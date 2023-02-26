@@ -1,0 +1,27 @@
+$schema: 'https://moonrepo.dev/schemas/template.json'
+
+title: 'New BaC Package'
+description: 'Create a new BaC package'
+variables:
+  package_type:
+    type: 'enum'
+    values:
+      - value: 'lib'
+        label: 'Library'
+      - value: 'corePlugin'
+        label: 'Core Plugin'
+      - value: 'publishablePlugin'
+        label: 'Publishable Plugin'
+    default: 'lib'
+    prompt: 'Package type?'
+    required: true
+  name:
+    type: 'string'
+    default: '@business-as-code/'
+    prompt: 'Package npm name'
+    required: true
+
+  # edition:
+  #   type: 'number'
+  #   default: 2021
+  #   prompt: 'Edition?'

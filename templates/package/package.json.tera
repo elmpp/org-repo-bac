@@ -1,0 +1,18 @@
+---
+force: true
+---
+{
+  "name": "{{ name }}",
+  "library": "{{ package_type }}",
+  "version": "0.0.1",
+  {% if package_type == 'lib' -%}
+  "description": "Library package {{name}}",
+  {% elif package_type == 'corePlugin' -%}
+  "description": "Core plugin package {{name}}",
+  {% elif package_type == 'publishablePlugin' -%}
+  "description": "Publishable plugin package {{name}}",
+  {% else -%}
+  WUT
+  {% endif -%}
+  "main": "src/index.ts"
+}

@@ -1,0 +1,86 @@
+lockfileVersion: 5.4
+
+specifiers:
+  '@moonrepo/cli': ^0.24.3
+
+devDependencies:
+  '@moonrepo/cli': 0.24.3
+
+packages:
+
+  /@moonrepo/cli/0.24.3:
+    resolution: {integrity: sha512-C1lDiP1hnRbYCxKdW54BdJn3R5uROgu7ibsQgB455kmUN/cUMjZLPvIbI0bcyrzGYq+xAQF410zKtabZQllpUg==}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      detect-libc: 2.0.1
+    optionalDependencies:
+      '@moonrepo/core-linux-arm64-gnu': 0.24.3
+      '@moonrepo/core-linux-arm64-musl': 0.24.3
+      '@moonrepo/core-linux-x64-gnu': 0.24.3
+      '@moonrepo/core-linux-x64-musl': 0.24.3
+      '@moonrepo/core-macos-arm64': 0.24.3
+      '@moonrepo/core-macos-x64': 0.24.3
+      '@moonrepo/core-windows-x64-msvc': 0.24.3
+    dev: true
+
+  /@moonrepo/core-linux-arm64-gnu/0.24.3:
+    resolution: {integrity: sha512-hrweVUh2UtT6LljYc1Dd9pnHGAoW/BPomaZy/zlIJ2Tfzlrr4rBYhHuzZ+HUWgdzcP2Vsj5pDWHfSKnzCl0nJQ==}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@moonrepo/core-linux-arm64-musl/0.24.3:
+    resolution: {integrity: sha512-KYbP8CMtj0X+ezNAlVT5+sRH1c5GWw+G0mt10qm342pln50YM02Ffqh2GbB19fA+viqd41M+S6f+isTgDeIYHg==}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@moonrepo/core-linux-x64-gnu/0.24.3:
+    resolution: {integrity: sha512-0sxFrhxV4/1A9rIYl96XL6dLA8VNK7CbNuvwaad5MUIi7MuaEQxjJ04mMoYpzemK5ffk4S7vF/vgfNPNeSMXjg==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@moonrepo/core-linux-x64-musl/0.24.3:
+    resolution: {integrity: sha512-wRvh5zp76PfAB9w+JYdIOu+KnPMAK/xweUEJF8r8pB+pqfyXykQo/ZZAPLZl0UmgV4FHgjYzW8z4K0yc1bajJA==}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@moonrepo/core-macos-arm64/0.24.3:
+    resolution: {integrity: sha512-OAS+l4PxOyptSuXWBcqE2lJw2DzSWQn+4AYj6nK/p5w0Tu1VtOQ0ZqRy5X1hV56viMcvM6+X1OM+66fUKwfZCQ==}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@moonrepo/core-macos-x64/0.24.3:
+    resolution: {integrity: sha512-ITQAEq6W2J72BA8xoUjhBoHKRz23bnHBtvRMvFT2jtKqds+r/KGJjJB/QELpf63cTQ13wizgj0ChTS9wPv5CDQ==}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /@moonrepo/core-windows-x64-msvc/0.24.3:
+    resolution: {integrity: sha512-l6JLWxeRGQNljiXJgIUJRyY6tc8yXd9aDicJrn8aji7HGtQavejufyjqcIK24SnB50WLuaAL4E6DO4QauFV6ew==}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: true
+    optional: true
+
+  /detect-libc/2.0.1:
+    resolution: {integrity: sha512-463v3ZeIrcWtdgIg6vI6XUncguvr2TnGl4SzDXinkt9mSLpBJKXT3mW6xT3VQdDN11+WVs29pgvivTc4Lp8v+w==}
+    engines: {node: '>=8'}
+    dev: true
