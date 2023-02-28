@@ -11,7 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": [
-      "es7"
+      "es7",
     ],
     "module": "commonjs",
     "moduleResolution": "node",

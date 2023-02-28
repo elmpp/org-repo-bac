@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.options.json",
+  "include": [
+    "**/*"
+  ],
+  // "references": [],
+  "compilerOptions": {
+    // "transpileOnly": true,
+    // "outDir": "../../.moon/cache/types/packages/bac-pkg-cli"
+  },
+  // "typeRoots": [
+  //   "./node_modules/@types"
+  // ]
+}
