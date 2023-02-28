@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@moonrepo/cli": "^0.24.3"
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "@moonrepo/cli": "^0.25.0",
+    "husky": "^8.0.3"
   }
 }
