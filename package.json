@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -14,7 +15,7 @@
     "@commitlint/config-conventional": "^17.4.4",
     "@commitlint/prompt-cli": "^17.4.4",
     "@commitlint/types": "^17.4.4",
-    "@moonrepo/cli": "^0.25.0",
+    "@moonrepo/cli": "^0.25.2",
     "@types/node": "^18.14.2",
     "husky": "^8.0.3",
     "typescript": "^4.9.5"

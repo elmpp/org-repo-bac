@@ -1,0 +1,10 @@
+{
+  "name": "@business-as-code/fslib",
+  "library": "lib",
+  "version": "0.0.1",
+  "description": "Library package @business-as-code/fslib",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@yarnpkg/fslib": "3.0.0-rc.39"
+  }
+}

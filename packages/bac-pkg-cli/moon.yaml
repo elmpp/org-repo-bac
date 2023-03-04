@@ -1,0 +1,4 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+
+# dependsOn: # using the node syncer in moon
+#   - '@business-as-code/core'
