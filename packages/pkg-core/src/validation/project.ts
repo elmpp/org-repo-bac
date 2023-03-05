@@ -5,6 +5,7 @@ import { languageSchema, projectTypeSchema } from "./common";
  defines the non-common attributes of a Project that must be detected during Source import
  */
 const baseProjectSchema = z.object({
+  /** blah blah */
   language: languageSchema,
   type: projectTypeSchema,
   name: z.string(),
@@ -17,6 +18,7 @@ export const projectConfigSchema = baseProjectSchema.merge(z.object({
   active: z.optional(z.boolean()),
 })
 )
+
 
 
 // export type BaseProject = {

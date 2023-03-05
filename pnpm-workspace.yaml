@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
-  - 'apps/**'
+  - 'apps/**' # @todo be more prescriptive here
+  - 'packages/tests/*'
   # exclude packages that are inside test directories
-  - '!**/test/**'
+  # - '!**/test/**'

@@ -3,8 +3,8 @@
     "allowJs": false,
     "checkJs": false,
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false, // true causes problem with Commands.flags inferrence
+    "declarationMap": false,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

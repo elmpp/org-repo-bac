@@ -5,7 +5,7 @@ import type {
 } from '@moonrepo/types'
 import { z } from "zod";
 import {expectTypeOf} from 'expect-type'
-import type {FSTree} from '@business-as-code/fslib'
+
 
 export const languageSchema = z.union([
   // z.literal("bash"),
@@ -25,10 +25,6 @@ export const projectTypeSchema = z.union([
   z.literal("library"),
   z.literal("tool"),
 ])
-
-export const fsTreeSchema = z.custom<FSTree>(() => {
-  // does it mirror the fs node api?
-})
 
 export type Language = z.infer<typeof languageSchema>
 export type ProjectType = z.infer<typeof projectTypeSchema>

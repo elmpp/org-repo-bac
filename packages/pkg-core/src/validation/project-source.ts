@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { fsTreeSchema, languageSchema, projectTypeSchema } from "./common";
+import type {FSTree} from '@business-as-code/fslib'
+import { languageSchema, projectTypeSchema } from "./common";
 import { projectConfigSchema } from "./project";
 
 const baseProjectSourceSchema = z.object({
@@ -18,7 +19,7 @@ export const projectSourceConfigSchema = baseProjectSourceSchema.merge(z.object(
     z.array(
       z.function()
       .args(z.object({
-        fsTree: fsTreeSchema,
+        fsTree: z.custom<FSTree>(), // no implementation function here - not user supplied
       }))
       .returns(z.optional(
         projectConfigSchema,

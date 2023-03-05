@@ -1,6 +1,8 @@
 
 ## Generator command
- - p moon g package ./packages/bac-pkg-cli --defaults -- --package_type 'library' --name '@business-as-code/cli'
+ - p moon g package ./packages/pkg-cli --defaults -- --package_type 'package' --name '@business-as-code/cli'
+ - p moon g package ./packages/plugin-myplugin --defaults -- --package_type 'plugin' --name '@business-as-code/plugin-myplugin'
+ - p m ls # list workspaces + deps
 
 ## Tasks
 
@@ -52,6 +54,12 @@ Create a schema for the config files. It should be driven by a typescript interf
 ### User Feedback
  - [ ] Need to solicit feedback on what plugins would be useful to a company
    - [ ] Either more business-oriented feedback (see Risks#1) or more god-mode stuff
+
+### Tech Stack
+ - cli/plugin management: [oclif](https://github.com/oclif/oclif)
+ - plugins: [oclif plugins](https://tinyurl.com/ybnks7qa)
+ - generators (yes, required): [yeoman](https://yeoman.io/authoring/integrating-yeoman.html) (it's usage is for simplicity and prompted by this - https://tinyurl.com/2ztjtsbs)
+
 
 ### Risks
  1. Jira kinda [owns this space already](https://tinyurl.com/2maj9agc). Need to lean into the monorepo tooling perhaps moreso

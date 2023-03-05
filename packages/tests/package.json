@@ -1,0 +1,7 @@
+{
+  "name": "@business-as-code/tests",
+  "library": "lib",
+  "version": "0.0.1",
+  "description": "Tests package @business-as-code/tests",
+  "main": "src/index.ts"
+}

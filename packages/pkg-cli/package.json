@@ -1,0 +1,53 @@
+{
+  "name": "@business-as-code/cli",
+  "version": "0.0.1",
+  "description": "Library package @business-as-code/cli",
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+    "bin": "bin/run"
+  },
+  "keywords": [
+    "typescript",
+    "generator",
+    "oclif"
+  ],
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "bin"
+  ],
+  "bin": {
+    "bac": "bin/dev"
+  },
+  "dependencies": {
+    "@business-as-code/plugin-core-essentials": "workspace:*",
+    "@business-as-code/tests-specs": "workspace:*",
+    "@oclif/command": "^1.8.22",
+    "@oclif/config": "^1.18.8",
+    "@oclif/core": "^2.4.0",
+    "@oclif/plugin-help": "^5.2.7",
+    "@oclif/plugin-not-found": "^2.3.21",
+    "@oclif/plugin-plugins": "^2.3.2"
+  },
+  "oclif": {
+    "bin": "bac",
+    "commands": "./dist/commands",
+    "topicSeparator": " ",
+    "topics": {
+      "hello": {
+        "description": "Say hello to the world and others"
+      }
+    },
+    "plugins": [
+      "@oclif/plugin-help",
+      "@oclif/plugin-not-found",
+      "@business-as-code/plugin-core-essentials"
+    ],
+    "devPlugins": [
+      "@oclif/plugin-plugins"
+    ]
+  }
+}

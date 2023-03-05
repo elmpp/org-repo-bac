@@ -6,7 +6,7 @@
   // "references": [],
   "compilerOptions": {
     // "transpileOnly": true,
-    // "outDir": "../../.moon/cache/types/packages/bac-pkg-cli"
+    // "outDir": "../../.moon/cache/types/packages/pkg-cli"
   },
   // "typeRoots": [
   //   "./node_modules/@types"
