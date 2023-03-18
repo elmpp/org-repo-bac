@@ -1,0 +1,20 @@
+diff --git a/lib/config/plugin.js b/lib/config/plugin.js
+index 916c1d606e1e0ecbbc08288e6175dd09ae3b730b..cb8641871397d1c9677010c0e34dccd6ef05eee4 100644
+--- a/lib/config/plugin.js
++++ b/lib/config/plugin.js
+@@ -265,9 +265,12 @@ class Plugin {
+     warn(err, scope) {
+         if (this.warned)
+             return;
+-        if (typeof err === 'string')
+-            err = new Error(err);
+-        process.emitWarning(this.addErrorScope(err, scope));
++        if (typeof err === 'Error') {
++            err = err.message
++        }
++            // err = new Error(err);
++        // process.emitWarning(this.addErrorScope(err, scope));
++        process.emitWarning(err, scope);
+     }
+     addErrorScope(err, scope) {
+         err.name = `${err.name} Plugin: ${this.name}`;

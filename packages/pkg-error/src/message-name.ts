@@ -1,6 +1,7 @@
 export enum MessageName {
   UNNAMED = 0,
   PACKAGE_RESOLVE_FAIL = 1, // mention how Mnt depends upon 'root' being the name of the root package in many instances
+  FS_PATH_FORMAT_ERROR = 2, // an FS path has been incorrectly encountered. Give examples of format. e.g. init-workspace#path
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink
   // TEST_ENV = 3, // ignorable message that is used within tests
   // PLUGIN_INSTALLATION_UNDECLARED = 10,

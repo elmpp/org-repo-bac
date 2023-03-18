@@ -26,10 +26,14 @@
     "@business-as-code/plugin-core-essentials": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
-    "@oclif/core": "^2.4.0",
+    "@oclif/core": "2.6.4",
     "@oclif/plugin-help": "^5.2.7",
     "@oclif/plugin-not-found": "^2.3.21",
     "@oclif/plugin-plugins": "^2.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "18.14.2",
+    "typescript": "5.0.2"
   },
   "oclif": {
     "topicSeparator": " ",
@@ -40,7 +44,6 @@
     },
     "plugins": [
       "@oclif/plugin-help",
-      "@oclif/plugin-not-found",
       "@business-as-code/plugin-core-essentials"
     ],
     "devPlugins": [

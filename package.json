@@ -32,6 +32,11 @@
   },
   "packageManager": "pnpm@7.18.2",
   "engines": {
-    "node": "18.12.0"
+    "node": "18.14.2"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@oclif/core@2.6.4": "patches/@oclif__core@2.6.4.patch"
+    }
   }
 }

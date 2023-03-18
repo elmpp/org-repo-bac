@@ -1,5 +1,3 @@
-import { assertUnreachable } from '@monotonous/common'
-import type { PackageManagerUnion } from '@monotonous/package-manager'
 import { URLSearchParams } from 'url'
 import { makeHash } from '../tools/normalize-utils'
 import { AddressHandler } from '../__types__'
@@ -34,7 +32,7 @@ const PACKAGE_REGEX = /^(?:@([a-z0-9-~][a-z0-9-._~]*)\/)?([a-z0-9-~][a-z0-9-._~]
 export const handler: AddressHandler<'paramDescriptorPackage'> = {
   name: 'paramDescriptorPackage',
   group: 'package',
-  parse({address, packageManager}) {
+  parse({address}) {
 
     const matches = address.match(PACKAGE_REGEX)
     if (!matches) return
@@ -50,7 +48,7 @@ export const handler: AddressHandler<'paramDescriptorPackage'> = {
         name,
         identString: `${scope ? `@${scope}/` : ''}${name}`,
         range,
-        protocol: classifyProtocol(range, packageManager),
+        protocol: classifyProtocol(range),
       },
       ...(params ? {params, paramsSorted} : {}),
     }
@@ -96,17 +94,16 @@ function handle({descriptor, params}: {descriptor: PackageDescriptorLoose, param
 
  @param packageManager  To be used as a hint, other pm packages may be imported
  */
-function classifyProtocol(range: string, packageManager: string): string {
+function classifyProtocol(range: string): string {
 // function classifyProtocol(range: string, packageManager: PackageManagerUnion): string { // build problems `mnt:build-and-clean`
-  switch (packageManager) {
-    case 'workrootPackageManagerYarn2Nm':
-    case 'workrootPackageManagerYarn2Pnp':
-      const parts = range.match(/^([a-z]+):/i)
-      return range.includes('/') ? 'github' : parts?.[1] ?? 'npm'
-    default:
-      throw new Error(`Package manager type not handled: ${packageManager}`)
+  // switch (packageManager) {
+  //   case 'workrootPackageManagerYarn2Nm':
+  //   case 'workrootPackageManagerYarn2Pnp':
+  const parts = range.match(/^([a-z]+):/i)
+  return range.includes('/') ? 'github' : parts?.[1] ?? 'npm'
+    // default:
+      // throw new Error(`Package manager type not handled: ${packageManager}`)
       // assertUnreachable(packageManager)
-  }
 }
 
 type PackageDescriptorLoose = {

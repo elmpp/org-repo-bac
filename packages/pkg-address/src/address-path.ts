@@ -173,7 +173,6 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
     },
     join(...pathSegments: AddressPath[]): AddressPath {
       const normal = pathSegments.pop()
-      console.log(`pathSegments :>> `, pathSegments)
       let posixJoin = path.posix.join(...pathSegments.map((p) => p.addressNormalized), normal!.address)
       if (posixJoin === '*') posixJoin = './*'
       return addressIns.parsePath(posixJoin)

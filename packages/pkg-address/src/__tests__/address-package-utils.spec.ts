@@ -3,13 +3,13 @@ import { AddressPackageUtils } from '../address-package'
 import { AddressDescriptor, AddressPackageDescriptor, AddressPackageIdent } from '../__types__'
 
 
-describe('Address.packageUtils', () => {
+describe.only('Address.packageUtils', () => {
 
   let addr: Address
   let addressPackageUtils: AddressPackageUtils
 
   beforeEach(async () => {
-    addr = Address.initialise({parseParams: {packageManager: 'workrootPackageManagerYarn2Pnp'}})
+    addr = Address.initialise({parseParams: {}})
     addressPackageUtils = addr.packageUtils
   })
   describe('resolve methods', () => {

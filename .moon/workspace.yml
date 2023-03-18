@@ -10,7 +10,7 @@ $schema: 'https://moonrepo.dev/schemas/workspace.json'
 
 vcs:
   manager: 'git'
-  defaultBranch: 'master'
+  defaultBranch: 'main'
 
 # REQUIRED: A map of all projects found within the workspace, or a list or file system globs.
 # When using a map, each entry requires a unique project ID as the map key, and a file system
@@ -27,7 +27,8 @@ projects:
     - 'packages/plugin-core-essentials'
     - 'packages/pkg-address'
     - 'packages/pkg-error'
-    - 'packages/tests/*'
+    - 'packages/tests/pkg-tests-core'
+    - 'packages/tests/pkg-tests-specs-fixtures'
 
 generator:
   templates:

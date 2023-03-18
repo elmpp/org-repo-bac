@@ -157,3 +157,5 @@ conventional-changelog-context.json
 # moon
 .moon/cache
 .moon/docker
+
+etc/var

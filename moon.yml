@@ -18,13 +18,14 @@ fileGroups:
 
   # List of non-source test files.
   testFixtures:
-    - 'ssstests/pkg-tests-specs-fixtures/**/*.spec.*'
+    - 'packages/tests/pkg-tests-specs-fixtures/**/*.spec.*'
 
   # List of non-source test files.
   testNonFixtures:
-    - 'tests/**/*.spec.*'
-    - '**/__tests__/**/*'
-    - '!tests/pkg-tests-specs-fixtures/**/*.spec.*'
+    # - 'packages/tests/**/*.spec.*'
+    # - '**/__tests__/**/*'
+    - '**/*.spec.*'
+    - '!packages/tests/pkg-tests-specs-fixtures/**/*.spec.*'
 
   # All static assets within the project.
   # This may include styles, images, videos, etc.
@@ -50,10 +51,10 @@ tasks:
   #     - '@globs(testNonFixtures)'
   #   platform: 'node'
   testFixtures:
-    command: 'pnpm jest --passWithNoTests tests/pkg-tests-specs-fixtures'
+    command: 'pnpm jest --passWithNoTests packages/tests/pkg-tests-specs-fixtures'
     # command: 'pnpm jest --passWithNoTests @in(0)'
     inputs:
-      # - 'tests/pkg-tests-specs-fixtures'
+      # - 'packages/tests/pkg-tests-specs-fixtures/**/*.ts'
       # - '/tests/pkg-tests-specs-fixtures/**/*'
       # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
       # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
@@ -65,7 +66,7 @@ tasks:
       - '~:testFixtures'
     inputs:
       - '@globs(testNonFixtures)'
-    command: 'pnpm jest --passWithNoTests --testPathPattern=!pkg-tests-specs-fixtures'
+    command: 'pnpm jest --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures'
     platform: 'node'
     runFromWorkspaceRoot: true
   testWatch:
@@ -73,7 +74,7 @@ tasks:
       - '~:testFixtures'
     inputs:
       - '@globs(testNonFixtures)'
-    command: 'pnpm jest --watch --passWithNoTests --testPathPattern=!pkg-tests-specs-fixtures'
+    command: 'pnpm jest --watch --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures'
     platform: 'node'
     runFromWorkspaceRoot: true
     local: true # disables moon caching etc

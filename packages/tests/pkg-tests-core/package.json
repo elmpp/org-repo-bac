@@ -10,8 +10,10 @@
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
-    "@oclif/core": "^2.4.0",
+    "@oclif/core": "2.6.4",
     "@oclif/test": "^2.3.9",
-    "stdout-stderr": "^0.1.13"
+    "@types/node": "18.14.2",
+    "stdout-stderr": "^0.1.13",
+    "typescript": "5.0.2"
   }
 }

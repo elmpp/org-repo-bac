@@ -1178,7 +1178,7 @@ describe('Address', () => {
           expect(parsed).toEqual(entry)
         }
         catch (err) {
-          console.log(`failed at entry, parsed :>> `, entry, parsed)
+          console.log(`failed at parseStr, entry, parsed :>> `, `${entry.group}:${entry.original}`, entry, parsed)
           throw err
         }
       })

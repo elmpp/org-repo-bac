@@ -3,9 +3,10 @@
 import * as oclifCore from '@oclif/core'
 import * as mockStd from 'stdout-stderr'
 import { addr, AddressPathAbsolute, AddressPathRelative } from '@business-as-code/address'
-import { Outputs } from '@business-as-code/core'
+import { Outputs,  } from '@business-as-code/core'
 import { getCurrentTestFilenameSanitised, getCurrentTestNameSanitised, sanitise } from './test-utils'
 import { XfsCacheManager } from './xfs-cache-manager'
+import { xfs } from '@business-as-code/fslib'
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -49,12 +50,12 @@ type CreatePersistentTestEnvVars = {
   // savePath?: (options: {testsPath: AddressPathAbsolute, cachePath: AddressPathAbsolute, fixturesPath: AddressPathAbsolute}) => AddressPathAbsolute
   /** the base path for further folders. We do this to allow cache and content folders to be contained */
   basePath?: () => AddressPathAbsolute
-  /** the cache base path. Tests are free to save cache entries that will allow be within here. Defaults to basePath/cache */
-  cachePath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
+  // /** the cache base path. Tests are free to save cache entries that will allow be within here. Defaults to basePath/cache */
+  // cachePath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   // /** the base path for the saveCacheManager. Defaults to basePath/fixtures */
   // fixturesPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
-  /** the base path where content will be created (i.e. contain the various destinationPaths). Defaults to basePath/tests */
-  testsPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
+  // /** the base path where content will be created (i.e. contain the various destinationPaths). Defaults to basePath/tests */
+  // testsPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   /** skips (+clears) cache namespace for the current test file. (remember we strongly encourage single 'makeTestEnv = await setupMakeTestEnv' per test file) */
   cacheRenewNamespace?: boolean
   // /** overrides the cache location for all tests (normally taken from processNamespace/test name) */
@@ -88,11 +89,12 @@ type EphemeralTestEnvVars = {
 export type TestContext = {
   mockStdStart: () => void
   mockStdEnd: () => Outputs
+  envVars: PersistentTestEnvVars & EphemeralTestEnvVars
   /**
    Runs an oclif command. Inspired by @oclif/test - https://tinyurl.com/2gftlrbb
    Example usage: https://oclif.io/docs/testing
    */
-  command: (args: string[]) => Promise<Outputs>
+  command: (args: string[], options?: {}) => Promise<number>
 }
 
 /**
@@ -116,13 +118,24 @@ export type RunFunction = (context: TestContext) => Promise<void>
 async function doCreatePersistentTestEnvs(
   createPersistentTestEnvVars: CreatePersistentTestEnvVars
 ): Promise<PersistentTestEnvVars> {
-  const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.parsePath('blah') as unknown as AddressPathAbsolute
-  const testsPath =
-    createPersistentTestEnvVars.testsPath?.({basePath}) ??
-    (addr.pathUtils.join(basePath, addr.parsePath('tests') as AddressPathRelative) as AddressPathAbsolute)
-  const cachePath =
-    createPersistentTestEnvVars.cachePath?.({basePath}) ??
-    (addr.pathUtils.join(basePath, addr.parsePath('cache') as AddressPathRelative) as AddressPathAbsolute)
+  const checkoutPath = addr.pathUtils.resolve(
+    addr.parsePPath(__dirname),
+    // addr.parsePPath('../../../mnt-pkg-cli/src/bin')
+    addr.parsePPath('../../../..')
+  ) as AddressPathAbsolute
+
+  // console.log(`checkoutPath :>> `, checkoutPath)
+  // throw new Error()
+
+  const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.pathUtils.join(checkoutPath, addr.parsePath('etc/var')) as AddressPathAbsolute
+  // const testsPath =
+  //   createPersistentTestEnvVars.testsPath?.({basePath}) ??
+  //   (addr.pathUtils.join(basePath, addr.parsePath('tests') as AddressPathRelative) as AddressPathAbsolute)
+  const testsPath = addr.pathUtils.join(basePath, addr.parsePath('tests')) as AddressPathAbsolute
+  // const cachePath =
+  //   createPersistentTestEnvVars.cachePath?.({basePath}) ??
+  //   (addr.pathUtils.join(basePath, addr.parsePath('cache') as AddressPathRelative) as AddressPathAbsolute)
+  const cachePath = addr.pathUtils.join(basePath, addr.parsePath('cache')) as AddressPathAbsolute
   // const fixturesPath =
   //   createPersistentTestEnvVars.fixturesPath?.({basePath}) ??
   //   (addr.pathUtils.join(basePath, addr.parsePPath('fixtures') as AddressPathRelative) as AddressPathAbsolute)
@@ -138,16 +151,12 @@ async function doCreatePersistentTestEnvs(
   //   strict: true,
   // })
 
-  const checkoutPath = addr.pathUtils.resolve(
-    addr.parsePPath(__dirname),
-    // addr.parsePPath('../../../mnt-pkg-cli/src/bin')
-    addr.parsePPath('../../../../../../..')
-  ) as AddressPathAbsolute
 
-  const checkoutMntCwd = addr.pathUtils.join(
-    checkoutPath,
-    addr.parsePPath('orgs/monotonous/packages/mnt-pkg-cli/src/bin')
-  ) as AddressPathAbsolute
+
+  // const checkoutMntCwd = addr.pathUtils.join(
+  //   checkoutPath,
+  //   addr.parsePPath('orgs/monotonous/packages/mnt-pkg-cli/src/bin')
+  // ) as AddressPathAbsolute
 
   // console.log(`addr.parsePPath('../../../../../..') :>> `, addr.parsePPath('../../../../../..'))
   // console.log(`addr.parsePPath(__dirname) :>> `, addr.parsePPath(__dirname))
@@ -294,23 +303,62 @@ export async function createPersistentTestEnv(
 
 }
 
+async function setupFolders(testEnvVars: EphemeralTestEnvVars & PersistentTestEnvVars): Promise<void> {
+  const doTestFolders = async () => {
+    const testsFolderName = testEnvVars.processNamespace ?? getCurrentTestNameSanitised(false)
+    if (!testsFolderName) {
+      throw new Error(`For tests within setupFixtures, a 'processNamespace' must be supplied`)
+    }
+    const testPath = addr.pathUtils.join(testEnvVars.testsPath, addr.parsePPath(testsFolderName))
+    await xfs.removePromise(testPath.address)
+    await xfs.mkdirpPromise(testPath.address)
+  }
+
+  await doTestFolders()
+}
+
 async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
   return async (createEphemeralTestEnvVars: CreateEphemeralTestEnvVars, run: RunFunction) => {
 
-    const checkoutMntPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../pkg-cli'))
+    const checkoutPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../..'))
+    const cliPath = addr.pathUtils.join(checkoutPath, addr.parsePath('packages/pkg-cli')) as AddressPathAbsolute
     const ephemeralTestEnvVars = await doCreateEphemeralTestEnvVars(createEphemeralTestEnvVars, persistentTestEnvVars)
 
     function createTestContext(): TestContext {
       return {
-        command: async (args: string[]) => {
+        command: async (args: string[], options = {}) => {
           // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
           // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
           // await oclifCore.execute({type: 'cjs', dir: ephemeralTestEnvVars.destinationPath.original, args})
-          await oclifCore.execute({type: 'cjs', dir: checkoutMntPath.original, args})
-          return {
-            stdout: '',
-            stderr: '',
-          }
+
+          // In dev mode, always show stack traces
+          // oclifCore.settings.debug = development; // this just registers ts-node which isn't swc
+
+          // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
+          // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
+          // await oclifCore.execute({type: 'cjs', dir: cliPath.original, args})
+          console.log(`cliPath.original :>> `, cliPath.original)
+
+          process.chdir(cliPath.original)
+
+          let exitCode = 0
+          await oclifCore.run(args, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
+          .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
+            .catch((error) => {
+              console.log(`error :>> `, error)
+              // oclifCore.Errors.handle(error)
+              // return 1
+              exitCode = error.oclif.exit
+            }
+          )
+
+          return exitCode
+
+          // return await oclifCore.({type: 'cjs', dir: checkoutMntPath.original, args})
+          // return {
+          //   stdout: '',
+          //   stderr: '',
+          // }
         },
         mockStdStart: () => {
           mockStd.stdout.start()
@@ -323,11 +371,17 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               stdout: mockStd.stdout.output,
               stderr: mockStd.stderr.output,
           }
-        }
+        },
+        envVars: {
+          ...ephemeralTestEnvVars,
+          ...persistentTestEnvVars,
+        },
       }
     }
 
     const testContext = await createTestContext()
+
+    await setupFolders({...ephemeralTestEnvVars, ...persistentTestEnvVars})
 
     try {
       await run(testContext)

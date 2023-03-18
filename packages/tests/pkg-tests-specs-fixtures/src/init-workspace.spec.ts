@@ -1,7 +1,7 @@
 import { createPersistentTestEnv } from '@business-as-code/tests-core'
 
 /** simply ensures the testEnv core util is operating properly */
-describe('test-env', () => {
+describe('init-workspace', () => {
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
 
@@ -16,7 +16,7 @@ describe('test-env', () => {
   // })
 
   // })
-  it('picks up paths from moon', async () => {
+  it('creates a skeleton workspace without config', async () => {
 
     const persistentTestEnv = await createPersistentTestEnv({})
     await persistentTestEnv.test({},
@@ -24,9 +24,11 @@ describe('test-env', () => {
 
       const {envVars} = testContext
 
-      expect(envVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
-      expect(envVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
-      expect(envVars.destinationPath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
+      // console.log(`envVars :>> `, envVars)
+
+      // expect(envVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
+      // expect(envVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
+      // expect(envVars.destinationPath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
 
       // console.log(`envVars :>> `, envVars)
 
@@ -38,17 +40,30 @@ describe('test-env', () => {
       // }
 
       // testContext.mockStdStart()
-      const exitCode = await testContext.command(['help'])
+      const exitCode = await testContext.command(['init-workspace', envVars.destinationPath.original])
+      expect(exitCode).toEqual(0)
+      console.log(`exitCode :>> `, exitCode)
       // await testContext.command(['something', 'else'])
-      const outputs = testContext.mockStdEnd()
+      // const outputs = testContext.mockStdEnd()
 
-      expect(outputs).not.toMatch('')
+      // expect(outputs).not.toMatch('')
 
       // console.log(`outputs :>> `, outputs)
 
       // return {
       //   outputs,
       // }
+    })
+  })
+  describe('errors', () => {
+    it('nonexistent command', async () => {
+
+      const persistentTestEnv = await createPersistentTestEnv({})
+      await persistentTestEnv.test({},
+      async (testContext) => {
+        const exitCode = await testContext.command(['does-not-exist', testContext.envVars.destinationPath.original])
+        expect(exitCode).toBeGreaterThan(0)
+      })
     })
   })
 })
