@@ -1,3 +1,12 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "yaml.schemas": {
+    "http://moonrepo.dev/schemas/tasks.json": [
+      "typescript.yml",
+      "file:///Users/matt/dev/org-repo-moonrepo/.moon/tasks/typescript.yml"
+    ],
+    "file:///Users/matthew.penrice/.vscode/extensions/atlassian.atlascode-2.9.1/resources/schemas/pipelines-schema.json": [
+      "bitbucket-pipelines.yml"
+    ]
+  }
 }

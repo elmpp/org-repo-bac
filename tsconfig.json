@@ -3,12 +3,40 @@
   "include": [
     "**/*"
   ],
-  // "references": [],
   "compilerOptions": {
-    // "transpileOnly": true,
-    // "outDir": "../../.moon/cache/types/packages/pkg-cli"
+    "outDir": ".moon/cache/types"
   },
-  // "typeRoots": [
-  //   "./node_modules/@types"
-  // ]
+  "ts-node": {
+    "files": true,
+    "swc": true,
+    "compilerOptions": {
+      "importHelpers": false
+    }
+  },
+  "references": [
+    {
+      "path": "."
+    },
+    {
+      "path": "packages/pkg-address"
+    },
+    {
+      "path": "packages/pkg-cli"
+    },
+    {
+      "path": "packages/pkg-core"
+    },
+    {
+      "path": "packages/pkg-error"
+    },
+    {
+      "path": "packages/plugin-core-essentials"
+    },
+    {
+      "path": "packages/tests/pkg-tests-core"
+    },
+    {
+      "path": "packages/tests/pkg-tests-specs-fixtures"
+    }
+  ]
 }

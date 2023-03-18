@@ -1,0 +1,22 @@
+{
+  "extends": "../../../tsconfig.options.json",
+  "include": [
+    "**/*"
+  ],
+  "references": [
+    {
+      "path": "../pkg-tests-core"
+    }
+  ],
+  "compilerOptions": {
+    "outDir": "../../../.moon/cache/types/packages/tests/pkg-tests-specs-fixtures",
+    "paths": {
+      "@business-as-code/tests-core": [
+        "../pkg-tests-core/src/index.ts"
+      ],
+      "@business-as-code/tests-core/*": [
+        "../pkg-tests-core/src/*"
+      ]
+    }
+  }
+}

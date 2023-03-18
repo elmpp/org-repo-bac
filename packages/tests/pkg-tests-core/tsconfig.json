@@ -1,0 +1,31 @@
+{
+  "extends": "../../../tsconfig.options.json",
+  "include": [
+    "**/*"
+  ],
+  "references": [
+    {
+      "path": "../../pkg-address"
+    },
+    {
+      "path": "../../pkg-core"
+    }
+  ],
+  "compilerOptions": {
+    "outDir": "../../../.moon/cache/types/packages/tests/pkg-tests-core",
+    "paths": {
+      "@business-as-code/address": [
+        "../../pkg-address/src/index.ts"
+      ],
+      "@business-as-code/address/*": [
+        "../../pkg-address/src/*"
+      ],
+      "@business-as-code/core": [
+        "../../pkg-core/src/index.ts"
+      ],
+      "@business-as-code/core/*": [
+        "../../pkg-core/src/*"
+      ]
+    }
+  }
+}

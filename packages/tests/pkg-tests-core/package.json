@@ -1,0 +1,17 @@
+{
+  "name": "@business-as-code/tests-core",
+  "library": "lib",
+  "version": "0.0.1",
+  "description": "Library package @business-as-code/tests-core",
+  "main": "src/index.ts",
+  "dependencies": {
+    "@business-as-code/address": "workspace:*",
+    "@business-as-code/core": "workspace:*",
+    "@business-as-code/fslib": "workspace:*"
+  },
+  "devDependencies": {
+    "@oclif/core": "^2.4.0",
+    "@oclif/test": "^2.3.9",
+    "stdout-stderr": "^0.1.13"
+  }
+}

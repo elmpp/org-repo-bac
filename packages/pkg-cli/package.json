@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@business-as-code/plugin-core-essentials": "workspace:*",
-    "@business-as-code/tests-specs": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
     "@oclif/core": "^2.4.0",
@@ -33,8 +32,6 @@
     "@oclif/plugin-plugins": "^2.3.2"
   },
   "oclif": {
-    "bin": "bac",
-    "commands": "./dist/commands",
     "topicSeparator": " ",
     "topics": {
       "hello": {

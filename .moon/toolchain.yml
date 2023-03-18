@@ -1,4 +1,5 @@
 # https://moonrepo.dev/docs/config/toolchain
+# yaml-language-server: $schema=https://moonrepo.dev/schemas/toolchain.json
 $schema: 'https://moonrepo.dev/schemas/toolchain.json'
 
 # Extend and inherit an external configuration file. Must be a valid HTTPS URL or file system path.
@@ -27,7 +28,7 @@ node:
   aliasPackageNames: 'name-and-scope'
 
   # Dedupe dependencies after the lockfile has changed.
-  dedupeOnLockfileChange: true
+  dedupeOnLockfileChange: false
 
   # Version format to use when syncing dependencies within the project's `package.json`.
   # dependencyVersionFormat: 'workspace'
@@ -37,7 +38,7 @@ node:
   inferTasksFromScripts: false
 
   # Sync a project's `dependsOn` as dependencies within the project's `package.json`.
-  syncProjectWorkspaceDependencies: true
+  syncProjectWorkspaceDependencies: false
 
   # Sync `node.version` to a 3rd-party version manager's config file.
   # Accepts "nodenv" (.node-version), "nvm" (.nvmrc), or none.

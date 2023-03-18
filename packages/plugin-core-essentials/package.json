@@ -10,8 +10,8 @@
     "bin": "bin/run"
   },
   "keywords": [
-    "typescript",
     "generator",
+    "typescript",
     "oclif"
   ],
   "files": [
@@ -21,7 +21,11 @@
     "bin"
   ],
   "dependencies": {
-    "@business-as-code/cli": "workspace:*"
+    "@business-as-code/address": "workspace:*",
+    "@business-as-code/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@business-as-code/tests-core": "workspace:*"
   },
   "oclif": {
     "commands": "./src/commands"

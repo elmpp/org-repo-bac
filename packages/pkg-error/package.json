@@ -1,0 +1,7 @@
+{
+  "name": "@business-as-code/error",
+  "library": "lib",
+  "version": "0.0.1",
+  "description": "Library package @business-as-code/error",
+  "main": "src/index.ts"
+}

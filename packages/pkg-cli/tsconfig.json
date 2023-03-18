@@ -3,8 +3,29 @@
   "include": [
     "**/*"
   ],
-  "references": [],
+  "references": [
+    {
+      "path": "../plugin-core-essentials"
+    },
+    {
+      "path": "../tests/pkg-tests-core"
+    }
+  ],
   "compilerOptions": {
     "outDir": "../../.moon/cache/types/packages/pkg-cli",
+    "paths": {
+      "@business-as-code/plugin-core-essentials": [
+        "../plugin-core-essentials/src/index.ts"
+      ],
+      "@business-as-code/plugin-core-essentials/*": [
+        "../plugin-core-essentials/src/*"
+      ],
+      "@business-as-code/tests-core": [
+        "../tests/pkg-tests-core/src/index.ts"
+      ],
+      "@business-as-code/tests-core/*": [
+        "../tests/pkg-tests-core/src/*"
+      ]
+    }
   }
 }

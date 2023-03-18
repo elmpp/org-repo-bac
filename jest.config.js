@@ -11,7 +11,7 @@ module.exports = {
     // '^.+\\.tsx?$': require.resolve('ts-jest')
     '^.+\\.tsx?$': ['@swc/jest'],
   },
-  testMatch: ['**/__tests__/**/*.spec.ts?(x)', '**/__tests__/**/*.spec.js?(x)', '**/tests-specs/**/*.spec.ts?(x)'],
+  testMatch: ['**/__tests__/**/*.spec.ts?(x)', '**/__tests__/**/*.spec.js?(x)', '**/tests/**/*.spec.ts?(x)'],
 
   testPathIgnorePatterns: [
     '\\.(deletable.*?)$',

@@ -6,6 +6,9 @@
   "main": "src/index.ts",
   "dependencies": {
     "@business-as-code/fslib": "workspace:*",
+    "@oclif/command": "^1.8.22",
+    "@oclif/config": "^1.18.8",
+    "@oclif/core": "^2.4.0",
     "zod": "^3.20.6"
   },
   "devDependencies": {
