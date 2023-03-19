@@ -2,7 +2,7 @@ import {createPersistentTestEnv, PersistentTestEnv} from '@business-as-code/test
 import {Outputs} from '@business-as-code/core'
 import {addr} from '@business-as-code/address'
 
-describe('init workspace', () => {
+describe('workspace init', () => {
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
 

@@ -1,7 +1,7 @@
 import { createPersistentTestEnv } from '@business-as-code/tests-core'
 
 /** simply ensures the testEnv core util is operating properly */
-describe('init-workspace', () => {
+describe('workspace init', () => {
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
 
@@ -16,7 +16,7 @@ describe('init-workspace', () => {
   // })
 
   // })
-  it('creates a skeleton workspace without config', async () => {
+  it.only('creates a skeleton workspace without config', async () => {
 
     const persistentTestEnv = await createPersistentTestEnv({})
     await persistentTestEnv.test({},
@@ -40,7 +40,7 @@ describe('init-workspace', () => {
       // }
 
       // testContext.mockStdStart()
-      const exitCode = await testContext.command(['init-workspace', envVars.destinationPath.original])
+      const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
       expect(exitCode).toEqual(0)
       console.log(`exitCode :>> `, exitCode)
       // await testContext.command(['something', 'else'])
@@ -62,6 +62,24 @@ describe('init-workspace', () => {
       await persistentTestEnv.test({},
       async (testContext) => {
         const exitCode = await testContext.command(['does-not-exist', testContext.envVars.destinationPath.original])
+        expect(exitCode).toBeGreaterThan(0)
+      })
+    })
+    it('incorrect command options', async () => {
+
+      const persistentTestEnv = await createPersistentTestEnv({})
+      await persistentTestEnv.test({},
+      async (testContext) => {
+        const exitCode = await testContext.command(['workspace', 'init', '--blah=noThere', testContext.envVars.destinationPath.original])
+        expect(exitCode).toBeGreaterThan(0)
+      })
+    })
+    it('incorrect command arg', async () => {
+
+      const persistentTestEnv = await createPersistentTestEnv({})
+      await persistentTestEnv.test({},
+      async (testContext) => {
+        const exitCode = await testContext.command(['workspace', 'init', 'nonExistentArg', testContext.envVars.destinationPath.original])
         expect(exitCode).toBeGreaterThan(0)
       })
     })

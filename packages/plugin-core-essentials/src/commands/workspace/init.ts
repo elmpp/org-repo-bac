@@ -1,9 +1,9 @@
 import { addr, assertIsAddress, assertIsAddressPath, assertIsAddressPathAbsolute, assertIsAddressPathRelative } from '@business-as-code/address'
 import {Args, Flags, BaseCommand} from '@business-as-code/core'
 import {xfs} from '@business-as-code/fslib'
-import { BacError, MessageName } from '../../../pkg-error/src'
+import { BacError, MessageName } from '../../../../pkg-error/src'
 
-export class InitWorkspace extends BaseCommand<typeof InitWorkspace> {
+export class WorkspaceInit extends BaseCommand<typeof WorkspaceInit> {
 
   static description = 'Creates an empty workspace'
 
@@ -22,7 +22,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   }
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(InitWorkspace)
+    const {args, flags} = await this.parse(WorkspaceInit)
 
     let workspacePath = addr.parsePath(args.path)
     if (!assertIsAddressPath(workspacePath)) {

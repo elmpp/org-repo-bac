@@ -29,6 +29,11 @@
     "@business-as-code/tests-core": "workspace:*"
   },
   "oclif": {
-    "commands": "./src/commands"
+    "commands": "./src/commands",
+    "topics": {
+      "workspace": {
+        "description": "Workspace-related actions"
+      }
+    }
   }
 }
