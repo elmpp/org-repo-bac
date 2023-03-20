@@ -1,5 +1,4 @@
 import { URLSearchParams } from 'url'
-import { Address } from '..'
 import { AddressPackageProtocols } from '../address-package'
 import { makeHash } from '../tools/normalize-utils'
 import { AddressHandler } from '../__types__'
@@ -106,7 +105,7 @@ function handle({descriptor, params}: {descriptor: PackageDescriptorLoose, param
 // }
 
 export const serializePackageDescriptor = (desc: PackageDescriptorLoose): string => {
-  const {scope, name, range} = desc
+  const {scope, name} = desc
   let ret = `${scope ? `@${scope}/` : ''}${name}`
   if (desc.range) ret = `${ret}@${desc.range}`
   if (desc.subpath) ret = `${ret}/${desc.subpath}`

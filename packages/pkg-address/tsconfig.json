@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.options.json",
   "include": [
-    "**/*"
+    "src/**/*",
+    "*.spec.*",
+    "*.js",
+    "*.ts"
   ],
   "references": [
     {
@@ -12,7 +15,8 @@
     }
   ],
   "compilerOptions": {
-    "outDir": "../../.moon/cache/types/packages/pkg-address",
+    "rootDir": "src",
+"outDir": "dist",
     "paths": {
       "@business-as-code/core": [
         "../pkg-core/src/index.ts"

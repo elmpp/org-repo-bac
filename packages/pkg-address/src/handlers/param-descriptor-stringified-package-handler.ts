@@ -33,7 +33,7 @@ const PACKAGE_REGEX = /^(?:@((?!___).*))?___([a-z0-9-~][a-z0-9-._~]*)(?:@([^#]+)
 export const handler: AddressHandler<'paramDescriptorStringifiedPackage'> = {
   name: 'paramDescriptorStringifiedPackage',
   group: 'package',
-  parse({address, packageManager}) {
+  parse({address}) {
 
     const matches = address.match(PACKAGE_REGEX)
     if (!matches) return

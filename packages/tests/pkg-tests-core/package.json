@@ -1,8 +1,7 @@
 {
   "name": "@business-as-code/tests-core",
-  "library": "lib",
   "version": "0.0.1",
-  "description": "Library package @business-as-code/tests-core",
+  "description": "Tool package @business-as-code/tests-core",
   "main": "src/index.ts",
   "dependencies": {
     "@business-as-code/address": "workspace:*",

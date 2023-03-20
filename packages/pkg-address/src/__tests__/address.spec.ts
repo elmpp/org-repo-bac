@@ -4,7 +4,7 @@ import { Address, assertIsAddressPackage, assertIsAddressPath, assertIsAddressUr
 import { AddressDescriptor, AddressHandler, AddressType } from '../__types__'
 
 // import {createMockContext} from '@monotonous/tests-core'
-import {npath, PortablePath} from '@business-as-code/fslib'
+import { PortablePath } from '@business-as-code/fslib'
 
 
 type TestMapEntry<AddName extends keyof AddressType> = AddressDescriptor<AddName> & {
@@ -1279,7 +1279,7 @@ describe('Address', () => {
         expect(addr.format(ret)).toEqual(`http://www.bbc.com/?a=a&b=b`) // applied normalization
       })
       it('url: handler format', () => {
-        addr.registerHandler(bespokeHandler)
+        addr.registerHandler(bespokeHandler as AddressHandler<keyof AddressType>)
         const ret = addr.parseUrl('http://www.bbc.com')
 
         expect(addr.format(ret)).toEqual(`FORMATTED`)
@@ -1293,7 +1293,7 @@ describe('Address', () => {
   })
   describe('handlers', () => {
     it('adding a handler to a group makes it firstly considered', () => {
-      addr.registerHandler(bespokeHandler)
+      addr.registerHandler(bespokeHandler as AddressHandler<keyof AddressType>)
       expect(addr.parse({
         address: 'url:https://github.com/elmpp/org-repo.git#commit=21c39617a9',
       })).toEqual(
@@ -1314,7 +1314,7 @@ describe('Address', () => {
   })
   describe('utility', () => {
     it('typeguards', () => {
-      const realPlatform: NodeJS.Platform = process.platform
+      // const realPlatform: NodeJS.Platform = process.platform
       testMap.forEach(({arch, ...entry}) => {
         Object.defineProperty(process, `platform`, {
           configurable: true,

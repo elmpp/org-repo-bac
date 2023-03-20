@@ -41,7 +41,7 @@ export const handler: AddressHandler<'url'> = {
     catch {}
   },
   format(options) {
-    const {address, addressIns} = options
+    const {address} = options
     const url = address.parts.url
     normalizeUrl(url)
     return url.toString()

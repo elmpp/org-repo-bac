@@ -4,10 +4,17 @@
   "version": "0.0.1",
   "description": "Library package @business-as-code/address",
   "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
   "dependencies": {
     "@business-as-code/core": "workspace:*",
     "@business-as-code/error": "workspace:*",
     "@business-as-code/fslib": "workspace:*",
     "json-stringify-deterministic": "^1.0.8"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3"
   }
 }

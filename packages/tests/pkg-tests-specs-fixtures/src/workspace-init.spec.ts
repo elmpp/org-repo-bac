@@ -22,7 +22,7 @@ describe('workspace init', () => {
     await persistentTestEnv.test({},
     async (testContext) => {
 
-      const {envVars} = testContext
+      // const {envVars} = testContext
 
       // console.log(`envVars :>> `, envVars)
 

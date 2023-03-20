@@ -1,22 +1,11 @@
 {
   "extends": "./tsconfig.options.json",
-  "include": [
-    "**/*"
-  ],
+  "files": [],
+  "include": [],
   "compilerOptions": {
     "outDir": ".moon/cache/types"
   },
-  "ts-node": {
-    "files": true,
-    "swc": true,
-    "compilerOptions": {
-      "importHelpers": false
-    }
-  },
   "references": [
-    {
-      "path": "."
-    },
     {
       "path": "packages/pkg-address"
     },

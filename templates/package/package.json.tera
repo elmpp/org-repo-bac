@@ -3,16 +3,24 @@ force: true
 ---
 {
   "name": "{{ name }}",
-  "library": "{{ package_type }}",
   "version": "0.0.1",
-  {% if package_type == 'lib' -%}
+  {% if type_variant == 'entrypoint' -%}
+  "description": "Application entrypoint package {{name}}",
+  {% elif type_variant == 'library' -%}
   "description": "Library package {{name}}",
-  {% elif package_type == 'corePlugin' -%}
+  {% elif type_variant == 'plugin-core' -%}
   "description": "Core plugin package {{name}}",
-  {% elif package_type == 'publishablePlugin' -%}
+  {% elif type_variant == 'plugin' -%}
   "description": "Publishable plugin package {{name}}",
   {% else -%}
   WUT
   {% endif -%}
   "main": "src/index.ts"
+  {% if type == 'library' || type == 'application' -%}
+  ,
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts",
+  }
+  {% endif -%}
 }

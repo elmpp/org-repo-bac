@@ -1,7 +1,7 @@
 import { PortablePath } from '@business-as-code/fslib'
 import { Address } from '../address'
 import { AddressPathUtils } from '../address-path'
-import { AddressTypeByGroup, AddressDescriptor, AddressPathAbsolute, AddressPathRelative } from '../__types__'
+import { AddressDescriptor, AddressPathAbsolute, AddressTypeByGroup } from '../__types__'
 
 
 describe('addr.pathUtils', () => {
@@ -10,7 +10,7 @@ describe('addr.pathUtils', () => {
   let addressPathUtils: AddressPathUtils
 
   beforeEach(async () => {
-    addr = Address.initialise({parseParams: {packageManager: 'workrootPackageManagerYarn2Pnp'}})
+    addr = Address.initialise({parseParams: {}})
     addressPathUtils = addr.pathUtils
   })
   describe('static references', () => {

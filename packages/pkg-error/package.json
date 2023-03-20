@@ -3,5 +3,12 @@
   "library": "lib",
   "version": "0.0.1",
   "description": "Library package @business-as-code/error",
-  "main": "src/index.ts"
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3"
+  }
 }

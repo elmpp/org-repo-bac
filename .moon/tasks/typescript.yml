@@ -12,34 +12,34 @@ $schema: 'https://moonrepo.dev/schemas/tasks.json'
 # This setting requires a map, where the key is the file group name, and the value is a list of
 # globs. Globs are relative to a project, even though they are defined globally. This enables
 # enforcement of organizational patterns across all projects in the workspace.
-# fileGroups:
-#   # List of configuration files located within the project root.
-#   configs:
-#     - '*.{js,json}'
+fileGroups:
+  # List of configuration files located within the project root.
+  configs:
+    - '*.{js,json}'
 
-#   # List of non-test source files.
-#   sources:
-#     - 'src/**/*'
-#     - 'types/**/*'
+  # List of non-test source files.
+  sources:
+    - 'src/**/*'
+    - '**/*.spec.*'
 
-#   # List of non-source test files.
-#   testFixtures:
-#     - 'tests/pkg-tests-specs-fixtures/*.test.*'
+  # # List of non-source test files.
+  # testFixtures:
+  #   - 'tests/pkg-tests-specs-fixtures/*.test.*'
 
-#   # List of non-source test files.
-#   testNonFixtures:
-#     - 'tests/**/*.test.*'
-#     - '!tests/pkg-tests-specs-fixtures/*.test.*'
-#     - '**/__tests__/**/*'
+  # # List of non-source test files.
+  # testNonFixtures:
+  #   - 'tests/**/*.test.*'
+  #   - '!tests/pkg-tests-specs-fixtures/*.test.*'
+  #   - '**/__tests__/**/*'
 
-#   # All static assets within the project.
-#   # This may include styles, images, videos, etc.
-#   assets:
-#     - 'assets/**/*'
-#     - 'images/**/*'
-#     - 'static/**/*'
-#     - '**/*.{scss,css}'
-#     - '**/*.mdx'
+  # # All static assets within the project.
+  # # This may include styles, images, videos, etc.
+  # assets:
+  #   - 'assets/**/*'
+  #   - 'images/**/*'
+  #   - 'static/**/*'
+  #   - '**/*.{scss,css}'
+  #   - '**/*.mdx'
 
 # # A task is an action that is ran within the context of a project, and wraps
 # # around an npm or system command. Tasks that are defined here and inherited by all projects
@@ -48,25 +48,25 @@ $schema: 'https://moonrepo.dev/schemas/tasks.json'
 # # This setting requires a map, where the key is a unique name for the task,
 # # and the value is an object of task parameters.
 # tasks:
-#   lint:
-#     command: 'eslint'
-#     inputs:
-#       - '@globs(sources)'
-#       - '@globs(testFixtures)'
-#       - '@globs(testNonFixtures)'
-#     platform: 'node'
-#   testFixtures:
-#     inputs:
-#       - '@globs(testFixtures)'
-#     command: 'pnpm -w jest pkg-tests-specs-fixtures'
-#     platform: 'node'
-#   test:
-#     deps:
-#       - '~:testFixtures'
-#     inputs:
-#       - '@globs(testNonFixtures)'
-#     command: 'pnpm -w jest --testPathPattern=!pkg-tests-specs-fixtures'
-#     platform: 'node'
+  # lint:
+  #   command: 'eslint'
+  #   inputs:
+  #     - '@globs(sources)'
+  #     # - '@globs(testFixtures)'
+  #     # - '@globs(testNonFixtures)'
+  #   platform: 'node'
+  # testFixtures:
+  #   inputs:
+  #     - '@globs(testFixtures)'
+  #   command: 'pnpm -w jest pkg-tests-specs-fixtures'
+  #   platform: 'node'
+  # build:
+  #   deps:
+  #     - '~:lint'
+  #   inputs:
+  #     - '@globs(sources)'
+  #   command: 'pnpm -w jest --testPathPattern=!pkg-tests-specs-fixtures'
+  #   platform: 'node'
 
   # # Name of the task.
   # noop:

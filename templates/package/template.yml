@@ -3,17 +3,33 @@ $schema: 'https://moonrepo.dev/schemas/template.json'
 title: 'New BaC Package'
 description: 'Create a new BaC package'
 variables:
-  package_type:
+  type:
     type: 'enum'
     values:
-      - value: 'lib'
+      - value: 'application'
+        label: 'Application'
+      - value: 'library'
         label: 'Library'
-      - value: 'corePlugin'
+      - value: 'tool'
+        label: 'Tool'
+      - value: 'unknown'
+        label: 'Unknown'
+    # default: 'library'
+    prompt: 'Type (Moon)?'
+    required: true
+  variant_type:
+    type: 'enum'
+    values:
+      - value: 'entrypoint'
+        label: 'Entrypoint'
+      - value: 'library'
+        label: 'Library'
+      - value: 'plugin-core'
         label: 'Core Plugin'
-      - value: 'publishablePlugin'
-        label: 'Publishable Plugin'
-    default: 'lib'
-    prompt: 'Package type?'
+      - value: 'plugin'
+        label: 'Plugin'
+    # default: 'library'
+    prompt: 'Type Variant?'
     required: true
   name:
     type: 'string'

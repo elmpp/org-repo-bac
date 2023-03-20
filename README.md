@@ -1,7 +1,9 @@
 
 ## Generator command
- - p moon g package ./packages/pkg-cli --defaults -- --package_type 'package' --name '@business-as-code/cli'
- - p moon g package ./packages/plugin-myplugin --defaults -- --package_type 'plugin' --name '@business-as-code/plugin-myplugin'
+# # --type "application" | "library"  | "tool" | "unknown" ; --type_variant "plugin" | 'plugin-core' | 'library' | 'entrypoint'
+ - p moon g package ./packages/pkg-cli --defaults -- --type 'library' --type_variant 'entrypoint' --name '@business-as-code/cli'
+ - p moon g package ./packages/plugin-myplugin --defaults -- --type 'library' --type_variant 'plugin' --name '@business-as-code/plugin-myplugin'
+ - p moon g package ./packages/plugin-core-essentials --defaults -- --type 'library' --type_variant 'plugin-core' --name '@business-as-code/plugin-myplugin'
  - p m ls # list workspaces + deps
 
 ## Tasks

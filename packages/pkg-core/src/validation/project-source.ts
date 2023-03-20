@@ -1,6 +1,5 @@
+import type { FSTree } from '@business-as-code/fslib';
 import { z } from "zod";
-import type {FSTree} from '@business-as-code/fslib'
-import { languageSchema, projectTypeSchema } from "./common";
 import { projectConfigSchema } from "./project";
 
 const baseProjectSourceSchema = z.object({

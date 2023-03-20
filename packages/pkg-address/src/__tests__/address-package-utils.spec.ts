@@ -1,16 +1,14 @@
 import { Address } from '../address'
-import { AddressPackageUtils } from '../address-package'
-import { AddressDescriptor, AddressPackageDescriptor, AddressPackageIdent } from '../__types__'
 
 
-describe.only('Address.packageUtils', () => {
+describe('Address.packageUtils', () => {
 
   let addr: Address
-  let addressPackageUtils: AddressPackageUtils
+  // let addressPackageUtils: AddressPackageUtils
 
   beforeEach(async () => {
     addr = Address.initialise({parseParams: {}})
-    addressPackageUtils = addr.packageUtils
+    // addressPackageUtils = addr.packageUtils
   })
   describe('resolve methods', () => {
     it.todo('dunno if worthwhile setting all this up')

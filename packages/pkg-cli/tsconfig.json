@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.options.json",
   "include": [
-    "**/*"
+    "src/**/*",
+    "*.spec.*",
+    "*.js",
+    "*.ts"
   ],
   "references": [
     {
@@ -12,7 +15,10 @@
     }
   ],
   "compilerOptions": {
-    "outDir": "../../.moon/cache/types/packages/pkg-cli",
+    "rootDir": "src",
+"outDir": "dist",
+    "emitDeclarationOnly": false,
+    "noEmit": true,
     "paths": {
       "@business-as-code/plugin-core-essentials": [
         "../plugin-core-essentials/src/index.ts"
@@ -26,6 +32,6 @@
       "@business-as-code/tests-core/*": [
         "../tests/pkg-tests-core/src/*"
       ]
-    }
+    },
   }
 }

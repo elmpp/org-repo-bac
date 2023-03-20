@@ -1,11 +1,9 @@
 import type {
-  Project as MoonProject,
   ProjectType as MoonProjectType,
   ProjectLanguage as MoonLanguage,
-} from '@moonrepo/types'
+} from "@moonrepo/types";
 import { z } from "zod";
-import {expectTypeOf} from 'expect-type'
-
+import { expectTypeOf } from "expect-type";
 
 export const languageSchema = z.union([
   // z.literal("bash"),
@@ -24,11 +22,11 @@ export const projectTypeSchema = z.union([
   z.literal("application"),
   z.literal("library"),
   z.literal("tool"),
-])
+]);
 
-export type Language = z.infer<typeof languageSchema>
-export type ProjectType = z.infer<typeof projectTypeSchema>
+export type Language = z.infer<typeof languageSchema>;
+export type ProjectType = z.infer<typeof projectTypeSchema>;
 
 // ensure the values that will go into Moon should match
-expectTypeOf<Language>().toMatchTypeOf<MoonLanguage>()
-expectTypeOf<ProjectType>().toMatchTypeOf<MoonProjectType>()
+expectTypeOf<Language>().toMatchTypeOf<MoonLanguage>();
+expectTypeOf<ProjectType>().toMatchTypeOf<MoonProjectType>();

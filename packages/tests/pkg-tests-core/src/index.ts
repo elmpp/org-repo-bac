@@ -1,12 +1,12 @@
 
 // import {oclifTest, oclifExpect} from './oclif'
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { Outputs } from '@business-as-code/core'
+import { xfs } from '@business-as-code/fslib'
 import * as oclifCore from '@oclif/core'
 import * as mockStd from 'stdout-stderr'
-import { addr, AddressPathAbsolute, AddressPathRelative } from '@business-as-code/address'
-import { Outputs,  } from '@business-as-code/core'
 import { getCurrentTestFilenameSanitised, getCurrentTestNameSanitised, sanitise } from './test-utils'
 import { XfsCacheManager } from './xfs-cache-manager'
-import { xfs } from '@business-as-code/fslib'
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 

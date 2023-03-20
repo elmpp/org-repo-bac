@@ -4,6 +4,10 @@
   "version": "0.0.1",
   "description": "Library package @business-as-code/core",
   "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
   "dependencies": {
     "@business-as-code/fslib": "workspace:*",
     "@oclif/command": "^1.8.22",

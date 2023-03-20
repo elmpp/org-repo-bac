@@ -4,6 +4,10 @@ $schema: 'https://moonrepo.dev/schemas/project.json'
 # dependsOn: # using the node syncer in moon
 #   - '@business-as-code/core'
 
+toolchain:
+  typescript:
+    disabled: true # https://github.com/moonrepo/moon/issues/723
+
 
 # moonrepo globs - https://tinyurl.com/2ftkxeso
 fileGroups:
@@ -78,3 +82,20 @@ tasks:
     platform: 'node'
     runFromWorkspaceRoot: true
     local: true # disables moon caching etc
+  build:
+    deps:
+      # - ':lint' # run it in all
+    # inputs:
+    #   - '@globs(sources)'
+    command: 'tsc --build'
+    platform: 'node'
+    local: true
+  # sends artifacts to the local verdaccio
+  # publishLocal:
+  #   deps:
+  #     # - ':lint' # run it in all
+  #   # inputs:
+  #   #   - '@globs(sources)'
+  #   command: 'tsc --build'
+  #   platform: 'node'
+  #   local: true

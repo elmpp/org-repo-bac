@@ -20,10 +20,10 @@ describe('workspace init', () => {
   it('completes', async () => {
 
     await persistentTestEnv.test({
-      destinationPath: (...args: any[]) => {
-        console.log(`args :>> `, args)
-        return ''
-      }
+      // destinationPath: (...args: any[]) => {
+      //   console.log(`args :>> `, args)
+      //   return ''
+      // }
     },
     async (testContext) => {
       // const {} = testContext
@@ -39,10 +39,6 @@ describe('workspace init', () => {
       outputs = testContext.mockStdEnd()
 
       console.log(`outputs :>> `, outputs)
-
-      return {
-        outputs,
-      }
     })
 
     // test.command

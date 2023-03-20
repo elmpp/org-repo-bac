@@ -11,7 +11,7 @@ export {
 } from './address'
 
 export {
-  AddressPackageProtocols
+  type AddressPackageProtocols
 } from './address-package'
 
 import {Address, InitialiseOptions} from './address'

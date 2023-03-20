@@ -108,10 +108,10 @@ export class ReadOnlyJailFS extends ProxiedFS<PortablePath, PortablePath> {
     this.baseFs = baseFs;
 
     return new Proxy(this, {
-      get(target, prop: unknown, receiver) {
+      get: () => (target: this, prop: unknown, receiver: this) => {
         const value = target[prop as keyof typeof target];
         if (value instanceof Function) {
-          return function (...args: unknown[]) {
+          return () => (...args: unknown[]) => {
             if (READONLY_IMPLEMENTATIONS.includes(prop as any)) {
               throw new Error(`You have used a non-permitted FS api method. Only the following may be used: '${READONLY_IMPLEMENTATIONS.join(', ')}'`)
             }
@@ -123,7 +123,7 @@ export class ReadOnlyJailFS extends ProxiedFS<PortablePath, PortablePath> {
     })
   }
 
-  getRealPath() {
+  override getRealPath() {
     return this.pathUtils.resolve(this.baseFs.getRealPath(), this.pathUtils.relative(PortablePath.root, this.target));
   }
 

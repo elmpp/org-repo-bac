@@ -4,7 +4,14 @@
   "version": "0.0.1",
   "description": "Library package @business-as-code/fslib",
   "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
   "dependencies": {
     "@yarnpkg/fslib": "3.0.0-rc.39"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3"
   }
 }

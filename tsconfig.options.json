@@ -1,39 +1,60 @@
+// excellent tsconfig knowledge - https://moonrepo.dev/docs/guides/javascript/typescript-project-refs
 {
+  "extends": "tsconfig-moon/tsconfig.json", // https://tinyurl.com/2kea2goc
   "compilerOptions": {
-    "allowJs": false,
-    "checkJs": false,
-    "allowSyntheticDefaultImports": true,
-    "declaration": false, // true causes problem with Commands.flags inferrence
-    "declarationMap": false,
-    "composite": false,
-    // "declaration": true, // true causes problem with Commands.flags inferrence
-    // "declarationMap": true,
+    // "composite": false, // required when running build with project references - https://tinyurl.com/2l7s253w
+    "composite": true, // required when running build with project references - https://tinyurl.com/2l7s253w
+    "declaration": true,
+    // "preserveSymlinks": true,
+
+    // // Moonrepo recommended - https://tinyurl.com/2nypqywm
     // "composite": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
+    // "declaration": true,
+    // "declarationMap": true,
+    // // -- true causes problem with Commands.flags inferrence
+    // // "composite": false,
+    // // "declaration": false, // true causes problem with Commands.flags inferrence
+    // // "declarationMap": false,
+    // // -- true causes problem with Commands.flags inferrence EOF
+    // "emitDeclarationOnly": true,
+    // "incremental": true,
+    // "noEmitOnError": true,
+    // "skipLibCheck": true,
+    // // ... others
+
+    // -- true causes problem with Commands.flags inferrence
+    // "composite": false,
+    // "declaration": false, // true causes problem with Commands.flags inferrence
+    // "declarationMap": false,
+    // -- true causes problem with Commands.flags inferrence EOF
+
+    // "allowJs": false,
+    // "checkJs": false,
+    // "allowSyntheticDefaultImports": true,
+    // "esModuleInterop": true,
+    // "emitDecoratorMetadata": true,
+    // "experimentalDecorators": true,
+    // "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "lib": [
-      "es7",
-    ],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
+    // "lib": [
+    //   "es7",
+    // ],
+    // "module": "commonjs",
+    // "moduleResolution": "node",
+    // "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "plugins": [],
-    "removeComments": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": false,
-    "target": "es2018",
-    "importHelpers": true,
-    "incremental": true,
-    "tsBuildInfoFile": "dist/.tsbuildinfo",
+    "noImplicitReturns": false,
+    // "noUnusedLocals": false,
+    // "noUnusedParameters": false,
+    // "plugins": [],
+    // "removeComments": false,
+    // "resolveJsonModule": true,
+    // "sourceMap": true,
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": false,
+    // "target": "es2018",
+    "importHelpers": false,
+    // "tsBuildInfoFile": "dist/.tsbuildinfo",
     // "rootDir": "src",
   },
   "exclude": [
@@ -44,6 +65,14 @@
     "**/*.delete.*",
     "**/*.ignore.*",
     "**/*.skip.*",
-    "**/dist/**/*"
+    "**/*.ignore.*/**/*"
+    // "**/dist/**/*"
   ],
+  "ts-node": {
+    "files": true,
+    "swc": true,
+    "compilerOptions": {
+      "importHelpers": false
+    }
+  },
 }

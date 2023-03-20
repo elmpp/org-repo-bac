@@ -159,3 +159,9 @@ conventional-changelog-context.json
 .moon/docker
 
 etc/var
+
+# moon typescript - https://tinyurl.com/2lyukj7x
+# The `outDir` for declarations
+dist/
+# Build cache manifests
+*.tsbuildinfo

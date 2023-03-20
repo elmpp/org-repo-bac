@@ -38,7 +38,7 @@ describe('test-env', () => {
       // }
 
       // testContext.mockStdStart()
-      const exitCode = await testContext.command(['help'])
+      // const exitCode = await testContext.command(['help'])
       // await testContext.command(['something', 'else'])
       const outputs = testContext.mockStdEnd()
 
