@@ -112,7 +112,7 @@ const config: UserConfig = {
 
 
 		// defaults from here - https://tinyurl.com/2ggbdo6c
-		'body-leading-blank': [1, 'always'],
+		// 'body-leading-blank': [1, 'always'],
 		'body-max-line-length': [2, 'always', 100],
 		// 'footer-leading-blank': [1, 'always'],
 		// 'footer-max-line-length': [2, 'always', 100],

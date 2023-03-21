@@ -90,7 +90,32 @@ tasks:
     command: 'tsc --build'
     platform: 'node'
     local: true
+  returnFail:
+    command: "bash -c '$(exit 1)'"
+    platform: 'system'
+    local: true
+  publishDev:
+    deps:
+      # - ~:returnFail
+      - ~:build
+      - pkg-tests-verdaccio:verdaccioEnsureRunning
+      - pkg-tests-verdaccio:verdaccioLogin
+    options:
+      runDepsInParallel: false
+      outputStyle: 'stream'
+      # outputStyle: 'buffer'
+
+    # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
+    command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # platform: 'system'
+    local: true
+  publish:
+    deps:
+      - ~:build
+    command: 'pnpm publish -r --force' # https://tinyurl.com/2okqdgo7
+    # platform: 'system'
   # sends artifacts to the local verdaccio
+
   # publishLocal:
   #   deps:
   #     # - ':lint' # run it in all

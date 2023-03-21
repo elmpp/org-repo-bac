@@ -1,5 +1,6 @@
 {
   "name": "@business-as-code/tests-core",
+  "private": true,
   "version": "0.0.1",
   "description": "Tool package @business-as-code/tests-core",
   "main": "src/index.ts",

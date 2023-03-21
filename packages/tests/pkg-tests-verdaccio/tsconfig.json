@@ -1,0 +1,25 @@
+{
+  "extends": "../../../tsconfig.options.json",
+  "include": ["src/**/*", "*.spec.*", "*.js", "*.ts"],
+  "references": [
+    {
+      "path": "../../pkg-core"
+    }
+  ],
+  "compilerOptions": {
+    // "baseUrl": "src",
+    // "emitDeclarationOnly": false,
+    // "noEmit": true,
+
+    "rootDir": "src",
+    "outDir": "dist",
+    "paths": {
+      "@business-as-code/core": [
+        "../../pkg-core/src/index.ts"
+      ],
+      "@business-as-code/core/*": [
+        "../../pkg-core/src/*"
+      ]
+    }
+  }
+}

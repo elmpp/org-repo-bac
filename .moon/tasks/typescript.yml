@@ -47,14 +47,14 @@ fileGroups:
 # #
 # # This setting requires a map, where the key is a unique name for the task,
 # # and the value is an object of task parameters.
-# tasks:
-  # lint:
-  #   command: 'eslint'
-  #   inputs:
-  #     - '@globs(sources)'
-  #     # - '@globs(testFixtures)'
-  #     # - '@globs(testNonFixtures)'
-  #   platform: 'node'
+tasks:
+  publish:
+    command: 'pnpm publish --'
+    inputs:
+      - '@globs(sources)'
+      # - '@globs(testFixtures)'
+      # - '@globs(testNonFixtures)'
+    platform: 'node'
   # testFixtures:
   #   inputs:
   #     - '@globs(testFixtures)'

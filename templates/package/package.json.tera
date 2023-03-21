@@ -22,5 +22,7 @@ force: true
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
   }
+  {% else -%}
+  "private": true
   {% endif -%}
 }

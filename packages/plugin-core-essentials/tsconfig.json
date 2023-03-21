@@ -1,6 +1,11 @@
 {
   "extends": "../../tsconfig.options.json",
-  "include": ["src/**/*", "*.spec.*", "*.js", "*.ts"],
+  "include": [
+    "src/**/*",
+    "*.spec.*",
+    "*.js",
+    "*.ts"
+  ],
   "references": [
     {
       "path": "../pkg-address"
@@ -14,7 +19,7 @@
   ],
   "compilerOptions": {
     "rootDir": "src",
-"outDir": "dist",
+    "outDir": "dist",
     "paths": {
       "@business-as-code/address": [
         "../pkg-address/src/index.ts"
@@ -30,6 +35,9 @@
       ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"
+      ],
+      "@business-as-code/tests-core/*": [
+        "../tests/pkg-tests-core/src/*"
       ]
     }
   }

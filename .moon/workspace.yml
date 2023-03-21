@@ -28,6 +28,7 @@ projects:
     - 'packages/pkg-address'
     - 'packages/pkg-error'
     - 'packages/tests/pkg-tests-core'
+    - 'packages/tests/pkg-tests-verdaccio'
     - 'packages/tests/pkg-tests-specs-fixtures'
 
 generator:
@@ -38,3 +39,7 @@ generator:
 hasher:
   optimization: 'accuracy'
   walkStrategy: 'vcs' # <!-- interesting way to source the files that are input for the hashing process
+
+runner:
+  inheritColorsForPipedTasks: true
+  logRunningCommand: true

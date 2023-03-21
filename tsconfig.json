@@ -26,6 +26,9 @@
     },
     {
       "path": "packages/tests/pkg-tests-specs-fixtures"
+    },
+    {
+      "path": "packages/tests/pkg-tests-verdaccio"
     }
   ]
 }

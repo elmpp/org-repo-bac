@@ -1,5 +1,6 @@
 {
   "name": "@business-as-code/tests-specs-fixtures",
+  "private": true,
   "version": "0.0.1",
   "description": "Tool package @business-as-code/tests-specs-fixtures",
   "main": "src/index.ts",

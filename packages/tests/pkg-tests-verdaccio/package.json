@@ -1,0 +1,24 @@
+{
+  "name": "@business-as-code/tests-verdaccio",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Tool package @business-as-code/tests-verdaccio",
+  "main": "src/index.ts",
+  "scripts": {
+    "verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"",
+    "verdaccio:ensureRunning": "pgrep verdaccio; # need to run 'p moon run pkg-tests-verdaccio:verdaccioRunBackground'",
+    "verdaccio:killBackground": "pkill verdaccio",
+    "verdaccio:runBackground": "pnpm run verdaccio:stopBackground || true; verdaccio -c ./verdaccio.yml &",
+    "verdaccio:stopBackground": "pkill verdaccio"
+  },
+  "dependencies": {
+    "@business-as-code/core": "workspace:*",
+    "@business-as-code/fslib": "workspace:*"
+  },
+  "devDependencies": {
+    "npm-cli-login": "^1.0.0",
+    "typescript": "5.0.2",
+    "verdaccio": "^5.22.1",
+    "verdaccio-auth-memory": "^10.2.1"
+  }
+}
