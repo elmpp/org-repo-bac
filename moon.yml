@@ -90,16 +90,16 @@ tasks:
     command: 'tsc --build'
     platform: 'node'
     local: true
-  returnFail:
-    command: "bash -c '$(exit 1)'"
-    platform: 'system'
-    local: true
+  # returnFail:
+  #   command: "bash -c '$(exit 1)'"
+  #   platform: 'system'
+  #   local: true
   publishDev:
     deps:
       # - ~:returnFail
       - ~:build
       - pkg-tests-verdaccio:verdaccioEnsureRunning
-      - pkg-tests-verdaccio:verdaccioLogin
+      # - pkg-tests-verdaccio:verdaccioLogin
     options:
       runDepsInParallel: false
       outputStyle: 'stream'
@@ -107,8 +107,11 @@ tasks:
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
     command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    inputs:
+      - /package.json
+    runFromWorkspaceRoot: true
     # platform: 'system'
-    local: true
+    # local: true
   publish:
     deps:
       - ~:build
