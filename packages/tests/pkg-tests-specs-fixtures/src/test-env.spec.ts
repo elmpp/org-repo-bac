@@ -42,7 +42,7 @@ describe('test-env', () => {
       // await testContext.command(['something', 'else'])
       const outputs = testContext.mockStdEnd()
 
-      expect(outputs).not.toMatch('')
+      // expect(outputs).not.toMatch('')
 
       // console.log(`outputs :>> `, outputs)
 

@@ -6,6 +6,8 @@
  - p moon g package ./packages/plugin-core-essentials --defaults -- --type 'library' --type_variant 'plugin-core' --name '@business-as-code/plugin-myplugin'
  - p m ls # list workspaces + deps
 
+ - run verdaccio: p moon run pkg-tests-verdaccio:verdaccioKillBackground; p moon run pkg-tests-verdaccio:verdaccioRunBackground
+
 ## Tasks
 
 *General*

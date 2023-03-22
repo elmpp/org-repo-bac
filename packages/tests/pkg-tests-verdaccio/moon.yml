@@ -32,6 +32,9 @@ tasks:
     #   - 'blah'
     local: true
     # platform: 'node'
+  verdaccioKillBackground:
+    command: 'pnpm run verdaccio:killBackground'
+    local: true
   verdaccioLogin:
     command: 'pnpm run verdaccio:login'
     options:

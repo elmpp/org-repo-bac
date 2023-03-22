@@ -8,7 +8,7 @@
     "verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"",
     "verdaccio:ensureRunning": "pgrep verdaccio; # need to run 'p moon run pkg-tests-verdaccio:verdaccioRunBackground'",
     "verdaccio:killBackground": "pkill verdaccio",
-    "verdaccio:runBackground": "pnpm run verdaccio:stopBackground || true; verdaccio -c ./verdaccio.yml &",
+    "verdaccio:runBackground": "verdaccio -c ./verdaccio.yml &",
     "verdaccio:stopBackground": "pkill verdaccio"
   },
   "dependencies": {

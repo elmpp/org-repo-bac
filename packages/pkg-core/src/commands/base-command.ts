@@ -1,4 +1,5 @@
 // oclif custom base command docs - https://tinyurl.com/2n3wch65
+// advanced BaseCommand Salesforce example - https://tinyurl.com/2lexro75
 import {Command, Flags, Interfaces} from '@oclif/core'
 // import {Interfaces, Command} from '@oclif/core'
 

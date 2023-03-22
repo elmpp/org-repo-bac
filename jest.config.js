@@ -11,21 +11,22 @@ module.exports = {
     // '^.+\\.tsx?$': require.resolve('ts-jest')
     '^.+\\.tsx?$': ['@swc/jest'],
   },
-  testMatch: ['**/__tests__/**/*.spec.ts?(x)', '**/__tests__/**/*.spec.js?(x)', '**/tests/**/*.spec.ts?(x)'],
+  // testMatch: ['**/__tests__/**/*.spec.ts?(x)', '**/__tests__/**/*.spec.js?(x)', '**/tests/**/*.spec.ts?(x)'],
+  testMatch: ['**/*.spec.ts?(x)'],
 
   testPathIgnorePatterns: [
     '\\.(deletable.*?)$',
     '\\.(pre-.*?)$',
     '\\.(post-.*?)$',
     '\\.*.ignore.*$',
-    '\/dist\/*',
+    '\\/dist\\/*',
   ],
 
   modulePathIgnorePatterns: [
     // '<rootDir>/packages/mnt-plugin-core-essentials/templates',
     // '<rootDir>/packages/mnt-pkg-fslib-extra/fixtures',
     // '<rootDir>/packages/tests/packages/tests-fixtures',
-    // '<rootDir>/packages/tests/fixtures',
+    '<rootDir>/.moon',
   ],
 
   testEnvironment: 'node',
