@@ -6,3 +6,6 @@ export * from "./commands";
 export { constants } from "./constants";
 
 export { Args, Flags, _Interfaces };
+
+// export type Simplify<T> = {[KeyType in keyof T]: T[KeyType]}
+// type Bac2 = Simplify<Bac.Services>

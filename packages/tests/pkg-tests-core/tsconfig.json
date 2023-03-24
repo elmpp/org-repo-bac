@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.options.json",
-  "include": ["src/**/*", "*.spec.*", "*.js", "*.ts"],
+  "include": ["../../../types/index.d.ts", "src/**/*", "*.spec.*", "*.js", "*.ts"],
   "references": [
     {
       "path": "../../pkg-address"

@@ -72,7 +72,8 @@
     "files": true,
     "swc": true,
     "compilerOptions": {
-      "importHelpers": false
+      "importHelpers": false,
+      "module": "CommonJS"
     }
   },
 }

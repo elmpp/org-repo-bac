@@ -1,10 +1,12 @@
 {
   "extends": "../../tsconfig.options.json",
   "include": [
+    "../../types/index.d.ts",
     "src/**/*",
     "*.spec.*",
     "*.js",
-    "*.ts"
+    "*.ts",
+    "../../types/**/*"
   ],
   "references": [
     {

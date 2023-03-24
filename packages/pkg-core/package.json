@@ -9,18 +9,21 @@
     "typings": "dist/index.d.ts"
   },
   "dependencies": {
+    "@business-as-code/address": "workspace:*",
     "@business-as-code/fslib": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
     "@oclif/core": "2.6.4",
+    "globby": "^11.0.4",
     "zod": "^3.20.6"
   },
   "devDependencies": {
     "@moonrepo/types": "^0.0.16",
+    "@types/globby": "^8.0.0",
     "@types/node": "18.14.2",
     "expect-type": "^0.15.0",
     "ts-to-zod": "^2.0.1",
-    "zod-to-json-schema": "^3.20.4",
-    "typescript": "5.0.2"
+    "typescript": "5.0.2",
+    "zod-to-json-schema": "^3.20.4"
   }
 }
