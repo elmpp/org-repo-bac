@@ -14,10 +14,10 @@ variables:
         label: 'Tool'
       - value: 'unknown'
         label: 'Unknown'
-    # default: 'library'
+    default: 'library'
     prompt: 'Type (Moon)?'
     required: true
-  variant_type:
+  type_variant:
     type: 'enum'
     values:
       - value: 'entrypoint'
@@ -28,7 +28,7 @@ variables:
         label: 'Core Plugin'
       - value: 'plugin'
         label: 'Plugin'
-    # default: 'library'
+    default: 'library'
     prompt: 'Type Variant?'
     required: true
   name:

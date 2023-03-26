@@ -1,6 +1,8 @@
+import { Interfaces } from '@oclif/core'
 import { ParserOutput } from '@oclif/core/lib/interfaces/parser'
 import { ValueOf } from './util'
 
+export * from './type-utils'
 export * from './util'
 
 export type Outputs = {
@@ -8,27 +10,40 @@ export type Outputs = {
   stderr: string
 }
 
+export type LogLevel =
+  | 'debug'
+  | 'info'
+  | 'warn'
+  | 'error'
+  | 'fatal'
+
 /** instance types of all loaded services */
 export type Services = {
   [ServiceName in keyof Bac.Services]: Bac.Services[ServiceName]['insType']
 }
-type D1 = keyof Bac.Services['myService']['insType']
-type D2 = keyof Bac.Services['myService']['clzType']
+
 /** instance types of all loaded services */
 export type ServicesStatic = {
   [ServiceName in keyof Bac.Services]: Bac.Services[ServiceName]['clzType']
 }
 
-/** internal ball of values */
+/** internal ball of values. Do not store or make available elsewhere. @internal */
 export type ContextPrivate = {
   /** values coming out of oclif command phase */
   cliOptions: ParserOutput
-
+  /** @internal */
+  oclifConfig: Interfaces.Config
+  /** @todo */
+  logger: (msg: string, level?: LogLevel) => void
 }
 
 /** ball of values made available to "userspace" methods */
-export type Context = ContextPrivate & {
+export type Context = {
+  /** values coming out of oclif command phase */
+  cliOptions: ParserOutput
   services: Services
+  /** @todo */
+  logger: (msg: string, level?: LogLevel) => void
 }
 
 // type MyInstanceType<T extends new (...args: any) => any> = T extends new (...args: any) => infer R ? R : any;

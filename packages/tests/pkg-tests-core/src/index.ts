@@ -1,7 +1,7 @@
 
 // import {oclifTest, oclifExpect} from './oclif'
 import { addr, AddressPathAbsolute } from '@business-as-code/address'
-import { Outputs } from '@business-as-code/core'
+import { LogLevel, Outputs } from '@business-as-code/core'
 import { xfs } from '@business-as-code/fslib'
 import * as oclifCore from '@oclif/core'
 import * as mockStd from 'stdout-stderr'
@@ -94,7 +94,7 @@ export type TestContext = {
    Runs an oclif command. Inspired by @oclif/test - https://tinyurl.com/2gftlrbb
    Example usage: https://oclif.io/docs/testing
    */
-  command: (args: string[], options?: {}) => Promise<number>
+  command: (args: string[], options?: {logLevel?: LogLevel}) => Promise<number>
 }
 
 /**
@@ -327,6 +327,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
     function createTestContext(): TestContext {
       return {
         command: async (args: string[], options = {}) => {
+          const {logLevel = 'info'} = options
+
           // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
           // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
           // await oclifCore.execute({type: 'cjs', dir: ephemeralTestEnvVars.destinationPath.original, args})
@@ -341,14 +343,16 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           process.chdir(cliPath.original)
 
+          const argsWithAdditional = [...args, '--log-level', logLevel]
+
           let exitCode = 0
-          await oclifCore.run(args, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
-          .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
+          await oclifCore.run(argsWithAdditional, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
+            .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((error) => {
-              console.log(`error :>> `, error)
+              console.log(`errorwwwwwwwwwwwww :>> `, error)
               // oclifCore.Errors.handle(error)
               // return 1
-              exitCode = error.oclif.exit
+              exitCode = error?.oclif.exit ?? 1
             }
           )
 
@@ -383,11 +387,12 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
     await setupFolders({...ephemeralTestEnvVars, ...persistentTestEnvVars})
 
-    try {
-      await run(testContext)
-    }
-    catch (err) {
-      console.log(`err when running run() :>> `, err, testContext)
-    }
+    await run(testContext)
+    // try {
+    //   await run(testContext)
+    // }
+    // catch (err) {
+    //   console.log(`err when running run() :>> `, err, testContext)
+    // }
   }
 }

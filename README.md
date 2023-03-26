@@ -3,7 +3,7 @@
 # # --type "application" | "library"  | "tool" | "unknown" ; --type_variant "plugin" | 'plugin-core' | 'library' | 'entrypoint'
  - p moon g package ./packages/pkg-cli --defaults -- --type 'library' --type_variant 'entrypoint' --name '@business-as-code/cli'
  - p moon g package ./packages/plugin-myplugin --defaults -- --type 'library' --type_variant 'plugin' --name '@business-as-code/plugin-myplugin'
- - p moon g package ./packages/plugin-core-essentials --defaults -- --type 'library' --type_variant 'plugin-core' --name '@business-as-code/plugin-myplugin'
+ - p moon g package ./packages/plugin-core-essentials --defaults -- --type 'library' --type_variant 'plugin-core' --name '@business-as-code/plugin-core-myplugin'
  - p m ls # list workspaces + deps
 
  - run verdaccio: p moon run pkg-tests-verdaccio:verdaccioKillBackground; p moon run pkg-tests-verdaccio:verdaccioRunBackground

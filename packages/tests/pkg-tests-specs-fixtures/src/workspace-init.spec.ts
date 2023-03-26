@@ -41,7 +41,7 @@ describe('workspace init', () => {
 
       // testContext.mockStdStart()
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
-      const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
+      const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original], {logLevel: 'debug'})
       expect(exitCode).toEqual(0)
       // console.log(`exitCode :>> `, exitCode)
 

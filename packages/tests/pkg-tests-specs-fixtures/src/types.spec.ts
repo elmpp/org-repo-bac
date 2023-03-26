@@ -11,6 +11,9 @@ describe("types", () => {
         yourService: {
           somethingelse: Function
         };
+        schematicsService: {
+          somethingelse: Function
+        };
       }>();
       expectTypeOf<Services>().not.toMatchTypeOf<{ // not the static side
         myService: {

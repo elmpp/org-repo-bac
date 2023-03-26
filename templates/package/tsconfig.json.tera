@@ -1,12 +1,12 @@
 {
   "extends": "../../tsconfig.options.json",
-  {% if type == "application" || type == "tool" %}
+  {% if type == "application" or type == "tool" %}
   // moonrepo docs for applications - https://tinyurl.com/2mkdn2uk
   "compilerOptions": {
     "emitDeclarationOnly": false,
     "noEmit": true
   },
-  "include": ["src/**/*", "tests/**/*", "*.js", "*.ts"],
+  "include": ["../../types/**/*", "src/**/*", "tests/**/*", "*.js", "*.ts"],
   "references": [],
   {% else %}
   // moonrepo docs for libraries - https://tinyurl.com/2mkdn2uk
@@ -14,11 +14,8 @@
     "rootDir": "src",
     "outDir": "./dist"
   },
-  "include": ["src/**/*", "tests/**/*", "*.js", "*.ts"],
+  "include": ["../../types/**/*", "src/**/*", "tests/**/*", "*.js", "*.ts"],
   "references": [
-    {
-      "path": "./tsconfig.build.json"
-    },
   ],
   {% endif %}
 }

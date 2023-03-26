@@ -1,4 +1,5 @@
 import "@business-as-code/plugin-core-essentials";
+import "@business-as-code/plugin-core-scaffold";
 
 // all plugins must be imported here
 declare global {

@@ -6,12 +6,11 @@ import {
 } from "@business-as-code/address";
 import {
   Args,
+  assertIsOk,
   BaseCommand,
-  CommandOptions,
   Context,
-  ContextPrivate,
   Flags,
-  _Interfaces,
+  Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { xfs } from "@business-as-code/fslib";
 import { BacError, MessageName } from "../../../../pkg-error/src";
@@ -46,8 +45,11 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // context.services.myService.somethingelse()
 
     // const { args } = await this.parse(WorkspaceInit);
-    console.log(`context.cliOptions.args.path :>> `, context.cliOptions.args.path);
-    console.log(`context.cliOptions :>> `, context.cliOptions)
+    console.log(
+      `context.cliOptions.args.path :>> `,
+      context.cliOptions.args.path
+    );
+    console.log(`context.cliOptions :>> `, context.cliOptions);
     let workspacePath = addr.parsePath(context.cliOptions.args.path!);
     if (!assertIsAddressPath(workspacePath)) {
       throw new BacError(
@@ -76,6 +78,29 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         );
       }
       await xfs.mkdirpPromise(workspacePath.address);
+    }
+
+    console.log(`context.services :>> `, context.services);
+
+    const res = await context.services.schematics.run({
+      address: `@business-as-code/plugin-core-essentials#namespace=blank`,
+      context,
+    });
+
+    if (!assertIsOk(res)) {
+      switch (res.res.reportCode) {
+        case MessageName.SCHEMATICS_ERROR:
+          context.logger(res.res.message, "error");
+          break;
+        case MessageName.SCHEMATICS_INVALID_ADDRESS:
+          context.logger(res.res.message, "error");
+          break;
+        case MessageName.SCHEMATICS_NOT_FOUND:
+          context.logger(res.res.message, "error");
+          break;
+      }
+    } else {
+      context.logger(`Finished ok`, "info");
     }
 
     //   override async run(): Promise<void> {

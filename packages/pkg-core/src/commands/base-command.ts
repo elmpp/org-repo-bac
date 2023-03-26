@@ -1,24 +1,22 @@
 // oclif custom base command docs - https://tinyurl.com/2n3wch65
 // advanced BaseCommand Salesforce example - https://tinyurl.com/2lexro75
-import {Command, Config, Flags, Interfaces, Performance, Plugin} from '@oclif/core'
-import ModuleLoader from '@oclif/core/lib/module-loader'
-import {addr, AddressPathAbsolute} from '@business-as-code/address'
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { Command, Config, Flags, Interfaces, Performance } from '@oclif/core'
 import { ParserOutput } from '@oclif/core/lib/interfaces/parser'
-import {fileURLToPath} from 'url'
-import path from 'path'
-import * as globby from 'globby'
-import { Context, ContextPrivate, Services, ServicesStatic, ServiceStaticInterface, ValueOf } from '../__types__'
+import ModuleLoader from '@oclif/core/lib/module-loader'
+import { fileURLToPath } from 'url'
+import { Context, ContextPrivate, LogLevel, Services, ServiceStaticInterface } from '../__types__'
 // import {Interfaces, Command} from '@oclif/core'
 
 // type ServiceMap = Global['Bac'].Services
 // type ServiceMap2 = keyof Bac.Services
 
-enum LogLevel {
-  debug = 'debug',
-  info = 'info',
-  warn = 'warn',
-  error = 'error',
-}
+// enum LogLevel {
+//   debug = 'debug',
+//   info = 'info',
+//   warn = 'warn',
+//   error = 'error',
+// }
 
 // declare module "@oclif/core/lib/interfaces/pjson" {
 //     interface PJSON {
@@ -88,7 +86,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   static override baseFlags = {
     'log-level': Flags.custom<LogLevel>({
       summary: 'Specify level for logging.',
-      options: Object.values(LogLevel),
+      options: ['debug', 'error', 'fatal', 'info', 'warn'] satisfies LogLevel[],
       helpGroup: 'GLOBAL',
     })(),
   }
@@ -162,7 +160,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       try {
         // const p = path.join(plugin.pjson.oclif.commands, ...id.split(':'))
         const {isESM, module, filePath} = await ModuleLoader.loadWithData(plugin, packagePath.original)
-        console.log(`isESM, module, filePath :>> `, isESM, module, filePath)
         this.debug(isESM ? 'LoadServicesForPlugin: (import)' : 'LoadServicesForPlugin: (require)', filePath)
         m = module
       } catch (error: any) {
@@ -352,6 +349,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
           this.debug(`loadServices: service '${sp.title}' does not instantiate`)
           return acc
         }
+        this.debug(`loadServices: service '${sp.title}' instantiated`)
         acc[sp.title as keyof Services] = serviceIns as any // string key not relatable to instance
         return acc
       }, Promise.resolve({}) as Promise<Services>)
@@ -388,11 +386,18 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     const contextPrivate: ContextPrivate = {
       cliOptions: parseOutput,
+      oclifConfig,
+      logger: (msg: string, level: LogLevel = 'info') => {
+        if (level === 'debug') {
+          return this.debug(msg)
+        }
+        this.log(msg)
+      }
     }
 
     const services = await this.loadServices({plugins: oclifConfig.plugins, context: contextPrivate})
 
-    // console.log(`services :>> `, services)
+    console.log(`services :>> `, services)
 
     const context: Context = {
       ...contextPrivate,

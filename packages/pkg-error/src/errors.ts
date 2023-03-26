@@ -17,13 +17,13 @@ export function assertIsError(errorLike: any): errorLike is Error {
 export function assertIsBacError<
   Extra = undefined,
   Code extends MessageName = MessageName
->(errorLike: any): errorLike is BacError<Extra, Code> {
+>(errorLike: any): errorLike is BacError<Code, Extra> {
   return assertIsError(errorLike) && errorLike instanceof BacError;
 }
 export function assertIsBacWrappedError<
   Extra = undefined,
   Code extends MessageName = MessageName
->(errorLike: any): errorLike is BacErrorWrapper<Extra, Code> {
+>(errorLike: any): errorLike is BacErrorWrapper<Code, Extra> {
   return assertIsError(errorLike) && !!(errorLike as BacErrorWrapper).wrapped;
 }
 
@@ -43,8 +43,8 @@ export type ClipanionErrorMeta =
 //   | 'clipanionGeneral'
 // type ErrorTypeOrExitCode = 'clipanionUsage' | 'clipanionGeneral' | ExitCode
 export class BacError<
-  Extra = undefined,
-  Code extends MessageName = MessageName
+Code extends MessageName = MessageName,
+Extra = undefined,
 > extends Error {
   public reportCode: Code;
   public clipanion?: ClipanionErrorMeta; // for compatibility with Clipanion
@@ -64,19 +64,19 @@ export class BacError<
   static fromError<Extra = undefined, Code extends MessageName = MessageName>(
     err: BacError,
     options?: { reportCode?: Code; extra?: Extra }
-  ): BacError<Extra, Code>;
+  ): BacError<Code, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName>(
     err: BacErrorWrapper,
     options?: { reportCode?: Code; extra?: Extra }
-  ): BacErrorWrapper<Extra, Code>;
+  ): BacErrorWrapper<Code, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName>(
     err: Error,
     options?: { reportCode?: Code; extra?: Extra }
-  ): BacError<Extra, Code>;
+  ): BacError<Code, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName>(
     err: BacError | BacErrorWrapper | Error,
     options: { reportCode?: Code; extra?: Extra } = {}
-  ): BacError<Extra, Code> | BacErrorWrapper<Extra, Code> {
+  ): BacError<Code, Extra> | BacErrorWrapper<Code, Extra> {
     const { reportCode, extra } = options;
     if (
       assertIsBacWrappedError<Extra, Code>(err) ||
@@ -86,7 +86,7 @@ export class BacError<
       if (extra) err.extra = extra;
       return err;
     }
-    return new BacError<Extra, Code>(
+    return new BacError<Code, Extra>(
       reportCode ?? (MessageName.UNNAMED as Code),
       err.message,
       { extra }
@@ -184,9 +184,9 @@ export class BacError<
 // }
 
 export class BacErrorWrapper<
-  Extra = undefined,
-  Code extends MessageName = MessageName
-> extends BacError<Extra, Code> {
+Code extends MessageName = MessageName,
+Extra = undefined,
+> extends BacError<Code, Extra> {
   public wrapped: Error;
 
   // constructor(code: MessageName, message: string, error: Error, typeOrExitCode?: ErrorTypeOrExitCode) {

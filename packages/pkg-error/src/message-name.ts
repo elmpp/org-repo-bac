@@ -2,6 +2,10 @@ export enum MessageName {
   UNNAMED = 0,
   PACKAGE_RESOLVE_FAIL = 1, // mention how Mnt depends upon 'root' being the name of the root package in many instances
   FS_PATH_FORMAT_ERROR = 2, // an FS path has been incorrectly encountered. Give examples of format. e.g. init-workspace#path
+  ADDRESS_FORMAT_INVALID = 3, // 1) address parsed ok but used improperly - e.g. templateNamespace params not present. 2) configuring template namespace with descriptor and not an ident
+  SCHEMATICS_INVALID_ADDRESS = 4, // must be in proper format e.g. @org/name#namespace=my-schematic
+  SCHEMATICS_NOT_FOUND = 5, // @
+  SCHEMATICS_ERROR = 6, // error occurred during schematic execution
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink
   // TEST_ENV = 3, // ignorable message that is used within tests
   // PLUGIN_INSTALLATION_UNDECLARED = 10,
@@ -74,7 +78,7 @@ export enum MessageName {
   // GENERAL_FEATURE_SERVICE = 78, // Specific rules around clz/entity/service. Includes checks when Feature/Categories/Stacks aren't found in db (Attempting to load Category that does not exist. Please check the relevant Plugin has been loaded using verbose mode)
   // // STACK_RECIPE_INVALID = 80, // 1.) give examples of working recipes
   // ADDRESS_SCHEME_INVALID = 81, // 1) perhaps link to the unit tests and a short explanation of the format
-  ADDRESS_FORMAT_INVALID = 2, // 1) address parsed ok but used improperly - e.g. templateNamespace params not present. 2) configuring template namespace with descriptor and not an ident
+
   // PLUGIN_INSTALLATION_ERROR = 83, // 1) plugin has been specified in workroot manifest with a disallowed range - should be exact (protocol = npm)
   // CLIPANION_USAGE_ERROR = 84, // 1) cli options supplied invalid but manually validated. Combine with BacError third param to trigger Clipanion usage screen. Link `noProject` context (--projectCwd)
   // PACKAGE_MANAGER_NOT_DETECTED = 85, // using dotfiles etc, the project pm was not detectable

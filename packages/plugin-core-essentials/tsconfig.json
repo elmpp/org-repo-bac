@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.options.json",
   "include": [
-    "../../types/index.d.ts",
+    "../../types/**/*",
     "src/**/*",
     "*.spec.*",
     "*.js",

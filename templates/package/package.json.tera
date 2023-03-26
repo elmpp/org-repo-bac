@@ -15,8 +15,9 @@ force: true
   {% else -%}
   WUT
   {% endif -%}
-  "main": "src/index.ts"
-  {% if type == 'library' || type == 'application' -%}
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  {% if type == 'library' or type == 'application' -%}
   ,
   "publishConfig": {
     "main": "dist/index.js",

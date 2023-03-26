@@ -14,7 +14,8 @@ import './param-ident-package-handler'
 import './param-descriptor-package-handler'
 import './param-descriptor-stringified-package-handler'
 import './param-ident-stringified-package-handler'
-import './template-ident-package-handler'
+// import './template-ident-package-handler'
+import './scaffold-ident-package-handler'
 
 
 import {handler as portablePathPosixAbsoluteHandler} from './portable-path-posix-absolute-handler'
@@ -32,7 +33,8 @@ import {handler as paramIdentPackageHandler} from './param-ident-package-handler
 import {handler as paramDescriptorPackageHandler} from './param-descriptor-package-handler'
 import {handler as paramDescriptorStringifiedPackageHandler} from './param-descriptor-stringified-package-handler'
 import {handler as paramIdentStringifiedPackageHandler} from './param-ident-stringified-package-handler'
-import {handler as templateIdentPackageHandler} from './template-ident-package-handler'
+// import {handler as templateIdentPackageHandler} from './template-ident-package-handler'
+import {handler as scaffoldIdentPackageHandler} from './scaffold-ident-package-handler'
 // import {handler as descriptorPackageHandler} from './descriptor-package-handler'
 
 export const handlers = [
@@ -43,7 +45,8 @@ export const handlers = [
   paramDescriptorStringifiedPackageHandler,
   paramIdentStringifiedPackageHandler,
   paramDescriptorPackageHandler,
-  templateIdentPackageHandler,
+  // templateIdentPackageHandler,
+  scaffoldIdentPackageHandler,
   paramIdentPackageHandler, // default
   githubRepoUrlHandler,
   githubUrlHandler,
