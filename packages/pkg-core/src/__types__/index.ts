@@ -1,6 +1,7 @@
-import { Interfaces } from '@oclif/core'
+import { Command, Interfaces } from '@oclif/core'
 import { ParserOutput } from '@oclif/core/lib/interfaces/parser'
 import { ValueOf } from './util'
+import { FlagsInfer, ArgsInfer } from '../commands/base-command'
 
 export * from './type-utils'
 export * from './util'
@@ -29,18 +30,25 @@ export type ServicesStatic = {
 
 /** internal ball of values. Do not store or make available elsewhere. @internal */
 export type ContextPrivate = {
-  /** values coming out of oclif command phase */
-  cliOptions: ParserOutput
+  // /** values coming out of oclif command phase */
+  // cliOptions: ParserOutput<T['flags'], T['flags'], T['args']>
   /** @internal */
   oclifConfig: Interfaces.Config
   /** @todo */
   logger: (msg: string, level?: LogLevel) => void
 }
 
+/** ball of values made available to command methods. Includes oclif cliOptions */
+export type ContextCommand<T extends typeof Command> = {
+  /** values coming out of oclif command phase */
+  cliOptions: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
+  services: Services
+  /** @todo */
+  logger: (msg: string, level?: LogLevel) => void
+}
+
 /** ball of values made available to "userspace" methods */
 export type Context = {
-  /** values coming out of oclif command phase */
-  cliOptions: ParserOutput
   services: Services
   /** @todo */
   logger: (msg: string, level?: LogLevel) => void

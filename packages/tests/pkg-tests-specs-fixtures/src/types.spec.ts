@@ -1,4 +1,4 @@
-import type { Context, ContextPrivate, Services } from "@business-as-code/core";
+import type { ContextCommand, ContextPrivate, Services } from "@business-as-code/core";
 import { expectTypeOf } from "expect-type";
 
 describe("types", () => {
@@ -27,7 +27,7 @@ describe("types", () => {
       }>();
     });
     it("context", () => {
-      expectTypeOf<Context>().toMatchTypeOf<{
+      expectTypeOf<ContextCommand>().toMatchTypeOf<{
         /** @oclif/main#ParserOutput */
         cliOptions: {
           args: any;

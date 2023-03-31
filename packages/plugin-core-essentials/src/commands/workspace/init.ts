@@ -5,15 +5,15 @@ import {
   assertIsAddressPathRelative,
 } from "@business-as-code/address";
 import {
-  Args,
   assertIsOk,
   BaseCommand,
-  Context,
+  ContextCommand,
   Flags,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { xfs } from "@business-as-code/fslib";
 import { BacError, MessageName } from "../../../../pkg-error/src";
+
 
 export class WorkspaceInit extends BaseCommand<typeof WorkspaceInit> {
   static override description = "Creates an empty workspace";
@@ -25,32 +25,46 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    config: Flags.string({
+    name: Flags.string({
+      char: "n",
+      description: "Workspace name",
+      required: true,
+    }),
+    destinationPath: Flags.string({
+      char: "d",
+      description: "Workspace name",
+      required: true,
+    }),
+    configPath: Flags.string({
       char: "c",
-      description: "Absolute path to a workspace configuration",
+      description: "Relative or absolute path to a workspace configuration",
       required: false,
     }),
   };
 
   static override args = {
-    path: Args.string({
-      char: "d",
-      description: "Absolute/Relative path",
-      required: false,
-    }),
+    // path: Args.string({
+    //   char: "d",
+    //   description: "Absolute/Relative path",
+    //   required: false,
+    // }),
   };
 
-  async execute(context: Context) {
+  async execute(context: ContextCommand<typeof WorkspaceInit>) {
     // console.log(`execute:context :>> `, context)
     // context.services.myService.somethingelse()
 
     // const { args } = await this.parse(WorkspaceInit);
-    console.log(
-      `context.cliOptions.args.path :>> `,
-      context.cliOptions.args.path
-    );
-    console.log(`context.cliOptions :>> `, context.cliOptions);
-    let workspacePath = addr.parsePath(context.cliOptions.args.path!);
+    // console.log(
+    //   `context.cliOptions.args.path :>> `,
+    //   context.cliOptions.args.path
+    // );
+    // console.log(`context.cliOptions :>> `, context.cliOptions);
+    // const poo = ParserOutput<T['flags'], T['flags'], T['args']>
+    // type DD = WorkspaceInit['flags']
+    // type DDd = WorkspaceInit['args']
+
+    let workspacePath = addr.parsePath(context.cliOptions.flags.destinationPath!);
     if (!assertIsAddressPath(workspacePath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
@@ -80,12 +94,30 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       await xfs.mkdirpPromise(workspacePath.address);
     }
 
-    console.log(`context.services :>> `, context.services);
+    // console.log(`context.services :>> `, context.services);
+
 
     const res = await context.services.schematics.run({
-      address: `@business-as-code/plugin-core-essentials#namespace=blank`,
+      address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
       context,
+      options: {
+        name: context.cliOptions.flags.name,
+        destinationPath: context.cliOptions.flags.destinationPath,
+        configPath: context.cliOptions.flags.configPath,
+        // name: 'cunt',
+        // author: 'boloerguie',
+
+
+
+      },
+      destinationPath: workspacePath,
+      dryRun: false,
+      force: true,
     });
+
+    console.log(`:>> FINISHED`);
+    console.log(`res :>> `, res)
+
 
     if (!assertIsOk(res)) {
       switch (res.res.reportCode) {
@@ -100,7 +132,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           break;
       }
     } else {
-      context.logger(`Finished ok`, "info");
+      context.logger(`Finished ok. Scaffolded into '${res.res.original}'`, "info");
     }
 
     //   override async run(): Promise<void> {

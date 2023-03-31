@@ -179,12 +179,21 @@ importers:
 
   packages/plugin-core-essentials:
     dependencies:
+      '@angular-devkit/core':
+        specifier: '*'
+        version: 15.2.4
+      '@angular-devkit/schematics':
+        specifier: '*'
+        version: 15.2.4
       '@business-as-code/address':
         specifier: workspace:*
         version: link:../pkg-address
       '@business-as-code/core':
         specifier: workspace:*
         version: link:../pkg-core
+      '@business-as-code/error':
+        specifier: workspace:^0.0.1
+        version: link:../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*
         version: link:../pkg-fslib
@@ -213,6 +222,9 @@ importers:
       '@business-as-code/error':
         specifier: workspace:^0.0.1
         version: link:../pkg-error
+      '@business-as-code/fslib':
+        specifier: workspace:^0.0.1
+        version: link:../pkg-fslib
       ansi-colors:
         specifier: ^4.1.3
         version: 4.1.3
@@ -247,6 +259,9 @@ importers:
 
   packages/tests/pkg-tests-specs-fixtures:
     devDependencies:
+      '@business-as-code/address':
+        specifier: workspace:*
+        version: link:../../pkg-address
       '@business-as-code/core':
         specifier: workspace:*
         version: link:../../pkg-core

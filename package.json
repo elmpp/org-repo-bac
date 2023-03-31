@@ -47,5 +47,8 @@
       "@types/globby": "^8.0.0",
       "globby": "11.1.10"
     }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
   }
 }

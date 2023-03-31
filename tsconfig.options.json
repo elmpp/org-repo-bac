@@ -48,7 +48,7 @@
     // "noUnusedParameters": false,
     // "plugins": [],
     // "removeComments": false,
-    // "resolveJsonModule": true,
+    "resolveJsonModule": true,
     // "sourceMap": true,
     // "strictNullChecks": true,
     // "strictFunctionTypes": false,

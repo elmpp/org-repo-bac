@@ -165,3 +165,7 @@ etc/var
 dist/
 # Build cache manifests
 *.tsbuildinfo
+
+
+# we'll be dropping cache and test artifacts into this directory (will also break git initialisation due to `rev-parse`)
+etc/var/

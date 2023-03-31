@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsSchematicSchema",
+  "title": "Schematic Options Schema",
+  "type": "object",
+  "properties": {
+    "destinationPath": {
+      "type": "string",
+      "description": "The absolute path where to scaffold to"
+    },
+    "name": {
+      "type": "string",
+      "description": "The package name for the new schematic"
+    },
+    "configPath": {
+      "type": "string",
+      "description": "Path to an existing config file which will be imported and trigger a sync"
+    }
+  },
+  "required": ["destinationPath", "name", "configPath"]
+}

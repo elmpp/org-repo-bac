@@ -6,6 +6,7 @@ export enum MessageName {
   SCHEMATICS_INVALID_ADDRESS = 4, // must be in proper format e.g. @org/name#namespace=my-schematic
   SCHEMATICS_NOT_FOUND = 5, // @
   SCHEMATICS_ERROR = 6, // error occurred during schematic execution
+  OCLIF_ERROR = 7, // throwable within main code to bubble incorrect flag values etc
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink
   // TEST_ENV = 3, // ignorable message that is used within tests
   // PLUGIN_INSTALLATION_UNDECLARED = 10,

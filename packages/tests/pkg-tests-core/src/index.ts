@@ -7,6 +7,7 @@ import * as oclifCore from '@oclif/core'
 import * as mockStd from 'stdout-stderr'
 import { getCurrentTestFilenameSanitised, getCurrentTestNameSanitised, sanitise } from './test-utils'
 import { XfsCacheManager } from './xfs-cache-manager'
+import os from 'os'
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -70,6 +71,8 @@ type PersistentTestEnvVars = {
 
   /** path to the root of this repository instance */
   checkoutPath: AddressPathAbsolute
+  /** path to the pkg-test-specs-fixtures package root */
+  fixturesPath: AddressPathAbsolute
   // /** the mntCwd of this repository instance (mntPath = path to the mnt.ts folder). See main-cli options for mntCwd info */
   // checkoutMntCwd: AddressPathAbsolute
 
@@ -127,7 +130,10 @@ async function doCreatePersistentTestEnvs(
   // console.log(`checkoutPath :>> `, checkoutPath)
   // throw new Error()
 
-  const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.pathUtils.join(checkoutPath, addr.parsePath('etc/var')) as AddressPathAbsolute
+  const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.parsePath('/tmp/bac-tests') as AddressPathAbsolute
+
+  console.log(`basePath :>> `, basePath)
+  // const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.pathUtils.join(checkoutPath, addr.parsePath('etc/var')) as AddressPathAbsolute
   // const testsPath =
   //   createPersistentTestEnvVars.testsPath?.({basePath}) ??
   //   (addr.pathUtils.join(basePath, addr.parsePath('tests') as AddressPathRelative) as AddressPathAbsolute)
@@ -162,6 +168,9 @@ async function doCreatePersistentTestEnvs(
   // console.log(`addr.parsePPath(__dirname) :>> `, addr.parsePPath(__dirname))
   // console.log(`checkoutMntPath :>> `, checkoutMntPath, checkoutPath, addr.pathUtils.cwd)
 
+  // const testsCoreRoot = addr.packageUtils.resolveRoot({address: addr.parsePackage('@business-as-code/tests-core'), projectCwd: addr.parseAsType(__dirname, 'portablePathPosixAbsolute'), strict: true})
+  const testsFixturesRoot = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../pkg-tests-specs-fixtures'))
+
   const testEnvVars: PersistentTestEnvVars = {
     // destinationPath:
     //   createTestEnvVars.destinationPath?.({testsPath, testName: expect.getState().currentTestName}) ??
@@ -172,7 +181,7 @@ async function doCreatePersistentTestEnvs(
     // checkoutMntCwd,
     basePath,
     cachePath,
-    // fixturesPath,
+    fixturesPath: testsFixturesRoot,
     testsPath,
     cacheRenewNamespace,
     cacheNamespaceFolder,
@@ -339,12 +348,11 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
           // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
           // await oclifCore.execute({type: 'cjs', dir: cliPath.original, args})
-          console.log(`cliPath.original :>> `, cliPath.original)
+          // console.log(`cliPath.original :>> `, cliPath.original)
 
           process.chdir(cliPath.original)
-
           const argsWithAdditional = [...args, '--log-level', logLevel]
-
+console.log(`argsWithAdditional, cliPath.original, process.cwd() :>> `, argsWithAdditional, cliPath.original, process.cwd())
           let exitCode = 0
           await oclifCore.run(argsWithAdditional, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
@@ -352,7 +360,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               console.log(`errorwwwwwwwwwwwww :>> `, error)
               // oclifCore.Errors.handle(error)
               // return 1
-              exitCode = error?.oclif.exit ?? 1
+              exitCode = error?.oclif?.exit ?? 1
             }
           )
 

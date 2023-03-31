@@ -21,9 +21,16 @@
     "dist",
     "bin"
   ],
+  "peerDependencies": {
+    "@angular-devkit/core": "*",
+    "@angular-devkit/schematics": "*"
+  },
   "dependencies": {
+    "@angular-devkit/core": "*",
+    "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
+    "@business-as-code/error": "workspace:^0.0.1",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {

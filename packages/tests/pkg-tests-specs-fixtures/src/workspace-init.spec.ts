@@ -1,7 +1,11 @@
+import { addr } from '@business-as-code/address'
 import { createPersistentTestEnv } from '@business-as-code/tests-core'
 
 /** simply ensures the testEnv core util is operating properly */
 describe('workspace init', () => {
+
+  jest.setTimeout(25000)
+
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
 
@@ -16,7 +20,8 @@ describe('workspace init', () => {
   // })
 
   // })
-  it.only('creates a skeleton workspace without config', async () => {
+  it('creates a skeleton workspace without configPath', async () => {
+
 
     const persistentTestEnv = await createPersistentTestEnv({})
     await persistentTestEnv.test({},
@@ -41,7 +46,7 @@ describe('workspace init', () => {
 
       // testContext.mockStdStart()
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
-      const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original], {logLevel: 'debug'})
+      const exitCode = await testContext.command(['workspace', 'init', '--name', 'my-new-workspace', '--destinationPath', testContext.envVars.destinationPath.original], {logLevel: 'debug'})
       expect(exitCode).toEqual(0)
       // console.log(`exitCode :>> `, exitCode)
 
@@ -56,6 +61,23 @@ describe('workspace init', () => {
       // return {
       //   outputs,
       // }
+    })
+  })
+  it.only('creates a skeleton workspace with absolute configPath', async () => {
+
+
+    const persistentTestEnv = await createPersistentTestEnv({})
+    await persistentTestEnv.test({},
+    async (testContext) => {
+
+      // testContext.mockStdStart()
+      // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
+
+      const configPath = addr.pathUtils.join(testContext.envVars.fixturesPath, addr.parsePath('mocks/input1.json'))
+
+      const exitCode = await testContext.command(['workspace', 'init', '--name', 'my-new-workspace', '--destinationPath', testContext.envVars.destinationPath.original, '--configPath', configPath.original], {logLevel: 'debug'})
+      expect(exitCode).toEqual(0)
+      // console.log(`exitCode :>> `, exitCode)
     })
   })
   describe('errors', () => {

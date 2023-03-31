@@ -6,6 +6,7 @@
     "*.spec.*",
     "*.js",
     "*.ts",
+    "**/schema.json",
     "../../types/**/*"
   ],
   "references": [

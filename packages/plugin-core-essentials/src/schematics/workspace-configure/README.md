@@ -1,0 +1,1 @@
+Responsible for applying configuration to the workspace

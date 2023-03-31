@@ -5,6 +5,7 @@
   "description": "Tool package @business-as-code/tests-specs-fixtures",
   "main": "src/index.ts",
   "devDependencies": {
+    "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
     "@business-as-code/tests-core": "workspace:*",
     "@types/jest": "^29.4.0",
