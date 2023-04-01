@@ -4,6 +4,7 @@ import type {Plugin} from "@oclif/core/lib/interfaces/plugin"; // need to import
 
 export * from "./__types__";
 export * from "./commands";
+export * from "./validation";
 export { constants } from "./constants";
 
 export { Args, Flags, Interfaces, Plugin };

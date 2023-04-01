@@ -8,7 +8,13 @@
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
   },
+  "peerDependencies": {
+    "@angular-devkit/core": "*",
+    "@angular-devkit/schematics": "*"
+  },
   "dependencies": {
+    "@angular-devkit/core": "*",
+    "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/fslib": "workspace:*",
     "@oclif/command": "^1.8.22",

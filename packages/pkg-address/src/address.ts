@@ -141,6 +141,7 @@ export class Address {
   private doParse(options: {address: string, group?: AddressGroupUnion, type?: keyof AddressType, strict?: boolean, arch?: NodeJS.Platform, pathType?: 'native' | 'portable'}): AddressDescriptor | undefined {
 
     const {arch = process.platform, address, group, strict, type, pathType} = options
+
     // let ret: AddressDescriptor | undefined = undefined
 
     // const doNormalize = (address: AddressDescriptor): void => {
@@ -197,7 +198,6 @@ export class Address {
         if (res) return res
       }
     }
-
     try {
       if (type) {
         return doReturn(doHandler(this.getHandlerForType(type), true))

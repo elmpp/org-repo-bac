@@ -1,36 +1,47 @@
-
 // import {oclifTest, oclifExpect} from './oclif'
-import { addr, AddressPathAbsolute } from '@business-as-code/address'
-import { LogLevel, Outputs } from '@business-as-code/core'
-import { xfs } from '@business-as-code/fslib'
-import * as oclifCore from '@oclif/core'
-import * as mockStd from 'stdout-stderr'
-import { getCurrentTestFilenameSanitised, getCurrentTestNameSanitised, sanitise } from './test-utils'
-import { XfsCacheManager } from './xfs-cache-manager'
-import os from 'os'
+import { Tree, HostCreateTree } from "@angular-devkit/schematics";
+import { virtualFs } from "@angular-devkit/core";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { LogLevel, Outputs, Result } from "@business-as-code/core";
+import { xfs } from "@business-as-code/fslib";
+import * as oclifCore from "@oclif/core";
+import * as mockStd from "stdout-stderr";
+import {
+  getCurrentTestFilenameSanitised,
+  getCurrentTestNameSanitised,
+  sanitise,
+} from "./test-utils";
+import { XfsCacheManager } from "./xfs-cache-manager";
+import os from "os";
+import { NodeJsSyncHost } from "@angular-devkit/core/node";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
-export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? UnwrapPromise<U> : T
+export type UnwrapPromise<T> = T extends PromiseLike<infer U>
+  ? UnwrapPromise<U>
+  : T;
 
 export type PersistentTestEnv = {
   /** main interface for creating tests */
-  test: UnwrapPromise<ReturnType<typeof createTestEnv>>
+  test: UnwrapPromise<ReturnType<typeof createTestEnv>>;
   // /** call to clear tests folder, probably on beforeEach */
   // init: () => Promise<void>
   /** clears up. Mainly jest mocking etc */
-  reset: () => Promise<void>
-}
+  reset: () => Promise<void>;
+};
 
 type CreateEphemeralTestEnvVars = {
   /** the ultimate path where content will be created. Defaults to `${basePath}/${testName}` which is the jest test name */
-  destinationPath?: (options: {testsPath: AddressPathAbsolute; testName: string}) => AddressPathAbsolute
+  destinationPath?: (options: {
+    testsPath: AddressPathAbsolute;
+    testName: string;
+  }) => AddressPathAbsolute;
   /** supply if you want to save a copy of the content (if tests pass) */
   savePath?: (options: {
-    testsPath: AddressPathAbsolute
-    cachePath: AddressPathAbsolute
-    fixturesPath: AddressPathAbsolute
-  }) => AddressPathAbsolute
+    testsPath: AddressPathAbsolute;
+    cachePath: AddressPathAbsolute;
+    fixturesPath: AddressPathAbsolute;
+  }) => AddressPathAbsolute;
   // /** any persistent plugins for the destination content */
   // persistentPlugins?: AddressPackageDescriptorString[]
   // /** any ephemeral plugins for the destination content */
@@ -39,10 +50,10 @@ type CreateEphemeralTestEnvVars = {
   // initialPlugins?: PluginMap
 
   /** used as the test folder names. This is required when within setupFixtures() */
-  processNamespace?: string
+  processNamespace?: string;
   /** remove cache for individual test. Deletes at a test level, not namespace */
-  cacheRenewTest?: boolean
-}
+  cacheRenewTest?: boolean;
+};
 
 type CreatePersistentTestEnvVars = {
   // /** the ultimate path where content will be created. Defaults to `${basePath}/${testName}` which is the jest test name */
@@ -50,7 +61,7 @@ type CreatePersistentTestEnvVars = {
   // /** supply if you want to save a copy of the content (if tests pass) */
   // savePath?: (options: {testsPath: AddressPathAbsolute, cachePath: AddressPathAbsolute, fixturesPath: AddressPathAbsolute}) => AddressPathAbsolute
   /** the base path for further folders. We do this to allow cache and content folders to be contained */
-  basePath?: () => AddressPathAbsolute
+  basePath?: () => AddressPathAbsolute;
   // /** the cache base path. Tests are free to save cache entries that will allow be within here. Defaults to basePath/cache */
   // cachePath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   // /** the base path for the saveCacheManager. Defaults to basePath/fixtures */
@@ -58,65 +69,72 @@ type CreatePersistentTestEnvVars = {
   // /** the base path where content will be created (i.e. contain the various destinationPaths). Defaults to basePath/tests */
   // testsPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   /** skips (+clears) cache namespace for the current test file. (remember we strongly encourage single 'makeTestEnv = await setupMakeTestEnv' per test file) */
-  cacheRenewNamespace?: boolean
+  cacheRenewNamespace?: boolean;
   // /** overrides the cache location for all tests (normally taken from processNamespace/test name) */
-  cacheNamespaceFolder?: string
-}
+  cacheNamespaceFolder?: string;
+};
 
 type PersistentTestEnvVars = {
-  basePath: AddressPathAbsolute
-  cachePath: AddressPathAbsolute
+  basePath: AddressPathAbsolute;
+  cachePath: AddressPathAbsolute;
   // fixturesPath: AddressPathAbsolute
-  testsPath: AddressPathAbsolute
+  testsPath: AddressPathAbsolute;
 
   /** path to the root of this repository instance */
-  checkoutPath: AddressPathAbsolute
+  checkoutPath: AddressPathAbsolute;
   /** path to the pkg-test-specs-fixtures package root */
-  fixturesPath: AddressPathAbsolute
+  fixturesPath: AddressPathAbsolute;
   // /** the mntCwd of this repository instance (mntPath = path to the mnt.ts folder). See main-cli options for mntCwd info */
   // checkoutMntCwd: AddressPathAbsolute
 
-  cacheRenewNamespace: boolean
-  cacheNamespaceFolder?: string
-}
+  cacheRenewNamespace: boolean;
+  cacheNamespaceFolder?: string;
+};
 type EphemeralTestEnvVars = {
-  destinationPath: AddressPathAbsolute
+  destinationPath: AddressPathAbsolute;
   // savePath?: AddressPathAbsolute
 
   /** used as a namespace in the subProcess as many testEnvs will be output to process.std* */
-  processNamespace: string
+  processNamespace: string;
   /** deletes and skips cache for this specific test */
-  cacheRenewTest: boolean
-}
+  cacheRenewTest: boolean;
+};
 
 export type TestContext = {
-  mockStdStart: () => void
-  mockStdEnd: () => Outputs
-  envVars: PersistentTestEnvVars & EphemeralTestEnvVars
+  mockStdStart: () => void;
+  mockStdEnd: () => Outputs;
+  envVars: PersistentTestEnvVars & EphemeralTestEnvVars;
   /**
    Runs an oclif command. Inspired by @oclif/test - https://tinyurl.com/2gftlrbb
    Example usage: https://oclif.io/docs/testing
    */
-  command: (args: string[], options?: {logLevel?: LogLevel}) => Promise<number>
-}
+  command: (
+    args: string[],
+    options?: { logLevel?: LogLevel }
+  ) => Promise<
+    Result<
+      { exitCode: number; tree: Tree },
+      { exitCode: number }
+    >
+  >;
+};
 
 /**
  Returnable from the run function. Will be cached in addition to the filesystem output of the process
  */
 export type TestContextStorage = {
-  outputs: Outputs
-}
+  outputs: Outputs;
+};
 
 /**
  The run function receives the results of SetupFunction and will be run regardless of cache with the same data.
  Use this to setup references for your tests.
  */
-export type RunFunction = (context: TestContext) => Promise<void>
+export type RunFunction = (context: TestContext) => Promise<void>;
 
 // export const test = {
 //   command: oclifTestWithExpect,
 // }
-
 
 async function doCreatePersistentTestEnvs(
   createPersistentTestEnvVars: CreatePersistentTestEnvVars
@@ -124,40 +142,46 @@ async function doCreatePersistentTestEnvs(
   const checkoutPath = addr.pathUtils.resolve(
     addr.parsePPath(__dirname),
     // addr.parsePPath('../../../mnt-pkg-cli/src/bin')
-    addr.parsePPath('../../../..')
-  ) as AddressPathAbsolute
+    addr.parsePPath("../../../..")
+  ) as AddressPathAbsolute;
 
   // console.log(`checkoutPath :>> `, checkoutPath)
   // throw new Error()
 
-  const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.parsePath('/tmp/bac-tests') as AddressPathAbsolute
+  const basePath =
+    createPersistentTestEnvVars.basePath?.() ??
+    (addr.parsePath("/tmp/bac-tests") as AddressPathAbsolute);
 
-  console.log(`basePath :>> `, basePath)
+  console.log(`basePath :>> `, basePath);
   // const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.pathUtils.join(checkoutPath, addr.parsePath('etc/var')) as AddressPathAbsolute
   // const testsPath =
   //   createPersistentTestEnvVars.testsPath?.({basePath}) ??
   //   (addr.pathUtils.join(basePath, addr.parsePath('tests') as AddressPathRelative) as AddressPathAbsolute)
-  const testsPath = addr.pathUtils.join(basePath, addr.parsePath('tests')) as AddressPathAbsolute
+  const testsPath = addr.pathUtils.join(
+    basePath,
+    addr.parsePath("tests")
+  ) as AddressPathAbsolute;
   // const cachePath =
   //   createPersistentTestEnvVars.cachePath?.({basePath}) ??
   //   (addr.pathUtils.join(basePath, addr.parsePath('cache') as AddressPathRelative) as AddressPathAbsolute)
-  const cachePath = addr.pathUtils.join(basePath, addr.parsePath('cache')) as AddressPathAbsolute
+  const cachePath = addr.pathUtils.join(
+    basePath,
+    addr.parsePath("cache")
+  ) as AddressPathAbsolute;
   // const fixturesPath =
   //   createPersistentTestEnvVars.fixturesPath?.({basePath}) ??
   //   (addr.pathUtils.join(basePath, addr.parsePPath('fixtures') as AddressPathRelative) as AddressPathAbsolute)
   const cacheRenewNamespace =
-    createPersistentTestEnvVars.cacheRenewNamespace ?? false
+    createPersistentTestEnvVars.cacheRenewNamespace ?? false;
   // const cacheRenewNamespace =
   //   truthyFalsy(process.env.TEST_ENV_CACHE_RENEW) ?? createPersistentTestEnvVars.cacheRenewNamespace ?? false
-  const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder
+  const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder;
 
   // const checkoutPath = addr.packageUtils.resolveRoot({
   //   address: addr.parsePackage('root'),
   //   projectCwd: addr.pathUtils.cwd,
   //   strict: true,
   // })
-
-
 
   // const checkoutMntCwd = addr.pathUtils.join(
   //   checkoutPath,
@@ -169,7 +193,10 @@ async function doCreatePersistentTestEnvs(
   // console.log(`checkoutMntPath :>> `, checkoutMntPath, checkoutPath, addr.pathUtils.cwd)
 
   // const testsCoreRoot = addr.packageUtils.resolveRoot({address: addr.parsePackage('@business-as-code/tests-core'), projectCwd: addr.parseAsType(__dirname, 'portablePathPosixAbsolute'), strict: true})
-  const testsFixturesRoot = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../pkg-tests-specs-fixtures'))
+  const testsFixturesRoot = addr.pathUtils.resolve(
+    addr.parsePath(__dirname),
+    addr.parsePath("../../pkg-tests-specs-fixtures")
+  );
 
   const testEnvVars: PersistentTestEnvVars = {
     // destinationPath:
@@ -185,83 +212,88 @@ async function doCreatePersistentTestEnvs(
     testsPath,
     cacheRenewNamespace,
     cacheNamespaceFolder,
-  }
+  };
 
-  return testEnvVars
+  return testEnvVars;
 }
 
 async function doCreateEphemeralTestEnvVars(
   createEphemeralTestEnvVars: CreateEphemeralTestEnvVars,
-  persistentTestEnvVars: PersistentTestEnvVars,
+  persistentTestEnvVars: PersistentTestEnvVars
 ): Promise<EphemeralTestEnvVars> {
-
   const processNamespace = createEphemeralTestEnvVars.processNamespace
     ? sanitise(createEphemeralTestEnvVars.processNamespace)
-    : getCurrentTestNameSanitised()
+    : getCurrentTestNameSanitised();
 
   if (!processNamespace) {
-    throw new Error(`'processNamespace' must be supplied else be within a valid jest test`)
+    throw new Error(
+      `'processNamespace' must be supplied else be within a valid jest test`
+    );
   }
 
   const destinationPath =
-      createEphemeralTestEnvVars.destinationPath?.({
-        testsPath: persistentTestEnvVars.testsPath,
-        testName: processNamespace,
-      }) ??
-      (addr.pathUtils.join(
-        persistentTestEnvVars.testsPath,
-        addr.parseAsType(processNamespace, 'portablePathFilename')
-      ) as AddressPathAbsolute)
+    createEphemeralTestEnvVars.destinationPath?.({
+      testsPath: persistentTestEnvVars.testsPath,
+      testName: processNamespace,
+    }) ??
+    (addr.pathUtils.join(
+      persistentTestEnvVars.testsPath,
+      addr.parseAsType(processNamespace, "portablePathFilename")
+    ) as AddressPathAbsolute);
 
-  const cacheRenewTest = createEphemeralTestEnvVars.cacheRenewTest ?? false
+  const cacheRenewTest = createEphemeralTestEnvVars.cacheRenewTest ?? false;
 
   return {
     destinationPath,
     processNamespace,
     cacheRenewTest,
-  }
+  };
 }
 
-async function createCacheManager(testEnvVars: PersistentTestEnvVars): Promise<XfsCacheManager> {
+async function createCacheManager(
+  testEnvVars: PersistentTestEnvVars
+): Promise<XfsCacheManager> {
   return await XfsCacheManager.initialise({
     contentBaseAddress: addr.pathUtils.join(
       testEnvVars.cachePath,
-      addr.parseAsType('content', 'portablePathFilename')
+      addr.parseAsType("content", "portablePathFilename")
     ) as AddressPathAbsolute,
     metaBaseAddress: addr.pathUtils.join(
       testEnvVars.cachePath,
-      addr.parseAsType('meta', 'portablePathFilename')
+      addr.parseAsType("meta", "portablePathFilename")
     ) as AddressPathAbsolute,
     outputsBaseAddress: addr.pathUtils.join(
       testEnvVars.cachePath,
-      addr.parseAsType('outputs', 'portablePathFilename')
+      addr.parseAsType("outputs", "portablePathFilename")
     ) as AddressPathAbsolute,
-  })
+  });
 }
 
-function getCacheNamespace(options: {cacheNamespaceFolder?: string}): string {
-  return options.cacheNamespaceFolder ?? getCurrentTestFilenameSanitised()
+function getCacheNamespace(options: { cacheNamespaceFolder?: string }): string {
+  return options.cacheNamespaceFolder ?? getCurrentTestFilenameSanitised();
 }
-
 
 export async function createPersistentTestEnv(
   createPersistentTestEnvVars: CreatePersistentTestEnvVars
 ): Promise<PersistentTestEnv> {
-
-  const persistentTestEnvVars = await doCreatePersistentTestEnvs(createPersistentTestEnvVars)
+  const persistentTestEnvVars = await doCreatePersistentTestEnvs(
+    createPersistentTestEnvVars
+  );
 
   // /** do some checks that we're still set up correctly */
   // await validateTestEnvVars(persistentTestEnvVars)
 
-  const cacheManager = await createCacheManager(persistentTestEnvVars)
+  const cacheManager = await createCacheManager(persistentTestEnvVars);
 
   /** clear any cache at top level. This must be done at this top level  */
   if (persistentTestEnvVars.cacheRenewNamespace) {
-    const namespaceExists = await cacheManager.hasNamespace({namespace: getCacheNamespace(persistentTestEnvVars)})
+    const namespaceExists = await cacheManager.hasNamespace({
+      namespace: getCacheNamespace(persistentTestEnvVars),
+    });
     const cacheEntry = await cacheManager.getCacheEntry({
       namespace: getCacheNamespace(persistentTestEnvVars),
-      key: 'dummy',
-    })
+      key: "dummy",
+    });
 
     // console.log(`getCacheNamespace(persistentTestEnvVars) :>> `, getCacheNamespace(persistentTestEnvVars))
     // console.log(`cacheEntry :>> `, cacheEntry)
@@ -269,15 +301,19 @@ export async function createPersistentTestEnv(
     if (namespaceExists) {
       console.log(
         `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY. DELETING EXISTING NAMESPACE. Content directory: '${cacheEntry.content._namespaceBase.original}' Outputs directory: '${cacheEntry.outputs._namespaceBase.original}'`
-      )
-      await cacheManager.removeNamespace({namespace: getCacheNamespace(persistentTestEnvVars)})
+      );
+      await cacheManager.removeNamespace({
+        namespace: getCacheNamespace(persistentTestEnvVars),
+      });
       // await xfs.removePromise(contentCachePath.address)
     } else {
       console.log(
         `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY (NONE EXISTENT). Content directory: '${cacheEntry.content._namespaceBase.original}' Outputs directory: '${cacheEntry.outputs._namespaceBase.original}'`
-      )
+      );
     }
-    await cacheManager.removeNamespace({namespace: getCacheNamespace(persistentTestEnvVars)})
+    await cacheManager.removeNamespace({
+      namespace: getCacheNamespace(persistentTestEnvVars),
+    });
   }
 
   return {
@@ -308,35 +344,54 @@ export async function createPersistentTestEnv(
     reset: async () => {
       // await stdioStreamsCb()
     },
-  }
-
+  };
 }
 
-async function setupFolders(testEnvVars: EphemeralTestEnvVars & PersistentTestEnvVars): Promise<void> {
+async function setupFolders(
+  testEnvVars: EphemeralTestEnvVars & PersistentTestEnvVars
+): Promise<void> {
   const doTestFolders = async () => {
-    const testsFolderName = testEnvVars.processNamespace ?? getCurrentTestNameSanitised(false)
+    const testsFolderName =
+      testEnvVars.processNamespace ?? getCurrentTestNameSanitised(false);
     if (!testsFolderName) {
-      throw new Error(`For tests within setupFixtures, a 'processNamespace' must be supplied`)
+      throw new Error(
+        `For tests within setupFixtures, a 'processNamespace' must be supplied`
+      );
     }
-    const testPath = addr.pathUtils.join(testEnvVars.testsPath, addr.parsePPath(testsFolderName))
-    await xfs.removePromise(testPath.address)
-    await xfs.mkdirpPromise(testPath.address)
-  }
+    const testPath = addr.pathUtils.join(
+      testEnvVars.testsPath,
+      addr.parsePPath(testsFolderName)
+    );
+    await xfs.removePromise(testPath.address);
+    await xfs.mkdirpPromise(testPath.address);
+  };
 
-  await doTestFolders()
+  await doTestFolders();
 }
 
 async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
-  return async (createEphemeralTestEnvVars: CreateEphemeralTestEnvVars, run: RunFunction) => {
-
-    const checkoutPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../..'))
-    const cliPath = addr.pathUtils.join(checkoutPath, addr.parsePath('packages/pkg-cli')) as AddressPathAbsolute
-    const ephemeralTestEnvVars = await doCreateEphemeralTestEnvVars(createEphemeralTestEnvVars, persistentTestEnvVars)
+  return async (
+    createEphemeralTestEnvVars: CreateEphemeralTestEnvVars,
+    run: RunFunction
+  ) => {
+    const checkoutPath = addr.pathUtils.resolve(
+      addr.parsePath(__dirname),
+      addr.parsePath("../../../..")
+    );
+    const cliPath = addr.pathUtils.join(
+      checkoutPath,
+      addr.parsePath("packages/pkg-cli")
+    ) as AddressPathAbsolute;
+    const ephemeralTestEnvVars = await doCreateEphemeralTestEnvVars(
+      createEphemeralTestEnvVars,
+      persistentTestEnvVars
+    );
+    const envVars = { ...ephemeralTestEnvVars, ...persistentTestEnvVars }
 
     function createTestContext(): TestContext {
       return {
         command: async (args: string[], options = {}) => {
-          const {logLevel = 'info'} = options
+          const { logLevel = "info" } = options;
 
           // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
           // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
@@ -350,21 +405,38 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // await oclifCore.execute({type: 'cjs', dir: cliPath.original, args})
           // console.log(`cliPath.original :>> `, cliPath.original)
 
-          process.chdir(cliPath.original)
-          const argsWithAdditional = [...args, '--log-level', logLevel]
-console.log(`argsWithAdditional, cliPath.original, process.cwd() :>> `, argsWithAdditional, cliPath.original, process.cwd())
-          let exitCode = 0
-          await oclifCore.run(argsWithAdditional, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
+          process.chdir(cliPath.original);
+          const argsWithAdditional = [...args, "--log-level", logLevel];
+          console.log(
+            `argsWithAdditional, cliPath.original, process.cwd() :>> `,
+            argsWithAdditional,
+            cliPath.original,
+            process.cwd()
+          );
+          let exitCode = 0;
+          await oclifCore
+            .run(argsWithAdditional, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((error) => {
-              console.log(`errorwwwwwwwwwwwww :>> `, error)
+              console.log(`errorwwwwwwwwwwwww :>> `, error);
               // oclifCore.Errors.handle(error)
               // return 1
-              exitCode = error?.oclif?.exit ?? 1
-            }
-          )
+              exitCode = error?.oclif?.exit ?? 1;
+            });
 
-          return exitCode
+          if (exitCode === 0) {
+
+            // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
+            const tree = new HostCreateTree(new virtualFs.ScopedHost(new NodeJsSyncHost(), envVars.destinationPath.original as any))
+
+            return {
+              success: true,
+              res: {
+                exitCode,
+                tree,
+              },
+            }
+          }
 
           // return await oclifCore.({type: 'cjs', dir: checkoutMntPath.original, args})
           // return {
@@ -373,34 +445,34 @@ console.log(`argsWithAdditional, cliPath.original, process.cwd() :>> `, argsWith
           // }
         },
         mockStdStart: () => {
-          mockStd.stdout.start()
-          mockStd.stderr.start()
+          mockStd.stdout.start();
+          mockStd.stderr.start();
         },
         mockStdEnd: () => {
-          mockStd.stdout.stop()
-          mockStd.stderr.stop()
+          mockStd.stdout.stop();
+          mockStd.stderr.stop();
           return {
-              stdout: mockStd.stdout.output,
-              stderr: mockStd.stderr.output,
-          }
+            stdout: mockStd.stdout.output,
+            stderr: mockStd.stderr.output,
+          };
         },
         envVars: {
           ...ephemeralTestEnvVars,
           ...persistentTestEnvVars,
         },
-      }
+      };
     }
 
-    const testContext = await createTestContext()
+    const testContext = await createTestContext();
 
-    await setupFolders({...ephemeralTestEnvVars, ...persistentTestEnvVars})
+    await setupFolders(envVars);
 
-    await run(testContext)
+    await run(testContext);
     // try {
     //   await run(testContext)
     // }
     // catch (err) {
     //   console.log(`err when running run() :>> `, err, testContext)
     // }
-  }
+  };
 }

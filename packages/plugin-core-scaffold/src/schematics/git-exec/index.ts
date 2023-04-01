@@ -9,28 +9,19 @@
 import { strings } from "@angular-devkit/core";
 import {
   apply,
-  chain,
-  mergeWith,
-  partitionApplyMerge,
-  Rule,
-  SchematicContext,
-  TaskConfigurationGenerator,
-  TaskId,
-  template,
-  Tree,
-  empty,
-  url,
+  mergeWith, partitionApplyMerge, Rule, template,
+  url
 } from "@angular-devkit/schematics";
 import {
   NodePackageInstallTask,
   RepositoryInitializerTask,
-  RunSchematicTask,
+  RunSchematicTask
 } from "@angular-devkit/schematics/tasks";
 import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative,
+  assertIsAddressPathRelative
 } from "@business-as-code/address";
 import { constants } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
@@ -38,17 +29,12 @@ import { xfs } from "@business-as-code/fslib";
 import path from "path";
 import { Schema } from "./schema";
 
-const wrapTaskAsRule = (task: TaskConfigurationGenerator<object>, dependencies?: TaskId[] | undefined) => (_tree: Tree, context: SchematicContext): Rule => {
-  const emptySource = empty()
-  context.addTask(task)
-  return mergeWith(emptySource)
-}
-
 export default function (options: Schema): Rule {
   // const schematicsVersion = require('@angular-devkit/schematics/package.json').version;
   // const coreVersion = require('@angular-devkit/core/package.json').version;
 
   return (_tree, context) => {
+
     // const getConfigPath = (
     //   runtimeConfigRelOrAbsoluteNative?: string
     // ): AddressPathAbsolute => {
@@ -80,79 +66,58 @@ export default function (options: Schema): Rule {
     // const repoPathName = "repo"
     // const repoPathAbs = path.join(destinationPath, repoPathName);
 
-    console.log(`options.destinationPath :>> `, options.destinationPath);
+    console.log(`options.destinationPath :>> `, options.destinationPath)
 
     // const configPath = getConfigPath();
 
     // console.log(`options._bacContext :>> `, options._bacContext)
     // console.log(`configPath, repoPath :>> `, configPath, repoPath)
 
-    // const repoGitInit = context.addTask(
-    //   new RepositoryInitializerTask("repo", {
-    //     email: constants.DEFAULT_COMMITTER_EMAIL,
-    //     message: "initial commit",
-    //     name: constants.DEFAULT_COMMITTER_NAME,
-    //   })
-    // );
-    // const gitInit = context.addTask(
-    //   new RepositoryInitializerTask(".", {
-    //     email: constants.DEFAULT_COMMITTER_EMAIL,
-    //     message: "initial commit",
-    //     name: constants.DEFAULT_COMMITTER_NAME,
-    //   })
-    // );
-    // console.log(`options.destinationPath :>> `, options.destinationPath);
-    // const pmTask = context.addTask(new NodePackageInstallTask({}), [
-    //   repoGitInit,
-    //   gitInit,
-    // ]);
-
-    // if (options.configPath) {
-    //   // running external schematics - https://tinyurl.com/2f3nwuk7
-    //   context.addTask(
-    //     new RunSchematicTask("workspace-configure", {
-    //       ...options,
-    //     }),
-    //     [pmTask]
-    //   );
-    // }
-
-    const baseTemplateSource = apply(url("./files"), [
-      // partitionApplyMerge(
-      // (p) => !/\/src\/.*?\/bare\//.test(p),
-      template({
-        ...options,
-        // coreVersion,
-        // schematicsVersion,
-        // configPath,
-        dot: ".",
-        dasherize: strings.dasherize,
-      }),
-      // ),
-      // move(destinationPath),
-    ]);
-
-    // context.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
-    // context.addTask(new NodePackageInstallTask({workingDirectory: options.destinationPath, quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
-
-    return chain([
-      mergeWith(baseTemplateSource),
-      wrapTaskAsRule(new RepositoryInitializerTask("repo", {
+    const repoGitInit = context.addTask(
+      new RepositoryInitializerTask('repo', {
         email: constants.DEFAULT_COMMITTER_EMAIL,
         message: "initial commit",
         name: constants.DEFAULT_COMMITTER_NAME,
-      })),
-      wrapTaskAsRule(new RepositoryInitializerTask(".", {
+      })
+    );
+    const gitInit = context.addTask(
+      new RepositoryInitializerTask('.', {
         email: constants.DEFAULT_COMMITTER_EMAIL,
         message: "initial commit",
         name: constants.DEFAULT_COMMITTER_NAME,
-      })),
-      wrapTaskAsRule(new NodePackageInstallTask({})),
-      wrapTaskAsRule(
-        new RunSchematicTask("workspace-configure", {
+      })
+      );
+      console.log(`options.destinationPath :>> `, options.destinationPath)
+      const pmTask = context.addTask(new NodePackageInstallTask({}), [repoGitInit, gitInit]);
+
+      if (
+        options.configPath
+      ) {
+        // running external schematics - https://tinyurl.com/2f3nwuk7
+        context.addTask(new RunSchematicTask('workspace-configure', {
           ...options,
-        }),
-      ),
-    ]);
+        }), [pmTask]);
+      }
+
+
+      // context.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+      // context.addTask(new NodePackageInstallTask({workingDirectory: options.destinationPath, quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+
+    return mergeWith(
+      apply(url("./files"), [
+        // partitionApplyMerge(
+          // (p) => !/\/src\/.*?\/bare\//.test(p),
+          template({
+            ...options,
+            // coreVersion,
+            // schematicsVersion,
+            // configPath,
+            dot: ".",
+            dasherize: strings.dasherize,
+          })
+        // ),
+        // move(destinationPath),
+      ])
+    );
   };
 }

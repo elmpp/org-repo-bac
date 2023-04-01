@@ -1,9 +1,13 @@
 {
-  "name": "@business-as-code/tests-core",
-  "private": true,
+  "name": "@business-as-code/plugin-tests",
   "version": "0.0.1",
-  "description": "Tool package @business-as-code/tests-core",
+  "description": "Publishable plugin package @business-as-code/plugin-tests",
   "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
   "peerDependencies": {
     "@angular-devkit/core": "*",
     "@angular-devkit/schematics": "*"
@@ -13,13 +17,11 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
+    "@business-as-code/error": "workspace:^0.0.1",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
-    "@oclif/core": "2.6.4",
-    "@oclif/test": "^2.3.9",
-    "@types/node": "18.14.2",
-    "stdout-stderr": "^0.1.13",
-    "typescript": "5.0.2"
+    "@business-as-code/tests-core": "workspace:*",
+    "@types/node": "^18.15.3"
   }
 }

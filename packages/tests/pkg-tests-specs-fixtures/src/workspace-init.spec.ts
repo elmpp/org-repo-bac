@@ -1,5 +1,8 @@
+import { Result, assertIsOk } from '@business-as-code/core'
 import { addr } from '@business-as-code/address'
 import { createPersistentTestEnv } from '@business-as-code/tests-core'
+import assert from 'assert'
+import { expectIsOk } from '@business-as-code/tests-core/src/test-utils'
 
 /** simply ensures the testEnv core util is operating properly */
 describe('workspace init', () => {
@@ -65,7 +68,6 @@ describe('workspace init', () => {
   })
   it.only('creates a skeleton workspace with absolute configPath', async () => {
 
-
     const persistentTestEnv = await createPersistentTestEnv({})
     await persistentTestEnv.test({},
     async (testContext) => {
@@ -75,8 +77,23 @@ describe('workspace init', () => {
 
       const configPath = addr.pathUtils.join(testContext.envVars.fixturesPath, addr.parsePath('mocks/input1.json'))
 
-      const exitCode = await testContext.command(['workspace', 'init', '--name', 'my-new-workspace', '--destinationPath', testContext.envVars.destinationPath.original, '--configPath', configPath.original], {logLevel: 'debug'})
-      expect(exitCode).toEqual(0)
+      const res = await testContext.command(['workspace', 'init', '--name', 'my-new-workspace', '--destinationPath', testContext.envVars.destinationPath.original, '--configPath', configPath.original], {logLevel: 'debug'})
+
+      // if (assertIsOk(res)) {
+      //   const success = res.success
+      // }
+      // assertIsOk()
+
+      expectIsOk(res)
+
+      console.log(`res.res.tree.read('./BOLLOCKS.md') :>> `, res.res.tree.readText('./BOLLOCKS.md'))
+      expect(res.res.tree.readText('./BOLLOCKS.md')).toEqual('PANTS')
+
+
+
+      // expect(exitCode).toEqual(0)
+
+
       // console.log(`exitCode :>> `, exitCode)
     })
   })

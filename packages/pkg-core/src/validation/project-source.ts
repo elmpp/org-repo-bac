@@ -1,5 +1,6 @@
-import type { FSTree } from '@business-as-code/fslib';
+import type {Tree} from '@angular-devkit/schematics'
 import { z } from "zod";
+import { sourceLocation } from './common';
 import { projectConfigSchema } from "./project";
 
 const baseProjectSourceSchema = z.object({
@@ -18,7 +19,8 @@ export const projectSourceConfigSchema = baseProjectSourceSchema.merge(z.object(
     z.array(
       z.function()
       .args(z.object({
-        fsTree: z.custom<FSTree>(), // no implementation function here - not user supplied
+        tree: z.custom<Tree>(), // no implementation function here - not user supplied
+        sourceLocation: sourceLocation,
       }))
       .returns(z.optional(
         projectConfigSchema,

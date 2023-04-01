@@ -50,6 +50,7 @@
       "@business-as-code/plugin-core-scaffold"
     ],
     "devPlugins": [
+      "@business-as-code/plugin-core-tests",
       "@oclif/plugin-plugins"
     ]
   }

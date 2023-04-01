@@ -1,3 +1,4 @@
+import { assertIsOk, Result } from "@business-as-code/core"
 import assert from "assert"
 import path from 'path'
 
@@ -19,3 +20,11 @@ export function getCurrentTestNameSanitised(strict: boolean = true): string | un
   // return (expect.getState().currentTestName ?? testEnvVars?.debugId ?? 'setupFilesAfterEnv')
 }
 export const sanitise = (str: string): string => str.replace(/['"~><]/, '').replace(/[\s;+/\\]+/g, '_')
+
+
+export function expectIsOk<T extends Result<any, any>>(res: T): asserts res is Extract<T, {success: true}> {
+  if (assertIsOk(res)) {
+    return
+  }
+  fail(new Error(`res is not successful`))
+}
