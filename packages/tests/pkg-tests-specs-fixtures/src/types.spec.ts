@@ -1,4 +1,4 @@
-import type { ContextCommand, ContextPrivate, Services } from "@business-as-code/core";
+import type { ContextCommand, Services } from "@business-as-code/core";
 import { expectTypeOf } from "expect-type";
 
 describe("types", () => {
@@ -6,14 +6,14 @@ describe("types", () => {
     it("services", () => {
       expectTypeOf<Services>().toMatchTypeOf<{ // instance side
         myService: {
-          somethingelse: Function
+          func1: Function
         };
         yourService: {
-          somethingelse: Function
+          func1: Function
         };
-        schematicsService: {
-          somethingelse: Function
-        };
+        schematics: {
+          run: Function
+        }
       }>();
       expectTypeOf<Services>().not.toMatchTypeOf<{ // not the static side
         myService: {
@@ -27,7 +27,7 @@ describe("types", () => {
       }>();
     });
     it("context", () => {
-      expectTypeOf<ContextCommand>().toMatchTypeOf<{
+      expectTypeOf<ContextCommand<any>>().toMatchTypeOf<{
         /** @oclif/main#ParserOutput */
         cliOptions: {
           args: any;
@@ -36,20 +36,23 @@ describe("types", () => {
           metadata: any;
           nonExistentFlags: any;
         };
-        services: Services
+        serviceFactory: Function
+        logger: Function
+        oclifConfig: object
+        workspacePath: object
       }>();
     });
-    it("contextPrivate", () => {
-      expectTypeOf<ContextPrivate>().toMatchTypeOf<{
-        /** @oclif/main#ParserOutput */
-        cliOptions: {
-          args: any;
-          argv: any;
-          raw: any;
-          metadata: any;
-          nonExistentFlags: any;
-        };
-      }>();
-    });
+    // it("contextPrivate", () => {
+    //   expectTypeOf<ContextPrivate>().toMatchTypeOf<{
+    //     /** @oclif/main#ParserOutput */
+    //     cliOptions: {
+    //       args: any;
+    //       argv: any;
+    //       raw: any;
+    //       metadata: any;
+    //       nonExistentFlags: any;
+    //     };
+    //   }>();
+    // });
   });
 });

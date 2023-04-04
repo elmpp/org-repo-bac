@@ -12,7 +12,7 @@
 //   }
 // }
 
-import { addr } from "@business-as-code/address";
+import { addr, AddressPathRelative } from "@business-as-code/address";
 import { ServiceInitialiseOptions } from "@business-as-code/core";
 import { spawn, SpawnOptions } from "child_process";
 
@@ -40,8 +40,8 @@ export class MyService {
 
   constructor(protected options: ServiceInitialiseOptions) {}
 
-  static fuckKnuckles() {}
-  async doGitStuff(options: { someRandomProps: string }) {
+  static staticFunc1() {}
+  async func1({someRandomProps, workingPath = addr.pathUtils.dot}: { someRandomProps: string, workingPath?: AddressPathRelative }) {
     const execute = (args: string[], ignoreErrorStream?: boolean) => {
       const outputStream = "ignore";
       const errorStream = ignoreErrorStream ? "ignore" : process.stderr;
@@ -50,7 +50,7 @@ export class MyService {
         shell: true,
         cwd: addr.pathUtils.join(
           this.options.context.workspacePath,
-          this.options.workingPath
+          workingPath,
         ).original,
         env: {},
       };

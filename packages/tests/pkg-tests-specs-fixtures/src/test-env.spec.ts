@@ -26,7 +26,7 @@ describe('test-env', () => {
 
       expect(envVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
       expect(envVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
-      expect(envVars.destinationPath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
+      expect(envVars.workspacePath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
 
       // console.log(`envVars :>> `, envVars)
 

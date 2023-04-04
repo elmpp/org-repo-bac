@@ -18,16 +18,23 @@ import {
   url,
   SchematicContext,
   Tree,
+  move,
 } from "@angular-devkit/schematics";
+import { constants, wrapServiceAsRule, wrapTaskAsRule } from "@business-as-code/core";
 import { Schema } from "./schema";
+import {
+  NodePackageInstallTask,
+  RepositoryInitializerTask,
+  RunSchematicTask,
+} from "@angular-devkit/schematics/tasks";
 
 
-function commit(_options: { name: string }): Rule {
-  return (_tree: Tree, _context: SchematicContext) => {
-    _context.logger.info(`Executing: npm run lint -- --fix ${_options.name}`);
-    execSync("npm run lint -- --fix " + _options.name);
-  };
-}
+// function commit(_options: { name: string }): Rule {
+//   return (_tree: Tree, _context: SchematicContext) => {
+//     _context.logger.info(`Executing: npm run lint -- --fix ${_options.name}`);
+//     execSync("npm run lint -- --fix " + _options.name);
+//   };
+// }
 
 export default function (options: Schema): Rule {
   return (_tree, context) => {
@@ -38,7 +45,8 @@ export default function (options: Schema): Rule {
       // partitionApplyMerge(
         // (p) => !/\/src\/.*?\/repo\//.test(p),
         template({
-          ...options,
+          // ...options,
+          name: 'root-package',
           // coreVersion,
           // schematicsVersion,
           // configPath,
@@ -48,7 +56,6 @@ export default function (options: Schema): Rule {
       // ),
       // move(destinationPath),
     ])
-
 
 
     const packageTemplateSource1 = apply(url("./package"), [
@@ -57,19 +64,34 @@ export default function (options: Schema): Rule {
         template({
           ...options,
           path: 'packages/my-package-1',
+          name: 'my-package-1',
           // coreVersion,
           // schematicsVersion,
           // configPath,
           dot: ".",
           dasherize: strings.dasherize,
-        })
+        }),
       // ),
-      // move(destinationPath),
+      move('packages/my-package-1'),
     ])
 
     const r = chain([
       mergeWith(bareTemplateSource),
+      wrapTaskAsRule(
+        new RepositoryInitializerTask(".", {
+          email: constants.DEFAULT_COMMITTER_EMAIL,
+          message: "initial commit of repo",
+          name: constants.DEFAULT_COMMITTER_NAME,
+        })
+      ),
       mergeWith(packageTemplateSource1),
+      wrapTaskAsRule(
+        new RepositoryInitializerTask(".", {
+          email: constants.DEFAULT_COMMITTER_EMAIL,
+          message: "adds my-package-1",
+          name: constants.DEFAULT_COMMITTER_NAME,
+        })
+      ),
     ])
     return r
 

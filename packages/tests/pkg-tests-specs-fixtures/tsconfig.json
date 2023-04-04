@@ -9,6 +9,12 @@
   ],
   "references": [
     {
+      "path": "../../pkg-address"
+    },
+    {
+      "path": "../../pkg-core"
+    },
+    {
       "path": "../pkg-tests-core"
     }
   ],
@@ -16,6 +22,18 @@
     "emitDeclarationOnly": false,
     "noEmit": true,
     "paths": {
+      "@business-as-code/address": [
+        "../../pkg-address/src/index.ts"
+      ],
+      "@business-as-code/address/*": [
+        "../../pkg-address/src/*"
+      ],
+      "@business-as-code/core": [
+        "../../pkg-core/src/index.ts"
+      ],
+      "@business-as-code/core/*": [
+        "../../pkg-core/src/*"
+      ],
       "@business-as-code/tests-core": [
         "../pkg-tests-core/src/index.ts"
       ],

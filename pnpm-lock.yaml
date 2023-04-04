@@ -114,6 +114,9 @@ importers:
         specifier: ^2.3.2
         version: 2.3.2(@types/node@18.14.2)(typescript@5.0.2)
     devDependencies:
+      '@business-as-code/plugin-core-tests':
+        specifier: workspace:*
+        version: link:../tests/plugin-core-tests
       '@types/node':
         specifier: 18.14.2
         version: 18.14.2
@@ -315,7 +318,7 @@ importers:
         specifier: ^10.2.1
         version: 10.2.1
 
-  packages/tests/plugin-tests:
+  packages/tests/plugin-core-tests:
     dependencies:
       '@angular-devkit/core':
         specifier: '*'
@@ -336,12 +339,12 @@ importers:
         specifier: workspace:*
         version: link:../../pkg-fslib
     devDependencies:
-      '@business-as-code/tests-core':
-        specifier: workspace:*
-        version: link:../pkg-tests-core
       '@types/node':
         specifier: ^18.15.3
         version: 18.15.3
+      expect-type:
+        specifier: ^0.15.0
+        version: 0.15.0
 
 packages:
 

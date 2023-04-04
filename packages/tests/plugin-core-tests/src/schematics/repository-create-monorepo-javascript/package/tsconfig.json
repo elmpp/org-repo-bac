@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "tsconfig",
+    "baseUrl": "../../repositories-create/package/tsconfig",
     "lib": ["es2018", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
@@ -10,7 +10,7 @@
     "noImplicitThis": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "rootDir": "src/",
+    "rootDir": "../../repositories-create/package/src",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
@@ -18,6 +18,6 @@
     "target": "es6",
     "types": ["jasmine", "node"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/*/files/**/*"]
+  "include": ["../../repositories-create/package/src/**/*"],
+  "exclude": ["../../repositories-create/package/src/*/files/**/*"]
 }

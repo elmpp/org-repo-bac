@@ -450,7 +450,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       const staticService = staticServices[serviceName]
       console.log(`staticServices, serviceName :>> `, staticServices, serviceName)
       const serviceIns = await staticService.initialise(options) as Services[SName];
-      console.log(`serviceIns :>> `, serviceIns)
+
       if (!serviceIns) {
         this.debug(
           `loadServiceFactory: service '${staticService.title}' does not instantiate`
@@ -513,7 +513,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       cliOptions: parseOutput,
       logger,
       serviceFactory,
-      workspacePath: getDestinationPath(parseOutput.flags['workspacePath']),
+      workspacePath: this.getWorkspacePath(parseOutput.flags['workspacePath']),
     };
 
     // const loadServices = (plugins: Interfaces.Plugin[]): Bac.Services => {
@@ -578,31 +578,36 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return super.catch(err);
   }
 
+  protected getWorkspacePath = (
+    pathRelOrAbsoluteNative?: string
+  ): AddressPathAbsolute => {
+    if (!pathRelOrAbsoluteNative) {
+      throw new BacError(MessageName.WORKSPACE_CWD_UNRESOLVABLE, `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?`)
+    }
+    let pathAddress: AddressPathAbsolute | AddressPathRelative =
+      addr.parsePath(
+        // pathRelOrAbsoluteNative ?? process.cwd() // do not fall back to cwd() yet - should be explicit until we can detect existing project
+        pathRelOrAbsoluteNative
+      );
+    if (assertIsAddressPathRelative(pathAddress)) {
+      pathAddress = addr.pathUtils.resolve(
+        addr.parsePath(process.cwd()),
+        pathAddress
+      ) as AddressPathAbsolute;
+    }
+
+    // if (!xfs.existsSync(pathAddress.address)) {
+    //   throw new BacError(
+    //     MessageName.OCLIF_ERROR,
+    //     `Config path at '${pathAddress.original}' does not exist, supplied as '${pathRelOrAbsoluteNative}'`
+    //   );
+    // }
+    return pathAddress;
+  };
+
   protected override async finally(_: Error | undefined): Promise<any> {
     // called after run and catch regardless of whether or not the command errored
     return super.finally(_);
   }
 }
 
-const getDestinationPath = (
-  pathRelOrAbsoluteNative?: string
-): AddressPathAbsolute => {
-  let pathAddress: AddressPathAbsolute | AddressPathRelative =
-    addr.parsePath(
-      pathRelOrAbsoluteNative ?? process.cwd()
-    );
-  if (assertIsAddressPathRelative(pathAddress)) {
-    pathAddress = addr.pathUtils.resolve(
-      addr.parsePath(process.cwd()),
-      pathAddress
-    ) as AddressPathAbsolute;
-  }
-
-  // if (!xfs.existsSync(pathAddress.address)) {
-  //   throw new BacError(
-  //     MessageName.OCLIF_ERROR,
-  //     `Config path at '${pathAddress.original}' does not exist, supplied as '${pathRelOrAbsoluteNative}'`
-  //   );
-  // }
-  return pathAddress;
-};

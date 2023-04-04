@@ -17,6 +17,9 @@
       "path": "../pkg-core"
     },
     {
+      "path": "../pkg-error"
+    },
+    {
       "path": "../tests/pkg-tests-core"
     }
   ],
@@ -35,6 +38,12 @@
       ],
       "@business-as-code/core/*": [
         "../pkg-core/src/*"
+      ],
+      "@business-as-code/error": [
+        "../pkg-error/src/index.ts"
+      ],
+      "@business-as-code/error/*": [
+        "../pkg-error/src/*"
       ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"

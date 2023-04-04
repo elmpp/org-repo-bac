@@ -46,10 +46,10 @@ export class YourService {
   }
 
 
-  static somethingElseYour() {
+  static staticFunc1() {
 
   }
-  async somethingelse() {
+  async func1() {
 
   }
 }

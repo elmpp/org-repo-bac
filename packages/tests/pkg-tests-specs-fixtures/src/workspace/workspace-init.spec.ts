@@ -34,7 +34,7 @@ describe("workspace init", () => {
 
       // expect(envVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
       // expect(envVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
-      // expect(envVars.destinationPath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
+      // expect(envVars.workspacePath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
 
       // console.log(`envVars :>> `, envVars)
 
@@ -46,7 +46,7 @@ describe("workspace init", () => {
       // }
 
       // testContext.mockStdStart()
-      // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
+      // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
       const exitCode = await testContext.command(
         [
           "workspace",
@@ -77,7 +77,7 @@ describe("workspace init", () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       // testContext.mockStdStart()
-      // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
+      // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
 
       const configPath = addr.pathUtils.join(
         testContext.envVars.fixturesPath,
@@ -105,11 +105,11 @@ describe("workspace init", () => {
 
       expectIsOk(res);
 
-      console.log(`res.res.tree. :>> `, res.res.tree.getDir("."));
-      console.log(
-        `res.res.tree.read('./BOLLOCKS.md') :>> `,
-        res.res.tree.readText("./BOLLOCKS.md")
-      );
+      // console.log(`res.res.tree. :>> `, res.res.tree.getDir("."));
+      // console.log(
+      //   `res.res.tree.read('./BOLLOCKS.md') :>> `,
+      //   res.res.tree.readText("./BOLLOCKS.md")
+      // );
       expect(res.res.tree.readText("./BOLLOCKS.md")).toEqual("PANTS");
 
       // expect(exitCode).toEqual(0)
@@ -118,19 +118,24 @@ describe("workspace init", () => {
     });
   });
   describe("errors", () => {
-    it("nonexistent command", async () => {
+    it("nonexistent command is handled and added to stderr", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
+
       await persistentTestEnv.test({}, async (testContext) => {
+        testContext.mockStdStart()
         const res = await testContext.command(["does-not-exist"], {
           logLevel: "debug",
         });
+        const outputs = testContext.mockStdEnd()
 
         expectIsFail(res);
+        expect(outputs.stderr).toMatch(`command does-not-exist not found`)
       });
     });
-    it("incorrect command options", async () => {
+    it("incorrect command flags", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
+        testContext.mockStdStart()
         const res = await testContext.command(
           [
             "workspace",
@@ -142,13 +147,16 @@ describe("workspace init", () => {
           ],
           { logLevel: "debug" }
         );
+        const outputs = testContext.mockStdEnd()
 
         expectIsFail(res);
+        expect(outputs.stderr).toMatch(`Error: Nonexistent flag: --blah`)
       });
     });
-    it("incorrect command options", async () => {
+    it("incorrect command args", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
+        testContext.mockStdStart()
         const res = await testContext.command(
           [
             "workspace",
@@ -159,8 +167,29 @@ describe("workspace init", () => {
           ],
           { logLevel: "debug" }
         );
+        const outputs = testContext.mockStdEnd()
 
         expectIsFail(res);
+        expect(outputs.stderr).toMatch(`Error: command workspace:init:nonExistentArg not found`)
+      });
+    });
+    it("--workspacePath is required", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+      await persistentTestEnv.test({}, async (testContext) => {
+        testContext.mockStdStart()
+        const res = await testContext.command(
+          [
+            "workspace",
+            "init",
+            "--name",
+            "something",
+          ],
+          { logLevel: "debug" }
+        );
+        const outputs = testContext.mockStdEnd()
+
+        expectIsFail(res);
+        expect(outputs.stderr).toMatch(`Missing required flag workspacePath`)
       });
     });
   });

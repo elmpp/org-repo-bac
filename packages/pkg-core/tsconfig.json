@@ -1,8 +1,35 @@
 {
   "extends": "../../tsconfig.options.json",
-  "include": ["../../types/**/*", "src/**/*", "*.spec.*", "*.js", "*.ts"],
-  "references": [],
+  "include": [
+    "../../types/**/*",
+    "src/**/*",
+    "*.spec.*",
+    "*.js",
+    "*.ts"
+  ],
+  "references": [
+    {
+      "path": "../pkg-address"
+    },
+    {
+      "path": "../pkg-error"
+    }
+  ],
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@business-as-code/address": [
+        "../pkg-address/src/index.ts"
+      ],
+      "@business-as-code/address/*": [
+        "../pkg-address/src/*"
+      ],
+      "@business-as-code/error": [
+        "../pkg-error/src/index.ts"
+      ],
+      "@business-as-code/error/*": [
+        "../pkg-error/src/*"
+      ]
+    }
   }
 }

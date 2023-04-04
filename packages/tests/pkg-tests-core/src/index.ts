@@ -32,7 +32,7 @@ export type PersistentTestEnv = {
 
 type CreateEphemeralTestEnvVars = {
   /** the ultimate path where content will be created. Defaults to `${basePath}/${testName}` which is the jest test name */
-  destinationPath?: (options: {
+  workspacePath?: (options: {
     testsPath: AddressPathAbsolute;
     testName: string;
   }) => AddressPathAbsolute;
@@ -152,7 +152,6 @@ async function doCreatePersistentTestEnvs(
     createPersistentTestEnvVars.basePath?.() ??
     (addr.parsePath("/tmp/bac-tests") as AddressPathAbsolute);
 
-  console.log(`basePath :>> `, basePath);
   // const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.pathUtils.join(checkoutPath, addr.parsePath('etc/var')) as AddressPathAbsolute
   // const testsPath =
   //   createPersistentTestEnvVars.testsPath?.({basePath}) ??
@@ -200,7 +199,7 @@ async function doCreatePersistentTestEnvs(
 
   const testEnvVars: PersistentTestEnvVars = {
     // destinationPath:
-    //   createTestEnvVars.destinationPath?.({testsPath, testName: expect.getState().currentTestName}) ??
+    //   createTestEnvVars.workspacePath?.({testsPath, testName: expect.getState().currentTestName}) ??
     //   (addr.pathUtils.join(basePath, addr.parsePPath(expect.getState().currentTestName)) as AddressPathAbsolute),
     // savePath: createTestEnvVars.savePath?.({testsPath, cachePath, fixturesPath}),
 
@@ -232,7 +231,7 @@ async function doCreateEphemeralTestEnvVars(
   }
 
   const workspacePath =
-    createEphemeralTestEnvVars.destinationPath?.({
+    createEphemeralTestEnvVars.workspacePath?.({
       testsPath: persistentTestEnvVars.testsPath,
       testName: processNamespace,
     }) ??
@@ -395,7 +394,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
           // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
-          // await oclifCore.execute({type: 'cjs', dir: ephemeralTestEnvVars.destinationPath.original, args})
+          // await oclifCore.execute({type: 'cjs', dir: ephemeralTestEnvVars.workspacePath.original, args})
 
           // In dev mode, always show stack traces
           // oclifCore.settings.debug = development; // this just registers ts-node which isn't swc
@@ -417,11 +416,12 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           let exitCode = 0;
           await oclifCore
-            .run(argsWithAdditional, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
+            .run(argsWithAdditional, {root: cliPath.original, debug: 9}) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((error) => {
-              // console.log(`errorwwwwwwwwwwwww :>> `, error);
-              // oclifCore.Errors.handle(error)
+              // return this.cat
+              // console.error(error);
+              process.stderr.write(error.stack ?? error.message)
               // return 1
               exitCode = error?.oclif?.exit ?? 1;
             });

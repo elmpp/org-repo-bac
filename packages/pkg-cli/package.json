@@ -34,6 +34,7 @@
     "@oclif/plugin-plugins": "^2.3.2"
   },
   "devDependencies": {
+    "@business-as-code/plugin-core-tests": "workspace:*",
     "@types/node": "18.14.2",
     "typescript": "5.0.2"
   },

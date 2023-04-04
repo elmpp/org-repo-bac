@@ -26,4 +26,9 @@ force: true
   {% else -%}
   "private": true
   {% endif -%}
+  {% if type_variant == 'plugin-core' OR type_variant == 'plugin' -%}
+  "oclif": {
+    "commands": "./src/commands",
+  }
+  {% endif -%}
 }

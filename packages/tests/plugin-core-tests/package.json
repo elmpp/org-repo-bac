@@ -1,13 +1,14 @@
 {
-  "name": "@business-as-code/plugin-tests",
+  "name": "@business-as-code/plugin-core-tests",
   "version": "0.0.1",
-  "description": "Publishable plugin package @business-as-code/plugin-tests",
+  "description": "Publishable plugin package @business-as-code/plugin-core-tests",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
   },
+  "files": [],
   "peerDependencies": {
     "@angular-devkit/core": "*",
     "@angular-devkit/schematics": "*"
@@ -21,7 +22,15 @@
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
-    "@business-as-code/tests-core": "workspace:*",
-    "@types/node": "^18.15.3"
+    "@types/node": "^18.15.3",
+    "expect-type": "^0.15.0"
+  },
+  "oclif": {
+      "commands": "./src/commands",
+      "topics": {
+        "bac-tests": {
+          "description": "Commands related to testing of BaC"
+        }
+      }
   }
 }

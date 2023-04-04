@@ -12,6 +12,9 @@
     },
     {
       "path": "../tests/pkg-tests-core"
+    },
+    {
+      "path": "../tests/plugin-core-tests"
     }
   ],
   "compilerOptions": {
@@ -26,12 +29,18 @@
       "@business-as-code/plugin-core-essentials/*": [
         "../plugin-core-essentials/src/*"
       ],
+      "@business-as-code/plugin-core-tests": [
+        "../tests/plugin-core-tests/src/index.ts"
+      ],
+      "@business-as-code/plugin-core-tests/*": [
+        "../tests/plugin-core-tests/src/*"
+      ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"
       ],
       "@business-as-code/tests-core/*": [
         "../tests/pkg-tests-core/src/*"
       ]
-    },
+    }
   }
 }

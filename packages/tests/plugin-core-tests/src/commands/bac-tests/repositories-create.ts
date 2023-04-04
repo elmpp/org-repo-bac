@@ -13,33 +13,39 @@ import {
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
+import path from "path";
 
 
-export class WorkspaceInit extends BaseCommand<typeof WorkspaceInit> {
-  static override description = "Creates an empty workspace";
+export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
+  static override description = "Creates the tests git repositories";
 
-  static override examples = [
-    `$ oex hello friend --from oclif
-hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ];
+//   static override examples = [
+//     `$ oex hello friend --from oclif
+// Produces the repos in the fixtures directory
+// `,
+//   ];
 
   static override flags = {
-    name: Flags.string({
-      char: "n",
-      description: "Workspace name",
-      required: true,
+    // name: Flags.string({
+    //   char: "n",
+    //   description: "Repository name",
+    //   required: true,
+    // }),
+    repositoriesPath: Flags.string({
+      char: "r",
+      description: "Repositories name",
+      required: false,
     }),
     workspacePath: Flags.string({
       char: "w",
       description: "Workspace name",
-      required: true,
-    }),
-    configPath: Flags.string({
-      char: "c",
-      description: "Relative or absolute path to a workspace configuration",
       required: false,
     }),
+    // configPath: Flags.string({
+    //   char: "c",
+    //   description: "Relative or absolute path to a workspace configuration",
+    //   required: false,
+    // }),
   };
 
   static override args = {
@@ -50,61 +56,49 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
   };
 
-  async execute(context: ContextCommand<typeof WorkspaceInit>) {
-    // console.log(`execute:context :>> `, context)
-    // context.services.myService.somethingelse()
+  async execute(context: ContextCommand<typeof BacTestsRepoCreate>) {
 
-    // const { args } = await this.parse(WorkspaceInit);
-    // console.log(
-    //   `context.cliOptions.args.path :>> `,
-    //   context.cliOptions.args.path
-    // );
-    // console.log(`context.cliOptions :>> `, context.cliOptions);
-    // const poo = ParserOutput<T['flags'], T['flags'], T['args']>
-    // type DD = WorkspaceInit['flags']
-    // type DDd = WorkspaceInit['args']
-
-    let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
-    if (!assertIsAddressPath(workspacePath)) {
+    let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
+    if (!assertIsAddressPath(repositoriesPath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
         `Path '${context.cliOptions.args.path.path}' cannot be parsed as a path`
       );
     }
-    if (assertIsAddressPathRelative(workspacePath)) {
-      workspacePath = addr.pathUtils.join(
+    if (assertIsAddressPathRelative(repositoriesPath)) {
+      repositoriesPath = addr.pathUtils.join(
         addr.parsePath(process.cwd()),
-        workspacePath
+        repositoriesPath
       );
     }
-    if (!assertIsAddressPathAbsolute(workspacePath)) {
+    if (!assertIsAddressPathAbsolute(repositoriesPath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
-        `Path '${workspacePath.original}' must be absolute/relative`
+        `Path '${repositoriesPath.original}' must be absolute/relative`
       );
     }
-    if (!(await xfs.existsPromise(workspacePath.address))) {
-      const workspacePathParent = addr.pathUtils.dirname(workspacePath);
-      if (!(await xfs.existsPromise(workspacePathParent.address))) {
+    if (!(await xfs.existsPromise(repositoriesPath.address))) {
+      const repositoriesPathParent = addr.pathUtils.dirname(repositoriesPath);
+      if (!(await xfs.existsPromise(repositoriesPathParent.address))) {
         throw new BacError(
           MessageName.FS_PATH_FORMAT_ERROR,
-          `Parent path '${workspacePathParent.original}' must be present when creating workspace at '${workspacePath.original}'`
+          `Parent path '${repositoriesPathParent.original}' must be present when creating workspace at '${repositoriesPath.original}'`
         );
       }
-      await xfs.mkdirpPromise(workspacePath.address);
+      await xfs.mkdirpPromise(repositoriesPath.address);
     }
-
+// console.log(`repositoriesPath :>> `, repositoriesPath)
+    // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath})
+    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: repositoriesPath})
 
     const res = await schematicsService.run({
-      address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
+      address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
       context,
       options: {
-        name: context.cliOptions.flags.name,
-        // destinationPath: context.cliOptions.flags.workspacePath,
-        configPath: context.cliOptions.flags.configPath,
+        // name: context.cliOptions.flags.name,
+        // // destinationPath: context.cliOptions.flags.workspacePath,
+        // configPath: context.cliOptions.flags.configPath,
         // name: 'cunt',
         // author: 'boloerguie',
 

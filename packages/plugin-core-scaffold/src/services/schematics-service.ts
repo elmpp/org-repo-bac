@@ -242,7 +242,6 @@ export class SchematicsService {
           // Flush the log queue and clean the error state.
           loggingQueue.forEach((log) => context.logger(log, "info"));
         }
-        console.log(`loggingQueue, event :>> `, loggingQueue, event);
         loggingQueue = [];
         error = false;
       }
@@ -377,7 +376,7 @@ export class SchematicsService {
       rootDirectory: this.options.destinationPath.original,
       // rootDirectory: root && getSystemPath(root),
     });
-    console.log(`workflow.engineHost :>> `, workflow.engineHost);
+    // console.log(`workflow.engineHost :>> `, workflow.engineHost);
   }
 
   // context.logger(`registerServicesAsTasks: registering '${context.}' services`)

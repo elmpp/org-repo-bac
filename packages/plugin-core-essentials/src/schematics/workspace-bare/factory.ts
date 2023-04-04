@@ -13,12 +13,7 @@ import {
   mergeWith,
   Rule,
   schematic,
-  SchematicContext,
-  TaskConfigurationGenerator,
-  TaskExecutor,
-  TaskExecutorFactory,
   template,
-  Tree,
   url,
 } from "@angular-devkit/schematics";
 import {
@@ -29,74 +24,10 @@ import {
 import { addr, AddressPathRelative } from "@business-as-code/address";
 import {
   constants,
-  Context,
-  ServiceExecTask,
-  Services,
-  ServicesStatic,
+  wrapServiceAsRule,
   wrapTaskAsRule,
 } from "@business-as-code/core";
-import { Options } from "@business-as-code/core/schematics/tasks/service-exec/options";
 import { Schema } from "./schema";
-
-export const wrapServiceAsRule = <SName extends keyof Services>(
-  options: Options<SName>
-  // ...args: ConstructorParameters<typeof ServiceExecTask>
-  // {
-  //   serviceName,
-  //   context,
-  //   serviceOptions,
-  //   workingDirectory,
-  //   cb,
-  // }: {
-  //   context: Context;
-  //   serviceName: SName;
-  //   workingDirectory: string;
-  //   serviceOptions: Parameters<ServicesStatic[SName]["initialise"]>;
-  //   cb: ({
-  //     service,
-  //   }: {
-  //     service: Services[SName];
-  //   }) => ReturnType<TaskExecutor<object>>
-  // },
-) => {
-  // // need to shimmy in here a Task
-  // const taskShim: TaskConfigurationGenerator<object> = {
-  //   toConfiguration() {
-  //     return {
-  //       name: serviceName,
-  //       // dependencies: Array<TaskId>,
-  //       options: {},
-  //     }
-  //   }
-  // }
-console.log(`args :>> `, options)
-  const serviceExecTask = new ServiceExecTask<SName>(options);
-  // const serviceExecTask = new ServiceExecTask(workingDirectory, {
-  //   cb,
-  //   serviceName,
-  //   serviceOptions,
-  // });
-
-  // // need to register the cb here somehow ¯\_(ツ)_/¯
-  // const taskExecutor: TaskExecutorFactory<Parameters<ServicesStatic[SName]['initialise']>> =
-  // {
-  //   name: serviceName,
-  //   create: (options) => Promise.resolve().then(() => {
-  //     const service = context.serviceFactory(serviceName, serviceOptions)
-  //     return service as unknown as TaskExecutor
-  //   }),
-  // };
-  // engineHost.registerTaskExecutor(taskExecutor, {
-  //   rootDirectory: root && getSystemPath(root),
-  // });
-  // engineHost.registerTaskExecutor(BuiltinTaskExecutor.RepositoryInitializer, {
-  //   rootDirectory: root && getSystemPath(root),
-  // });
-
-  const task = wrapTaskAsRule(serviceExecTask);
-  console.log(`task :>> `, task);
-  return task;
-};
 
 export default function (options: Schema): Rule {
   return (_tree, context) => {
@@ -133,14 +64,13 @@ export default function (options: Schema): Rule {
       wrapServiceAsRule(
         {
           serviceName: "myService",
-          serviceOptions: {context: options._bacContext, workingPath: addr.pathUtils.dot},
           cb: async ({ service }) => {
-            console.log(`service, serviceName, workingDirectory :>> `, service);
-            await service.doGitStuff({someRandomProps: 'bollocks'})
+            await service.func1({ someRandomProps: "bollocks" });
           },
-          workingPath: addr.parsePath('.') as AddressPathRelative,
+          workingPath: addr.parsePath(".") as AddressPathRelative,
           context: options._bacContext,
         },
+        context
       ),
       wrapTaskAsRule(
         new RepositoryInitializerTask("repo", {
