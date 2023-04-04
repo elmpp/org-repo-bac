@@ -4,10 +4,10 @@
   "title": "Schematic Options Schema",
   "type": "object",
   "properties": {
-    "destinationPath": {
-      "type": "string",
-      "description": "The absolute path where to scaffold to"
-    },
+    // "destinationPath": {
+    //   "type": "string",
+    //   "description": "The absolute path where to scaffold to"
+    // },
     "name": {
       "type": "string",
       "description": "The package name for the new schematic"
@@ -26,5 +26,5 @@
       "description": "Allows BaC to be built from a local registry if required"
     }
   },
-  "required": ["destinationPath", "name"]
+  "required": ["name"]
 }

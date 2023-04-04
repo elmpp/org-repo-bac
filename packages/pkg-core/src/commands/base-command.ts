@@ -1,16 +1,23 @@
 // oclif custom base command docs - https://tinyurl.com/2n3wch65
 // advanced BaseCommand Salesforce example - https://tinyurl.com/2lexro75
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { addr, AddressPathAbsolute, AddressPathRelative, assertIsAddressPathRelative } from "@business-as-code/address";
 import { Command, Config, Flags, Interfaces, Performance } from "@oclif/core";
+import { BacError, MessageName } from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import { fileURLToPath } from "url";
 import {
+  assertIsOk,
+  Context,
   ContextCommand,
-  ContextPrivate,
   LogLevel,
+  Result,
+  ServiceInitialiseOptions,
   Services,
-  ServiceStaticInterface
+  ServicesStatic,
+  ValueOf
 } from "../__types__";
+import path from 'path'
 // import {Interfaces, Command} from '@oclif/core'
 
 // type ServiceMap = Global['Bac'].Services
@@ -157,7 +164,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     plugin,
   }: {
     plugin: Interfaces.Plugin;
-  }): Promise<ServiceStaticInterface[]> {
+  }): Promise<Partial<ServicesStatic>> {
+  // }): Promise<ServiceStaticInterface[]> {
     const marker = Performance.mark(
       `plugin.loadServicesForPlugin#${plugin.name}`,
       { plugin: plugin.name }
@@ -174,7 +182,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       // return Object.values(module).find((anExport: any) => typeof anExport.title === 'function')
     };
 
-    const loadPlugin = async (packagePath: AddressPathAbsolute) => {
+    const loadPlugin = async (packagePath: AddressPathAbsolute): Promise<ValueOf<ServicesStatic>[]> => {
       let m;
       try {
         // const p = path.join(plugin.pjson.oclif.commands, ...id.split(':'))
@@ -196,7 +204,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
       const services = findExportFromModule(m);
       // console.log(`services :>> `, services)
-      if (!services) return;
+      if (!services) return [];
 
       // cmd.id = id
       // cmd.plugin = this
@@ -270,9 +278,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // const servicePaths = findServicePaths()
     // const pluginServices = await loadServicePaths(servicePaths)
 
-    const services = await loadPlugin(
+    const services = (await loadPlugin(
       addr.parseAsType(plugin.root, "portablePathPosixAbsolute")
-    );
+    )).reduce((acc, staticService) => ({...acc, [staticService.title]: staticService}), {} as Partial<ServicesStatic>)
+
+
     // console.log(`services :>> `, services)
     // const cmd = await fetch()
     // if (!cmd && opts.must) error(`command ${id} not found`)
@@ -358,14 +368,65 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   //   return pluginServices
   // }
 
-  async loadServices({
+  // async loadServiceFactory({
+  //   plugins,
+  //   context,
+  // }: {
+  //   plugins: Interfaces.Plugin[];
+  //   context: ContextPrivate;
+  // }): Promise<Services> {
+  //   const res = await plugins.reduce(
+  //     async (accum, plugin) => {
+  //       const acc = await accum
+  //       const staticPluginServices = await this.loadServicesForPlugin({
+  //         plugin,
+  //       });
+  //       if (!staticPluginServices) {
+  //         return acc;
+  //       }
+
+  //       // console.log(`staticPluginServices :>> `, staticPluginServices, plugin)
+
+  //       const pluginServices = await staticPluginServices.reduce<
+  //         Promise<Services>
+  //       >(async (accum, sp) => {
+  //         const acc = await accum;
+  //         const serviceIns = await sp.initialise(context);
+  //         if (!serviceIns) {
+  //           this.debug(
+  //             `loadServices: service '${sp.title}' does not instantiate`
+  //           );
+  //           return acc;
+  //         }
+  //         this.debug(`loadServices: service '${sp.title}' instantiated`);
+  //         acc[sp.title as keyof Services] = serviceIns as any; // string key not relatable to instance
+  //         return acc;
+  //       }, Promise.resolve({}) as Promise<Services>);
+
+  //       return {
+  //         ...acc,
+  //         // ...(pluginServices.reduce((acc, ps) => ({...acc, ...{ps.title, ps}))),
+  //         ...pluginServices,
+  //       };
+  //     },
+  //     Promise.resolve({})
+  //   ) as Services;
+
+  //   // console.log(`res :>> `, res)
+
+  //   return res;
+  // }
+  async loadServiceFactory({
     plugins,
-    context,
+    // context,
+    logger,
   }: {
     plugins: Interfaces.Plugin[];
-    context: ContextPrivate;
-  }): Promise<Services> {
-    const res = await plugins.reduce(
+    logger: Context['logger']
+    // context: Context;
+  }): Promise<Context['serviceFactory']> {
+
+    const staticServices = await plugins.reduce(
       async (accum, plugin) => {
         const acc = await accum
         const staticPluginServices = await this.loadServicesForPlugin({
@@ -375,41 +436,36 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
           return acc;
         }
 
-        // console.log(`staticPluginServices :>> `, staticPluginServices, plugin)
-
-        const pluginServices = await staticPluginServices.reduce<
-          Promise<Services>
-        >(async (accum, sp) => {
-          const acc = await accum;
-          const serviceIns = await sp.initialise(context);
-          if (!serviceIns) {
-            this.debug(
-              `loadServices: service '${sp.title}' does not instantiate`
-            );
-            return acc;
-          }
-          this.debug(`loadServices: service '${sp.title}' instantiated`);
-          acc[sp.title as keyof Services] = serviceIns as any; // string key not relatable to instance
-          return acc;
-        }, Promise.resolve({}) as Promise<Services>);
-
         return {
           ...acc,
-          // ...(pluginServices.reduce((acc, ps) => ({...acc, ...{ps.title, ps}))),
-          ...pluginServices,
+          ...staticPluginServices,
         };
       },
       Promise.resolve({})
-    ) as Services;
+    ) as ServicesStatic;
 
     // console.log(`res :>> `, res)
 
-    return res;
+    const factory = async <SName extends keyof Services>(serviceName: SName, options: ServiceInitialiseOptions): Promise<Services[SName]> => {
+      const staticService = staticServices[serviceName]
+      console.log(`staticServices, serviceName :>> `, staticServices, serviceName)
+      const serviceIns = await staticService.initialise(options) as Services[SName];
+      console.log(`serviceIns :>> `, serviceIns)
+      if (!serviceIns) {
+        this.debug(
+          `loadServiceFactory: service '${staticService.title}' does not instantiate`
+        );
+        throw new BacError(MessageName.SERVICE_NOT_FOUND, `Service '${serviceName}' not found. Ensure you have installed relevant plugins`)
+      }
+      this.debug(`loadServiceFactory: service '${staticService.title}' instantiated`)
+      return serviceIns
+    }
+    factory['availableServices'] = Object.keys(staticServices) as (keyof ServicesStatic)[]
+    return factory
   }
 
   async run(): Promise<void> {
     const parseOutput = await this.parse<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>();
-
 
 
     // oclif has kindly aggregated all our plugins for us. We should be able to scavenge our additional plugin
@@ -422,28 +478,42 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // console.log(`oclifConfig.plugins :>> `, oclifConfig.plugins)
 
     // const oclifCommands = oclifConfig.commands
-    const contextPrivate: ContextPrivate = {
-      // cliOptions: parseOutput,
-      oclifConfig,
-      logger: (msg: string, level: LogLevel = "info") => {
-        if (level === "debug") {
-          return this.debug(msg);
-        }
-        this.log(msg);
-      },
-    };
+    // const contextPrivate: Context = {
+    //   // cliOptions: parseOutput,
+    //   // oclifConfig,
+    //   logger: (msg: string, level: LogLevel = "info") => {
+    //     if (level === "debug") {
+    //       return this.debug(msg);
+    //     }
+    //     this.log(msg);
+    //   },
+    // };
 
-    const services = await this.loadServices({
+    const logger: Context['logger'] = (msg: string, level: LogLevel = "info") => {
+      if (level === "debug") {
+        return this.debug(msg);
+      }
+      this.log(msg);
+    }
+
+    // const services = await this.loadServices({
+    //   plugins: oclifConfig.plugins,
+    //   context: contextPrivate,
+    // });
+    const serviceFactory = await this.loadServiceFactory({
       plugins: oclifConfig.plugins,
-      context: contextPrivate,
-    });
+      logger,
+      // context: contextPrivate,
+    })
 
     // console.log(`services :>> `, services);
 
     const context: ContextCommand<T> = {
+      oclifConfig,
       cliOptions: parseOutput,
-      ...contextPrivate,
-      services,
+      logger,
+      serviceFactory,
+      workspacePath: getDestinationPath(parseOutput.flags['workspacePath']),
     };
 
     // const loadServices = (plugins: Interfaces.Plugin[]): Bac.Services => {
@@ -459,14 +529,50 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // console.log(`args, commandInstance :>> `, args, commandInstance)
     // const services =
 
-    return this.execute(context);
+    const res = await this.execute(context);
+
+    if (!assertIsOk(res)) {
+      const err = res.res
+      const oclifError = {
+        ...err,
+        exitCode: err?.extra?.exitCode ?? 1, // oclif understands error.exitCode - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L333
+      }
+      // console.error(`oclifError.message :>> `, oclifError.message)
+      process.exitCode = oclifError.exitCode
+      // this.error(oclifError, {exit: oclifError.exitCode})
+      throw oclifError // will end up in this.catch()
+    }
+    return
   }
 
-  abstract execute(context: ContextCommand<T>): Promise<void>;
+  abstract execute(context: ContextCommand<T>): Promise<Result<unknown, BacError<MessageName, any>>>;
 
   protected override async catch(
     err: Error & { exitCode?: number }
   ): Promise<any> {
+
+    /** super.catch doesn't seem to log errors outside of json so handle this specifically */
+    if (!this.jsonEnabled()) {
+      console.error(err)
+    }
+
+    // process.exitCode = process.exitCode ?? err.exitCode ?? 1
+    // if (this.jsonEnabled()) {
+    //   this.logJson(this.toErrorJson(err))
+    // } else {
+    //   if (!err.message) throw err
+    //   try {
+
+    //     // console.log(`err :>> `, err)
+    //     // this.logToStderr(err.message)
+    //     // this.log(err.message)
+    //     // console.error(err)
+    //     // ux.action.stop(chalk.bold.red('!'))
+    //   } catch {}
+
+    //   throw err
+    // }
+
     // add any custom logic to handle errors from the command
     // or simply return the parent class error handling
     return super.catch(err);
@@ -477,3 +583,26 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return super.finally(_);
   }
 }
+
+const getDestinationPath = (
+  pathRelOrAbsoluteNative?: string
+): AddressPathAbsolute => {
+  let pathAddress: AddressPathAbsolute | AddressPathRelative =
+    addr.parsePath(
+      pathRelOrAbsoluteNative ?? process.cwd()
+    );
+  if (assertIsAddressPathRelative(pathAddress)) {
+    pathAddress = addr.pathUtils.resolve(
+      addr.parsePath(process.cwd()),
+      pathAddress
+    ) as AddressPathAbsolute;
+  }
+
+  // if (!xfs.existsSync(pathAddress.address)) {
+  //   throw new BacError(
+  //     MessageName.OCLIF_ERROR,
+  //     `Config path at '${pathAddress.original}' does not exist, supplied as '${pathRelOrAbsoluteNative}'`
+  //   );
+  // }
+  return pathAddress;
+};

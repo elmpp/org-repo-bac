@@ -1,14 +1,29 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { logging } from '@angular-devkit/core';
-import { createConsoleLogger } from '@angular-devkit/core/node';
-import { Collection, UnsuccessfulWorkflowExecution } from '@angular-devkit/schematics';
+import { logging } from "@angular-devkit/core";
+import { createConsoleLogger } from "@angular-devkit/core/node";
+import {
+  Collection,
+  TaskExecutorFactory,
+  UnsuccessfulWorkflowExecution,
+} from "@angular-devkit/schematics";
 import { NodeWorkflow } from "@angular-devkit/schematics/tools";
-import { addr, AddressPackageScaffoldIdent, AddressPackageScaffoldIdentString, AddressPathAbsolute } from "@business-as-code/address";
+import {
+  addr,
+  AddressPackageScaffoldIdent,
+  AddressPackageScaffoldIdentString,
+  AddressPathAbsolute,
+  AddressPathRelative,
+} from "@business-as-code/address";
+import {
+  Context,
+  Plugin,
+  Result,
+  ServiceInitialiseOptions,
+} from "@business-as-code/core";
+import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
-import { Context, ContextCommand, ContextPrivate, Plugin, Result } from "@business-as-code/core";
-import { BacError, MessageName } from '@business-as-code/error';
-import * as ansiColors from 'ansi-colors';
-import path from 'path';
+import * as ansiColors from "ansi-colors";
+import path from "path";
 
 declare global {
   namespace Bac {
@@ -24,65 +39,120 @@ declare global {
   // }
 }
 
-type SchematicsMap = Map<AddressPackageScaffoldIdentString, {
-  plugin: Plugin,
-  collection: Collection<any, any>,
-  collectionPath: AddressPathAbsolute,
-  address: AddressPackageScaffoldIdent
-}>
+type SchematicsMap = Map<
+  AddressPackageScaffoldIdentString,
+  {
+    plugin: Plugin;
+    collection: Collection<any, any>;
+    collectionPath: AddressPathAbsolute;
+    address: AddressPackageScaffoldIdent;
+  }
+>;
 
 const colors = ansiColors.create();
 
+// type Options = { context: Context; destinationPath: AddressPathAbsolute };
+
 export class SchematicsService {
   static title = "schematics";
+  // options: Options;
 
-  static async initialise(context: ContextPrivate) {
-    const ins = new SchematicsService();
-    await ins.initialise(context)
-    return ins
+  static async initialise(options: ServiceInitialiseOptions) {
+    const ins = new SchematicsService(options);
+    await ins.initialise(options);
+    return ins;
   }
 
-  schematicsMap: SchematicsMap = new Map
+  schematicsMap: SchematicsMap = new Map();
   // @ts-ignore - is assigned via initialise
-  schematicsLogger: logging.Logger
+  schematicsLogger: logging.Logger;
 
-  // constructor(context: ContextPrivate) {
-  //   this.setupSchematics
-  // }
+  // @ts-expect-error:
+  private workflow: NodeWorkflow;
 
-  protected async initialise(context: ContextPrivate) {
-    this.setupSchematics(context)
+  constructor(protected options: ServiceInitialiseOptions) {
+    // this.options = options;
   }
 
-  async run({address, context, options, dryRun = true, force = false, destinationPath}: {address: AddressPackageScaffoldIdentString, context: Context, destinationPath: AddressPathAbsolute, options: Record<PropertyKey, unknown>, dryRun?: boolean, force?: boolean}): Promise<Result<AddressPathAbsolute, BacError<MessageName.SCHEMATICS_INVALID_ADDRESS> | BacError<MessageName.SCHEMATICS_NOT_FOUND> | BacError<MessageName.SCHEMATICS_ERROR>>> {
+  protected async initialise(_options: ServiceInitialiseOptions) {
+    this.workflow = this.createWorkflow({
+      dryRun: false,
+      force: true,
+      destinationPath: this.options.context.workspacePath,
+    });
+    this.setupSchematics({ workflow: this.workflow });
+    this.registerTasks({ workflow: this.workflow });
+    // this.registerServicesAsTasks({context, workflow: this.workflow});
+  }
 
+  async run({
+    address,
+    context,
+    options,
+    dryRun = true,
+    force = false,
+    workingPath,
+  }: // destinationPath,
+  {
+    address: AddressPackageScaffoldIdentString;
+    context: Context;
+    // destinationPath: AddressPathAbsolute;
+    options: Record<PropertyKey, unknown>;
+    dryRun?: boolean;
+    force?: boolean;
+    workingPath: AddressPathRelative;
+  }): Promise<
+    Result<
+      AddressPathAbsolute,
+      | BacError<MessageName.SCHEMATICS_INVALID_ADDRESS>
+      | BacError<MessageName.SCHEMATICS_NOT_FOUND>
+      | BacError<MessageName.SCHEMATICS_ERROR>
+    >
+  > {
     // console.log(` :>> Available: '${Array.from(this.schematicsMap.keys()).map(schematicPath => schematicPath).join(', ')}'`)
 
-    if (!xfs.existsPromise(destinationPath.address)) {
+    if (!xfs.existsPromise(this.options.context.workspacePath.address)) {
       return {
         success: false,
-        res: new BacError(MessageName.SCHEMATICS_ERROR, `DestinationPath '${destinationPath.original}' must exist before scaffolding`)
-      }
+        res: new BacError(
+          MessageName.SCHEMATICS_ERROR,
+          `DestinationPath '${this.options.destinationPath.original}' must exist before scaffolding`
+        ),
+      };
     }
 
-    const schematicPath = addr.parseAsType(address, 'scaffoldIdentPackage', {strict: false})
+    const schematicPath = addr.parseAsType(address, "scaffoldIdentPackage", {
+      strict: false,
+    });
     if (!schematicPath) {
       return {
-        res: new BacError(MessageName.SCHEMATICS_INVALID_ADDRESS, `Invalid schematic address '${address}'`),
+        res: new BacError(
+          MessageName.SCHEMATICS_INVALID_ADDRESS,
+          `Invalid schematic address '${address}'`
+        ),
         success: false,
-      }
+      };
     }
 
-    const schematicMapEntry = this.schematicsMap.get(schematicPath.addressNormalized)
+    const schematicMapEntry = this.schematicsMap.get(
+      schematicPath.addressNormalized
+    );
 
     if (!schematicMapEntry) {
       return {
-        res: new BacError(MessageName.SCHEMATICS_NOT_FOUND, `Schematic not found at address '${schematicPath.original}'. Available: '${Array.from(this.schematicsMap.keys()).map(schematicPath => schematicPath).join(', ')}'`),
+        res: new BacError(
+          MessageName.SCHEMATICS_NOT_FOUND,
+          `Schematic not found at address '${
+            schematicPath.original
+          }'. Available: '${Array.from(this.schematicsMap.keys())
+            .map((schematicPath) => schematicPath)
+            .join(", ")}'`
+        ),
         success: false,
-      }
+      };
     }
 
-    const debug = true // @todo - make available from oclif
+    const debug = true; // @todo - make available from oclif
     // const dryRunPresent = true;  // @todo - make available from oclif
     // const dryRun = dryRunPresent ? true : debug; // @todo - make available from oclif
 
@@ -100,7 +170,13 @@ export class SchematicsService {
     let loggingQueue: string[] = [];
     let error = false;
 
-    const workflow = this.createWorkflow({context, dryRun, force, destinationPath})
+    const workflow = this.workflow;
+    // const workflow = this.createWorkflow({
+    //   context,
+    //   dryRun,
+    //   force,
+    //   destinationPath,
+    // });
 
     /**
      * Logs out dry run events.
@@ -127,7 +203,7 @@ export class SchematicsService {
             event.description == "alreadyExist"
               ? "already exists"
               : "does not exist";
-          context.logger(`ERROR! ${eventPath} ${desc}.`, 'error');
+          context.logger(`ERROR! ${eventPath} ${desc}.`, "error");
           break;
         case "update":
           loggingQueue.push(
@@ -164,16 +240,18 @@ export class SchematicsService {
       if (event.kind == "workflow-end" || event.kind == "post-tasks-start") {
         if (!error) {
           // Flush the log queue and clean the error state.
-          loggingQueue.forEach((log) => context.logger(log, 'info'));
+          loggingQueue.forEach((log) => context.logger(log, "info"));
         }
-console.log(`loggingQueue, event :>> `, loggingQueue, event)
+        console.log(`loggingQueue, event :>> `, loggingQueue, event);
         loggingQueue = [];
         error = false;
       }
     });
 
     // Show usage of deprecated options
-    workflow.registry.useXDeprecatedProvider((msg) => context.logger(msg, 'warn'));
+    workflow.registry.useXDeprecatedProvider((msg) =>
+      context.logger(msg, "warn")
+    );
 
     // const _ = context.cliOptions.argv // @todo - make available from oclif onwards - https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L424
     // // Pass the rest of the arguments as the smart default "argv". Then delete it.
@@ -186,13 +264,16 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
     //   workflow.registry.usePromptProvider(_createPromptProvider());
     // }
 
-    context.logger(`Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${destinationPath.original}'`, 'info')
+    context.logger(
+      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.destinationPath.original}'`,
+      "info"
+    );
     // console.log(`schematicMapEntry.address.parts.params.namespace :>> `, schematicMapEntry.address.parts.params.get('namespace'))
     // console.log(`schematicMapEntry.address :>> `, schematicMapEntry.address)
 
     // console.log(`context :>> `, context)
 
-    const {services: _services, ...contextPrivate} = context
+    // const {...contextPrivate} = context
 
     /**
      *  Execute the workflow, which will report the dry run events, run the tasks, and complete
@@ -206,11 +287,11 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
       await workflow
         .execute({
           collection: schematicMapEntry.collectionPath.original,
-          schematic: schematicMapEntry.address.parts.params.get('namespace')!,
+          schematic: schematicMapEntry.address.parts.params.get("namespace")!,
           // options,
           options: {
             ...options,
-            bacContext: contextPrivate,
+            _bacContext: context,
           },
           // collection: collectionName,
           // schematic: schematicName,
@@ -223,39 +304,47 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
         .toPromise();
 
       if (nothingDone) {
-        context.logger("Nothing to be done.", 'info');
+        context.logger("Nothing to be done.", "info");
       } else if (dryRun) {
-        context.logger(
-          `Dry run enabled. No files written to disk.`,
-          'info'
-        );
+        context.logger(`Dry run enabled. No files written to disk.`, "info");
       }
 
-      return {res: destinationPath, success: true};
+      return { res: this.options.context.workspacePath, success: true };
     } catch (err) {
+      let message: string
       if (err instanceof UnsuccessfulWorkflowExecution) {
         // "See above" because we already printed the error.
-        context.logger("The Schematic workflow failed. See above.", 'error');
+        message = "The Schematic workflow failed. See above."
+        // context.logger("The Schematic workflow failed. See above.", "error");
       } else if (debug && err instanceof Error) {
-        context.logger(`An error occured:\n${err.stack}`, 'error');
+        message = `An error occured:\n${err.stack}`
       } else {
-        context.logger(`Error: ${err instanceof Error ? err.message : err}`, 'error');
+        message = `Error: ${err instanceof Error ? err.message : err}`
       }
 
       return {
-        res: new BacError(MessageName.SCHEMATICS_ERROR, `The Schematic workflow failed. See above. Supplied path: '${schematicPath.original}'`),
+        res: new BacErrorWrapper(
+          MessageName.SCHEMATICS_ERROR,
+          `${message}. Supplied path: '${schematicPath.original}'`,
+          err as Error
+        ),
         success: false,
-      }
+      };
     }
-
-
   }
 
-  protected createWorkflow({context, dryRun = true, force = false, destinationPath}: {context: ContextPrivate | Context, dryRun?: boolean, force?: boolean, destinationPath?: AddressPathAbsolute}): NodeWorkflow {
-
-    const scaffoldBase = path.resolve(__dirname, '../..')
-    const cliRoot = process.cwd() // todo make available through context
-    const workflowRoot = destinationPath?.original ?? process.cwd()
+  protected createWorkflow({
+    dryRun = true,
+    force = false,
+    destinationPath,
+  }: {
+    dryRun?: boolean;
+    force?: boolean;
+    destinationPath?: AddressPathAbsolute;
+  }): NodeWorkflow {
+    const scaffoldBase = path.resolve(__dirname, "../..");
+    const cliRoot = process.cwd(); // todo make available through context
+    const workflowRoot = destinationPath?.original ?? process.cwd();
     // const pluginRoots = context.oclifConfig.plugins.filter(p => p.type === 'core').map(p => p.root)
 
     const workflow = new NodeWorkflow(workflowRoot, {
@@ -264,36 +353,120 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
       // resolvePaths: [process.cwd(), scaffoldBase],
       resolvePaths: [scaffoldBase, cliRoot], // not sure what this does just yet
       schemaValidation: true,
-      packageManager: 'pnpm', // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L163
+      packageManager: "pnpm", // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L163
     });
-    return workflow
+    return workflow;
   }
 
-  // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L220
-  protected async setupSchematics(context: ContextPrivate) {
+  protected async registerTasks({ workflow }: { workflow: NodeWorkflow }) {
+    this.options.context.logger(`registerServicesAsTasks: registering tasks`);
 
-    const verbose = true // @todo - make available from oclif
+    const taskExecutorFactory: TaskExecutorFactory<{ rootDirectory: string }> = // very vanilla factory-level params; we'll be creating the services per usage
+    // Parameters<ServicesStatic[typeof serviceName]["initialise"]>
+      {
+        name: "service-exec",
+        create: (options) =>
+          import("@business-as-code/core").then((mod) =>
+            mod.serviceExecExecutor(options!)
+          ),
+        // create: (options) => import('../schematics/tasks/service-exec/executor').then((mod) => mod.default(options!)),
+      };
+
+    workflow.engineHost.registerTaskExecutor(taskExecutorFactory, {
+      // context,
+      rootDirectory: this.options.destinationPath.original,
+      // rootDirectory: root && getSystemPath(root),
+    });
+    console.log(`workflow.engineHost :>> `, workflow.engineHost);
+  }
+
+  // context.logger(`registerServicesAsTasks: registering '${context.}' services`)
+  // need to register the cb here somehow ¯\_(ツ)_/¯
+  // }
+
+  // /**
+  //  In order to integrate services with schematics, we can register the services as tasks
+  //  */
+  // protected async registerServicesAsTasks({context, workflow, destinationPath}: {context: Context, workflow: NodeWorkflow, destinationPath: AddressPathAbsolute}) {
+
+  //   const registerServiceAsTask = ({
+  //     serviceName,
+  //   }: {
+  //     serviceName: keyof ServicesStatic;
+  //   }) => {
+  //     context.logger(
+  //       `registerServicesAsTasks: registering service '${serviceName}' as schematic task`
+  //     );
+
+  //     const taskExecutor: TaskExecutorFactory<
+  //       Parameters<ServicesStatic[typeof serviceName]["initialise"]>
+  //     > = {
+  //       name: serviceName,
+  //       create: (serviceOptions: Parameters<ServicesStatic[typeof serviceName]["initialise"]>) =>
+  //         Promise.resolve().then(() => {
+  //           return context.serviceFactory(serviceName, serviceOptions)
+  //         }).then((service) => {
+  //           console.log(`:>> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH`, serviceOptions);
+
+  //           const executor: TaskExecutor = async (options) => {
+  //             console.log(`WITHIN EXECUTOR '${serviceName}' options, serviceOptions, service :>> `, options, serviceOptions, service)
+  //           }
+  //           return executor
+  //         })
+  //           // const service = context.serviceFactory(serviceName, serviceOptions);
+  //           // return service as unknown as TaskExecutor;
+  //         // Promise.resolve().then(() => {
+  //         //   console.log(`:>> HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH`, serviceOptions);
+
+  //         //   const service = context.serviceFactory(serviceName, serviceOptions);
+  //         //   const executor: TaskExecutor = async (options) => {
+  //         //     console.log(`WITHIN EXECUTOR '${serviceName}' options, service :>> `, options, service)
+  //         //   }
+  //         //   return executor
+  //         //   // return service as unknown as TaskExecutor;
+  //         // }),
+  //     };
+  //     workflow.engineHost.registerTaskExecutor(taskExecutor, [{ context, destinationPath
+  //       // rootDirectory: root && getSystemPath(root),
+  //     }]);
+  //   };
+
+  //   for (const serviceName of context.serviceFactory.availableServices) {
+  //     registerServiceAsTask({serviceName})
+  //   }
+
+  //   console.log(`workflow.engineHost :>> `, workflow.engineHost)
+
+  //   // context.logger(`registerServicesAsTasks: registering '${context.}' services`)
+  //   // need to register the cb here somehow ¯\_(ツ)_/¯
+  // }
+
+  // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L220
+  protected async setupSchematics({ workflow }: { workflow: NodeWorkflow }) {
+    const verbose = true; // @todo - make available from oclif
     // const debug = true // @todo - make available from oclif
     // const dryRunPresent = true;  // @todo - make available from oclif
     // const dryRun = dryRunPresent ? true : debug; // @todo - make available from oclif
     // const force = true; // @todo - make available from oclif
     // const allowPrivate = true; // @todo - make available from oclif
 
-
     // const colors = ansiColors.create();
 
-
     /** @todo - integrate with oclif somehow */
-    const setupLogger = (): logging.Logger  => {
-
+    const setupLogger = (): logging.Logger => {
       /** Create the DevKit Logger used through the CLI. */
-      const logger = createConsoleLogger(verbose ?? true, process.stdout, process.stderr, {
-        info: (s) => s,
-        debug: (s) => s,
-        warn: (s) => colors.bold.yellow(s),
-        error: (s) => colors.bold.red(s),
-        fatal: (s) => colors.bold.red(s),
-      });
+      const logger = createConsoleLogger(
+        verbose ?? true,
+        process.stdout,
+        process.stderr,
+        {
+          info: (s) => s,
+          debug: (s) => s,
+          warn: (s) => colors.bold.yellow(s),
+          error: (s) => colors.bold.red(s),
+          fatal: (s) => colors.bold.red(s),
+        }
+      );
       // const logger = createConsoleLogger(verbose ?? true, process.stdout, process.stderr, {
       //   info: (s) => s,
       //   debug: (s) => s,
@@ -301,9 +474,9 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
       //   error: (s) => colors.bold.red(s),
       //   fatal: (s) => colors.bold.red(s),
       // });
-      return logger
-    }
-    const logger = setupLogger()
+      return logger;
+    };
+    const logger = setupLogger();
 
     /** Create the workflow scoped to the working directory that will be executed with this run. */
     // const scaffoldBase = path.resolve(__dirname, '../..')
@@ -316,36 +489,55 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
     // console.log(`pluginRoots :>> `, pluginRoots)
     // console.log(`context.cliOptions :>> `, context.cliOptions)
 
-    const workflow = this.createWorkflow({context})
-// console.log(`workflow :>> `, workflow)
+    // const workflow = this.createWorkflow({ context });
+    // console.log(`workflow :>> `, workflow)
 
-
-    function findAllSchematics({workflow, context, logger}: {workflow: NodeWorkflow, context: ContextPrivate, logger: logging.Logger}): SchematicsMap {
+    function findAllSchematics({
+      workflow,
+      context,
+      logger,
+    }: {
+      workflow: NodeWorkflow;
+      context: Context;
+      logger: logging.Logger;
+    }): SchematicsMap {
       try {
         // const cliCollection = workflow.engine.createCollection(path.join(cliRoot, 'collection.json'));
 
         return context.oclifConfig.plugins.reduce((acc, plugin) => {
-          const collectionPath = addr.pathUtils.join(addr.parsePath(plugin.root), addr.parsePath('collection.json')) as AddressPathAbsolute
+          const collectionPath = addr.pathUtils.join(
+            addr.parsePath(plugin.root),
+            addr.parsePath("collection.json")
+          ) as AddressPathAbsolute;
           try {
-            const collection = workflow.engine.createCollection(collectionPath.original);
+            const collection = workflow.engine.createCollection(
+              collectionPath.original
+            );
             if (collection) {
-              for (const publicSchematicName of collection.listSchematicNames(false)) {
-                const addressTemplate = addr.parseAsType(`${plugin.name}#namespace=${publicSchematicName}`, 'scaffoldIdentPackage')
+              for (const publicSchematicName of collection.listSchematicNames(
+                false
+              )) {
+                const addressTemplate = addr.parseAsType(
+                  `${plugin.name}#namespace=${publicSchematicName}`,
+                  "scaffoldIdentPackage"
+                );
                 acc.set(addressTemplate.addressNormalized, {
                   plugin,
                   collection,
                   collectionPath,
                   address: addressTemplate,
-                })
+                });
               }
             }
-          }
-          catch (err) {
-            context.logger(`schematic collection path '${collectionPath.original}' unresolvable`, 'debug')
+          } catch (err) {
+            context.logger(
+              `schematic collection path '${collectionPath.original}' unresolvable`,
+              "debug"
+            );
             // unresolvable collection
           }
-          return acc
-        }, new Map as SchematicsMap)
+          return acc;
+        }, new Map() as SchematicsMap);
 
         // // can use the cli collection as the base 'requester' within schematics..
         // console.log(`cliCollection :>> `, cliCollection, cliCollection._engine._host)
@@ -355,12 +547,16 @@ console.log(`loggingQueue, event :>> `, loggingQueue, event)
         // logger.info(collection.listSchematicNames().join('\n'));
       } catch (error) {
         logger.fatal(error instanceof Error ? error.message : `${error}`);
-        throw error
+        throw error;
       }
     }
 
-    this.schematicsMap = findAllSchematics({workflow, context, logger})
-    this.schematicsLogger = logger
+    this.schematicsMap = findAllSchematics({
+      workflow,
+      context: this.options.context,
+      logger,
+    });
+    this.schematicsLogger = logger;
     // workflow = workflow
 
     // /** If the user wants to list schematics, we simply show all the schematic names. */

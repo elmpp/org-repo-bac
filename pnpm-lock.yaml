@@ -132,6 +132,9 @@ importers:
       '@business-as-code/address':
         specifier: workspace:*
         version: link:../pkg-address
+      '@business-as-code/error':
+        specifier: workspace:*
+        version: link:../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*
         version: link:../pkg-fslib

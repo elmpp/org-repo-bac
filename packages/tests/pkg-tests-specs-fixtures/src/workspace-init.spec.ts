@@ -1,13 +1,15 @@
-import { Result, assertIsOk } from '@business-as-code/core'
-import { addr } from '@business-as-code/address'
-import { createPersistentTestEnv } from '@business-as-code/tests-core'
-import assert from 'assert'
-import { expectIsOk } from '@business-as-code/tests-core/src/test-utils'
+import { Result, assertIsOk } from "@business-as-code/core";
+import { addr } from "@business-as-code/address";
+import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import assert from "assert";
+import {
+  expectIsFail,
+  expectIsOk,
+} from "@business-as-code/tests-core/src/test-utils";
 
 /** simply ensures the testEnv core util is operating properly */
-describe('workspace init', () => {
-
-  jest.setTimeout(25000)
+describe("workspace init", () => {
+  jest.setTimeout(25000);
 
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
@@ -23,13 +25,9 @@ describe('workspace init', () => {
   // })
 
   // })
-  it('creates a skeleton workspace without configPath', async () => {
-
-
-    const persistentTestEnv = await createPersistentTestEnv({})
-    await persistentTestEnv.test({},
-    async (testContext) => {
-
+  it("creates a skeleton workspace without configPath", async () => {
+    const persistentTestEnv = await createPersistentTestEnv({});
+    await persistentTestEnv.test({}, async (testContext) => {
       // const {envVars} = testContext
 
       // console.log(`envVars :>> `, envVars)
@@ -49,10 +47,19 @@ describe('workspace init', () => {
 
       // testContext.mockStdStart()
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
-      const exitCode = await testContext.command(['workspace', 'init', '--name', 'my-new-workspace', '--destinationPath', testContext.envVars.destinationPath.original], {logLevel: 'debug'})
-      expect(exitCode).toEqual(0)
+      const exitCode = await testContext.command(
+        [
+          "workspace",
+          "init",
+          "--name",
+          "my-new-workspace",
+          "--workspacePath",
+          testContext.envVars.workspacePath.original,
+        ],
+        { logLevel: "debug" }
+      );
+      expect(exitCode).toEqual(0);
       // console.log(`exitCode :>> `, exitCode)
-
 
       // await testContext.command(['something', 'else'])
       // const outputs = testContext.mockStdEnd()
@@ -64,66 +71,97 @@ describe('workspace init', () => {
       // return {
       //   outputs,
       // }
-    })
-  })
-  it.only('creates a skeleton workspace with absolute configPath', async () => {
-
-    const persistentTestEnv = await createPersistentTestEnv({})
-    await persistentTestEnv.test({},
-    async (testContext) => {
-
+    });
+  });
+  it.only("creates a skeleton workspace with absolute configPath", async () => {
+    const persistentTestEnv = await createPersistentTestEnv({});
+    await persistentTestEnv.test({}, async (testContext) => {
       // testContext.mockStdStart()
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.destinationPath.original])
 
-      const configPath = addr.pathUtils.join(testContext.envVars.fixturesPath, addr.parsePath('mocks/input1.json'))
+      const configPath = addr.pathUtils.join(
+        testContext.envVars.fixturesPath,
+        addr.parsePath("mocks/input1.json")
+      );
 
-      const res = await testContext.command(['workspace', 'init', '--name', 'my-new-workspace', '--destinationPath', testContext.envVars.destinationPath.original, '--configPath', configPath.original], {logLevel: 'debug'})
+      const res = await testContext.command(
+        [
+          "workspace",
+          "init",
+          "--name",
+          "my-new-workspace",
+          "--workspacePath",
+          testContext.envVars.workspacePath.original,
+          "--configPath",
+          configPath.original,
+        ],
+        { logLevel: "debug" }
+      );
 
       // if (assertIsOk(res)) {
       //   const success = res.success
       // }
       // assertIsOk()
 
-      expectIsOk(res)
+      expectIsOk(res);
 
-      console.log(`res.res.tree.read('./BOLLOCKS.md') :>> `, res.res.tree.readText('./BOLLOCKS.md'))
-      expect(res.res.tree.readText('./BOLLOCKS.md')).toEqual('PANTS')
-
-
+      console.log(`res.res.tree. :>> `, res.res.tree.getDir("."));
+      console.log(
+        `res.res.tree.read('./BOLLOCKS.md') :>> `,
+        res.res.tree.readText("./BOLLOCKS.md")
+      );
+      expect(res.res.tree.readText("./BOLLOCKS.md")).toEqual("PANTS");
 
       // expect(exitCode).toEqual(0)
 
-
       // console.log(`exitCode :>> `, exitCode)
-    })
-  })
-  describe('errors', () => {
-    it('nonexistent command', async () => {
+    });
+  });
+  describe("errors", () => {
+    it("nonexistent command", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+      await persistentTestEnv.test({}, async (testContext) => {
+        const res = await testContext.command(["does-not-exist"], {
+          logLevel: "debug",
+        });
 
-      const persistentTestEnv = await createPersistentTestEnv({})
-      await persistentTestEnv.test({},
-      async (testContext) => {
-        const exitCode = await testContext.command(['does-not-exist', testContext.envVars.destinationPath.original])
-        expect(exitCode).toBeGreaterThan(0)
-      })
-    })
-    it('incorrect command options', async () => {
+        expectIsFail(res);
+      });
+    });
+    it("incorrect command options", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+      await persistentTestEnv.test({}, async (testContext) => {
+        const res = await testContext.command(
+          [
+            "workspace",
+            "init",
+            "--blah",
+            "noThere",
+            "--workspacePath",
+            testContext.envVars.workspacePath.original,
+          ],
+          { logLevel: "debug" }
+        );
 
-      const persistentTestEnv = await createPersistentTestEnv({})
-      await persistentTestEnv.test({},
-      async (testContext) => {
-        const exitCode = await testContext.command(['workspace', 'init', '--blah=noThere', testContext.envVars.destinationPath.original])
-        expect(exitCode).toBeGreaterThan(0)
-      })
-    })
-    it('incorrect command arg', async () => {
+        expectIsFail(res);
+      });
+    });
+    it("incorrect command options", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+      await persistentTestEnv.test({}, async (testContext) => {
+        const res = await testContext.command(
+          [
+            "workspace",
+            "init",
+            "nonExistentArg",
+            "--workspacePath",
+            testContext.envVars.workspacePath.original,
+          ],
+          { logLevel: "debug" }
+        );
 
-      const persistentTestEnv = await createPersistentTestEnv({})
-      await persistentTestEnv.test({},
-      async (testContext) => {
-        const exitCode = await testContext.command(['workspace', 'init', 'nonExistentArg', testContext.envVars.destinationPath.original])
-        expect(exitCode).toBeGreaterThan(0)
-      })
-    })
-  })
-})
+        expectIsFail(res);
+      });
+    });
+  });
+});

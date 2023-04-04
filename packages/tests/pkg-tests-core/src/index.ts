@@ -91,7 +91,7 @@ type PersistentTestEnvVars = {
   cacheNamespaceFolder?: string;
 };
 type EphemeralTestEnvVars = {
-  destinationPath: AddressPathAbsolute;
+  workspacePath: AddressPathAbsolute;
   // savePath?: AddressPathAbsolute
 
   /** used as a namespace in the subProcess as many testEnvs will be output to process.std* */
@@ -231,7 +231,7 @@ async function doCreateEphemeralTestEnvVars(
     );
   }
 
-  const destinationPath =
+  const workspacePath =
     createEphemeralTestEnvVars.destinationPath?.({
       testsPath: persistentTestEnvVars.testsPath,
       testName: processNamespace,
@@ -244,7 +244,7 @@ async function doCreateEphemeralTestEnvVars(
   const cacheRenewTest = createEphemeralTestEnvVars.cacheRenewTest ?? false;
 
   return {
-    destinationPath,
+    workspacePath,
     processNamespace,
     cacheRenewTest,
   };
@@ -407,18 +407,20 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           process.chdir(cliPath.original);
           const argsWithAdditional = [...args, "--log-level", logLevel];
-          console.log(
-            `argsWithAdditional, cliPath.original, process.cwd() :>> `,
-            argsWithAdditional,
-            cliPath.original,
-            process.cwd()
-          );
+
+          // console.log(
+          //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
+          //   argsWithAdditional,
+          //   cliPath.original,
+          //   process.cwd()
+          // );
+
           let exitCode = 0;
           await oclifCore
             .run(argsWithAdditional, cliPath.original) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((error) => {
-              console.log(`errorwwwwwwwwwwwww :>> `, error);
+              // console.log(`errorwwwwwwwwwwwww :>> `, error);
               // oclifCore.Errors.handle(error)
               // return 1
               exitCode = error?.oclif?.exit ?? 1;
@@ -427,7 +429,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           if (exitCode === 0) {
 
             // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = new HostCreateTree(new virtualFs.ScopedHost(new NodeJsSyncHost(), envVars.destinationPath.original as any))
+            const tree = new HostCreateTree(new virtualFs.ScopedHost(new NodeJsSyncHost(), envVars.workspacePath.original as any))
 
             return {
               success: true,
@@ -436,6 +438,14 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 tree,
               },
             }
+          }
+
+          return {
+            success: false,
+            res: {
+              exitCode,
+              // tree,
+            },
           }
 
           // return await oclifCore.({type: 'cjs', dir: checkoutMntPath.original, args})

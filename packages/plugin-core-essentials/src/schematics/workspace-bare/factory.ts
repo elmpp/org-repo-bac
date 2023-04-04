@@ -11,14 +11,14 @@ import {
   apply,
   chain,
   mergeWith,
-  partitionApplyMerge,
   Rule,
+  schematic,
   SchematicContext,
   TaskConfigurationGenerator,
-  TaskId,
+  TaskExecutor,
+  TaskExecutorFactory,
   template,
   Tree,
-  empty,
   url,
 } from "@angular-devkit/schematics";
 import {
@@ -26,96 +26,82 @@ import {
   RepositoryInitializerTask,
   RunSchematicTask,
 } from "@angular-devkit/schematics/tasks";
+import { addr, AddressPathRelative } from "@business-as-code/address";
 import {
-  addr,
-  AddressPathAbsolute,
-  AddressPathRelative,
-  assertIsAddressPathRelative,
-} from "@business-as-code/address";
-import { constants } from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
-import path from "path";
+  constants,
+  Context,
+  ServiceExecTask,
+  Services,
+  ServicesStatic,
+  wrapTaskAsRule,
+} from "@business-as-code/core";
+import { Options } from "@business-as-code/core/schematics/tasks/service-exec/options";
 import { Schema } from "./schema";
 
-const wrapTaskAsRule = (task: TaskConfigurationGenerator<object>, dependencies?: TaskId[] | undefined) => (_tree: Tree, context: SchematicContext): Rule => {
-  const emptySource = empty()
-  context.addTask(task)
-  return mergeWith(emptySource)
-}
+export const wrapServiceAsRule = <SName extends keyof Services>(
+  options: Options<SName>
+  // ...args: ConstructorParameters<typeof ServiceExecTask>
+  // {
+  //   serviceName,
+  //   context,
+  //   serviceOptions,
+  //   workingDirectory,
+  //   cb,
+  // }: {
+  //   context: Context;
+  //   serviceName: SName;
+  //   workingDirectory: string;
+  //   serviceOptions: Parameters<ServicesStatic[SName]["initialise"]>;
+  //   cb: ({
+  //     service,
+  //   }: {
+  //     service: Services[SName];
+  //   }) => ReturnType<TaskExecutor<object>>
+  // },
+) => {
+  // // need to shimmy in here a Task
+  // const taskShim: TaskConfigurationGenerator<object> = {
+  //   toConfiguration() {
+  //     return {
+  //       name: serviceName,
+  //       // dependencies: Array<TaskId>,
+  //       options: {},
+  //     }
+  //   }
+  // }
+console.log(`args :>> `, options)
+  const serviceExecTask = new ServiceExecTask<SName>(options);
+  // const serviceExecTask = new ServiceExecTask(workingDirectory, {
+  //   cb,
+  //   serviceName,
+  //   serviceOptions,
+  // });
+
+  // // need to register the cb here somehow ¯\_(ツ)_/¯
+  // const taskExecutor: TaskExecutorFactory<Parameters<ServicesStatic[SName]['initialise']>> =
+  // {
+  //   name: serviceName,
+  //   create: (options) => Promise.resolve().then(() => {
+  //     const service = context.serviceFactory(serviceName, serviceOptions)
+  //     return service as unknown as TaskExecutor
+  //   }),
+  // };
+  // engineHost.registerTaskExecutor(taskExecutor, {
+  //   rootDirectory: root && getSystemPath(root),
+  // });
+  // engineHost.registerTaskExecutor(BuiltinTaskExecutor.RepositoryInitializer, {
+  //   rootDirectory: root && getSystemPath(root),
+  // });
+
+  const task = wrapTaskAsRule(serviceExecTask);
+  console.log(`task :>> `, task);
+  return task;
+};
 
 export default function (options: Schema): Rule {
-  // const schematicsVersion = require('@angular-devkit/schematics/package.json').version;
-  // const coreVersion = require('@angular-devkit/core/package.json').version;
-
   return (_tree, context) => {
-    // const getConfigPath = (
-    //   runtimeConfigRelOrAbsoluteNative?: string
-    // ): AddressPathAbsolute => {
-    //   let configPath: AddressPathAbsolute | AddressPathRelative =
-    //     addr.parsePath(
-    //       runtimeConfigRelOrAbsoluteNative ??
-    //         path.resolve(__dirname, "./config-default.json")
-    //     );
-    //   if (assertIsAddressPathRelative(configPath)) {
-    //     configPath = addr.pathUtils.resolve(
-    //       addr.parsePath(process.cwd()),
-    //       configPath
-    //     ) as AddressPathAbsolute;
-    //   }
-
-    //   if (!xfs.existsSync(configPath.address)) {
-    //     throw new BacError(
-    //       MessageName.OCLIF_ERROR,
-    //       `Config path at '${configPath.original}' does not exist, supplied as '${runtimeConfigRelOrAbsoluteNative}'`
-    //     );
-    //   }
-    //   return configPath;
-    // };
-
-    // console.log(`_tree :>> `, _tree)
-    // console.log(`_tree :>> `, _tree.root.subfiles)
-
-    // const { destinationPath } = options;
-    // const repoPathName = "repo"
-    // const repoPathAbs = path.join(destinationPath, repoPathName);
-
-    console.log(`options.destinationPath :>> `, options.destinationPath);
-
-    // const configPath = getConfigPath();
-
-    // console.log(`options._bacContext :>> `, options._bacContext)
-    // console.log(`configPath, repoPath :>> `, configPath, repoPath)
-
-    // const repoGitInit = context.addTask(
-    //   new RepositoryInitializerTask("repo", {
-    //     email: constants.DEFAULT_COMMITTER_EMAIL,
-    //     message: "initial commit",
-    //     name: constants.DEFAULT_COMMITTER_NAME,
-    //   })
-    // );
-    // const gitInit = context.addTask(
-    //   new RepositoryInitializerTask(".", {
-    //     email: constants.DEFAULT_COMMITTER_EMAIL,
-    //     message: "initial commit",
-    //     name: constants.DEFAULT_COMMITTER_NAME,
-    //   })
-    // );
     // console.log(`options.destinationPath :>> `, options.destinationPath);
-    // const pmTask = context.addTask(new NodePackageInstallTask({}), [
-    //   repoGitInit,
-    //   gitInit,
-    // ]);
-
-    // if (options.configPath) {
-    //   // running external schematics - https://tinyurl.com/2f3nwuk7
-    //   context.addTask(
-    //     new RunSchematicTask("workspace-configure", {
-    //       ...options,
-    //     }),
-    //     [pmTask]
-    //   );
-    // }
+    // console.log(`context :>> `, context.engine.workflow.engineHost)
 
     const baseTemplateSource = apply(url("./files"), [
       // partitionApplyMerge(
@@ -137,22 +123,42 @@ export default function (options: Schema): Rule {
 
     return chain([
       mergeWith(baseTemplateSource),
-      wrapTaskAsRule(new RepositoryInitializerTask("repo", {
-        email: constants.DEFAULT_COMMITTER_EMAIL,
-        message: "initial commit",
-        name: constants.DEFAULT_COMMITTER_NAME,
-      })),
-      wrapTaskAsRule(new RepositoryInitializerTask(".", {
-        email: constants.DEFAULT_COMMITTER_EMAIL,
-        message: "initial commit",
-        name: constants.DEFAULT_COMMITTER_NAME,
-      })),
+      wrapTaskAsRule(
+        new RepositoryInitializerTask(".", {
+          email: constants.DEFAULT_COMMITTER_EMAIL,
+          message: "initial commit of workspace",
+          name: constants.DEFAULT_COMMITTER_NAME,
+        })
+      ),
+      wrapServiceAsRule(
+        {
+          serviceName: "myService",
+          serviceOptions: {context: options._bacContext, workingPath: addr.pathUtils.dot},
+          cb: async ({ service }) => {
+            console.log(`service, serviceName, workingDirectory :>> `, service);
+            await service.doGitStuff({someRandomProps: 'bollocks'})
+          },
+          workingPath: addr.parsePath('.') as AddressPathRelative,
+          context: options._bacContext,
+        },
+      ),
+      wrapTaskAsRule(
+        new RepositoryInitializerTask("repo", {
+          email: constants.DEFAULT_COMMITTER_EMAIL,
+          message: "initial commit of repo",
+          name: constants.DEFAULT_COMMITTER_NAME,
+        })
+      ),
       wrapTaskAsRule(new NodePackageInstallTask({})),
       wrapTaskAsRule(
         new RunSchematicTask("workspace-configure", {
           ...options,
-        }),
+        })
       ),
+      /** run schematic from same collection */
+      schematic("workspace-configure", {
+        ...options,
+      }),
     ]);
   };
 }

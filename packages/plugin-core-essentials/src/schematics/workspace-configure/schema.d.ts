@@ -1,6 +1,6 @@
 export interface Schema {
-  destinationPath: string,
+  // destinationPath: string,
   name: string,
   configPath: string,
-  _bacContext: import('@business-as-code/core').ContextCommand
+  _bacContext: import('@business-as-code/core').Context
 }

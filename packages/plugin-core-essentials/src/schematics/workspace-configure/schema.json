@@ -4,10 +4,10 @@
   "title": "Schematic Options Schema",
   "type": "object",
   "properties": {
-    "destinationPath": {
-      "type": "string",
-      "description": "The absolute path where to scaffold to"
-    },
+    // "destinationPath": {
+    //   "type": "string",
+    //   "description": "The absolute path where to scaffold to"
+    // },
     "name": {
       "type": "string",
       "description": "The package name for the new schematic"
@@ -17,5 +17,5 @@
       "description": "Path to an existing config file which will be imported and trigger a sync"
     }
   },
-  "required": ["destinationPath", "name", "configPath"]
+  "required": ["name"]
 }

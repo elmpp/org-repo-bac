@@ -1,4 +1,3 @@
-
 // declare global {
 //   interface Bac {
 //     "@business-as-code/plugin-core-essentials": {
@@ -13,7 +12,9 @@
 //   }
 // }
 
-import { ContextPrivate } from "@business-as-code/core";
+import { addr } from "@business-as-code/address";
+import { ServiceInitialiseOptions } from "@business-as-code/core";
+import { spawn, SpawnOptions } from "child_process";
 
 declare global {
   namespace Bac {
@@ -21,7 +22,7 @@ declare global {
       myService: {
         insType: MyService;
         clzType: typeof MyService;
-      },
+      };
     }
   }
   // export interface BacServices {
@@ -29,16 +30,83 @@ declare global {
   // }
 }
 
+// type Options = { context: Context; destinationPath: AddressPathAbsolute, workingDirectory: AddressPathRelative };
+
 export class MyService {
-  static title = 'myService'
-  static async initialise(options: ContextPrivate) {
-    return new MyService()
+  static title = "myService";
+  static async initialise(options: ServiceInitialiseOptions) {
+    return new MyService(options);
   }
 
-  static something() {
+  constructor(protected options: ServiceInitialiseOptions) {}
 
-  }
-  async somethingelse() {
+  static fuckKnuckles() {}
+  async doGitStuff(options: { someRandomProps: string }) {
+    const execute = (args: string[], ignoreErrorStream?: boolean) => {
+      const outputStream = "ignore";
+      const errorStream = ignoreErrorStream ? "ignore" : process.stderr;
+      const spawnOptions: SpawnOptions = {
+        stdio: [process.stdin, outputStream, errorStream],
+        shell: true,
+        cwd: addr.pathUtils.join(
+          this.options.context.workspacePath,
+          this.options.workingPath
+        ).original,
+        env: {},
+      };
 
+      return new Promise<void>((resolve, reject) => {
+        spawn("git", args, spawnOptions).on("close", (code: number) => {
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(code);
+          }
+        });
+      });
+    };
+
+    const hasCommand = await execute(["--version"]).then(
+      () => true,
+      () => false
+    );
+    if (!hasCommand) {
+      return;
+    }
+
+    const insideRepo = await execute(
+      ["rev-parse", "--is-inside-work-tree"],
+      true
+    ).then(
+      () => true,
+      () => false
+    );
+    if (insideRepo) {
+      this.options.context.logger(
+        `
+        Directory is already under version control.
+        Skipping initialization of git.
+      `,
+        "info"
+      );
+
+      return;
+    }
+
+    // if git is not found or an error was thrown during the `git`
+    // init process just swallow any errors here
+    // NOTE: This will be removed once task error handling is implemented
+    try {
+      await execute(["init"]);
+      await execute(["add", "."]);
+
+      // if (options.commit) {
+      //   const message = options.message || 'initial commit';
+
+      //   await execute(['commit', `-m "${message}"`]);
+      // }
+
+      this.options.context.logger("Successfully initialized git.", "info");
+    } catch {}
   }
 }

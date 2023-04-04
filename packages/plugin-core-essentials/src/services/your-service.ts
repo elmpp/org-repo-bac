@@ -14,7 +14,8 @@
 //   }
 // }
 
-import { ContextPrivate } from "@business-as-code/core";
+import { AddressPathAbsolute } from "@business-as-code/address";
+import { Context, ServiceInitialiseOptions } from "@business-as-code/core";
 
 declare global {
   namespace Bac {
@@ -33,10 +34,15 @@ declare global {
 //   }
 // }
 
+
 export class YourService {
-  static title = 'myService'
-  static async initialise(options: ContextPrivate) {
-    return new YourService()
+  static title = 'yourService'
+  static async initialise(options: ServiceInitialiseOptions) {
+    return new YourService(options)
+  }
+
+  constructor(protected options: ServiceInitialiseOptions) {
+
   }
 
 

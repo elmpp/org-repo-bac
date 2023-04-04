@@ -16,6 +16,7 @@
     "@angular-devkit/core": "*",
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
+    "@business-as-code/error": "workspace:*",
     "@business-as-code/fslib": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",

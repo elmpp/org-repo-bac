@@ -30,7 +30,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Workspace name",
       required: true,
     }),
-    destinationPath: Flags.string({
+    workspacePath: Flags.string({
       char: "d",
       description: "Workspace name",
       required: true,
@@ -64,7 +64,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // type DD = WorkspaceInit['flags']
     // type DDd = WorkspaceInit['args']
 
-    let workspacePath = addr.parsePath(context.cliOptions.flags.destinationPath!);
+    let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
     if (!assertIsAddressPath(workspacePath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
@@ -96,13 +96,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // console.log(`context.services :>> `, context.services);
 
+    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath})
 
-    const res = await context.services.schematics.run({
+    const res = await schematicsService.run({
       address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
       context,
       options: {
         name: context.cliOptions.flags.name,
-        destinationPath: context.cliOptions.flags.destinationPath,
+        // destinationPath: context.cliOptions.flags.workspacePath,
         configPath: context.cliOptions.flags.configPath,
         // name: 'cunt',
         // author: 'boloerguie',
@@ -110,9 +111,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
 
       },
-      destinationPath: workspacePath,
+      // destinationPath: workspacePath,
       dryRun: false,
       force: true,
+      workingPath: addr.pathUtils.dot,
     });
 
     console.log(`:>> FINISHED`);
@@ -134,6 +136,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     } else {
       context.logger(`Finished ok. Scaffolded into '${res.res.original}'`, "info");
     }
+
+    return res
 
     //   override async run(): Promise<void> {
     //     }
