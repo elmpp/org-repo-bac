@@ -111,10 +111,6 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
       workingPath: addr.pathUtils.dot,
     });
 
-    console.log(`:>> FINISHED`);
-    console.log(`res :>> `, res)
-
-
     if (!assertIsOk(res)) {
       switch (res.res.reportCode) {
         case MessageName.SCHEMATICS_ERROR:

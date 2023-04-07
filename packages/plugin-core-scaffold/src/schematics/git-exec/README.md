@@ -1,1 +1,0 @@
-Executes the workchain git binary

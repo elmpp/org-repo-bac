@@ -24,6 +24,10 @@
     "pmRegistry": {
       "type": "string",
       "description": "Allows BaC to be built from a local registry if required"
+    },
+    "_bacContext": {
+      "type": "object",
+      "description": "Ubiquitous bac context"
     }
   },
   "required": ["name"]

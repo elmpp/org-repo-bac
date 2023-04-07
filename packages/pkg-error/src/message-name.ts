@@ -9,6 +9,7 @@ export enum MessageName {
   OCLIF_ERROR = 7, // throwable within main code to bubble incorrect flag values etc
   SERVICE_NOT_FOUND = 8, // service factory could not create service. Mention that perhaps the plugin has not been found/installed etc
   WORKSPACE_CWD_UNRESOLVABLE = 9, // --workspacePath is required when the workspace is not readily detectable
+  GIT_SERVICE_REPOSITORY_UNINITIALISED = 10,
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink
   // TEST_ENV = 3, // ignorable message that is used within tests
   // PLUGIN_INSTALLATION_UNDECLARED = 10,

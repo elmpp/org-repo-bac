@@ -3,6 +3,10 @@ import { AddressTypeByGroup } from "./util"
 
 export type AddressUrl = AddressDescriptor<AddressTypeByGroup<'url'>>
 
-export type AddressUrlGit = AddressDescriptor<'githubRepoUrl'>
+export type AddressUrlGithub = AddressDescriptor<'githubRepoUrl'>
+/** e.g. https://github.com/elmpp/org-repo.git#head=master */
+export type AddressUrlGithubString = string
+
+
 // export type AddressUrlRelative = AddressDescriptor<'portablePathPosixRelative' | 'portablePathWindowsRelative' | 'portablePathFilename'>
 // export type AddressUrlFilename = AddressDescriptor<'portablePathFilename'>

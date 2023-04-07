@@ -1,9 +1,0 @@
-{
-  "schematics": {
-    "git-exec": {
-      "factory": "./src/schematics/git-exec/index",
-      "schema": "./src/schematics/git-exec/schema.json",
-      "description": "Simple schematic to execute the WORKCHAIN git binary"
-    },
-  }
-}

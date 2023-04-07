@@ -22,6 +22,7 @@
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
+    "@business-as-code/tests-core": "workspace:*",
     "@types/node": "^18.15.3",
     "expect-type": "^0.15.0"
   },

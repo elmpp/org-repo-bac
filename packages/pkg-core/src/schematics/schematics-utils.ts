@@ -8,7 +8,7 @@ import {
   Tree,
 } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { Services } from "../__types__";
+import { IsEmptyObject, ServiceInitialiseOptions, Services, ServicesStatic } from "../__types__";
 import { ServiceExecTask } from "./tasks";
 import { Options } from "./tasks/service-exec/options";
 
@@ -25,7 +25,9 @@ export function wrapTaskAsRule(
   }
 
   export const wrapServiceAsRule = <SName extends keyof Services>(
-    optionsMinusServiceOptions: Omit<Options<SName>, 'serviceOptions'>,
+    optionsMinusServiceOptions: Omit<Options<SName>, 'serviceOptions'> & {
+      serviceOptions: IsEmptyObject<Omit<Parameters<ServicesStatic[SName]['initialise']>[0], keyof ServiceInitialiseOptions>> extends true ? Record<never, any> : Omit<Parameters<ServicesStatic[SName]['initialise']>[0], keyof ServiceInitialiseOptions>
+    },
     context: SchematicContext,
     // ...args: ConstructorParameters<typeof ServiceExecTask>
     // {
@@ -45,7 +47,7 @@ export function wrapTaskAsRule(
     //     service: Services[SName];
     //   }) => ReturnType<TaskExecutor<object>>
     // },
-  ) => {
+  ): Rule => {
     // // need to shimmy in here a Task
     // const taskShim: TaskConfigurationGenerator<object> = {
     //   toConfiguration() {
@@ -57,6 +59,8 @@ export function wrapTaskAsRule(
     //   }
     // }
 
+    console.log(`optionsMinusServiceOptions :>> `, optionsMinusServiceOptions)
+
     const getCurrentSchematicHostRoot = (context: SchematicContext): AddressPathAbsolute => addr.parsePath((context.engine.workflow as any)?._host?._root!) as AddressPathAbsolute
 
     const options: Options<SName> = {
@@ -65,6 +69,7 @@ export function wrapTaskAsRule(
       serviceOptions: {
         context: optionsMinusServiceOptions.context,
         destinationPath: getCurrentSchematicHostRoot(context),
+        ...optionsMinusServiceOptions.serviceOptions,
       },
     }
 

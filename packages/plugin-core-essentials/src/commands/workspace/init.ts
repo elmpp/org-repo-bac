@@ -117,10 +117,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       workingPath: addr.pathUtils.dot,
     });
 
-    console.log(`:>> FINISHED`);
-    console.log(`res :>> `, res)
-
-
     if (!assertIsOk(res)) {
       switch (res.res.reportCode) {
         case MessageName.SCHEMATICS_ERROR:

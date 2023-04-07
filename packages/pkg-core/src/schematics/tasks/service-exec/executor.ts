@@ -33,7 +33,6 @@ export function serviceExecExecutor(
     assertNonEmpty(options)
 
     const {serviceName, serviceOptions, cb, context: bacContext} = options
-    console.log(`serviceName, serviceOptions, cb :>> `, serviceName, serviceOptions, cb)
 
     const service = await bacContext!.serviceFactory(serviceName, serviceOptions)
 

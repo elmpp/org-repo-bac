@@ -1,15 +1,15 @@
 {
   "schematics": {
-    "run-service-as-rule": {
-      "factory": "./src/schematics/run-service-as-rule/factory",
-      "schema": "./src/schematics/run-service-as-rule/schema.json",
-      "description": "Allows running of an arbitrary service cb as a schematics rule"
+    "git-clone": {
+      "factory": "./src/schematics/git-clone/factory",
+      "schema": "./src/schematics/git-clone/schema.json",
+      "description": "Clones an entire repository"
     },
-    "repositories-create": {
-      "factory": "./src/schematics/repositories-create/factory",
-      "schema": "./src/schematics/repositories-create/schema.json",
-      "description": "Generates our git repositories"
-    },
+    // "workspace-configure": {
+    //   "factory": "./src/schematics/workspace-configure/factory",
+    //   "schema": "./src/schematics/workspace-configure/schema.json",
+    //   "description": "Applies configuration to a workspace"
+    // },
     // "blank": {
     //   "factory": "./src/schematics/blank/factory",
     //   "schema": "./src/schematics/blank/schema.json",

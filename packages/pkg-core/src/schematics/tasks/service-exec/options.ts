@@ -17,7 +17,7 @@ export interface Options<SName extends keyof ServicesStatic> {
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
   serviceName: SName;
   serviceOptions: ServiceInitialiseOptions;
-  workingPath: AddressPathRelative
+  // workingPath: AddressPathRelative
   context: Context
 }
 

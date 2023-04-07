@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsSchematicSchema",
+  "title": "Schematic Options Schema",
+  "type": "object",
+  "properties": {
+
+    "cb": {
+      "type": "object",
+      "description": "THIS IS ACTUALLY A FUNCTION BUT WE'RE BYPASSING VALIDATION ANYWAY. DIFFERENT IN SCHEMA.D.TS"
+    },
+    "serviceName": {
+      "type": "string",
+      "description": "Service name matching that in the cb"
+    },
+    "originPath": {
+      "type": "string",
+      "description": "Optional path to Source content. Defaults to any empty() Source"
+    },
+    "initialisationOptions": {
+      "type": "object",
+      "description": "Additional params for initialising of the service instance"
+    },
+    // "destinationPath": {
+    //   "type": "string",
+    //   "description": "The absolute path where to scaffold to"
+    // },
+    // "name": {
+    //   "type": "string",
+    //   "description": "The package name for the new schematic"
+    // },
+    // "configPath": {
+    //   "type": "string",
+    //   "description": "Path to an existing config file which will be imported and trigger a sync"
+    // },
+    // "cliVersion": {
+    //   "type": "string",
+    //   "description": "The version of BaC",
+    //   "default": "latest"
+    // },
+    // "pmRegistry": {
+    //   "type": "string",
+    //   "description": "Allows BaC to be built from a local registry if required"
+    // }
+  },
+  "required": ["rule", "serviceName", "serviceOptions"]
+}

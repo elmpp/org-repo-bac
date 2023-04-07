@@ -1,8 +1,18 @@
 // import {oclifTest, oclifExpect} from './oclif'
-import { Tree, HostCreateTree } from "@angular-devkit/schematics";
+import { Tree, HostCreateTree, Rule } from "@angular-devkit/schematics";
 import { virtualFs } from "@angular-devkit/core";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { LogLevel, Outputs, Result } from "@business-as-code/core";
+import {
+  IsEmptyObject,
+  LogLevel,
+  Outputs,
+  Result,
+  ServiceInitialiseOptions,
+  Services,
+  ServicesStatic,
+  wrapServiceAsRule,
+} from "@business-as-code/core";
+import { SchematicsRunCommand } from "./schematics-run-command";
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import * as mockStd from "stdout-stderr";
@@ -12,8 +22,12 @@ import {
   sanitise,
 } from "./test-utils";
 import { XfsCacheManager } from "./xfs-cache-manager";
-import os from "os";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
+import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
+import {
+  ArgsInfer,
+  FlagsInfer,
+} from "@business-as-code/core/commands/base-command";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -111,12 +125,56 @@ export type TestContext = {
   command: (
     args: string[],
     options?: { logLevel?: LogLevel }
-  ) => Promise<
-    Result<
-      { exitCode: number; tree: Tree },
-      { exitCode: number }
-    >
-  >;
+  ) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+  /**
+   Allows a schematic to be run directly without going through the cli arg parsing etc
+   */
+  runSchematic: (options: {
+    parseOutput: ParserOutput<
+      FlagsInfer<typeof SchematicsRunCommand>,
+      FlagsInfer<typeof SchematicsRunCommand>,
+      ArgsInfer<typeof SchematicsRunCommand>
+    >;
+    // schematicAddress: string,
+    // workspacePath: string,
+  }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+  /**
+   Allows a service task to be run directly, without need for schematics boilerplating
+   */
+  runSchematicServiceCb: <SName extends keyof Services>(options: {
+    cb: (options: {
+      service: Services[SName];
+      serviceName: SName;
+    }) => Promise<void>;
+    // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
+    serviceName: SName;
+    /**  */
+    // initialisationOptions: Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions> extends never ? Record<never, never> | undefined : Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions>
+    initialisationOptions: IsEmptyObject<Omit<Parameters<ServicesStatic[SName]['initialise']>[0], keyof ServiceInitialiseOptions>> extends true ? Record<never, any> : Omit<Parameters<ServicesStatic[SName]['initialise']>[0], keyof ServiceInitialiseOptions>
+    // serviceName: SName
+    // cb: Parameters<typeof wrapServiceAsRule<SName>>[0];
+    // /** optional Source path for the Rule. Defaults to an empty() Source */
+    originPath?: AddressPathAbsolute;
+    /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
+    tree?: Tree;
+    // parseOutput: ParserOutput<
+    //   FlagsInfer<typeof SchematicsRunCommand>,
+    //   FlagsInfer<typeof SchematicsRunCommand>,
+    //   ArgsInfer<typeof SchematicsRunCommand>
+    // >,
+    // schematicAddress: string,
+    // workspacePath: string,
+  } & {
+
+  }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+  // runSchematic: (options: {
+  //   args: any[];
+  //   flags: any[];
+  //   schematicAddress: string,
+  //   workspacePath: string,
+  //   logLevel?: LogLevel,
+  //   // destinationPath
+  // }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
 };
 
 /**
@@ -385,7 +443,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
       createEphemeralTestEnvVars,
       persistentTestEnvVars
     );
-    const envVars = { ...ephemeralTestEnvVars, ...persistentTestEnvVars }
+    const envVars = { ...ephemeralTestEnvVars, ...persistentTestEnvVars };
 
     function createTestContext(): TestContext {
       return {
@@ -415,21 +473,30 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // );
 
           let exitCode = 0;
+
+          /**  */
           await oclifCore
-            .run(argsWithAdditional, {root: cliPath.original, debug: 9}) // @oclif/core source - https://tinyurl.com/2qnt23kr
+            .run(argsWithAdditional, {
+              root: cliPath.original,
+              // debug: 9,
+            }) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((error) => {
               // return this.cat
               // console.error(error);
-              process.stderr.write(error.stack ?? error.message)
+              process.stderr.write(error.stack ?? error.message);
               // return 1
               exitCode = error?.oclif?.exit ?? 1;
             });
 
           if (exitCode === 0) {
-
             // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = new HostCreateTree(new virtualFs.ScopedHost(new NodeJsSyncHost(), envVars.workspacePath.original as any))
+            const tree = new HostCreateTree(
+              new virtualFs.ScopedHost(
+                new NodeJsSyncHost(),
+                envVars.workspacePath.original as any
+              )
+            );
 
             return {
               success: true,
@@ -437,7 +504,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 exitCode,
                 tree,
               },
-            }
+            };
           }
 
           return {
@@ -446,13 +513,166 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               exitCode,
               // tree,
             },
-          }
+          };
 
           // return await oclifCore.({type: 'cjs', dir: checkoutMntPath.original, args})
           // return {
           //   stdout: '',
           //   stderr: '',
           // }
+        },
+        runSchematic: async ({ parseOutput }) => {
+          // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
+
+          process.chdir(cliPath.original);
+          // const argsWithAdditional = [...args, "--log-level", logLevel];
+
+          let exitCode = 0;
+
+          // running oclif commands programatically - https://tinyurl.com/29dj8vmc
+          await SchematicsRunCommand.runDirect<any>(
+            {
+              root: cliPath.original,
+              // debug: 9,
+            },
+            parseOutput
+          )
+            // .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
+            .catch((error) => {
+              // return this.cat
+              // console.error(error);
+              console.log(`error :>> `, error, error.stack ?? error.message);
+              process.stderr.write(error.stack ?? error.message);
+              // return 1
+              exitCode = error?.oclif?.exit ?? 1;
+            });
+
+          if (exitCode === 0) {
+            // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
+            const tree = new HostCreateTree(
+              new virtualFs.ScopedHost(
+                new NodeJsSyncHost(),
+                envVars.workspacePath.original as any
+              )
+            );
+
+            return {
+              success: true,
+              res: {
+                exitCode,
+                tree,
+              },
+            };
+          }
+
+          return {
+            success: false,
+            res: {
+              exitCode,
+              // tree,
+            },
+          };
+        },
+        runSchematicServiceCb: async ({
+          cb,
+          originPath,
+          serviceName,
+          tree,
+          initialisationOptions,
+        }) => {
+          // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
+
+          process.chdir(cliPath.original);
+          // const argsWithAdditional = [...args, "--log-level", logLevel];
+
+          const parseOutput: ParserOutput<
+            FlagsInfer<typeof SchematicsRunCommand> & {
+              payload: {
+                originPath?: string;
+                tree?: Tree;
+                cb: (options: any) => Promise<void>;
+                serviceName: keyof Services;
+                initialisationOptions: any;
+              };
+            },
+            FlagsInfer<typeof SchematicsRunCommand> & {
+              payload: {
+                originPath?: string;
+                tree?: Tree;
+                cb: (options: any) => Promise<void>;
+                serviceName: keyof Services;
+                initialisationOptions: any;
+              };
+            },
+            ArgsInfer<typeof SchematicsRunCommand>
+          > = {
+            flags: {
+              workspacePath: testContext.envVars.workspacePath.original,
+              // destinationPath: testContext.envVars.workspacePath.original,
+              schematicsAddress:
+                "@business-as-code/plugin-core-tests#namespace=run-service-as-rule",
+              payload: {
+                initialisationOptions,
+                originPath: originPath?.original,
+                tree,
+                cb,
+                serviceName,
+              },
+              ["log-level"]: "info",
+              ["json"]: false,
+            },
+            args: {},
+            argv: [],
+            metadata: {} as any,
+            raw: {} as any,
+            nonExistentFlags: {} as any,
+          };
+
+          let exitCode = 0;
+
+          // running oclif commands programatically - https://tinyurl.com/29dj8vmc
+          await SchematicsRunCommand.runDirect<any>(
+            {
+              root: cliPath.original,
+              // debug: 9,
+            },
+            parseOutput
+          )
+            // .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
+            .catch((error) => {
+              // return this.cat
+              // console.error(error);
+              console.log(`error :>> `, error, error.stack ?? error.message);
+              process.stderr.write(error.stack ?? error.message);
+              // return 1
+              exitCode = error?.oclif?.exit ?? 1;
+            });
+
+          if (exitCode === 0) {
+            // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
+            const tree = new HostCreateTree(
+              new virtualFs.ScopedHost(
+                new NodeJsSyncHost(),
+                envVars.workspacePath.original as any
+              )
+            );
+
+            return {
+              success: true,
+              res: {
+                exitCode,
+                tree,
+              },
+            };
+          }
+
+          return {
+            success: false,
+            res: {
+              exitCode,
+              // tree,
+            },
+          };
         },
         mockStdStart: () => {
           mockStd.stdout.start();

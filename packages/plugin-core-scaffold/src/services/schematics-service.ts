@@ -351,7 +351,8 @@ export class SchematicsService {
       dryRun,
       // resolvePaths: [process.cwd(), scaffoldBase],
       resolvePaths: [scaffoldBase, cliRoot], // not sure what this does just yet
-      schemaValidation: true,
+      schemaValidation: false,
+      // schemaValidation: true,
       packageManager: "pnpm", // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L163
     });
     return workflow;

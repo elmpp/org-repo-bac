@@ -54,20 +54,33 @@ export default function (options: Schema): Rule {
 
     return chain([
       mergeWith(baseTemplateSource),
-      wrapTaskAsRule(
-        new RepositoryInitializerTask(".", {
-          email: constants.DEFAULT_COMMITTER_EMAIL,
-          message: "initial commit of workspace",
-          name: constants.DEFAULT_COMMITTER_NAME,
-        })
+      wrapServiceAsRule(
+        {
+          serviceName: "git",
+          cb: async ({ service }) => {
+            // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+            await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+          },
+          context: options._bacContext,
+        },
+        context
       ),
+      // wrapTaskAsRule(
+      //   // new RepositoryInitializerTask(".", {
+      //   //   email: constants.DEFAULT_COMMITTER_EMAIL,
+      //   //   message: "initial commit of workspace",
+      //   //   name: constants.DEFAULT_COMMITTER_NAME,
+      //   // })
+
+      //   USE GIT SERVICE - https://github.com/nodegit/nodegit/blob/master/examples/create-new-repo.js#L13
+      // ),
       wrapServiceAsRule(
         {
           serviceName: "myService",
           cb: async ({ service }) => {
             await service.func1({ someRandomProps: "bollocks" });
           },
-          workingPath: addr.parsePath(".") as AddressPathRelative,
+          // workingPath: addr.parsePath(".") as AddressPathRelative,
           context: options._bacContext,
         },
         context

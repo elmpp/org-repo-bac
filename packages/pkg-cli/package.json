@@ -26,6 +26,7 @@
   "dependencies": {
     "@business-as-code/plugin-core-essentials": "workspace:*",
     "@business-as-code/plugin-core-scaffold": "workspace:*",
+    "@business-as-code/plugin-core-git": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
     "@oclif/core": "2.6.4",
@@ -48,6 +49,7 @@
     "plugins": [
       "@oclif/plugin-help",
       "@business-as-code/plugin-core-essentials",
+      "@business-as-code/plugin-core-git",
       "@business-as-code/plugin-core-scaffold"
     ],
     "devPlugins": [

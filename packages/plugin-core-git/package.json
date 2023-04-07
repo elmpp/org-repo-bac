@@ -1,0 +1,28 @@
+{
+  "name": "@business-as-code/plugin-core-git",
+  "version": "0.0.1",
+  "description": "Core plugin package @business-as-code/plugin-core-git",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
+  "dependencies": {
+    "@angular-devkit/core": "^15.2.4",
+    "@angular-devkit/schematics": "^15.2.4",
+    "@business-as-code/address": "workspace:*",
+    "@business-as-code/core": "workspace:*",
+    "@business-as-code/error": "workspace:^0.0.1",
+    "@business-as-code/fslib": "workspace:^0.0.1",
+    "nodegit": "v0.28.0-alpha.18",
+    "simple-git": "^3.17.0"
+  },
+  "devDependencies": {
+    "@business-as-code/tests-core": "workspace:*",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.15.3",
+    "@types/nodegit": "^0.28.3",
+    "expect-type": "^0.15.0"
+  }
+}

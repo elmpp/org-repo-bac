@@ -15,6 +15,10 @@
     "configPath": {
       "type": "string",
       "description": "Path to an existing config file which will be imported and trigger a sync"
+    },
+    "_bacContext": {
+      "type": "object",
+      "description": "Ubiquitous bac context"
     }
   },
   "required": ["name"]
