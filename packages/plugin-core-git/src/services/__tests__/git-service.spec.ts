@@ -27,7 +27,7 @@ describe("git-service", () => {
           serviceName: "git",
           tree: res.res.tree,
           cb: async ({ service }) => {
-              const repo = await service.getRepository()
+              const repo = service.getRepository()
               expect(repo.checkIsRepo(CheckRepoActions.IS_REPO_ROOT)).toBeTruthy()
               // const currentDir = (await service.getRepository()).cwd()/
               // console.log(`currentDir :>> `, currentDir)
@@ -82,7 +82,7 @@ describe("git-service", () => {
     // });
   })
   describe('initialising repo', () => {
-    it.only("initialise standard", async () => {
+    it("initialise standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.runSchematicServiceCb({
@@ -102,16 +102,8 @@ describe("git-service", () => {
           serviceName: "git",
           tree: res.res.tree,
           cb: async ({ service }) => {
-              const repo = await service.getRepository()
-              expect(repo.checkIsRepo(CheckRepoActions.IS_REPO_ROOT)).toBeTruthy()
-              // const currentDir = (await service.getRepository()).cwd()/
-              // console.log(`currentDir :>> `, currentDir)
-              console.log(`service.getWorkingDestinationPath :>> `, service.getWorkingDestinationPath())
-              // const logs = await repo.log()
-              // console.log(`logs :>> `, logs)
-              // expect((await service.getRepository()).log()).toBeTruthy()
-              // expect((await service.getRepository()).commit(CheckRepoActions.BARE)).toBeTruthy()
-              // await service.clone(`https://github.com/elmpp/bac-tester.git`, {bare: null});
+              const repo = service.getRepository()
+              expect(repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)).toBeTruthy()
           },
           initialisationOptions: {},
           // originPath: testContext.envVars.workspacePath,

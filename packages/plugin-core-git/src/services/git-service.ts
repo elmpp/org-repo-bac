@@ -1,7 +1,7 @@
 import { ServiceInitialiseOptions } from '@business-as-code/core';
 import { BacError, MessageName } from '@business-as-code/error';
-import nodeGit, { Repository } from 'nodegit'
-import simpleGitFactory, {CheckRepoActions, SimpleGit, TaskOptions} from 'simple-git'
+// import nodeGit, { Repository } from 'nodegit'
+import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
 import path from 'path'
 
 // nodeGit.Clone('eriguh').then()
@@ -46,6 +46,8 @@ declare global {
  */
 export class GitService {
   static title = "git";
+
+  public CheckRepoActions = CheckRepoActionsImport
   // options: Options;
 
   /** whether the service has initialised on a local repo. Prerequisite for most operations. See  */
@@ -55,16 +57,15 @@ export class GitService {
     const ins = new GitService(options);
 
     const baseDir = GitService.getWorkingDestinationPath(options)
-    console.log(`baseDir :>> `, baseDir)
     const simpleGit = simpleGitFactory({baseDir});
 
-    ins.repository = simpleGit
-    // if (await simpleGit.checkIsRepo(CheckRepoActions.IS_REPO_ROOT)) {
-    //   ins.repository = simpleGit
-    // }
-    // else {
-    //   options.context.logger(`GitService: no existing repo found at location '${options.destinationPath.original}'`)
-    // }
+    // ins.repository = simpleGit
+    if (await simpleGit.checkIsRepo(CheckRepoActionsImport.IS_REPO_ROOT)) {
+      ins.repository = simpleGit
+    }
+    else {
+      options.context.logger(`GitService: no existing repo found at location '${options.destinationPath.original}'`)
+    }
 
     return ins
 
@@ -86,11 +87,18 @@ export class GitService {
     return path.join(options.destinationPath.original, options.workingPath ?? '.')
   }
 
-  public async getRepository() {
+  getRepository(strict: false): undefined | SimpleGit
+  getRepository(strict?: true): SimpleGit
+  getRepository(strict = true): SimpleGit | undefined {
     if (!this.repository) {
+      if (!strict) {
+        return
+      }
       throw new BacError(MessageName.GIT_SERVICE_REPOSITORY_UNINITIALISED, `Attempting an operation without a current initialised repository`)
     }
-    return Promise.resolve(this.repository)
+
+    return simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
+    // return this.repository
   }
 
   // /**
@@ -126,7 +134,7 @@ export class GitService {
     // )
     // // @todo - error handling
     // this.repository = repository
-
+console.log(`GitService.getWorkingDestinationPath(this.options) :>> `, GitService.getWorkingDestinationPath(this.options))
     const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
     await simpleGit.init(options ?? {})
     // @todo - error handling

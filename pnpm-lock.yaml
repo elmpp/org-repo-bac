@@ -130,10 +130,10 @@ importers:
   packages/pkg-core:
     dependencies:
       '@angular-devkit/core':
-        specifier: '*'
+        specifier: 15.2.4
         version: 15.2.4
       '@angular-devkit/schematics':
-        specifier: '*'
+        specifier: 15.2.4
         version: 15.2.4
       '@business-as-code/address':
         specifier: workspace:*
@@ -153,6 +153,9 @@ importers:
       '@oclif/core':
         specifier: 2.6.4
         version: 2.6.4(patch_hash=6bgvkausea6luhfwc2tw5lwncq)(@types/node@18.14.2)(typescript@5.0.2)
+      rxjs:
+        specifier: 6.6.7
+        version: 6.6.7
       zod:
         specifier: ^3.20.6
         version: 3.20.6
@@ -388,6 +391,9 @@ importers:
         specifier: workspace:*
         version: link:../../pkg-fslib
     devDependencies:
+      '@business-as-code/tests-core':
+        specifier: workspace:*
+        version: link:../pkg-tests-core
       '@types/node':
         specifier: ^18.15.3
         version: 18.15.3

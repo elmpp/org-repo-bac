@@ -8,6 +8,11 @@
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
   },
+  "files": [],
+  "peerDependencies": {
+    "@angular-devkit/core": "*",
+    "@angular-devkit/schematics": "*"
+  },
   "dependencies": {
     "@angular-devkit/core": "^15.2.4",
     "@angular-devkit/schematics": "^15.2.4",

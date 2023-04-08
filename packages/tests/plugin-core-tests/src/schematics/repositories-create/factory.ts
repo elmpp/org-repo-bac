@@ -1,74 +1,32 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
 import { strings } from "@angular-devkit/core";
 import {
   apply,
+  chain,
   mergeWith,
-  partitionApplyMerge,
+  move,
   Rule,
   template,
-  chain,
-  branchAndMerge,
   url,
-  SchematicContext,
-  Tree,
-  move,
 } from "@angular-devkit/schematics";
-import {
-  constants,
-  wrapServiceAsRule,
-  wrapTaskAsRule,
-} from "@business-as-code/core";
+import { debugRule } from "@business-as-code/tests-core";
+import { constants, wrapServiceAsRule } from "@business-as-code/core";
 import { Schema } from "./schema";
-import {
-  NodePackageInstallTask,
-  RepositoryInitializerTask,
-  RunSchematicTask,
-} from "@angular-devkit/schematics/tasks";
-
-// function commit(_options: { name: string }): Rule {
-//   return (_tree: Tree, _context: SchematicContext) => {
-//     _context.logger.info(`Executing: npm run lint -- --fix ${_options.name}`);
-//     execSync("npm run lint -- --fix " + _options.name);
-//   };
-// }
 
 export default function (options: Schema): Rule {
   return (_tree, context) => {
-    // just make a big repo with a number of packages and a variety of commits
-
     const bareTemplateSource = apply(url("./repo"), [
-      // partitionApplyMerge(
-      // (p) => !/\/src\/.*?\/repo\//.test(p),
       template({
-        // ...options,
         name: "root-package",
-        // coreVersion,
-        // schematicsVersion,
-        // configPath,
         dot: ".",
         dasherize: strings.dasherize,
       }),
-      // ),
-      // move(destinationPath),
     ]);
 
     const packageTemplateSource1 = apply(url("./package"), [
-      // partitionApplyMerge(
-      // (p) => !/\/src\/.*?\/repo\//.test(p),
       template({
         ...options,
         path: "packages/my-package-1",
         name: "my-package-1",
-        // coreVersion,
-        // schematicsVersion,
-        // configPath,
         dot: ".",
         dasherize: strings.dasherize,
       }),
@@ -78,53 +36,80 @@ export default function (options: Schema): Rule {
 
     const r = chain([
       mergeWith(bareTemplateSource),
+      debugRule(options),
       wrapServiceAsRule(
         {
           serviceName: "git",
           cb: async ({ service }) => {
-            // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
-            await service.init({ bare: false });
-            const repo = await service.getRepository()
-            const index = await repo.refreshIndex()
-            await index.addAll()
-            await index.write()
+            // const repo = await service.getRepository()
+            // await repo.add("./*")
+            //   /** commit example - https://tinyurl.com/29y5mnwm */
+            //   .commit("first commit", {
+            //     "--author": constants.DEFAULT_COMMITTER,
+            //   }),
+            await service.init({ "--initial-branch": "main" });
+            const repo = service.getRepository();
 
-            const oid = await index.writeTree();
+            // console.log(
+            //   `repo, service.getWorkingDestinationPath() :>> `,
+            //   repo,
+            //   service.getWorkingDestinationPath()
+            // );
 
-            const parent = await repo.getHeadCommit();
-            const author = nodegit.Signature.now("Scott Chacon",
-              "schacon@gmail.com");
-            const committer = nodegit.Signature.now("Scott A Chacon",
-              "scott@github.com");
+            await repo.add(".");
+            /** commit example - https://tinyurl.com/29y5mnwm */
+            await repo.commit("initial commit", {
+              "--author": constants.DEFAULT_COMMITTER,
+              "--allow-empty": null,
+            });
 
-            const commitId = await repo.createCommit("HEAD", author, committer, "message", oid, [parent]);
 
-              // .then((index) => index.addAll())
-              // .then((index) => index.write())
-            // await (await service.getRepository().refreshIndex()).addAll()
-            // await service.commit({bare: false});
+
+            // return (
+            //   (await service.init().then((service) => service.getRepository()))
+            //     .add("./*")
+            //     /** commit example - https://tinyurl.com/29y5mnwm */
+            //     .commit("first commit", {
+            //       "--author": constants.DEFAULT_COMMITTER,
+            //     })
+            // );
           },
           context: options._bacContext,
+          serviceOptions: {},
         },
         context
       ),
+      debugRule(options),
       mergeWith(packageTemplateSource1),
-      wrapTaskAsRule(
-        new RepositoryInitializerTask(".", {
-          email: constants.DEFAULT_COMMITTER_EMAIL,
-          message: "adds my-package-1",
-          name: constants.DEFAULT_COMMITTER_NAME,
-        })
+      debugRule(options),
+      wrapServiceAsRule(
+        {
+          serviceName: "git",
+          cb: async ({ service }) => {
+            const repo = await service.getRepository()
+            await repo.add(".");
+            /** commit example - https://tinyurl.com/29y5mnwm */
+            await repo.commit("adds /packages/my-package-1", {
+              "--author": constants.DEFAULT_COMMITTER,
+              // "--allow-empty": null,
+            });
+            // return (
+            //   (await service.getRepository())
+            //     .add(".")
+            //     /** commit example - https://tinyurl.com/29y5mnwm */
+            //     .commit("adds /packages/my-package-1", {
+            //       "--author": constants.DEFAULT_COMMITTER,
+            //       "--allow-empty": null,
+            //     })
+            // );
+          },
+          context: options._bacContext,
+          serviceOptions: {},
+        },
+        context
       ),
+      debugRule(options),
     ]);
     return r;
-
-    //     const t = mergeWith(bareTemplateSource, packageTemplateSource1)
-    // return t
-    // const t = apply(bareTemplateSource)
-
-    // return mergeWith(
-
-    // );
   };
 }

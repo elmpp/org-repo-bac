@@ -6,8 +6,6 @@ export default function (options: Schema): Rule {
   return (_tree, context) => {
     const originSource = options.originPath ? url(options.originPath) : empty();
 
-console.log(`optionsFactory :>> `, options)
-
     const serviceRule = wrapServiceAsRule(
       {
         cb: options.cb,

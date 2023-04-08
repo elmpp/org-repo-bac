@@ -1,6 +1,9 @@
-import { TaskExecutor } from "@angular-devkit/schematics";
-import { AddressPathRelative } from "@business-as-code/address";
-import { Context, ServiceInitialiseOptions, Services, ServicesStatic } from "../../../__types__";
+import {
+  Context,
+  ServiceInitialiseOptions,
+  Services,
+  ServicesStatic,
+} from "../../../__types__";
 
 export const ServiceExecName = "service-exec";
 
@@ -13,15 +16,16 @@ export interface Options<SName extends keyof ServicesStatic> {
   cb: (options: {
     service: Services[SName];
     serviceName: SName;
-  }) => Promise<void>;
+  }) => Promise<any>;
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
   serviceName: SName;
   serviceOptions: ServiceInitialiseOptions;
   // workingPath: AddressPathRelative
-  context: Context
+  context: Context;
 }
 
-export type ServiceExecTaskOptions<SName extends keyof Services> = Options<SName>
+export type ServiceExecTaskOptions<SName extends keyof Services> =
+  Options<SName>;
 // export interface ServiceExecTaskOptions {
 //   // workingDirectory: string;
 //   options: Options<keyof ServicesStatic>; // must be optional due to TaskExecutor having optional params

@@ -163,8 +163,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     ): Promise<Services[SName]> => {
       const staticService = staticServices[serviceName];
 
-      // console.log(`staticServices, serviceName :>> `, staticServices, serviceName)
-console.log(`staticServices, serviceName :>> `, staticServices, serviceName)
       const serviceIns = (await staticService.initialise(
         options
       )) as Services[SName];

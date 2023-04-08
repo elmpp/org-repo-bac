@@ -64,6 +64,8 @@ Create a schema for the config files. It should be driven by a typescript interf
  - plugins: [oclif plugins](https://tinyurl.com/ybnks7qa)
  - generators (yes, required): [yeoman](https://yeoman.io/authoring/integrating-yeoman.html) (it's usage is for simplicity and prompted by this - https://tinyurl.com/2ztjtsbs)
 
+### Tech Notes
+ - Need to pin `angular-devkit/core` + `angular-devkit/schematics` to an exact version ('15.2.4') - this is because we import rxjs and use it in /core. It has to match the schematics transitive dep rxjs. GH issue - https://tinyurl.com/2c4ukdle
 
 ### Risks
  1. Jira kinda [owns this space already](https://tinyurl.com/2maj9agc). Need to lean into the monorepo tooling perhaps moreso

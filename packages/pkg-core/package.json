@@ -13,14 +13,15 @@
     "@angular-devkit/schematics": "*"
   },
   "dependencies": {
-    "@angular-devkit/core": "*",
-    "@angular-devkit/schematics": "*",
+    "@angular-devkit/core": "15.2.4",
+    "@angular-devkit/schematics": "15.2.4",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/error": "workspace:*",
     "@business-as-code/fslib": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
     "@oclif/core": "2.6.4",
+    "rxjs": "6.6.7",
     "zod": "^3.20.6"
   },
   "devDependencies": {
