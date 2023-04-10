@@ -112,9 +112,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
       },
       // destinationPath: workspacePath,
-      dryRun: false,
-      force: true,
-      workingPath: addr.pathUtils.dot,
+      // dryRun: false,
+      // force: true,
+      // workingPath: addr.pathUtils.dot,
     });
 
     if (!assertIsOk(res)) {
@@ -130,7 +130,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           break;
       }
     } else {
-      context.logger(`Finished ok. Scaffolded into '${res.res.original}'`, "info");
+      context.logger(`Finished ok. Scaffolded into '${res.res.destinationPath.original}'`, "info");
     }
 
     return res

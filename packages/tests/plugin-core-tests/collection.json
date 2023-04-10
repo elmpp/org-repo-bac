@@ -10,6 +10,16 @@
       "schema": "./src/schematics/repositories-create/schema.json",
       "description": "Generates our git repositories"
     },
+    "commit": {
+      "factory": "./src/schematics/commit/factory",
+      "schema": "./src/schematics/commit/schema.json",
+      "description": "Make a commit through a separate schematic"
+    },
+    "init": {
+      "factory": "./src/schematics/init/factory",
+      "schema": "./src/schematics/init/schema.json",
+      "description": "Make a init through a separate schematic"
+    },
     // "blank": {
     //   "factory": "./src/schematics/blank/factory",
     //   "schema": "./src/schematics/blank/schema.json",

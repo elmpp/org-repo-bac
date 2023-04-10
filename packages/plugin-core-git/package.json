@@ -20,6 +20,7 @@
     "@business-as-code/core": "workspace:*",
     "@business-as-code/error": "workspace:^0.0.1",
     "@business-as-code/fslib": "workspace:^0.0.1",
+    "isomorphic-git": "^1.23.0",
     "nodegit": "v0.28.0-alpha.18",
     "simple-git": "^3.17.0"
   },

@@ -1,2 +1,2 @@
 export * from "./test-env";
-export * from "./schematics-utils";
+export * from "./schematics/schematics-utils";

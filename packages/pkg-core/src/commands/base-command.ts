@@ -11,6 +11,7 @@ import { Command, Config, Flags, Interfaces, Performance } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import { fileURLToPath } from "url";
+import { SchematicsService } from "../schematics/schematics-service";
 import {
   assertIsOk,
   Context,
@@ -140,6 +141,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     plugins: Interfaces.Plugin[];
     logger: Context["logger"];
   }): Promise<Context["serviceFactory"]> {
+
+    const coreServices = {
+      schematics: SchematicsService,
+    }
+
     const staticServices = (await plugins.reduce(async (accum, plugin) => {
       const acc = await accum;
       const staticPluginServices = await this.loadServicesForPlugin({
@@ -153,7 +159,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
         ...acc,
         ...staticPluginServices,
       };
-    }, Promise.resolve({}))) as ServicesStatic;
+    }, Promise.resolve(coreServices))) as ServicesStatic;
 
     // console.log(`res :>> `, res)
 
@@ -260,6 +266,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       }
       this.log(msg);
     };
+
+
 
     const serviceFactory = await this.loadServiceFactory({
       plugins: oclifConfig.plugins,

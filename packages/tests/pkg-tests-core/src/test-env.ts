@@ -20,7 +20,7 @@ import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import * as mockStd from "stdout-stderr";
-import { SchematicsRunCommand } from "./schematics-run-command";
+import { SchematicsRunCommand } from "./schematics/schematics-run-command";
 import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,

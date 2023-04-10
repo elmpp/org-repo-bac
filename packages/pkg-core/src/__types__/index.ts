@@ -80,6 +80,8 @@ export type ServiceInitialiseOptions = {
   context: Context;
   /** service instances are recreated when targeting different directories */
   destinationPath: AddressPathAbsolute;
+  /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
+  workingPath?: string
 };
 // export type ServiceInitialiseOptions = { context: Context; workingPath: AddressPathRelative }; // workingPath must be runtime value for services
 

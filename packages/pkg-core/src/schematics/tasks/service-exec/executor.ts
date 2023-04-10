@@ -6,14 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { tags } from '@angular-devkit/core';
 import { SchematicContext, TaskExecutor } from '@angular-devkit/schematics';
-import { SpawnOptions, spawn } from 'child_process';
-import * as path from 'path';
 import { assertNonEmpty } from '../../../util';
 import {
   ServiceExecTaskFactoryOptions,
-  ServiceExecTaskOptions,
+  ServiceExecTaskOptions
 } from './options';
 
 export function serviceExecExecutor(
@@ -21,7 +18,7 @@ export function serviceExecExecutor(
 ): TaskExecutor<ServiceExecTaskOptions> {
   const rootDirectory = factoryOptions.rootDirectory || process.cwd();
 
-  return async (options: ServiceExecTaskOptions = {} as ServiceExecTaskOptions, context: SchematicContext) => {
+  return async (options: ServiceExecTaskOptions = {} as ServiceExecTaskOptions, schematicsContext: SchematicContext) => {
 
     // if (!options) {
     //   throw new Error(`How is this supposed to work then huh!!`)
@@ -32,9 +29,9 @@ export function serviceExecExecutor(
     // }
     assertNonEmpty(options)
 
-    const {serviceName, serviceOptions, cb, context: bacContext} = options
+    const {serviceName, serviceOptions, cb, context} = options
 
-    const service = await bacContext!.serviceFactory(serviceName, serviceOptions)
+    const service = await context!.serviceFactory(serviceName, serviceOptions)
 
     return cb({service, serviceName})
 

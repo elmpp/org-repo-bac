@@ -1,5 +1,4 @@
 import "@business-as-code/plugin-core-essentials";
-import "@business-as-code/plugin-core-scaffold";
 import "@business-as-code/plugin-core-git";
 import "@business-as-code/plugin-core-tests";
 
