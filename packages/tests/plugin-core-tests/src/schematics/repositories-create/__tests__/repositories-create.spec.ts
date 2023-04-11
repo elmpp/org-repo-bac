@@ -1,8 +1,9 @@
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 import { expectIsOk } from "@business-as-code/tests-core/src/test-utils";
+import assert from "assert";
 
 describe("repositories-create", () => {
-  // jest.setTimeout(25000);
+  jest.setTimeout(25000);
 
   it("create normal", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
@@ -27,41 +28,49 @@ describe("repositories-create", () => {
 
       expectIsOk(res);
 
-      // await testContext.runSchematicServiceCb({
-      //   serviceName: "git",
-      //   tree: res.res.tree,
-      //   cb: async ({ service }) => {
-      //     const repo = service.getRepository(false);
+      const assertForWorkingPath = async (workingPath: string) => {
+        await testContext.runSchematicServiceCb({
+          serviceOptions: {
+            serviceName: "git",
+            cb: async ({ service }) => {
+              const repo = service.getRepository(false);
 
-      //     assert(repo)
+              expect(service.getWorkingDestinationPath().original).toMatch(
+                new RegExp(`/${workingPath}$`)
+              );
+              assert(
+                repo,
+                `Initialised repo not found at '${
+                  service.getWorkingDestinationPath().original
+                }'`
+              );
 
-      //     expect(
-      //       await repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)
-      //     ).toBeTruthy();
+              expect(
+                await repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)
+              ).toBeTruthy();
+            },
+            initialiseOptions: {
+              workingPath,
+            },
+          },
+          tree: res.res.tree,
+        });
 
-      //     // try {
-      //     //   // const logs = await repo.log();
-      //     //   // console.log(`logs :>> `, logs);
-      //     // }
-      //     // catch (logErr) {
-      //     //   console.log(`logErr :>> `, logErr)
-      //     //   throw logErr
-      //     // }
-      //   },
-      //   initialisationOptions: {},
-      //   // originPath: testContext.envVars.workspacePath,
-      // });
+        expect(
+          (res.res.tree.readJson(`./${workingPath}/package.json`) as any)?.name
+        ).toEqual("root-package");
+        expect(
+          (
+            res.res.tree.readJson(
+              `./${workingPath}/packages/my-package-1/package.json`
+            ) as any
+          )?.name
+        ).toEqual("my-package-1");
+      };
 
-      // console.log(`res.res.tree :>> `, res.res.tree)
-      expect((res.res.tree.readJson("./package.json") as any)?.name).toEqual(
-        "root-package"
-      );
-      // expect(
-      //   (res.res.tree.readJson("./packages/my-package-1/package.json") as any)
-      //     ?.name
-      // ).toEqual("my-package-1");
-
-      // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
+      await assertForWorkingPath("repo1");
+      await assertForWorkingPath("repo2");
+      await assertForWorkingPath("repo3");
     });
   });
 });

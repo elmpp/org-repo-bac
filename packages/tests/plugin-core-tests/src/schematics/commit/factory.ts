@@ -4,12 +4,12 @@ import { debugRule } from "@business-as-code/tests-core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
-  return (_tree, context) => {
+  return (_tree, schematicContext) => {
 
     const r = chain([
       // debugRule(options),
-      wrapServiceAsRule(
-        {
+      wrapServiceAsRule({
+        serviceOptions: {
           serviceName: "git",
           cb: async ({ service }) => {
             // console.log(`:>> BBBBBBBBBBBBBBBBBBB`);
@@ -46,10 +46,10 @@ export default function (options: Schema): Rule {
             // );
           },
           context: options._bacContext,
-          serviceOptions: {},
+          initialiseOptions: {},
         },
-        context
-      ),
+        schematicContext
+  }),
       // debugRule(options),
     ]);
     return r;

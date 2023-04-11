@@ -4,6 +4,9 @@ import { BacError, MessageName } from '@business-as-code/error';
 // import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
 import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
 import path from 'path'
+import fs from 'fs'
+import { addr, AddressPathAbsolute } from '@business-as-code/address';
+import { xfs } from '@business-as-code/fslib';
 
 declare global {
   namespace Bac {
@@ -17,6 +20,10 @@ declare global {
   // export interface BacServices {
   //   schematicsService: SchematicsService;
   // }
+}
+
+type Options = ServiceInitialiseOptions & {
+
 }
 
 
@@ -39,11 +46,17 @@ export class GitService {
   /** whether the service has initialised on a local repo. Prerequisite for most operations. See  */
   protected repository: SimpleGit | undefined
 
-  static async initialise(options: ServiceInitialiseOptions) {
+  static async initialise(options: Options) {
     const ins = new GitService(options);
 
-    const baseDir = GitService.getWorkingDestinationPath(options)
-    const simpleGit = simpleGitFactory({baseDir});
+    const workspacePathAbsolute = GitService.getWorkingDestinationPath(options)
+
+    if (!(await xfs.existsPromise(workspacePathAbsolute.address))) {
+      options.context.logger(`gitService: service initialised on a non-existent path '${workspacePathAbsolute.original}'. Is this really what you desire?`)
+      return ins
+    }
+
+    const simpleGit = simpleGitFactory({baseDir: workspacePathAbsolute.original});
 
     // ins.repository = simpleGit
     if (await simpleGit.checkIsRepo(CheckRepoActionsImport.IS_REPO_ROOT)) {
@@ -65,12 +78,12 @@ export class GitService {
     // return ins;
   }
 
-  constructor(protected options: ServiceInitialiseOptions) {
+  constructor(protected options: Options) {
     // this.options = options;
   }
 
-  protected static getWorkingDestinationPath(options: ServiceInitialiseOptions): string {
-    return path.join(options.destinationPath.original, options.workingPath ?? '.')
+  protected static getWorkingDestinationPath(options: Options): AddressPathAbsolute {
+    return addr.pathUtils.join(options.destinationPath, addr.parsePath(options.workingPath ?? '.')) as AddressPathAbsolute
   }
 
   getRepository(strict: false): undefined | SimpleGit
@@ -83,7 +96,7 @@ export class GitService {
       throw new BacError(MessageName.GIT_SERVICE_REPOSITORY_UNINITIALISED, `Attempting an operation without a current initialised repository`)
     }
 
-    return simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
+    return simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
     // return this.repository
   }
 
@@ -102,14 +115,14 @@ export class GitService {
    nodeGit example - https://tinyurl.com/23cn82ao
    */
   async clone(url: string, options?: TaskOptions): Promise<this> {
-    const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
+    const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
     await simpleGit.clone(
       url,
       this.options.destinationPath.original,
       options,
     )
     // @todo - error handling
-    this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
+    this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
     return this
   }
 
@@ -121,14 +134,14 @@ export class GitService {
     // // @todo - error handling
     // this.repository = repository
 // console.log(`GitService.getWorkingDestinationPath(this.options) :>> `, GitService.getWorkingDestinationPath(this.options))
-    const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
+    const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
     await simpleGit.init(options ?? {})
     // @todo - error handling
-    this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options)});
+    this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
     return this
   }
 
-  getWorkingDestinationPath(): string {
+  getWorkingDestinationPath(): AddressPathAbsolute {
     return GitService.getWorkingDestinationPath(this.options)
   }
 

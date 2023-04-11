@@ -16,21 +16,11 @@ import {
   template,
   url,
 } from "@angular-devkit/schematics";
-import {
-  NodePackageInstallTask,
-  RepositoryInitializerTask,
-  RunSchematicTask,
-} from "@angular-devkit/schematics/tasks";
-import { addr, AddressPathRelative } from "@business-as-code/address";
-import {
-  constants,
-  wrapServiceAsRule,
-  wrapTaskAsRule,
-} from "@business-as-code/core";
+import { wrapServiceAsRule } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
-  return (_tree, context) => {
+  return (_tree, schematicContext) => {
     // console.log(`options.destinationPath :>> `, options.destinationPath);
     // console.log(`context :>> `, context.engine.workflow.engineHost)
 
@@ -54,17 +44,18 @@ export default function (options: Schema): Rule {
 
     return chain([
       mergeWith(baseTemplateSource),
-      wrapServiceAsRule(
-        {
+      wrapServiceAsRule({
+        serviceOptions: {
           serviceName: "git",
           cb: async ({ service }) => {
             // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
             await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
           },
+          initialiseOptions: {},
           context: options._bacContext,
         },
-        context
-      ),
+        schematicContext,
+      }),
       // wrapTaskAsRule(
       //   // new RepositoryInitializerTask(".", {
       //   //   email: constants.DEFAULT_COMMITTER_EMAIL,
@@ -74,30 +65,31 @@ export default function (options: Schema): Rule {
 
       //   USE GIT SERVICE - https://github.com/nodegit/nodegit/blob/master/examples/create-new-repo.js#L13
       // ),
-      wrapServiceAsRule(
-        {
+      wrapServiceAsRule({
+        serviceOptions: {
           serviceName: "myService",
           cb: async ({ service }) => {
             await service.func1({ someRandomProps: "bollocks" });
           },
           // workingPath: addr.parsePath(".") as AddressPathRelative,
+          initialiseOptions: {},
           context: options._bacContext,
         },
-        context
-      ),
-      wrapTaskAsRule(
-        new RepositoryInitializerTask("repo", {
-          email: constants.DEFAULT_COMMITTER_EMAIL,
-          message: "initial commit of repo",
-          name: constants.DEFAULT_COMMITTER_NAME,
-        })
-      ),
-      wrapTaskAsRule(new NodePackageInstallTask({})),
-      wrapTaskAsRule(
-        new RunSchematicTask("workspace-configure", {
-          ...options,
-        })
-      ),
+        schematicContext,
+      }),
+      // wrapTaskAsRule(
+      //   new RepositoryInitializerTask("repo", {
+      //     email: constants.DEFAULT_COMMITTER_EMAIL,
+      //     message: "initial commit of repo",
+      //     name: constants.DEFAULT_COMMITTER_NAME,
+      //   })
+      // ),
+      // wrapTaskAsRule(new NodePackageInstallTask({})),
+      // wrapTaskAsRule(
+      //   new RunSchematicTask("workspace-configure", {
+      //     ...options,
+      //   })
+      // ),
       /** run schematic from same collection */
       schematic("workspace-configure", {
         ...options,

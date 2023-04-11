@@ -38,7 +38,7 @@ export default function (options: Schema): Rule {
   // const schematicsVersion = require('@angular-devkit/schematics/package.json').version;
   // const coreVersion = require('@angular-devkit/core/package.json').version;
 
-  return (_tree, context) => {
+  return (_tree, schematicContext) => {
 
     const getConfigPath = (
       runtimeConfigRelOrAbsoluteNative?: string

@@ -17,7 +17,7 @@
       "type": "string",
       "description": "Optional path to Source content. Defaults to any empty() Source"
     },
-    "initialisationOptions": {
+    "initialiseOptions": {
       "type": "object",
       "description": "Additional params for initialising of the service instance"
     },

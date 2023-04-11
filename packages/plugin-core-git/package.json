@@ -20,15 +20,12 @@
     "@business-as-code/core": "workspace:*",
     "@business-as-code/error": "workspace:^0.0.1",
     "@business-as-code/fslib": "workspace:^0.0.1",
-    "isomorphic-git": "^1.23.0",
-    "nodegit": "v0.28.0-alpha.18",
     "simple-git": "^3.17.0"
   },
   "devDependencies": {
     "@business-as-code/tests-core": "workspace:*",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.15.3",
-    "@types/nodegit": "^0.28.3",
     "expect-type": "^0.15.0"
   }
 }

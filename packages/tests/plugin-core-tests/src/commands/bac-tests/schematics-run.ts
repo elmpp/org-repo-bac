@@ -1,32 +1,40 @@
-import { addr } from "@business-as-code/address";
 import {
+  addr,
+  assertIsAddressPath,
+  assertIsAddressPathAbsolute,
+  assertIsAddressPathRelative,
+} from "@business-as-code/address";
+import {
+  Args,
   assertIsOk,
   BaseCommand,
   ContextCommand,
   Flags,
+  Interfaces as _Interfaces,
 } from "@business-as-code/core";
-import { MessageName } from "@business-as-code/error";
+import { BacError, MessageName } from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
+import path from "path";
+
 
 /**
  Generic command to run any schematic. Allows testing without standing up dedicated command
  */
-export class SchematicsRunCommand extends BaseCommand<
-  typeof SchematicsRunCommand
-> {
+export class BacTestsSchematicsRun extends BaseCommand<typeof BacTestsSchematicsRun> {
   static override description = "Runs arbitrary schematic";
 
-  //   static override examples = [
-  //     `$ oex hello friend --from oclif
-  // Produces the repos in the fixtures directory
-  // `,
-  //   ];
+//   static override examples = [
+//     `$ oex hello friend --from oclif
+// Produces the repos in the fixtures directory
+// `,
+//   ];
 
   static override flags = {
     // payload: Flags.custom({
-    //     // parse: async (): Promise<any> => {},
-    //     // char: 'p',
-    //     // description: 'team to use',
-    //     // default: () => {},
+    //     parse: async (): Promise<any> => {},
+    //     char: 'p',
+    //     description: 'team to use',
+    //     default: () => {},
     // }),
     workspacePath: Flags.string({
       char: "w",
@@ -40,9 +48,12 @@ export class SchematicsRunCommand extends BaseCommand<
     }),
   };
 
-  static override args = {};
+  static override args = {
+  };
 
-  async execute(context: ContextCommand<typeof SchematicsRunCommand>) {
+  async execute(context: ContextCommand<typeof BacTestsSchematicsRun>) {
+
+
     // let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
     // if (!assertIsAddressPath(repositoriesPath)) {
     //   throw new BacError(
@@ -72,23 +83,25 @@ export class SchematicsRunCommand extends BaseCommand<
     //   }
     //   await xfs.mkdirpPromise(repositoriesPath.address);
     // }
-    // console.log(`repositoriesPath :>> `, repositoriesPath)
+// console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
+    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath})
 
-    // console.log(`(context.cliOptions.flags as any).initialiseOptions :>> `, (context.cliOptions.flags as any).payload.initialiseOptions)
-    const schematicsService = await context.serviceFactory("schematics", {
-      context,
-      destinationPath: context.workspacePath,
-    });
+    console.log(`:>> beforeschematicrun`);
 
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
-      context: context,
+      context,
       options: (context.cliOptions.flags as any).payload,
       // destinationPath: workspacePath,
+      dryRun: false,
+      force: true,
+      workingPath: addr.pathUtils.dot,
     });
+
+    console.log(`res :>> `, res)
 
     if (!assertIsOk(res)) {
       switch (res.res.reportCode) {
@@ -103,12 +116,10 @@ export class SchematicsRunCommand extends BaseCommand<
           break;
       }
     } else {
-      context.logger(
-        `Finished ok. Scaffolded into '${res.res.destinationPath.original}'`,
-        "info"
-      );
+      context.logger(`Finished ok. Scaffolded into '${res.res.original}'`, "info");
     }
-    return res;
+
+    return res
 
     //   override async run(): Promise<void> {
     //     }

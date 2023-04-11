@@ -1,25 +1,16 @@
-import { strings } from "@angular-devkit/core";
 import {
-  apply,
-  chain,
-  mergeWith,
-  move,
-  Rule,
-  template,
-  url,
-  externalSchematic,
+  chain, Rule
 } from "@angular-devkit/schematics";
-import { debugRule } from "@business-as-code/tests-core";
 import { constants, wrapServiceAsRule } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
-  return (_tree, context) => {
+  return (_tree, schematicContext) => {
 
     const r = chain([
       // debugRule(options),
-      wrapServiceAsRule(
-        {
+      wrapServiceAsRule({
+        serviceOptions: {
           serviceName: "git",
           cb: async ({ service }) => {
             // const repo = await service.getRepository()
@@ -39,7 +30,7 @@ export default function (options: Schema): Rule {
 
             await repo.add(".");
             /** commit example - https://tinyurl.com/29y5mnwm */
-            await repo.commit(options.message, {
+            await repo.commit('some message', {
               "--author": constants.DEFAULT_COMMITTER,
               "--allow-empty": null,
             });
@@ -56,10 +47,10 @@ export default function (options: Schema): Rule {
             // );
           },
           context: options._bacContext,
-          serviceOptions: {},
+          initialiseOptions: {},
         },
-        context
-      ),
+        schematicContext
+  }),
       // debugRule(options),
     ]);
     return r;

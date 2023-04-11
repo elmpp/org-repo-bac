@@ -222,7 +222,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // argv?: string[] | undefined,
     opts: Interfaces.LoadOptions,
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
-  ): Promise<ReturnType<T["run"]>> {
+  ): Promise<Result<unknown, {error: Error}>> {
     const config = await Config.load(
       opts || require.main?.filename || __dirname
     );

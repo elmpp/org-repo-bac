@@ -1,19 +1,20 @@
-import { chain, empty, mergeWith, Rule, url } from "@angular-devkit/schematics";
+import { chain, empty, mergeWith, Rule, SchematicContext, Tree, url } from "@angular-devkit/schematics";
 import { wrapServiceAsRule } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
-  return (_tree, context) => {
+  return (_tree: Tree, schematicContext: SchematicContext) => {
     const originSource = options.originPath ? url(options.originPath) : empty();
 
-    const serviceRule = wrapServiceAsRule(
-      {
+    const serviceRule = wrapServiceAsRule({
+      serviceOptions: {
         cb: options.cb,
         serviceName: options.serviceName,
         context: options._bacContext,
-        serviceOptions: options.initialisationOptions,
+        initialiseOptions: options.initialiseOptions,
       },
-      context
+      schematicContext
+    }
     );
 
     // console.log(`context :>> `, context)

@@ -46,7 +46,7 @@ describe("repositories-create", () => {
           //   throw logErr
           // }
         },
-        initialisationOptions: {},
+        initialiseOptions: {},
         // originPath: testContext.envVars.workspacePath,
       });
 

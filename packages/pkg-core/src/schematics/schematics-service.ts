@@ -1,13 +1,15 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { logging, Path, virtualFs } from "@angular-devkit/core";
-import { createConsoleLogger, NodeJsSyncHost } from "@angular-devkit/core/node";
+import { Path, virtualFs } from "@angular-devkit/core";
+import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import {
+  callRule,
   Collection,
   DryRunSink,
   ExecutionOptions,
   HostCreateTree,
   HostSink,
   MergeStrategy,
+  Rule,
   SchematicContext,
   Sink,
   TaskExecutorFactory,
@@ -28,7 +30,6 @@ import {
   AddressPackageScaffoldIdentString,
   AddressPathAbsolute,
   AddressPathAbsoluteString,
-  AddressPathRelative,
 } from "@business-as-code/address";
 import {
   BacError,
@@ -39,22 +40,8 @@ import { xfs } from "@business-as-code/fslib";
 import { Interfaces } from "@oclif/core";
 import * as ansiColors from "ansi-colors";
 import path from "path";
-import {
-  EMPTY,
-  from,
-  Observable,
-  of as observableOf,
-  of,
-  throwError,
-} from "rxjs";
-import {
-  catchError,
-  concatMap,
-  ignoreElements,
-  last,
-  map,
-  takeLast,
-} from "rxjs/operators";
+import { from, Observable, of as observableOf, of, throwError } from "rxjs";
+import { concatMap, ignoreElements, last, map, takeLast } from "rxjs/operators";
 import { Context, Result, ServiceInitialiseOptions } from "../__types__";
 
 declare global {
@@ -130,12 +117,17 @@ export class SchematicsService {
   // @ts-expect-error:
   private workflow: NodeWorkflow;
 
-  constructor({ dryRun = false, force = true, ...otherOptions }: Options) {
+  constructor({
+    dryRun = false,
+    force = true,
+    workingPath = ".",
+    ...otherOptions
+  }: Options) {
     this.options = {
-      ...otherOptions,
-      workingPath: ".",
+      workingPath,
       dryRun,
       force,
+      ...otherOptions,
     };
   }
 
@@ -143,6 +135,8 @@ export class SchematicsService {
     options: Options,
     prevInstance?: SchematicsService
   ) {
+    // console.log(`options :>> `, options)
+
     /** we can skip the resolving of plugins after initial instance.
      * Also, it is necessary when calling to .runSchematic for workflow.engine to be consistent
      * */
@@ -155,6 +149,16 @@ export class SchematicsService {
       this.schematicsMap = schematicsMap;
       this.registerTasks({ workflow: this.workflow });
     }
+
+    // DO NOT MOVE THE HOST_ROOT FOLDER. THIS STAYS AT DESTINATIONPATH ALWAYS
+
+    // however, the workingPath must be heeded
+    // console.log(`host :>> `, this.workflow._host._root);
+    // this.workflow._host._root = path.join(
+    //   this.options.destinationPath.original,
+    //   this.options.workingPath
+    // );
+    // console.log(`host2 :>> `, this.workflow._host._root);
 
     // const schematicsMap = this.findAllSchematicsCollections()
     // this.workflow = this.createWorkflow({
@@ -170,25 +174,20 @@ export class SchematicsService {
    Runs a schematic directly, no workflow involvement. This returns an observer so can be merged into
    an existing tree
    */
-  runExternal({
+  runExternalSchematic({
     address,
-    context,
-    schematicsContext,
-    options,
+    schematicContext,
+    schematicOptions,
     tree,
     executionOptions,
-  }: // parentContext,
+  }:
   {
     address: AddressPackageScaffoldIdentString;
-    context: Context;
-    schematicsContext: SchematicContext;
-    // parentContext?: SchematicContext // when running an external Schematic
-    // destinationPath: AddressPathAbsolute;
-    options: Record<PropertyKey, unknown>;
+    schematicContext: SchematicContext;
+    schematicOptions: Record<PropertyKey, unknown>;
     tree: Tree;
     executionOptions?: Partial<ExecutionOptions>;
   }): Promise<Tree> {
-    // }): Observable<Tree> {
     const schematicsMapEntry = this.schematicsMap.get(address);
     if (!this.workflow) {
       throw new Error(`Cannot runExternal without an existing workflow`);
@@ -200,7 +199,7 @@ export class SchematicsService {
     const collection = this.workflow.engine.createCollection(
       schematicsMapEntry.collectionPath.original,
       // @ts-ignore
-      schematicsContext.schematic.collection
+      schematicContext.schematic.collection
     ) as Collection<{}, {}>;
     const schematic = collection.createSchematic(
       schematicsMapEntry.address.parts.params.get("namespace")!
@@ -218,69 +217,15 @@ export class SchematicsService {
     //   )
     // );
 
-    // schematicsContext.
+    // schematicContext.
 
-    /**
-
-     */
-    const attachFlushSinksToSchematic = (
-      tree$: Observable<Tree>,
-      action: "commit" | "report"
-    ): Observable<Tree> => {
-      const createFlushToFsSinks = (): Sink[] => {
-        let error = false;
-
-        // flush the existing tree...
-        // const progressSink = new HostSink(tmpHosts, true)
-        const dryRunSink = new DryRunSink(this._host, this.options.force);
-        const dryRunSubscriber = dryRunSink.reporter.subscribe((event) => {
-          if (action === "report") {
-            this.workflow._reporter.next(event);
-          }
-          error = error || event.kind == "error";
-        });
-        return [
-          dryRunSink,
-          {
-            commit() {
-              dryRunSubscriber.unsubscribe();
-              if (error) {
-                return throwError(new UnsuccessfulWorkflowExecution());
-              }
-
-              return of();
-            },
-          },
-          ...(action === "commit"
-            ? [new HostSink(this.workflow._host, this.options.force)]
-            : []),
-        ];
-      };
-
-      const flushToFsSinks = createFlushToFsSinks();
-
-      return from(flushToFsSinks).pipe(
-        concatMap((sink) => {
-          return tree$.pipe(
-            concatMap((tree) => {
-              // console.log(`tree :>> `, tree)
-              // if (tree.actions) {
-              return sink.commit(tree);
-              // }
-            })
-          );
-          // return of()
-        }),
-        ignoreElements()
-      );
-    };
 
     // from(flushToFsSinks).pipe(
     //   concatMap((sink) => sink.commit(tree)),
     //   ignoreElements(),
     // )
 
-    const prevSchematicWithSink = attachFlushSinksToSchematic(
+    const prevSchematicWithSink = this.attachFlushSinksToSchematic(
       of(tree),
       "commit"
     );
@@ -288,11 +233,11 @@ export class SchematicsService {
       .toPromise()
       .then(() => {
         const nextSchematic = schematic.call(
-          options,
+          schematicOptions,
           // observableOf(tmpTree),
           observableOf(branch(tree)),
           // observableOf(branch(tree)),
-          schematicsContext,
+          schematicContext,
           executionOptions
         );
 
@@ -316,7 +261,7 @@ export class SchematicsService {
         // const nextSchematicWithSink = attachFlushSinksToSchematic(
         //   of(tmpHostsTree)
         // );
-        const nextSchematicWithSink = attachFlushSinksToSchematic(
+        const nextSchematicWithSink = this.attachFlushSinksToSchematic(
           nextSchematicWithFsTree,
           "report"
         ); // don't commit the changes as already there, duh. Workflow reporting only
@@ -334,43 +279,88 @@ export class SchematicsService {
           .toPromise();
       })
       .then(() => tree);
-
-    // .pipe(
-    //   last(),
-    //   map((x) => {
-    //     tree.merge(x, MergeStrategy.AllowOverwriteConflict);
-    //     return tree;
-    //   })
-    // );
-    // const externalSchematicPromise = schematic.call(
-    //   options,
-    //   // observableOf(tmpTree),
-    //   observableOf(branch(tree)),
-    //   // observableOf(branch(tree)),
-    //   schematicsContext,
-    //   executionOptions
-    //   ).toPromise();
-    // return externalSchematicPromise
   }
 
-  async run({
+  /**
+   Runs a rule with same semantics as .runExternalSchematic. This does not change the
+   schematicContext, collection etc - it simply ensures that the tree is flushed to fs before execution
+
+   inspiration - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/testing/schematic-test-runner.ts#L133
+   */
+  runExternalSchematicRule({
+    schematicRule,
+    schematicContext,
+    tree,
+  }: // parentContext,
+  {
+    schematicRule: Rule;
+    schematicContext: SchematicContext;
+    tree: Tree;
+  }): Promise<Tree> {
+
+    const prevSchematicWithSink = this.attachFlushSinksToSchematic(
+      of(tree),
+      "commit"
+    );
+
+    return prevSchematicWithSink
+      .toPromise()
+      .then(() => {
+        const nextSchematic = callRule(
+          schematicRule,
+          tree,
+          schematicContext,
+        );
+
+        // will produce an observable stream of a single tree event. We can then take the first and build
+        // a new tree from the fs because the process may have written to it directly (i.e. git client etc)
+        const nextSchematicWithFsTree = nextSchematic.pipe(
+          last(),
+          map((x) => {
+            const externalSchematicTree = new HostCreateTree(
+              new virtualFs.ScopedHost(
+                new NodeJsSyncHost(),
+                this.options.destinationPath.original as any
+              )
+            );
+            // externalSchematicTree._cache = tree._cache // hacky way to roll back the staging area
+            // get a diff of existing tree and this new one to know what the externalSchematic actually did
+            return externalSchematicTree;
+          })
+        );
+
+        // const nextSchematicWithSink = attachFlushSinksToSchematic(
+        //   of(tmpHostsTree)
+        // );
+        const nextSchematicWithSink = this.attachFlushSinksToSchematic(
+          nextSchematicWithFsTree,
+          "report"
+        ); // don't commit the changes as already there, duh. Workflow reporting only
+        return nextSchematicWithSink
+          .pipe(
+            takeLast(1),
+            // catchError(() => EMPTY),
+            // map(x => EMPTY),
+            // ignoreElements()
+            map((x) => {
+              tree.merge(x, MergeStrategy.AllowOverwriteConflict);
+              return tree;
+            })
+          )
+          .toPromise();
+      })
+      .then(() => tree);
+  }
+
+  async runSchematic({
     address,
     context,
     options,
-  }: // dryRun = false,
-  // force = false,
-  // workingPath,
-  // parentContext,
-  // destinationPath,
+  }:
   {
     address: AddressPackageScaffoldIdentString;
     context: Context;
-    // parentContext?: SchematicContext // when running an external Schematic
-    // destinationPath: AddressPathAbsolute;
     options: Record<PropertyKey, unknown>;
-    // dryRun?: boolean;
-    // force?: boolean;
-    // workingPath: AddressPathRelative;
   }): Promise<
     Result<
       { destinationPath: AddressPathAbsolute },
@@ -379,8 +369,6 @@ export class SchematicsService {
       | BacError<MessageName.SCHEMATICS_ERROR>
     >
   > {
-    // console.log(` :>> Available: '${Array.from(this.schematicsMap.keys()).map(schematicPath => schematicPath).join(', ')}'`)
-
     if (!xfs.existsPromise(this.options.context.workspacePath.address)) {
       return {
         success: false,
@@ -423,13 +411,7 @@ export class SchematicsService {
     }
 
     const debug = true; // @todo - make available from oclif
-    // const dryRunPresent = true;  // @todo - make available from oclif
-    // const dryRun = dryRunPresent ? true : debug; // @todo - make available from oclif
-
-    // const force = true; // @todo - make available from oclif
     const allowPrivate = true; // @todo - make available from oclif
-
-    // all set for executing this bitch
 
     // Indicate to the user when nothing has been done. This is automatically set to off when there's
     // a new DryRunEvent.
@@ -439,11 +421,6 @@ export class SchematicsService {
       loggingQueue: [],
       error: false,
     };
-
-    // // Logging queue that receives all the messages to show the users. This only get shown when no
-    // // errors happened.
-    // let loggingQueue: string[] = [];
-    // let error = false;
 
     const workflow = this.workflow;
 
@@ -521,17 +498,18 @@ export class SchematicsService {
   protected createWorkflow({
     schematicsCollectionMap,
     // logger,
-    destinationPath,
-    context,
+    // destinationPath,
+    // context,
   }: {
     schematicsCollectionMap: SchematicsCollectionsMap;
     // logger: logging.Logger;
-    destinationPath?: AddressPathAbsolute;
-    context: Context;
+    // destinationPath?: AddressPathAbsolute;
+    // context: Context;
   }): NodeWorkflow {
     const scaffoldBase = path.resolve(__dirname, "../..");
     const cliRoot = process.cwd(); // todo make available through context
-    const workflowRoot = (destinationPath?.original ?? process.cwd()) as Path;
+    const workflowRoot = addr.pathUtils.join(this.options.destinationPath, addr.parsePath(this.options.workingPath)).original as Path
+    // const workflowRoot = (destinationPath?.original ?? process.cwd()) as Path;
     // const pluginRoots = context.oclifConfig.plugins.filter(p => p.type === 'core').map(p => p.root)
 
     // Logging queue that receives all the messages to show the users. This only get shown when no
@@ -542,7 +520,9 @@ export class SchematicsService {
 
     const fsHost = new virtualFs.ScopedHost(new NodeJsSyncHost(), workflowRoot);
     // const fsHost = new NodeJsSyncHost
-    fsHost._root = workflowRoot;
+    // fsHost._root = workflowRoot;
+
+
     const workflow = new NodeWorkflow(fsHost, {
       root: workflowRoot,
       // const workflow = new NodeWorkflow(workflowRoot, {
@@ -613,7 +593,6 @@ export class SchematicsService {
         ? event.path.slice(1)
         : event.path;
 
-
       let pushable: string;
 
       if (event.kind === "error") {
@@ -623,7 +602,7 @@ export class SchematicsService {
           event.description == "alreadyExist"
             ? "already exists"
             : "does not exist";
-        context.logger(`ERROR! ${eventPath} ${desc}.`, "error");
+        this.options.context.logger(`ERROR! ${eventPath} ${desc}.`, "error");
         return;
       }
 
@@ -666,22 +645,74 @@ export class SchematicsService {
         if (!this.runCache.error) {
           // Flush the log queue and clean the error state.
           this.runCache.loggingQueue.forEach((log) =>
-            context.logger(log, "info")
+            this.options.context.logger(log, "info")
           );
         }
         this.runCache.loggingQueue = [];
         this.runCache.error = false;
       }
-      context.logger(`schematicsService: lifecycle '${event.kind}'`, "debug");
+      this.options.context.logger(`schematicsService: lifecycle '${event.kind}'`, "debug");
     });
 
     // Show usage of deprecated options
     workflow.registry.useXDeprecatedProvider((msg) =>
-      context.logger(msg, "warn")
+      this.options.context.logger(msg, "warn")
     );
 
     return workflow;
   }
+
+  protected attachFlushSinksToSchematic(
+    tree$: Observable<Tree>,
+    action: "commit" | "report"
+  ): Observable<Tree> {
+    const createFlushToFsSinks = (): Sink[] => {
+      let error = false;
+
+      // flush the existing tree...
+      // const progressSink = new HostSink(tmpHosts, true)
+      const dryRunSink = new DryRunSink(this._host, this.options.force);
+      const dryRunSubscriber = dryRunSink.reporter.subscribe((event) => {
+        if (action === "report") {
+          this.workflow._reporter.next(event);
+        }
+        error = error || event.kind == "error";
+      });
+      return [
+        dryRunSink,
+        {
+          commit() {
+            dryRunSubscriber.unsubscribe();
+            if (error) {
+              return throwError(new UnsuccessfulWorkflowExecution());
+            }
+
+            return of();
+          },
+        },
+        ...(action === "commit"
+          ? [new HostSink(this.workflow._host, this.options.force)]
+          : []),
+      ];
+    };
+
+    const flushToFsSinks = createFlushToFsSinks();
+
+    return from(flushToFsSinks).pipe(
+      concatMap((sink) => {
+        return tree$.pipe(
+          concatMap((tree) => {
+            // console.log(`tree :>> `, tree)
+            // if (tree.actions) {
+            return sink.commit(tree);
+            // }
+          })
+        );
+        // return of()
+      }),
+      ignoreElements()
+    );
+  };
 
   protected async registerTasks({ workflow }: { workflow: NodeWorkflow }) {
     this.options.context.logger(`registerServicesAsTasks: registering tasks`);

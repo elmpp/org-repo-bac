@@ -4,11 +4,11 @@ import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { HostCreateTree, Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
-  IsEmptyObject,
+  assertIsOk,
   LogLevel,
   Outputs,
   Result,
-  ServiceInitialiseOptions,
+  ServiceOptions,
   Services,
   ServicesStatic,
 } from "@business-as-code/core";
@@ -29,6 +29,16 @@ import {
 import { XfsCacheManager } from "./xfs-cache-manager";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
+
+type ServiceOptionsTestLite<SName extends keyof ServicesStatic> = Omit<
+  ServiceOptions<SName>,
+  "initialiseOptions" | "context"
+> & {
+  initialiseOptions: Omit<
+    ServiceOptions<SName>["initialiseOptions"],
+    "context" | "destinationPath"
+  >;
+};
 
 export type UnwrapPromise<T> = T extends PromiseLike<infer U>
   ? UnwrapPromise<U>
@@ -142,40 +152,49 @@ export type TestContext = {
    */
   runSchematicServiceCb: <SName extends keyof Services>(
     options: {
-      cb: (options: {
-        service: Services[SName];
-        serviceName: SName;
-      }) => Promise<void>;
-      // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
-      serviceName: SName;
-      /**  */
-      // initialisationOptions: Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions> extends never ? Record<never, never> | undefined : Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions>
-      initialisationOptions: IsEmptyObject<
-        Omit<
-          Parameters<ServicesStatic[SName]["initialise"]>[0],
-          keyof ServiceInitialiseOptions
-        >
-      > extends true
-        ? Record<never, any>
-        : Omit<
-            Parameters<ServicesStatic[SName]["initialise"]>[0],
-            keyof ServiceInitialiseOptions
-          >;
-      // serviceName: SName
-      // cb: Parameters<typeof wrapServiceAsRule<SName>>[0];
-      // /** optional Source path for the Rule. Defaults to an empty() Source */
+      serviceOptions: ServiceOptionsTestLite<SName>;
+      /** optional Source path for the Rule. Defaults to an empty() Source */
       originPath?: AddressPathAbsolute;
       /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
       tree?: Tree;
-      // parseOutput: ParserOutput<
-      //   FlagsInfer<typeof SchematicsRunCommand>,
-      //   FlagsInfer<typeof SchematicsRunCommand>,
-      //   ArgsInfer<typeof SchematicsRunCommand>
-      // >,
-      // schematicAddress: string,
-      // workspacePath: string,
-    } & {}
-  ) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+    }
+    // options: {
+    //   cb: (options: {
+    //     service: Services[SName];
+    //     serviceName: SName;
+    //   }) => Promise<void>;
+    //   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
+    //   serviceName: SName;
+    //   /**  */
+    //   // initialiseOptions: Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions> extends never ? Record<never, never> | undefined : Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions>
+    //   initialiseOptions: (IsEmptyObject<
+    //     Omit<
+    //       Parameters<ServicesStatic[SName]["initialise"]>[0],
+    //       keyof ServiceInitialiseOptions
+    //     >
+    //   > extends true
+    //     ? Record<never, any>
+    //     : Omit<
+    //         Parameters<ServicesStatic[SName]["initialise"]>[0],
+    //         keyof ServiceInitialiseOptions
+    //       >) & {workingPath?: string};
+    //   // serviceName: SName
+    //   // cb: Parameters<typeof wrapServiceAsRule<SName>>[0];
+    //   // /** optional Source path for the Rule. Defaults to an empty() Source */
+    //   originPath?: AddressPathAbsolute;
+    //   /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
+    //   tree?: Tree;
+    //   // parseOutput: ParserOutput<
+    //   //   FlagsInfer<typeof SchematicsRunCommand>,
+    //   //   FlagsInfer<typeof SchematicsRunCommand>,
+    //   //   ArgsInfer<typeof SchematicsRunCommand>
+    //   // >,
+    //   // schematicAddress: string,
+    //   // workspacePath: string,
+    // } & {}
+  ) => Promise<
+    Result<{ exitCode: number; tree: Tree }, never>
+  >;
   // runSchematic: (options: {
   //   args: any[];
   //   flags: any[];
@@ -533,13 +552,13 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
         runSchematic: async ({ parseOutput }) => {
           // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
 
-          process.chdir(cliPath.original);
+          // process.chdir(cliPath.original);
           // const argsWithAdditional = [...args, "--log-level", logLevel];
 
           let exitCode = 0;
 
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
-          await SchematicsRunCommand.runDirect<any>(
+          const res = await SchematicsRunCommand.runDirect<any>(
             {
               root: cliPath.original,
               // debug: 9,
@@ -583,15 +602,13 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           };
         },
         runSchematicServiceCb: async ({
-          cb,
+          serviceOptions: { cb, serviceName, initialiseOptions },
           originPath,
-          serviceName,
           tree,
-          initialisationOptions,
         }) => {
           // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
 
-          process.chdir(cliPath.original);
+          // process.chdir(cliPath.original);
           // const argsWithAdditional = [...args, "--log-level", logLevel];
 
           const parseOutput: ParserOutput<
@@ -601,7 +618,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 tree?: Tree;
                 cb: (options: any) => Promise<void>;
                 serviceName: keyof Services;
-                initialisationOptions: any;
+                initialiseOptions: any;
               };
             },
             FlagsInfer<typeof SchematicsRunCommand> & {
@@ -610,7 +627,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 tree?: Tree;
                 cb: (options: any) => Promise<void>;
                 serviceName: keyof Services;
-                initialisationOptions: any;
+                initialiseOptions: any;
               };
             },
             ArgsInfer<typeof SchematicsRunCommand>
@@ -621,7 +638,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               schematicsAddress:
                 "@business-as-code/plugin-core-tests#namespace=run-service-as-rule",
               payload: {
-                initialisationOptions,
+                initialiseOptions,
                 originPath: originPath?.original,
                 tree,
                 cb,
@@ -637,29 +654,24 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             nonExistentFlags: {} as any,
           };
 
-          let exitCode = 0;
+          // let exitCode = 0;
+          // let error: Error | undefined;
 
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
-          await SchematicsRunCommand.runDirect<any>(
+          const res = await (SchematicsRunCommand.runDirect<any>(
             {
               root: cliPath.original,
               // debug: 9,
             },
             parseOutput
           )
-            // .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
-            .catch((error) => {
-              // return this.cat
-              // console.error(error);
-              console.log(`error :>> `, error, error.stack ?? error.message);
-              process.stderr.write(error.stack ?? error.message);
-              // return 1
-              exitCode = error?.oclif?.exit ?? 1;
-            });
+          .catch((err) => {
+            console.log(`testKKKKKKKKKKKKKKK :>> `, err)
+            throw err // for test purposes, our is Result<blah, never>
+          }))
 
-          if (exitCode === 0) {
-            // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = new HostCreateTree(
+          if (assertIsOk(res)) {
+            const resultTree = new HostCreateTree(
               new virtualFs.ScopedHost(
                 new NodeJsSyncHost(),
                 envVars.workspacePath.original as any
@@ -669,19 +681,17 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             return {
               success: true,
               res: {
-                exitCode,
-                tree,
+                exitCode: 0,
+                tree: resultTree,
               },
             };
           }
+          else {
+            throw res.res.error // for test purposes, our is Result<blah, never>
+          }
 
-          return {
-            success: false,
-            res: {
-              exitCode,
-              // tree,
-            },
-          };
+
+
         },
         mockStdStart: () => {
           mockStd.stdout.start();

@@ -12,17 +12,18 @@ export interface ServiceExecTaskFactoryOptions {
   // context: Context // supply at usage task level below
 }
 
-export interface Options<SName extends keyof ServicesStatic> {
-  cb: (options: {
-    service: Services[SName];
-    serviceName: SName;
-  }) => Promise<any>;
-  // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
-  serviceName: SName;
-  serviceOptions: ServiceInitialiseOptions;
-  // workingPath: AddressPathRelative
-  context: Context;
-}
+// export interface Options<SName extends keyof ServicesStatic> {
+//   cb: (options: {
+//     service: Services[SName];
+//     serviceName: SName;
+//   }) => Promise<any>;
+//   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
+//   serviceName: SName;
+//   NEED TO SORT THESE OPTIONS OUT (INFER) + FINISH UP THE SCHEMATICS-SERVICE::RUNRULEEXTERNAL METHOD
+//   serviceOptions: ServiceInitialiseOptions;
+//   // workingPath: AddressPathRelative
+//   context: Context;
+// }
 
 export type ServiceExecTaskOptions<SName extends keyof Services> =
   Options<SName>;

@@ -18,7 +18,7 @@ export function serviceExecExecutor(
 ): TaskExecutor<ServiceExecTaskOptions> {
   const rootDirectory = factoryOptions.rootDirectory || process.cwd();
 
-  return async (options: ServiceExecTaskOptions = {} as ServiceExecTaskOptions, schematicsContext: SchematicContext) => {
+  return async (options: ServiceExecTaskOptions = {} as ServiceExecTaskOptions, schematicContext: SchematicContext) => {
 
     // if (!options) {
     //   throw new Error(`How is this supposed to work then huh!!`)

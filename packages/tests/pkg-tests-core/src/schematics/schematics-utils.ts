@@ -2,43 +2,51 @@
 
 import { Path, virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { HostCreateTree, Rule, SchematicContext, Tree } from "@angular-devkit/schematics";
-import { NodeModulesEngineHost, NodeWorkflow } from "@angular-devkit/schematics/tools";
 import {
-  Context,
+  HostCreateTree,
+  Rule,
+  SchematicContext,
+  Tree,
+} from "@angular-devkit/schematics";
+import { NodeWorkflow } from "@angular-devkit/schematics/tools";
+import {
   getSchematicsEngineHost,
+  ServiceOptionsLite,
   wrapServiceAsRule,
 } from "@business-as-code/core";
+import { xfs } from "@business-as-code/fslib";
 
-export function debugRule(options: { _bacContext: Context }): Rule {
+export function debugRule(
+  options: Pick<ServiceOptionsLite<"git">, "initialiseOptions" | "context">
+): Rule {
   function getFsContents(tree: Tree, _context: SchematicContext) {
     const treeFiles: string[] = [];
     tree.visit((p) => treeFiles.push(p));
     return treeFiles;
   }
-  function getCwd(tree: Tree, schematicsContext: SchematicContext): Path {
-    const fsHost = getSchematicsEngineHost(schematicsContext);
-    (schematicsContext.engine.workflow as NodeWorkflow)?.engine
+  function getCwd(tree: Tree, schematicContext: SchematicContext): Path {
+    const fsHost = getSchematicsEngineHost(schematicContext);
+    (schematicContext.engine.workflow as NodeWorkflow)?.engine;
     return fsHost._root as Path;
   }
 
-  return (tree: Tree, schematicsContext: SchematicContext) => {
-
+  return (tree: Tree, schematicContext: SchematicContext) => {
     const liveFsTree = new HostCreateTree(
-    // const liveFsTree = new HostCreateTree(
+      // const liveFsTree = new HostCreateTree(
       new virtualFs.ScopedHost(
-      new NodeJsSyncHost(),
-      getCwd(tree, schematicsContext),
-    ))
+        new NodeJsSyncHost(),
+        getCwd(tree, schematicContext)
+      )
+    );
 
     const debuggable: Record<string, any> = {
-      cwd: getCwd(tree, schematicsContext),
-      treeContents: getFsContents(tree, schematicsContext),
-      fsContents: getFsContents(liveFsTree, schematicsContext),
+      cwd: getCwd(tree, schematicContext),
+      treeContents: getFsContents(tree, schematicContext),
+      fsContents: getFsContents(liveFsTree, schematicContext),
     };
 
-    const gitRule = wrapServiceAsRule(
-      {
+    const gitRule = wrapServiceAsRule({
+      serviceOptions: {
         serviceName: "git",
         cb: async ({ service }) => {
           const repo = service.getRepository(false);
@@ -49,14 +57,16 @@ export function debugRule(options: { _bacContext: Context }): Rule {
             debuggable.logs = await repo.log();
           }
 
+          console.log(`debugRule: :>> `, debuggable);
+
           return tree;
         },
-        context: options._bacContext,
-        serviceOptions: {},
+        ...options,
       },
-      schematicsContext
-    );
+      schematicContext,
+    });
 
     return gitRule;
+
   };
 }

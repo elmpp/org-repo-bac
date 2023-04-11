@@ -11,18 +11,21 @@ import { wrapServiceAsRule } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
-  return (_tree, context) => {
+  return (_tree, schematicContext) => {
     return chain([
       mergeWith(empty()),
-      wrapServiceAsRule(
-        {
+      wrapServiceAsRule({
+        serviceOptions: {
           serviceName: "git",
           cb: async ({ service }) => {
             await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
           },
+          initialiseOptions: {},
           context: options._bacContext,
         },
-        context
+        schematicContext,
+      }
+
       ),
       move(options.destinationPath),
     ]);

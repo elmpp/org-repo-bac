@@ -1,6 +1,7 @@
 // type Config = import('@business-as-code/core').Config
 
-import { Rule } from '@angular-devkit/schematics'
+import { Rule } from "@angular-devkit/schematics";
+import { ServiceOptions } from "@business-as-code/core";
 
 export type RepoMap = {
   // language: 'javascript' | 'rust'
@@ -11,7 +12,6 @@ export type RepoMap = {
   // }[]
   // // languageVariant: 'typescript' | 'javascript' | 'rust'
   // packages: {
-
   // },
   // commits: {
   //   committer: {
@@ -19,9 +19,8 @@ export type RepoMap = {
   //     email: string
   //     message: string
   //   }
-
   // }[]
-}
+};
 
 export interface Schema {
   // rule: Rule,
@@ -31,9 +30,9 @@ export interface Schema {
   }) => Promise<void>;
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
   serviceName: SName;
-  originPath?: string
-  initialisationOptions: IsEmptyObject<Omit<Parameters<ServicesStatic[SName]['initialise']>[0], keyof ServiceInitialiseOptions>> extends true ? Record<never, any> : Omit<Parameters<ServicesStatic[SName]['initialise']>[0], keyof ServiceInitialiseOptions>
+  originPath?: string;
+  initialiseOptions: ServiceOptions<SName>['initialiseOptions']
   // name: string,
 
-  _bacContext: import('@business-as-code/core').Context
+  _bacContext: import("@business-as-code/core").Context;
 }

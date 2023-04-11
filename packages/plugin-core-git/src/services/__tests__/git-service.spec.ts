@@ -15,7 +15,7 @@ describe("git-service", () => {
           cb: async ({ service }) => {
               await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
           },
-          initialisationOptions: {},
+          initialiseOptions: {},
           // originPath: testContext.envVars.workspacePath,
         });
 
@@ -38,7 +38,7 @@ describe("git-service", () => {
               // expect((await service.getRepository()).commit(CheckRepoActions.BARE)).toBeTruthy()
               // await service.clone(`https://github.com/elmpp/bac-tester.git`, {bare: null});
           },
-          initialisationOptions: {},
+          initialiseOptions: {},
           // originPath: testContext.envVars.workspacePath,
         })
       });
@@ -51,7 +51,7 @@ describe("git-service", () => {
     //       cb: async ({ service }) => {
     //           await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
     //       },
-    //       initialisationOptions: {},
+    //       initialiseOptions: {},
     //       // originPath: testContext.envVars.workspacePath,
     //     });
 
@@ -72,7 +72,7 @@ describe("git-service", () => {
     //           // expect((await service.getRepository()).commit(CheckRepoActions.BARE)).toBeTruthy()
     //           // await service.clone(`https://github.com/elmpp/bac-tester.git`, {bare: null});
     //       },
-    //       initialisationOptions: {workingPath: '.git'},
+    //       initialiseOptions: {workingPath: '.git'},
     //       // originPath: testContext.envVars.workspacePath,
     //     })
 
@@ -90,7 +90,7 @@ describe("git-service", () => {
           cb: async ({ service }) => {
               await service.init();
           },
-          initialisationOptions: {},
+          initialiseOptions: {},
           // originPath: testContext.envVars.workspacePath,
         });
 
@@ -105,7 +105,7 @@ describe("git-service", () => {
               const repo = service.getRepository()
               expect(repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)).toBeTruthy()
           },
-          initialisationOptions: {},
+          initialiseOptions: {},
           // originPath: testContext.envVars.workspacePath,
         })
       });

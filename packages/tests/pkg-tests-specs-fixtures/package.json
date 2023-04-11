@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.1",
   "description": "Tool package @business-as-code/tests-specs-fixtures",
+  "scripts": {
+    "dev:mockGitServer": "GIT_HTTP_MOCK_SERVER_ROOT=./repositories git-ssh-mock-server "
+  },
   "main": "src/index.ts",
   "devDependencies": {
     "@business-as-code/address": "workspace:*",
@@ -10,6 +13,7 @@
     "@business-as-code/tests-core": "workspace:*",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.15.3",
-    "expect-type": "^0.15.0"
+    "expect-type": "^0.15.0",
+    "git-http-mock-server": "^2.0.0"
   }
 }
