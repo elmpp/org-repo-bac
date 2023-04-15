@@ -4,7 +4,9 @@
   "version": "0.0.1",
   "description": "Tool package @business-as-code/tests-specs-fixtures",
   "scripts": {
-    "dev:mockGitServer": "GIT_HTTP_MOCK_SERVER_ROOT=./repositories git-ssh-mock-server "
+    "dev:mockGitServerHttp": "cd repositories && git-http-mock-server",
+    "dev:mockGitServerSsh": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=true git-ssh-mock-server",
+    "dev:mockGitServerSshAnonymous": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=false git-ssh-mock-server"
   },
   "main": "src/index.ts",
   "devDependencies": {
@@ -14,6 +16,6 @@
     "@types/jest": "^29.4.0",
     "@types/node": "^18.15.3",
     "expect-type": "^0.15.0",
-    "git-http-mock-server": "^2.0.0"
+    "git-http-mock-server": "workspace:*"
   }
 }

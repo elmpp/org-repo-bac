@@ -6,7 +6,6 @@
   "scripts": {
     "prepare": "husky install;",
     "test": "moon run :test",
-    "dev:mockGitServer": "pnpm --filter @business-as-code/tests-specs-fixtures run dev:mockGitServer",
     "dev:runCli": "ts-node --project ./tsconfig.json packages/pkg-cli/src/bin/dev.ts",
     "dev:runTask": "moon run --concurrency 1"
   },

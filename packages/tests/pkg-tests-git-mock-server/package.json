@@ -1,0 +1,48 @@
+{
+  "name": "git-http-mock-server",
+  "version": "0.0.0-development",
+  "description": "Clone and push to git repository test fixtures over HTTP.",
+  "main": "index.js",
+  "bin": {
+    "git-http-mock-server": "http-daemon.js",
+    "git-ssh-mock-server": "ssh-daemon.js"
+  },
+  "scripts": {
+    "test": "echo \"No tests\"",
+    "semantic-release": "semantic-release",
+    "travis-deploy-once": "travis-deploy-once"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isomorphic-git/git-http-mock-server.git"
+  },
+  "keywords": [
+    "karma-plugin",
+    "karma-middleware",
+    "git-http-server",
+    "git-http-backend"
+  ],
+  "author": "William Hilton <wmhilton@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/isomorphic-git/git-http-mock-server/issues"
+  },
+  "homepage": "https://github.com/isomorphic-git/git-http-mock-server#readme",
+  "dependencies": {
+    "basic-auth": "^2.0.1",
+    "buffer-equal-constant-time": "^1.0.1",
+    "chalk": "^2.4.2",
+    "daemonize-process": "^1.0.9",
+    "fixturez": "^1.1.0",
+    "htpasswd-js": "^1.0.2",
+    "micro-cors": "^0.1.1",
+    "minimisted": "^2.0.1",
+    "ssh-keygen": "^0.4.2",
+    "ssh2": "^1.11.0",
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "semantic-release": "16.0.3",
+    "travis-deploy-once": "4.4.1"
+  }
+}
