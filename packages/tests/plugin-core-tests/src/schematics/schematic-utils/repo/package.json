@@ -1,0 +1,5 @@
+{
+  "name": "<%= dasherize(name) %>",
+  "version": "0.0.0",
+  "description": "root package"
+}

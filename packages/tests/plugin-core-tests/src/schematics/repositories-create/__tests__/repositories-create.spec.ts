@@ -12,7 +12,6 @@ describe("repositories-create", () => {
         parseOutput: {
           flags: {
             workspacePath: testContext.envVars.workspacePath.original,
-            // destinationPath: testContext.envVars.workspacePath.original,
             schematicsAddress:
               "@business-as-code/plugin-core-tests#namespace=repositories-create",
             ["log-level"]: "info",
@@ -26,7 +25,9 @@ describe("repositories-create", () => {
         },
       });
 
+      console.log(`res :>> `, res)
       expectIsOk(res);
+
 
       const assertForWorkingPath = async (workingPath: string) => {
         await testContext.runSchematicServiceCb({
@@ -48,6 +49,12 @@ describe("repositories-create", () => {
               expect(
                 await repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)
               ).toBeTruthy();
+
+              const logs = await repo.log();
+
+              expect(logs.all).toHaveLength(2)
+              expect(logs.all[0]).toHaveProperty('message', 'second commit')
+              expect(logs.latest).toHaveProperty('message', 'second commit')
             },
             initialiseOptions: {
               workingPath,
@@ -56,21 +63,29 @@ describe("repositories-create", () => {
           tree: res.res.tree,
         });
 
-        expect(
-          (res.res.tree.readJson(`./${workingPath}/package.json`) as any)?.name
-        ).toEqual("root-package");
-        expect(
-          (
-            res.res.tree.readJson(
-              `./${workingPath}/packages/my-package-1/package.json`
-            ) as any
-          )?.name
-        ).toEqual("my-package-1");
+        expect(res.res.tree.exists(`./${workingPath}/package.json`)).toBeFalsy() // bare repo
+
+        // expect(
+        //   (res.res.tree.readJson(`./${workingPath}/package.json`) as any)?.name
+        // ).not.toEqual("root-package"); // bare repo
+        // expect(
+        //   (
+        //     res.res.tree.readJson(
+        //       `./${workingPath}/packages/my-package-1/package.json`
+        //     ) as any
+        //   )?.name
+        // ).toEqual("my-package-1");
       };
 
-      await assertForWorkingPath("repo1");
-      await assertForWorkingPath("repo2");
-      await assertForWorkingPath("repo3");
+      await assertForWorkingPath("repo1.git");
+      // await assertForWorkingPath("repo2.git");
+      // await assertForWorkingPath("repo3.git");
+
+      const dirEntries = res.res.tree.getDir('.')
+
+      expect(dirEntries.subdirs).toHaveLength(1) // cleared up
+      // expect(dirEntries.subdirs).toHaveLength(3) // cleared up
+      console.log(`dirEntries.subdirs :>> `, dirEntries.subdirs)
     });
   });
 });

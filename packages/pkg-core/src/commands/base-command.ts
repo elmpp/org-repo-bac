@@ -204,7 +204,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     const res = await this.execute(context);
 
     if (!assertIsOk(res)) {
-      const err = res.res;
+      const err = res.res.error;
       const oclifError = {
         ...err,
         exitCode: err?.extra?.exitCode ?? 1, // oclif understands error.exitCode - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L333
@@ -237,7 +237,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     cmd.ctor.oclifConfig = config;
 
     // @ts-ignore
-    return cmd._runDirect<ReturnType<T["run"]>>(parseOutput);
+    const directRes = await cmd._runDirect<ReturnType<T["run"]>>(parseOutput)
+    return directRes
   }
 
   /**
@@ -286,7 +287,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   abstract execute(
     context: ContextCommand<T>
-  ): Promise<Result<unknown, BacError<MessageName, any>>>;
+  ): Promise<Result<unknown, {error: BacError<MessageName, any>}>>;
 
   protected override async catch(
     err: Error & { exitCode?: number }

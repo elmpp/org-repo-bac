@@ -8,6 +8,8 @@
 
  - run verdaccio: p moon run pkg-tests-verdaccio:verdaccioKillBackground; p moon run pkg-tests-verdaccio:verdaccioRunBackground
 
+ - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
+
 ## Tasks
 
 *General*

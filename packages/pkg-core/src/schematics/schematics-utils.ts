@@ -1,10 +1,11 @@
 import { Host } from "@angular-devkit/core/src/virtual-fs/host";
-import { Rule, SchematicContext, Tree } from "@angular-devkit/schematics";
 import {
-  addr,
-  AddressPackageScaffoldIdentString,
-  AddressPathAbsolute,
-} from "@business-as-code/address";
+  MergeStrategy,
+  Rule,
+  SchematicContext,
+  Tree,
+} from "@angular-devkit/schematics";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { from } from "rxjs";
 import {
   Context,
@@ -12,6 +13,8 @@ import {
   Services,
   ServicesStatic,
 } from "../__types__";
+import path from 'path'
+import { join, normalize } from '@angular-devkit/core';
 // import { Options as Options } from "./tasks/service-exec/options";
 
 export interface ServiceOptions<SName extends keyof ServicesStatic> {
@@ -36,7 +39,10 @@ export type ServiceOptionsLite<SName extends keyof ServicesStatic> = Omit<
   >;
 };
 
-/** naughty naughty */
+/**
+ naughty naughty
+ @internal
+ */
 export function getSchematicsEngineHost(
   context: SchematicContext
 ): Host & { _root: string } {
@@ -50,56 +56,6 @@ const getCurrentSchematicHostRoot = (
     (context.engine.workflow as any)?._host?._root!
   ) as AddressPathAbsolute;
 };
-
-// export function wrapTaskAsRule(
-//   task: TaskConfigurationGenerator<object>,
-//   dependencies?: TaskId[] | undefined
-// ) {
-//   return (tree: Tree, schematicContext: SchematicContext) => {
-//     schematicContext.addTask(task, dependencies); // think this may just shunt it to the end of all Rules though?? ¯\_(ツ)_/¯
-//     return tree;
-//   };
-// }
-
-function wrapExternalServiceCbAsRule<SName extends keyof Services>(options: {
-  serviceOptions: ServiceOptions<SName>;
-  dryRun?: boolean;
-  force?: boolean;
-  // workingPath: string;
-}): Rule {
-  return (tree: Tree, schematicContext: SchematicContext) => {
-    // const destinationPath = addr.pathUtils.join(getCurrentSchematicHostRoot(schematicContext), addr.parsePath(options.workingPath)) as AddressPathAbsolute
-    const { serviceOptions } = options;
-
-    const res = from(
-      serviceOptions.context
-        .serviceFactory("schematics", {
-          context: serviceOptions.context,
-          destinationPath: getCurrentSchematicHostRoot(schematicContext),
-          workingPath: options.serviceOptions.initialiseOptions.workingPath,
-        })
-        .then((service) => {
-          const serviceRule: Rule = (
-            tree: Tree,
-            schematicContext: SchematicContext
-          ) => {
-            return from(
-              serviceOptions.context
-                .serviceFactory(serviceOptions.serviceName, serviceOptions.initialiseOptions)
-                .then((service) => serviceOptions.cb({ service, serviceName: serviceOptions.serviceName }))
-                .then(() => tree)
-            );
-          };
-          return service.runExternalSchematicRule({
-            schematicRule: serviceRule,
-            schematicContext,
-            tree,
-          });
-        })
-    );
-    return res;
-  };
-}
 
 function wrapServiceCbAsRule<SName extends keyof Services>({
   serviceOptions,
@@ -150,151 +106,311 @@ export const wrapServiceAsRule = <SName extends keyof Services>({
   return wrapServiceCbAsRule({ serviceOptions: options });
 };
 
+// /**
+//  Runs a service callback but ensures that previous Rules are flushed to disk
+//  Returns a new Tree representing the output of the callback (cf Source)
+//  */
+// export const wrapExternalServiceAsSource = <SName extends keyof Services>({
+//   serviceOptions: serviceOptionsLite,
+//   schematicContext,
+//   dryRun,
+//   force,
+// }: // workingPath,
+// {
+//   serviceOptions: ServiceOptionsLite<SName>;
+//   schematicContext: SchematicContext;
+//   dryRun?: boolean | undefined;
+//   force?: boolean | undefined;
+//   // workingPath: string;
+// }): Source => {
+//   const serviceOptions: ServiceOptions<SName> = {
+//     ...serviceOptionsLite,
+//     /** due to ServiceInitialiseOptions we can do derive here based on the Schematic workflow engine host */
+//     initialiseOptions: {
+//       ...serviceOptionsLite.initialiseOptions,
+//       context: serviceOptionsLite.context,
+//       destinationPath: getCurrentSchematicHostRoot(schematicContext),
+//     },
+//   };
+
+//   return wrapExternalServiceCbAsSource({
+//     serviceOptions,
+//     dryRun,
+//     force,
+//     // workingPath,
+//   });
+// };
+
+// /**
+//  Runs a service callback but ensures that previous Rules are flushed to disk
+//  */
+// export const wrapExternalServiceAsRule = <SName extends keyof Services>({
+//   serviceOptions: serviceOptionsLite,
+//   schematicContext,
+//   dryRun,
+//   force,
+// }: // workingPath,
+// {
+//   serviceOptions: ServiceOptionsLite<SName>;
+//   schematicContext: SchematicContext;
+//   dryRun?: boolean | undefined;
+//   force?: boolean | undefined;
+//   // workingPath: string;
+// }): Rule => {
+//   const serviceOptions: ServiceOptions<SName> = {
+//     ...serviceOptionsLite,
+//     /** due to ServiceInitialiseOptions we can do derive here based on the Schematic workflow engine host */
+//     initialiseOptions: {
+//       ...serviceOptionsLite.initialiseOptions,
+//       context: serviceOptionsLite.context,
+//       destinationPath: getCurrentSchematicHostRoot(schematicContext),
+//     },
+//   };
+//   return wrapExternalServiceCbAsRule({
+//     serviceOptions,
+//     dryRun,
+//     force,
+//     // workingPath,
+//   });
+// };
+
 /**
- Runs a service callback but ensures that previous Rules are flushed to disk
+ Flushes to disk and merges the outcome of the wrapped rule
  */
-export const wrapExternalServiceAsRule = <SName extends keyof Services>({
-  serviceOptions: serviceOptionsLite,
-  schematicContext,
-  dryRun,
-  force,
-  // workingPath,
-}: {
-  serviceOptions: ServiceOptionsLite<SName>;
-  schematicContext: SchematicContext;
-  dryRun?: boolean | undefined;
-  force?: boolean | undefined;
-  // workingPath: string;
-}): Rule => {
-  const serviceOptions: ServiceOptions<SName> = {
-    ...serviceOptionsLite,
-    /** due to ServiceInitialiseOptions we can do derive here based on the Schematic workflow engine host */
-    initialiseOptions: {
-      ...serviceOptionsLite.initialiseOptions,
-      context: serviceOptionsLite.context,
-      destinationPath: getCurrentSchematicHostRoot(schematicContext),
-    },
-  };
-  return wrapExternalServiceCbAsRule({
-    serviceOptions,
-    dryRun,
-    force,
-    // workingPath,
-  });
-};
-
-/** runs a separate schematic. Actually produces separate context which enables a task to be run - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/rules/schematic.ts#L21 */
-export const runExternalSchematic = (options: {
-  address: AddressPackageScaffoldIdentString;
-  context: Context;
-  // destinationPath: AddressPathAbsolute;
-  schematicOptions: Record<PropertyKey, unknown> & { _bacContext: Context }; // @todo - type this somehow
-  dryRun?: boolean;
-  force?: boolean;
-  workingPath: string;
-  // workingPath: AddressPathRelative;
-  // options: ServiceInitialiseOptions,
-  // executionOptions?: Partial<ExecutionOptions>
-}): Rule => {
+export const mergeWithExternal = (
+  rule: Rule,
+  serviceOptions: {
+    context: Context;
+    initialiseOptions: ServiceOptionsLite<"schematics">["initialiseOptions"];
+  },
+  mergeStrategy: MergeStrategy
+): Rule => {
   return (tree: Tree, schematicContext: SchematicContext) => {
-    // const destinationPath = addr.pathUtils.join(getCurrentSchematicHostRoot(schematicContext), addr.parsePath(options.workingPath)) as AddressPathAbsolute
-
     const res = from(
-      options.context
+      serviceOptions.context
         .serviceFactory("schematics", {
-          context: options.context,
+          ...serviceOptions.initialiseOptions,
+          context: serviceOptions.context,
           destinationPath: getCurrentSchematicHostRoot(schematicContext),
-          workingPath: options.workingPath,
         })
-        .then((service) =>
-          service.runExternalSchematic({
-            ...options,
-            tree,
-            schematicContext,
+        .then((schematicsService) =>
+          schematicsService.flush({ tree, action: 'commit' }).then((t) => {
+            // we should be ok now to source a new host tree to run the wrapped Rule with
+            const nextInitialTree = schematicsService.createHostTree();
+            // console.log(`nextInitialTree :>> `, nextInitialTree)
+
+            return schematicsService
+              .runSchematicRule({
+                schematicContext,
+                schematicRule: rule,
+                tree: nextInitialTree,
+              })
+              .then((nextTree) => {
+                // return schematicsService.flush({ tree: nextTree, action: 'report' })
+                // .then(() => {
+                //   tree.merge(nextTree, mergeStrategy);
+                //   // console.log(`tree after :>> `, tree)
+                //   return tree;
+                // })
+                // console.log(`tree :>> `, tree)
+                // console.log(`nextTree :>> `, nextTree)
+
+                // now we have both trees available for merging...
+                tree.merge(nextTree, mergeStrategy);
+                // console.log(`tree after :>> `, tree)
+                return tree;
+
+                // // tree.merge(nextTree, mergeStrategy);
+                // nextTree.merge(tree, mergeStrategy);
+                // // console.log(`tree after :>> `, nextTree)
+                // return nextTree;
+              });
           })
         )
     );
     return res;
   };
-
-  // const asyncRule = (tree: Tree, context: SchematicContext) => {
-  //   // console.log(`:>> HHHHHHHHHHHHHHHHHHHHHH`, context.schematic.collection);
-
-  //   // const bacContext = options.context
-  //   bacContext.logger(
-  //     `Running external schematic '${address}'. DestinationPath: '${getCurrentSchematicHostRoot(context).original}'`,
-  //     "info"
-  //   );
-
-  //   const runPromise = await bacContext.serviceFactory("schematics", {context: bacContext, destinationPath: getCurrentSchematicHostRoot(context)}).then(service => {
-  //     return service.runExternal({
-  //       address,
-  //       bacContext,
-  //       options,
-  //       workingPath,
-  //       tree,
-  //       context,
-  //       // parentContext: context.,
-  //     })
-  //   })
-
-  //   // merges the second schematic run into current tree - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/rules/schematic.ts#L34
-  //   return from(runPromise).pipe(
-  //     last(),
-  //     map((x) => {
-  //       console.log(`x :>> `, x)
-  //       tree.merge(x, MergeStrategy.AllowOverwriteConflict);
-
-  //       return tree;
-  //     }),
-  //   );
-  //   // return from(runPromise)
-  //   // return mergeWith(from(r/unPromise))
-
-  //   // const collection = context.engine.createCollection(
-  //   //   collectionName,
-  //   //   context.schematic.collection
-  //   // );
-  //   // console.log(`collection :>> `, collection)
-  //   // const schematic = collection.createSchematic(schematicName);
-
-  //   // return schematic
-  //   //   .call(options, of(branch(input)), context, executionOptions)
-  //   //   .pipe(
-  //   //     last(),
-  //   //     map((x) => {
-  //   //       input.merge(x, MergeStrategy.AllowOverwriteConflict);
-
-  //   //       return input;
-  //   //     })
-  //   //   );
-  // };
-
-  // return asyncRule
-
-  // const collection = context.engine.createCollection(
-  //   collectionName,
-  //   context.schematic.collection,
-  // );
-  // const schematic = collection.createSchematic(schematicName);
-
-  // return schematic.call(options, observableOf(branch(input)), context, executionOptions).pipe(
-  //   last(),
-  //   map((x) => {
-  //     input.merge(x, MergeStrategy.AllowOverwriteConflict);
-
-  //     return input;
-  //   }),
-  // );
-
-  // const options: Options<SName> = {
-  //   ...optionsMinusOptions,
-  //   /** due to ServiceInitialiseOptions we can do derive here based on the Schematic workflow engine host */
-  //   options: {
-  //     context: optionsMinusOptions.context,
-  //     destinationPath: getCurrentSchematicHostRoot(context),
-  //     ...optionsMinusOptions.options,
-  //   },
-  // };
-  // return wrapServiceCbAsRule(options);
 };
+
+// /** runs a separate schematic. Actually produces separate context which enables a task to be run - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/rules/schematic.ts#L21 */
+// export function runExternalSchematic(options: {
+//   address: AddressPackageScaffoldIdentString;
+//   context: Context;
+//   // destinationPath: AddressPathAbsolute;
+//   schematicOptions: Record<PropertyKey, unknown> & { _bacContext: Context }; // @todo - type this somehow
+//   dryRun?: boolean;
+//   force?: boolean;
+//   workingPath: string;
+//   /** defines how the 2 trees are merged. Additional 'replace' variant will return the last. This means a full replacement! */
+//   mergeStrategy?: MergeStrategy | "replace";
+//   // workingPath: AddressPathRelative;
+//   // options: ServiceInitialiseOptions,
+//   // executionOptions?: Partial<ExecutionOptions>
+// }): Rule {
+//   return (tree: Tree, schematicContext: SchematicContext) => {
+//     // const destinationPath = addr.pathUtils.join(getCurrentSchematicHostRoot(schematicContext), addr.parsePath(options.workingPath)) as AddressPathAbsolute
+
+//     const res = from(
+//       options.context
+//         .serviceFactory("schematics", {
+//           context: options.context,
+//           destinationPath: getCurrentSchematicHostRoot(schematicContext),
+//           workingPath: options.workingPath,
+//         })
+//         .then((schematicsService) =>
+//           schematicsService.runExternalSchematic({
+//             ...options,
+//             tree,
+//             schematicContext,
+//           })
+//         )
+//     );
+//     return res;
+//   };
+// }
+
+// /**
+//  Simply runs a Rule but, crucially, is flushed to disk with an optional merge strategy.
+//  This allows for amending fs content
+//  */
+// export function runExternalRule(options: {
+//   schematicRule: Rule;
+//   context: Context;
+//   // schematicOptions: Record<PropertyKey, unknown> & { _bacContext: Context }; // @todo - type this somehow
+//   // dryRun?: boolean;
+//   // force?: boolean;
+//   workingPath: string;
+//   // schematicContext: SchematicContext;
+//   // tree: Tree;
+//   /** defines how the 2 trees are merged. Additional 'replace' variant will return the last. This means a full replacement! */
+//   mergeStrategy?: MergeStrategy | "replace";
+// }): Rule {
+//   return (tree: Tree, schematicContext: SchematicContext) => {
+//     // const destinationPath = addr.pathUtils.join(getCurrentSchematicHostRoot(schematicContext), addr.parsePath(options.workingPath)) as AddressPathAbsolute
+
+//     const res = from(
+//       options.context
+//         .serviceFactory("schematics", {
+//           context: options.context,
+//           destinationPath: getCurrentSchematicHostRoot(schematicContext),
+//           workingPath: options.workingPath,
+//         })
+//         .then((schematicsService) =>
+//           schematicsService.runExternalSchematicRule({
+//             ...options,
+//             tree,
+//             schematicContext,
+//           })
+//         )
+//     );
+//     return res;
+//   };
+// }
+
+/** SO - https://tinyurl.com/2b6rdw6j */
+export function remove(
+  filePath: string,
+  tree: Tree,
+  schematicContext: SchematicContext,
+  originalPath?: string
+): void {
+
+  const originalRemovePath = originalPath ?? filePath
+
+  /** this "double blind deletion" is seen to be effective, dunno why */
+  const forceDelete = (path: string) => {
+    try {
+      tree.delete(path)
+      tree.delete(path)
+    }
+    catch (err) {
+      // console.log(`schematicUtils::remove: MEHMEH err :>> `, err);
+    }
+  }
+
+  try {
+    // as the tree only lists the files, this returns false for directories
+    if (!tree.exists(filePath)) {
+      // retrieve the directory corresponding to the path
+      const dirEntry = tree.getDir(filePath);
+      // if there are neither files nor dirs in the directory entry,
+      // it means the directory does not exist
+      if (!dirEntry.subdirs.length && !dirEntry.subfiles.length) {
+        schematicContext.logger.info(`schematicUtils::remove: ${filePath} does not exist. OriginalRemovePath: '${originalRemovePath}'`);
+        // console.log(`dirEntry.subdirs, dirEntry , tree :>> `, dirEntry.subdirs, dirEntry , tree)
+
+        // we do a cheeky forceDelete as this seems to effect changes to FS following wrapExternals
+        // forceDelete(filePath) // NOPE!
+
+        // otherwise, it exists, seriously !
+      } else {
+        schematicContext.logger.info(
+          `schematicUtils::remove: deleting files in directory ${filePath}. dirEntry found? ${!!dirEntry}. OriginalRemovePath: '${originalRemovePath}'`
+        );
+        dirEntry.subfiles.forEach((subFile) => {
+          const subDirFilePath = path.join(filePath, subFile)
+          // forceDelete(subDirFilePath)
+          remove(subDirFilePath, tree, schematicContext, originalRemovePath)
+        }
+        );
+        dirEntry.subdirs.forEach((subDir) => {
+          const subDirDirPath = path.join(filePath, subDir)
+          remove(subDirDirPath, tree, schematicContext, originalRemovePath)
+        }
+        );
+        if (!originalPath) {
+          remove(filePath, tree, schematicContext, originalRemovePath) // try to remove the now-empty folder (only on tail of first call)
+        }
+      }
+      // if the file exists, delete it the easiest way
+    } else {
+      schematicContext.logger.debug(`schematicUtils::remove: deleting file ${filePath}. OriginalRemovePath: '${originalRemovePath}'`);
+      // tree.delete(filePath);
+      forceDelete(filePath); // double deletion seems to affect the filesystem (which is required with wrapExternal)
+      schematicContext.logger.info(`schematicUtils::remove: file ${filePath} deleted successfully. OriginalRemovePath: '${originalRemovePath}'`);
+    }
+  } catch (err) {
+    console.log(`schematicUtils::remove: err :>> `, err);
+    throw new Error(`schematicUtils::remove: Could not delete file ${filePath}. OriginalRemovePath: '${originalRemovePath}'`);
+  }
+}
+
+/** original Schematics GH - https://github.com/angular/angular-cli/blob/137651645ca5e7f08cbcdc0d2c080e3518d6c908/packages/angular_devkit/schematics/src/rules/move.ts#L13 */
+export function move(
+  from: string,
+  to: string,
+  tree: Tree,
+  schematicContext: SchematicContext,
+): void {
+
+    if (to === undefined) {
+      to = from;
+      from = '/';
+    }
+
+    const fromPath = normalize('/' + from);
+    const toPath = normalize('/' + to);
+
+    if (fromPath === toPath) {
+      return ;
+    }
+
+
+    if (tree.exists(fromPath)) {
+      schematicContext.logger.info(`schematicUtils::move: folder ${fromPath} being renamed. fromPath: '${fromPath}' toPath: '${toPath}'`);
+
+      // fromPath is a file
+      tree.rename(fromPath, toPath);
+    } else {
+      schematicContext.logger.info(`schematicUtils::move: file ${fromPath} being individually renamed. fromPath: '${fromPath}' toPath: '${toPath}'`);
+
+      // fromPath is a directory
+      tree.getDir(fromPath).visit((path) => {
+        tree.rename(path, join(toPath, path.slice(fromPath.length)));
+      });
+
+      schematicContext.logger.info(`schematicUtils::move: file ${fromPath} being individually renamed COMPLETE. fromPath: '${fromPath}' toPath: '${toPath}'`);
+    }
+
+    return
+}

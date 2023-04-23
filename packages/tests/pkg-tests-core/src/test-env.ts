@@ -1,14 +1,15 @@
 // import {oclifTest, oclifExpect} from './oclif'
 import { virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { HostCreateTree, Tree } from "@angular-devkit/schematics";
+import { HostCreateTree, HostTree, Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
   assertIsOk,
   LogLevel,
   Outputs,
   Result,
-  ServiceOptions,
+  // ServiceOptions,
+  schematicUtils,
   Services,
   ServicesStatic,
 } from "@business-as-code/core";
@@ -27,15 +28,17 @@ import {
   sanitise,
 } from "./test-utils";
 import { XfsCacheManager } from "./xfs-cache-manager";
+import fs from 'fs'
+import path from 'path'
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
 type ServiceOptionsTestLite<SName extends keyof ServicesStatic> = Omit<
-  ServiceOptions<SName>,
+  schematicUtils.ServiceOptions<SName>,
   "initialiseOptions" | "context"
 > & {
   initialiseOptions: Omit<
-    ServiceOptions<SName>["initialiseOptions"],
+    schematicUtils.ServiceOptions<SName>["initialiseOptions"],
     "context" | "destinationPath"
   >;
 };
@@ -125,7 +128,7 @@ type EphemeralTestEnvVars = {
 
 export type TestContext = {
   mockStdStart: () => void;
-  mockStdEnd: () => Outputs;
+  mockStdEnd: (flush?: boolean) => Outputs;
   envVars: PersistentTestEnvVars & EphemeralTestEnvVars;
   /**
    Runs an oclif command. Inspired by @oclif/test - https://tinyurl.com/2gftlrbb
@@ -146,7 +149,7 @@ export type TestContext = {
     >;
     // schematicAddress: string,
     // workspacePath: string,
-  }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+  }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number; error: Error }>>;
   /**
    Allows a service task to be run directly, without need for schematics boilerplating
    */
@@ -454,6 +457,54 @@ async function setupFolders(
   await doTestFolders();
 }
 
+/**
+ we take a virtualFs of the fs after the tests but monkeypatch some methods to inspect the actual FS also
+ because schematics has some weird assumptions
+
+ virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
+ */
+function createTree(workspacePath: string): Tree {
+  const tree = new HostCreateTree(
+    new virtualFs.ScopedHost(
+      new NodeJsSyncHost(),
+      workspacePath as any,
+    )
+  );
+
+  // const origExists = tree.exists
+  // tree.exists = (filePath: string) => {
+  //   const origRes = origExists(filePath)
+  //   if (origRes) {
+  //     return origRes
+  //   }
+  //   return fs.existsSync(filePath)
+  // }
+
+  return Object.assign(tree, {
+    /**
+     improved exists that supports folders and checks the actual FS
+     Original Schematics GH implementation - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/tree/host-tree.ts#L330
+     */
+    exists(this: HostTree, filePath: string): boolean {
+      // const origRes = origExists(filePath)
+      // const fullPathIndeed = this._normalizePath(filePath)
+      const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
+
+      return origRes
+      // const origRes = (this as any)._recordSync.isFile(this._normalizePath(filePath));
+      // if (origRes) {
+      //   return origRes
+      // }
+
+      // const fullPath = path.join(workspacePath, filePath)
+      // // console.log(`fullPath, fs.existsSync(fullPath) :>> `, fullPath, fs.existsSync(filePath))
+      // return fs.existsSync(fullPath)
+    }
+  })
+
+  return tree
+}
+
 async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
   return async (
     createEphemeralTestEnvVars: CreateEphemeralTestEnvVars,
@@ -519,12 +570,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           if (exitCode === 0) {
             // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = new HostCreateTree(
-              new virtualFs.ScopedHost(
-                new NodeJsSyncHost(),
-                envVars.workspacePath.original as any
-              )
-            );
+            const tree = createTree(envVars.workspacePath.original)
 
             return {
               success: true,
@@ -555,7 +601,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // process.chdir(cliPath.original);
           // const argsWithAdditional = [...args, "--log-level", logLevel];
 
-          let exitCode = 0;
+          // let exitCode = 0;
 
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
@@ -572,34 +618,68 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               console.log(`error :>> `, error, error.stack ?? error.message);
               process.stderr.write(error.stack ?? error.message);
               // return 1
-              exitCode = error?.oclif?.exit ?? 1;
+              // exitCode = error?.oclif?.exit ?? 1;
+
+              return {
+                success: false,
+                res: {
+                  error,
+                  exitCode: error?.oclif?.exit ?? 1,
+                  // tree,
+                },
+              };
             });
 
-          if (exitCode === 0) {
-            // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = new HostCreateTree(
-              new virtualFs.ScopedHost(
-                new NodeJsSyncHost(),
-                envVars.workspacePath.original as any
-              )
-            );
+          if (assertIsOk(res)) {
+            const tree = createTree(envVars.workspacePath.original)
+            // Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
 
             return {
               success: true,
               res: {
-                exitCode,
+                exitCode: 0,
                 tree,
               },
             };
           }
+          else {
+            console.log(`resddddddddd :>> `, res)
+            return {
+              success: false,
+              res: {
+                exitCode: 1,
+                error: res.res.error as Error,
+              },
+            };
+          }
 
-          return {
-            success: false,
-            res: {
-              exitCode,
-              // tree,
-            },
-          };
+          // return res
+
+          // if (exitCode === 0) {
+          //   // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
+          //   const tree = new HostCreateTree(
+          //     new virtualFs.ScopedHost(
+          //       new NodeJsSyncHost(),
+          //       envVars.workspacePath.original as any
+          //     )
+          //   );
+
+          //   return {
+          //     success: true,
+          //     res: {
+          //       exitCode,
+          //       tree,
+          //     },
+          //   };
+          // }
+
+          // return {
+          //   success: false,
+          //   res: {
+          //     exitCode,
+          //     // tree,
+          //   },
+          // };
         },
         runSchematicServiceCb: async ({
           serviceOptions: { cb, serviceName, initialiseOptions },
@@ -697,9 +777,15 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           mockStd.stdout.start();
           mockStd.stderr.start();
         },
-        mockStdEnd: () => {
+        mockStdEnd: (flush?: boolean) => {
           mockStd.stdout.stop();
           mockStd.stderr.stop();
+
+          if (flush) {
+            process.stdout.write(mockStd.stdout.output)
+            process.stderr.write(mockStd.stderr.output)
+          }
+
           return {
             stdout: mockStd.stdout.output,
             stderr: mockStd.stderr.output,

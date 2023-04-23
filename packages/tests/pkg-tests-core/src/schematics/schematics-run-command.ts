@@ -91,15 +91,15 @@ export class SchematicsRunCommand extends BaseCommand<
     });
 
     if (!assertIsOk(res)) {
-      switch (res.res.reportCode) {
+      switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger(res.res.message, "error");
+          context.logger(res.res.error.message, "error");
           break;
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger(res.res.message, "error");
+          context.logger(res.res.error.message, "error");
           break;
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger(res.res.message, "error");
+          context.logger(res.res.error.message, "error");
           break;
       }
     } else {
@@ -108,6 +108,7 @@ export class SchematicsRunCommand extends BaseCommand<
         "info"
       );
     }
+
     return res;
 
     //   override async run(): Promise<void> {

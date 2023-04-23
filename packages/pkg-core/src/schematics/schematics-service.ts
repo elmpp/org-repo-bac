@@ -1,9 +1,10 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { Path, virtualFs } from "@angular-devkit/core";
-import { NodeJsSyncHost } from "@angular-devkit/core/node";
+import { logging, Path, virtualFs } from "@angular-devkit/core";
+import { createConsoleLogger, NodeJsSyncHost } from "@angular-devkit/core/node";
 import {
   callRule,
   Collection,
+  DryRunEvent,
   DryRunSink,
   ExecutionOptions,
   HostCreateTree,
@@ -17,6 +18,7 @@ import {
   UnsuccessfulWorkflowExecution,
 } from "@angular-devkit/schematics";
 import { branch } from "@angular-devkit/schematics/src/tree/static";
+import { BaseWorkflow } from "@angular-devkit/schematics/src/workflow";
 import {
   NodeModulesEngineHost,
   NodePackageDoesNotSupportSchematics,
@@ -36,11 +38,18 @@ import {
   BacErrorWrapper,
   MessageName,
 } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
+import { VirtualFS, xfs } from "@business-as-code/fslib";
 import { Interfaces } from "@oclif/core";
 import * as ansiColors from "ansi-colors";
 import path from "path";
-import { from, Observable, of as observableOf, of, throwError } from "rxjs";
+import {
+  from,
+  Observable,
+  of as observableOf,
+  of,
+  Subject,
+  throwError,
+} from "rxjs";
 import { concatMap, ignoreElements, last, map, takeLast } from "rxjs/operators";
 import { Context, Result, ServiceInitialiseOptions } from "../__types__";
 
@@ -111,8 +120,9 @@ export class SchematicsService {
 
   schematicsMap: SchematicsMap = new Map();
   // schematicsCollectionMap: SchematicsCollectionsMap = new Map();
-  // // @ts-ignore - is assigned via initialise
-  // schematicsLogger: logging.Logger;
+
+  // @ts-ignore - is assigned via initialise
+  schematicsLogger: logging.Logger;
 
   // @ts-expect-error:
   private workflow: NodeWorkflow;
@@ -153,12 +163,12 @@ export class SchematicsService {
     // DO NOT MOVE THE HOST_ROOT FOLDER. THIS STAYS AT DESTINATIONPATH ALWAYS
 
     // however, the workingPath must be heeded
-    // console.log(`host :>> `, this.workflow._host._root);
-    // this.workflow._host._root = path.join(
+    // console.log(`host :>> `, this.getCurrentFsHost()._root);
+    // this.getCurrentFsHost()._root = path.join(
     //   this.options.destinationPath.original,
     //   this.options.workingPath
     // );
-    // console.log(`host2 :>> `, this.workflow._host._root);
+    // console.log(`host2 :>> `, this.getCurrentFsHost()._root);
 
     // const schematicsMap = this.findAllSchematicsCollections()
     // this.workflow = this.createWorkflow({
@@ -170,212 +180,332 @@ export class SchematicsService {
     // this.registerServicesAsTasks({context, workflow: this.workflow});
   }
 
-  /**
-   Runs a schematic directly, no workflow involvement. This returns an observer so can be merged into
-   an existing tree
-   */
-  runExternalSchematic({
-    address,
-    schematicContext,
-    schematicOptions,
-    tree,
-    executionOptions,
-  }:
-  {
-    address: AddressPackageScaffoldIdentString;
-    schematicContext: SchematicContext;
-    schematicOptions: Record<PropertyKey, unknown>;
-    tree: Tree;
-    executionOptions?: Partial<ExecutionOptions>;
-  }): Promise<Tree> {
-    const schematicsMapEntry = this.schematicsMap.get(address);
-    if (!this.workflow) {
-      throw new Error(`Cannot runExternal without an existing workflow`);
-    }
-    if (!schematicsMapEntry) {
-      throw new Error(`Schematics '${address}' cannot be ran as runExternal`);
-    }
+  createHostTree(): Tree {
+    // const nodeHost = new NodeJsSyncHost()
+    // const workflowHost = this.getCurrentFsHost()._delegate
 
-    const collection = this.workflow.engine.createCollection(
-      schematicsMapEntry.collectionPath.original,
-      // @ts-ignore
-      schematicContext.schematic.collection
-    ) as Collection<{}, {}>;
-    const schematic = collection.createSchematic(
-      schematicsMapEntry.address.parts.params.get("namespace")!
+    // console.log(`nodeHost, workflowHost :>> `, nodeHost, workflowHost)
+
+    const nextTree = new HostCreateTree(
+      new virtualFs.ScopedHost(
+        new NodeJsSyncHost(),
+        // workflowHost,
+        this.options.destinationPath.original as any
+      )
     );
 
-    // const tmpHosts =
-    //   new virtualFs.ScopedHost(
-    //     new NodeJsSyncHost(),
-    //     this.options.destinationPath.original as any
-    //   )
-    // const tmpHostsTree = new HostCreateTree(
-    //   new virtualFs.ScopedHost(
-    //     new NodeJsSyncHost(),
-    //     this.options.destinationPath.original as any
-    //   )
-    // );
-
-    // schematicContext.
-
-
-    // from(flushToFsSinks).pipe(
-    //   concatMap((sink) => sink.commit(tree)),
-    //   ignoreElements(),
-    // )
-
-    const prevSchematicWithSink = this.attachFlushSinksToSchematic(
-      of(tree),
-      "commit"
-    );
-    return prevSchematicWithSink
-      .toPromise()
-      .then(() => {
-        const nextSchematic = schematic.call(
-          schematicOptions,
-          // observableOf(tmpTree),
-          observableOf(branch(tree)),
-          // observableOf(branch(tree)),
-          schematicContext,
-          executionOptions
-        );
-
-        // will produce an observable stream of a single tree event. We can then take the first and build
-        // a new tree from the fs because the process may have written to it directly (i.e. git client etc)
-        const nextSchematicWithFsTree = nextSchematic.pipe(
-          last(),
-          map((x) => {
-            const externalSchematicTree = new HostCreateTree(
-              new virtualFs.ScopedHost(
-                new NodeJsSyncHost(),
-                this.options.destinationPath.original as any
-              )
-            );
-            // externalSchematicTree._cache = tree._cache // hacky way to roll back the staging area
-            // get a diff of existing tree and this new one to know what the externalSchematic actually did
-            return externalSchematicTree;
-          })
-        );
-
-        // const nextSchematicWithSink = attachFlushSinksToSchematic(
-        //   of(tmpHostsTree)
-        // );
-        const nextSchematicWithSink = this.attachFlushSinksToSchematic(
-          nextSchematicWithFsTree,
-          "report"
-        ); // don't commit the changes as already there, duh. Workflow reporting only
-        return nextSchematicWithSink
-          .pipe(
-            takeLast(1),
-            // catchError(() => EMPTY),
-            // map(x => EMPTY),
-            // ignoreElements()
-            map((x) => {
-              tree.merge(x, MergeStrategy.AllowOverwriteConflict);
-              return tree;
-            })
-          )
-          .toPromise();
-      })
-      .then(() => tree);
+    // console.log(`prevTree, nextTree :>> `, prevTree, nextTree)
+    return nextTree
   }
 
+  // /**
+  //  Runs a schematic directly, no workflow involvement. This returns an observer so can be merged into
+  //  an existing tree
+  //  */
+  // runExternalSchematic({
+  //   address,
+  //   schematicContext,
+  //   schematicOptions,
+  //   tree,
+  //   executionOptions,
+  //   mergeStrategy = MergeStrategy.AllowOverwriteConflict,
+  // }: {
+  //   address: AddressPackageScaffoldIdentString;
+  //   schematicContext: SchematicContext;
+  //   schematicOptions: Record<PropertyKey, unknown>;
+  //   tree: Tree;
+  //   executionOptions?: Partial<ExecutionOptions>;
+  //   /** defines how the 2 trees are merged. Additional 'replace' variant will return the last. This means a full replacement! */
+  //   mergeStrategy?: MergeStrategy | "replace";
+  // }): Promise<Tree> {
+  //   const schematicsMapEntry = this.schematicsMap.get(address);
+  //   if (!this.workflow) {
+  //     throw new Error(`Cannot runExternal without an existing workflow`);
+  //   }
+  //   if (!schematicsMapEntry) {
+  //     throw new Error(`Schematics '${address}' cannot be ran as runExternal`);
+  //   }
+
+  //   const collection = this.workflow.engine.createCollection(
+  //     schematicsMapEntry.collectionPath.original,
+  //     // @ts-ignore
+  //     schematicContext.schematic.collection
+  //   ) as Collection<{}, {}>;
+  //   const schematic = collection.createSchematic(
+  //     schematicsMapEntry.address.parts.params.get("namespace")!
+  //   );
+
+  //   // const tmpHosts =
+  //   //   new virtualFs.ScopedHost(
+  //   //     new NodeJsSyncHost(),
+  //   //     this.options.destinationPath.original as any
+  //   //   )
+  //   // const tmpHostsTree = new HostCreateTree(
+  //   //   new virtualFs.ScopedHost(
+  //   //     new NodeJsSyncHost(),
+  //   //     this.options.destinationPath.original as any
+  //   //   )
+  //   // );
+
+  //   // schematicContext.
+
+  //   // from(flushToFsSinks).pipe(
+  //   //   concatMap((sink) => sink.commit(tree)),
+  //   //   ignoreElements(),
+  //   // )
+
+  //   const prevSchematicWithSink = this.attachFlushSinksToSchematic({
+  //     tree$: of(tree),
+  //     tree,
+  //     action: "commit",
+  //   });
+  //   return prevSchematicWithSink
+  //     .toPromise()
+  //     .then(() => {
+  //       const nextSchematic = schematic.call(
+  //         schematicOptions,
+  //         // observableOf(tmpTree),
+  //         observableOf(branch(tree)),
+  //         // observableOf(branch(tree)),
+  //         schematicContext,
+  //         executionOptions
+  //       );
+
+  //       // will produce an observable stream of a single tree event. We can then take that event and build
+  //       // a new tree from the fs because the process may have written to it directly (i.e. git client etc)
+  //       const nextSchematicWithFsTree = nextSchematic.pipe(
+  //         last(),
+  //         map((x) => {
+  //           const externalSchematicTree = this.createHostTree();
+  //           // const externalSchematicTree = new HostCreateTree(
+  //           //   new virtualFs.ScopedHost(
+  //           //     new NodeJsSyncHost(),
+  //           //     this.options.destinationPath.original as any
+  //           //   )
+  //           // );
+  //           // externalSchematicTree._cache = tree._cache // hacky way to roll back the staging area
+  //           // get a diff of existing tree and this new one to know what the externalSchematic actually did
+  //           return externalSchematicTree;
+  //         })
+  //       );
+
+  //       // const nextSchematicWithSink = attachFlushSinksToSchematic(
+  //       //   of(tmpHostsTree)
+  //       // );
+  //       const nextSchematicWithSink = this.attachFlushSinksToSchematic({
+  //         tree$: nextSchematicWithFsTree,
+  //         tree,
+  //         action: "report",
+  //       }); // don't commit the changes as already there, duh. Workflow reporting only
+  //       // return nextSchematicWithFsTree
+  //       return nextSchematicWithSink
+  //         .pipe(
+  //           takeLast(1),
+  //           // catchError(() => EMPTY),
+  //           // map(x => EMPTY),
+  //           // ignoreElements()
+  //           map((x) => {
+  //             // if (mergeStrategy === 'replace') {
+  //             //   return tree
+  //             // }
+  //             tree.merge(x, mergeStrategy);
+  //             return tree;
+  //           })
+  //         )
+  //         .toPromise();
+  //     })
+  //     .then((finalTree) => tree);
+  // }
+
   /**
-   Runs a rule with same semantics as .runExternalSchematic. This does not change the
-   schematicContext, collection etc - it simply ensures that the tree is flushed to fs before execution
+   Winds the event stream forward, which should mean the SchematicActions are effected to disk
+   Does no merging of Trees - consuming code should do this explicitly (via Source utils or tree.merge(x, MergeStrategy.x);)
+   */
+  flush({
+    tree,
+    action,
+  }: // parentContext,
+  {
+    tree: Tree;
+    action: 'report' | 'commit'
+  }): Promise<Tree> {
+    const prevObservable = this.attachFlushSinksToSchematic({
+      tree$: of(tree),
+      tree,
+      action,
+    }); // allows the next to just amend this version
+
+    return prevObservable.toPromise();
+  }
+
+  // /**
+  //  Runs a rule with same semantics as .runExternalSchematic. This does not change the
+  //  schematicContext, collection etc - it simply ensures that the tree is flushed to fs before execution
+
+  //  inspiration - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/testing/schematic-test-runner.ts#L133
+  //  */
+  // runExternalSchematicRule({
+  //   schematicRule,
+  //   schematicContext,
+  //   tree,
+  //   mergeStrategy = MergeStrategy.AllowOverwriteConflict,
+  // }: // parentContext,
+  // {
+  //   schematicRule: Rule;
+  //   schematicContext: SchematicContext;
+  //   tree: Tree;
+  //   /** defines how the 2 trees are merged. Additional 'replace' variant will return the last. This means a full replacement! */
+  //   mergeStrategy?: MergeStrategy | "replace";
+  // }): Promise<Tree> {
+  //   // const prevSchematicWithSink = this.attachFlushSinksToSchematic({
+  //   //   tree$: of(tree),
+  //   //   tree,
+  //   //   action: "commit"
+  //   // }
+  //   // );
+
+  //   const prevObservable =
+  //     mergeStrategy === "replace"
+  //       ? of(tree)
+  //       : this.attachFlushSinksToSchematic({
+  //           tree$: of(tree),
+  //           tree,
+  //           action: "commit",
+  //         }); // allows the next to just amend this version
+
+  //   return prevObservable
+  //     .toPromise()
+  //     .then(() => {
+  //       // console.log(`t :>> `, t)
+  //       const nextSchematic = callRule(schematicRule, tree, schematicContext);
+
+  //       // const externalSchematicTree = new HostCreateTree(
+  //       //   new virtualFs.ScopedHost(
+  //       //     new NodeJsSyncHost(),
+  //       //     this.options.destinationPath.original as any
+  //       //   )
+  //       // );
+
+  //       // will produce an observable stream of a single tree event. We can then take that event and build
+  //       // a new tree from the fs because the process may have written to it directly (i.e. git client etc)
+  //       const nextSchematicWithFsTree = nextSchematic.pipe(
+  //         last(),
+  //         map((x) => {
+  //           const externalSchematicTree = this.createHostTree();
+  //           // const externalSchematicTree = new HostCreateTree(
+  //           //   new virtualFs.ScopedHost(
+  //           //     new NodeJsSyncHost(),
+  //           //     this.options.destinationPath.original as any
+  //           //   )
+  //           // );
+  //           // externalSchematicTree._cache = tree._cache // hacky way to roll back the staging area
+  //           // get a diff of existing tree and this new one to know what the externalSchematic actually did
+  //           return externalSchematicTree;
+  //         })
+  //       );
+
+  //       // const nextSchematicWithSink = attachFlushSinksToSchematic(
+  //       //   of(tmpHostsTree)
+  //       // );
+  //       // const nextSchematicWithSink = this.attachFlushSinksToSchematic({
+  //       //   tree$: nextSchematicWithFsTree,
+  //       //   tree,
+  //       //   action: "report"
+  //       // }
+  //       // ); // don't commit the changes as already there, duh. Workflow reporting only
+
+  //       return (
+  //         nextSchematic
+  //           // return nextSchematicWithFsTree
+  //           // return nextSchematicWithSink
+  //           .pipe(
+  //             takeLast(1),
+  //             // catchError(() => EMPTY),
+  //             // map(x => EMPTY),
+  //             // ignoreElements()
+  //             map((x) => {
+  //               // allows us to to just flat out replace the previous fs contents with new tree
+  //               tree.merge(x, MergeStrategy.AllowOverwriteConflict);
+  //               return tree;
+
+  //               if (mergeStrategy === "replace") {
+  //                 // return tree
+  //                 // x.merge(tree, MergeStrategy.Overwrite);
+  //                 // return x
+  //                 tree.merge(x, MergeStrategy.Overwrite);
+  //                 return tree;
+  //               } else {
+  //                 tree.merge(x, MergeStrategy.AllowOverwriteConflict);
+  //                 return tree;
+  //               }
+  //             })
+  //           )
+  //           .toPromise()
+  //           .then(() => {
+  //             // console.log(`:>> BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`);
+
+  //             // const externalSchematicTree = new HostCreateTree(
+  //             //   new virtualFs.ScopedHost(
+  //             //     new NodeJsSyncHost(),
+  //             //     this.options.destinationPath.original as any
+  //             //   )
+  //             // );
+  //             // return mergeStrategy === 'replace' ? externalSchematicTree : tree
+  //             return tree;
+  //           })
+  //       );
+  //       // .then((t) => {
+  //       //   return t
+  //       // })
+  //     })
+  //     .then((finalTree) => {
+  //       // console.log(`finalTree :>> `, finalTree)
+  //       return finalTree;
+  //     });
+  // }
+
+  /**
+   Runs a rule with same semantics as .runExternalSchematic. Does not flush
 
    inspiration - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/testing/schematic-test-runner.ts#L133
    */
-  runExternalSchematicRule({
+  runSchematicRule({
     schematicRule,
     schematicContext,
     tree,
-  }: // parentContext,
-  {
+  }: {
     schematicRule: Rule;
     schematicContext: SchematicContext;
     tree: Tree;
   }): Promise<Tree> {
-
-    const prevSchematicWithSink = this.attachFlushSinksToSchematic(
-      of(tree),
-      "commit"
-    );
-
-    return prevSchematicWithSink
-      .toPromise()
-      .then(() => {
-        const nextSchematic = callRule(
-          schematicRule,
-          tree,
-          schematicContext,
-        );
-
-        // will produce an observable stream of a single tree event. We can then take the first and build
-        // a new tree from the fs because the process may have written to it directly (i.e. git client etc)
-        const nextSchematicWithFsTree = nextSchematic.pipe(
-          last(),
-          map((x) => {
-            const externalSchematicTree = new HostCreateTree(
-              new virtualFs.ScopedHost(
-                new NodeJsSyncHost(),
-                this.options.destinationPath.original as any
-              )
-            );
-            // externalSchematicTree._cache = tree._cache // hacky way to roll back the staging area
-            // get a diff of existing tree and this new one to know what the externalSchematic actually did
-            return externalSchematicTree;
-          })
-        );
-
-        // const nextSchematicWithSink = attachFlushSinksToSchematic(
-        //   of(tmpHostsTree)
-        // );
-        const nextSchematicWithSink = this.attachFlushSinksToSchematic(
-          nextSchematicWithFsTree,
-          "report"
-        ); // don't commit the changes as already there, duh. Workflow reporting only
-        return nextSchematicWithSink
-          .pipe(
-            takeLast(1),
-            // catchError(() => EMPTY),
-            // map(x => EMPTY),
-            // ignoreElements()
-            map((x) => {
-              tree.merge(x, MergeStrategy.AllowOverwriteConflict);
-              return tree;
-            })
-          )
-          .toPromise();
-      })
-      .then(() => tree);
+    return callRule(schematicRule, tree, schematicContext).toPromise();
   }
 
   async runSchematic({
     address,
     context,
     options,
-  }:
-  {
+  }: {
     address: AddressPackageScaffoldIdentString;
     context: Context;
     options: Record<PropertyKey, unknown>;
   }): Promise<
     Result<
       { destinationPath: AddressPathAbsolute },
-      | BacError<MessageName.SCHEMATICS_INVALID_ADDRESS>
-      | BacError<MessageName.SCHEMATICS_NOT_FOUND>
-      | BacError<MessageName.SCHEMATICS_ERROR>
+      | { error: BacError<MessageName.SCHEMATICS_INVALID_ADDRESS> }
+      | { error: BacError<MessageName.SCHEMATICS_NOT_FOUND> }
+      | { error: BacError<MessageName.SCHEMATICS_ERROR> }
     >
   > {
     if (!xfs.existsPromise(this.options.context.workspacePath.address)) {
       return {
         success: false,
-        res: new BacError(
-          MessageName.SCHEMATICS_ERROR,
-          `DestinationPath '${this.options.destinationPath.original}' must exist before scaffolding`
-        ),
+        res: {
+          error: new BacError(
+            MessageName.SCHEMATICS_ERROR,
+            `DestinationPath '${this.options.destinationPath.original}' must exist before scaffolding`
+          ),
+        },
       };
     }
 
@@ -384,10 +514,12 @@ export class SchematicsService {
     });
     if (!schematicPath) {
       return {
-        res: new BacError(
-          MessageName.SCHEMATICS_INVALID_ADDRESS,
-          `Invalid schematic address '${address}'`
-        ),
+        res: {
+          error: new BacError(
+            MessageName.SCHEMATICS_INVALID_ADDRESS,
+            `Invalid schematic address '${address}'`
+          ),
+        },
         success: false,
       };
     }
@@ -398,14 +530,16 @@ export class SchematicsService {
 
     if (!schematicMapEntry) {
       return {
-        res: new BacError(
-          MessageName.SCHEMATICS_NOT_FOUND,
-          `Schematic not found at address '${
-            schematicPath.original
-          }'. Available: '${Array.from(this.schematicsMap.keys())
-            .map((schematicPath) => schematicPath)
-            .join(", ")}'`
-        ),
+        res: {
+          error: new BacError(
+            MessageName.SCHEMATICS_NOT_FOUND,
+            `Schematic not found at address '${
+              schematicPath.original
+            }'. Available: '${Array.from(this.schematicsMap.keys())
+              .map((schematicPath) => schematicPath)
+              .join(", ")}'`
+          ),
+        },
         success: false,
       };
     }
@@ -455,7 +589,7 @@ export class SchematicsService {
 
           allowPrivate: allowPrivate,
           debug: true,
-          // logger: this.schematicsLogger, // IS THIS REQUIRED?!
+          logger: this.schematicsLogger, // IS THIS REQUIRED?!
         })
         .toPromise();
 
@@ -482,11 +616,13 @@ export class SchematicsService {
       }
 
       return {
-        res: new BacErrorWrapper(
-          MessageName.SCHEMATICS_ERROR,
-          `${message}. Supplied path: '${schematicPath.original}'`,
-          err as Error
-        ),
+        res: {
+          error: new BacErrorWrapper(
+            MessageName.SCHEMATICS_ERROR,
+            `${message}. Supplied path: '${schematicPath.original}'`,
+            err as Error
+          ),
+        },
         success: false,
       };
     }
@@ -497,10 +633,10 @@ export class SchematicsService {
    */
   protected createWorkflow({
     schematicsCollectionMap,
-    // logger,
-    // destinationPath,
-    // context,
-  }: {
+  }: // logger,
+  // destinationPath,
+  // context,
+  {
     schematicsCollectionMap: SchematicsCollectionsMap;
     // logger: logging.Logger;
     // destinationPath?: AddressPathAbsolute;
@@ -508,7 +644,10 @@ export class SchematicsService {
   }): NodeWorkflow {
     const scaffoldBase = path.resolve(__dirname, "../..");
     const cliRoot = process.cwd(); // todo make available through context
-    const workflowRoot = addr.pathUtils.join(this.options.destinationPath, addr.parsePath(this.options.workingPath)).original as Path
+    const workflowRoot = addr.pathUtils.join(
+      this.options.destinationPath,
+      addr.parsePath(this.options.workingPath)
+    ).original as Path;
     // const workflowRoot = (destinationPath?.original ?? process.cwd()) as Path;
     // const pluginRoots = context.oclifConfig.plugins.filter(p => p.type === 'core').map(p => p.root)
 
@@ -521,7 +660,6 @@ export class SchematicsService {
     const fsHost = new virtualFs.ScopedHost(new NodeJsSyncHost(), workflowRoot);
     // const fsHost = new NodeJsSyncHost
     // fsHost._root = workflowRoot;
-
 
     const workflow = new NodeWorkflow(fsHost, {
       root: workflowRoot,
@@ -651,7 +789,10 @@ export class SchematicsService {
         this.runCache.loggingQueue = [];
         this.runCache.error = false;
       }
-      this.options.context.logger(`schematicsService: lifecycle '${event.kind}'`, "debug");
+      this.options.context.logger(
+        `schematicsService: lifecycle '${event.kind}'`,
+        "debug"
+      );
     });
 
     // Show usage of deprecated options
@@ -662,41 +803,75 @@ export class SchematicsService {
     return workflow;
   }
 
-  protected attachFlushSinksToSchematic(
-    tree$: Observable<Tree>,
-    action: "commit" | "report"
-  ): Observable<Tree> {
+  protected getCurrentFsHost(): virtualFs.Host {
+    // @ts-expect-error:
+    return (this.workflow as BaseWorkflow)._host;
+  }
+  protected getCurrentWorkflowReporter(): Subject<DryRunEvent> {
+    // @ts-expect-error:
+    return (this.workflow as BaseWorkflow)._reporter;
+  }
+
+  protected attachFlushSinksToSchematic({
+    tree$,
+    tree,
+    action,
+  }: {
+    tree$: Observable<Tree>;
+    tree: Tree;
+    action: "commit" | "report";
+  }): Observable<Tree> {
+    // if (tree.__isObserved) {
+    //   console.log(`:>> TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT`);
+
+    //   return tree$
+    // }
+
     const createFlushToFsSinks = (): Sink[] => {
-      let error = false;
+      let error: false | Error = false;
 
       // flush the existing tree...
       // const progressSink = new HostSink(tmpHosts, true)
-      const dryRunSink = new DryRunSink(this._host, this.options.force);
+      const dryRunSink = new DryRunSink(
+        this.getCurrentFsHost(),
+        this.options.force
+      );
       const dryRunSubscriber = dryRunSink.reporter.subscribe((event) => {
         if (action === "report") {
-          this.workflow._reporter.next(event);
+          this.getCurrentWorkflowReporter().next(event);
         }
-        error = error || event.kind == "error";
+
+        if (event.kind == 'error') {
+          error = new Error(`${event.description}. Path: '${event.path}'`)
+          // console.log(`eventEEEEE :>> `, event)
+        }
+        // error = error || event.kind == "error";
       });
       return [
         dryRunSink,
         {
           commit() {
             dryRunSubscriber.unsubscribe();
+
             if (error) {
-              return throwError(new UnsuccessfulWorkflowExecution());
+              // return throwError(new UnsuccessfulWorkflowExecution());
+              return throwError(error);
             }
 
             return of();
           },
         },
+        // new HostSink(this.getCurrentFsHost(), this.options.force)
         ...(action === "commit"
-          ? [new HostSink(this.workflow._host, this.options.force)]
-          : []),
+          ? [new HostSink(this.getCurrentFsHost(), this.options.force)]
+          : // ? [new HostSink(this.getCurrentFsHost(), this.options.force)]
+            []),
       ];
     };
 
     const flushToFsSinks = createFlushToFsSinks();
+
+    // tree.__isObserved = true
 
     return from(flushToFsSinks).pipe(
       concatMap((sink) => {
@@ -712,7 +887,7 @@ export class SchematicsService {
       }),
       ignoreElements()
     );
-  };
+  }
 
   protected async registerTasks({ workflow }: { workflow: NodeWorkflow }) {
     this.options.context.logger(`registerServicesAsTasks: registering tasks`);
@@ -986,24 +1161,24 @@ export class SchematicsService {
   ): Promise<{ workflow: NodeWorkflow; schematicsMap: SchematicsMap }> {
     // const verbose = true; // @todo - make available from oclif
 
-    // /** @todo - integrate with oclif somehow */
-    // const setupLogger = (): logging.Logger => {
-    //   /** Create the DevKit Logger used through the CLI. */
-    //   const logger = createConsoleLogger(
-    //     verbose ?? true,
-    //     process.stdout,
-    //     process.stderr,
-    //     {
-    //       info: (s) => s,
-    //       debug: (s) => s,
-    //       warn: (s) => colors.bold.yellow(s),
-    //       error: (s) => colors.bold.red(s),
-    //       fatal: (s) => colors.bold.red(s),
-    //     }
-    //   );
-    //   return logger;
-    // };
-    // const logger = setupLogger();
+    /** @todo - integrate with oclif somehow */
+    const setupLogger = (): logging.Logger => {
+      /** Create the DevKit Logger used through the CLI. */
+      const logger = createConsoleLogger(
+        true,
+        process.stdout,
+        process.stderr,
+        {
+          info: (s) => s,
+          debug: (s) => s,
+          warn: (s) => colors.bold.yellow(s),
+          error: (s) => colors.bold.red(s),
+          fatal: (s) => colors.bold.red(s),
+        }
+      );
+      return logger;
+    };
+    const logger = setupLogger();
 
     const schematicsCollectionsMap = this.findAllSchematicsCollections({
       ...options,
@@ -1020,7 +1195,7 @@ export class SchematicsService {
       schematicsCollectionsMap,
       workflow,
     });
-    // this.schematicsLogger = logger;
+    this.schematicsLogger = logger;
 
     // logger.debug(`schematicsService::setupSchematics: found '${schematicsMap.size}' schematics '${Array.from(schematicsMap.values()).map(s => s.address.original).join(', ')}'`)
     options.context.logger(

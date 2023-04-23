@@ -26,49 +26,21 @@ function getProjectsFromMoon(selector: (options: {name: string, projectType: str
 	const moonProjectQueryResponseJson = execSync('pnpm moon query projects --json', {shell: true as any, encoding: 'utf8'})
 	// console.log(`moonProjectQueryResponseJson :>> `, moonProjectQueryResponseJson)
 
-  const moonProjectQueryResponse: MoonProjectQueryResponse = JSON.parse(moonProjectQueryResponseJson)
-	// console.log(`moonProjectQueryRes :>> `, moonProjectQueryResponse)
+	try {
+		const moonProjectQueryResponse: MoonProjectQueryResponse = JSON.parse(moonProjectQueryResponseJson)
+		// console.log(`moonProjectQueryRes :>> `, moonProjectQueryResponse)
 
 
-	return moonProjectQueryResponse.projects.filter(p => selector({
-		name: p.aliases[0],
-		projectType: p.type,
-		tags: [],
-	}))
-	.map(p => p.aliases[0])
-	// .map((name) => (name.charAt(0) === '@' ? name.split('/')[1] : name));
-
-	// console.log(`moonProjectQuery :>> `, moonProjectQuery)
-	// return
-
-	// return Promise.resolve()
-	// 	.then(() => {
-
-
-	// 		const ctx = context || {};
-	// 		const cwd = ctx.cwd || process.cwd();
-	// 		const ws = new Workspaces(cwd);
-	// 		const workspace = ws.readWorkspaceConfiguration();
-	// 		return Object.entries(workspace.projects || {}).map(
-	// 			([name, project]) => ({
-	// 				name,
-	// 				...project,
-	// 			})
-	// 		);
-	// 	})
-	// 	.then((projects) => {
-	// 		return projects
-	// 			.filter((project) =>
-	// 				selector({
-	// 					name: project.name,
-	// 					projectType: project.projectType,
-	// 					tags: project.tags,
-	// 				})
-	// 			)
-	// 			.filter((project) => project.targets)
-	// 			.map((project) => project.name)
-	// 			.map((name) => (name.charAt(0) === '@' ? name.split('/')[1] : name));
-	// 	});
+		return moonProjectQueryResponse.projects.filter(p => selector({
+			name: p.aliases[0],
+			projectType: p.type,
+			tags: [],
+		}))
+		.map(p => p.aliases[0])
+	}
+	catch (err) {
+		console.log(`could not parse :>> `, moonProjectQueryResponseJson)
+	}
 }
 
 const projectsFromMoon = getProjectsFromMoon(

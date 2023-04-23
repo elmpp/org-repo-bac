@@ -207,10 +207,11 @@ Extra = undefined,
     Object.setPrototypeOf(this, BacErrorWrapper.prototype);
   }
 
-  static inlineWrapError(message: string, wrappable: string | Error) {
+  static inlineWrapError(message: string, wrappable: string | Error = message) {
     if (assertIsError(wrappable)) {
       wrappable = wrappable.stack ?? wrappable.message;
     }
+    console.log(`wrappable :>> `, wrappable)
     const lines = wrappable.split(os.EOL);
     return `Error: ${message}\nWrapped error:\n${lines
       .map((line) => `  ${line}`)

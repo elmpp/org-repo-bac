@@ -96,9 +96,9 @@ export class BacTestsSchematicsRun extends BaseCommand<typeof BacTestsSchematics
       context,
       options: (context.cliOptions.flags as any).payload,
       // destinationPath: workspacePath,
-      dryRun: false,
-      force: true,
-      workingPath: addr.pathUtils.dot,
+      // dryRun: false,
+      // force: true,
+      // workingPath: addr.pathUtils.dot,
     });
 
     console.log(`res :>> `, res)

@@ -10,14 +10,11 @@ import {
 } from "@angular-devkit/schematics";
 import { NodeWorkflow } from "@angular-devkit/schematics/tools";
 import {
-  getSchematicsEngineHost,
-  ServiceOptionsLite,
-  wrapServiceAsRule,
+  schematicUtils
 } from "@business-as-code/core";
-import { xfs } from "@business-as-code/fslib";
 
 export function debugRule(
-  options: Pick<ServiceOptionsLite<"git">, "initialiseOptions" | "context">
+  options: Pick<schematicUtils.ServiceOptionsLite<"git">, "initialiseOptions" | "context">
 ): Rule {
   function getFsContents(tree: Tree, _context: SchematicContext) {
     const treeFiles: string[] = [];
@@ -25,7 +22,7 @@ export function debugRule(
     return treeFiles;
   }
   function getCwd(tree: Tree, schematicContext: SchematicContext): Path {
-    const fsHost = getSchematicsEngineHost(schematicContext);
+    const fsHost = schematicUtils.getSchematicsEngineHost(schematicContext);
     (schematicContext.engine.workflow as NodeWorkflow)?.engine;
     return fsHost._root as Path;
   }
@@ -45,12 +42,15 @@ export function debugRule(
       fsContents: getFsContents(liveFsTree, schematicContext),
     };
 
-    const gitRule = wrapServiceAsRule({
+    const gitRule = schematicUtils.wrapServiceAsRule({
       serviceOptions: {
         serviceName: "git",
         cb: async ({ service }) => {
           const repo = service.getRepository(false);
           if (repo) {
+            // console.log(`service.get :>> `, service.getWorkingDestinationPath())
+            // console.log(`repo.config :>> `, repo)
+
             debuggable.status = await repo.status();
             debuggable.branches = await repo.branch();
             debuggable.localBranches = await repo.branchLocal();
@@ -67,6 +67,5 @@ export function debugRule(
     });
 
     return gitRule;
-
   };
 }
