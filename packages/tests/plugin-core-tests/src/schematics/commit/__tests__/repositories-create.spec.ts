@@ -10,7 +10,7 @@ describe("repositories-create", () => {
       const res = await testContext.runSchematic({
         parseOutput: {
           flags: {
-            workspacePath: testContext.envVars.workspacePath.original,
+            workspacePath: testContext.testEnvVars.workspacePath.original,
             // destinationPath: testContext.envVars.workspacePath.original,
             schematicsAddress:
               "@business-as-code/plugin-core-tests#namespace=repositories-create",

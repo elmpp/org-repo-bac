@@ -1,33 +1,24 @@
 import {
-  addr,
-  assertIsAddressPath,
-  assertIsAddressPathAbsolute,
-  assertIsAddressPathRelative,
-} from "@business-as-code/address";
-import {
-  Args,
   assertIsOk,
   BaseCommand,
   ContextCommand,
   Flags,
-  Interfaces as _Interfaces,
 } from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
-import path from "path";
-
+import { MessageName } from "@business-as-code/error";
 
 /**
  Generic command to run any schematic. Allows testing without standing up dedicated command
  */
-export class BacTestsSchematicsRun extends BaseCommand<typeof BacTestsSchematicsRun> {
+export class BacTestsSchematicsRun extends BaseCommand<
+  typeof BacTestsSchematicsRun
+> {
   static override description = "Runs arbitrary schematic";
 
-//   static override examples = [
-//     `$ oex hello friend --from oclif
-// Produces the repos in the fixtures directory
-// `,
-//   ];
+  //   static override examples = [
+  //     `$ oex hello friend --from oclif
+  // Produces the repos in the fixtures directory
+  // `,
+  //   ];
 
   static override flags = {
     // payload: Flags.custom({
@@ -48,12 +39,9 @@ export class BacTestsSchematicsRun extends BaseCommand<typeof BacTestsSchematics
     }),
   };
 
-  static override args = {
-  };
+  static override args = {};
 
   async execute(context: ContextCommand<typeof BacTestsSchematicsRun>) {
-
-
     // let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
     // if (!assertIsAddressPath(repositoriesPath)) {
     //   throw new BacError(
@@ -83,12 +71,14 @@ export class BacTestsSchematicsRun extends BaseCommand<typeof BacTestsSchematics
     //   }
     //   await xfs.mkdirpPromise(repositoriesPath.address);
     // }
-// console.log(`repositoriesPath :>> `, repositoriesPath)
+    // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath})
-
-    console.log(`:>> beforeschematicrun`);
+    const schematicsService = await context.serviceFactory("schematics", {
+      context,
+      destinationPath: context.workspacePath,
+      workingPath: ".",
+    });
 
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
@@ -101,25 +91,21 @@ export class BacTestsSchematicsRun extends BaseCommand<typeof BacTestsSchematics
       // workingPath: addr.pathUtils.dot,
     });
 
-    console.log(`res :>> `, res)
-
     if (!assertIsOk(res)) {
-      switch (res.res.reportCode) {
+      switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
       }
-    } else {
-      context.logger(`Finished ok. Scaffolded into '${res.res.original}'`, "info");
     }
 
-    return res
+    return res;
 
     //   override async run(): Promise<void> {
     //     }

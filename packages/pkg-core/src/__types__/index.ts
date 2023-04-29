@@ -1,3 +1,4 @@
+import { logging } from "@angular-devkit/core";
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Command, Interfaces } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -43,8 +44,8 @@ export type ContextCommand<T extends typeof Command> = {
     serviceName: SName,
     options: ServiceInitialiseOptions
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
-  /** @todo */
-  logger: (msg: string, level?: LogLevel) => void;
+  logger: logging.Logger;
+  // logger: (msg: string, level?: LogLevel) => void;
   /** @internal */
   oclifConfig: Interfaces.Config;
   /**
@@ -61,8 +62,7 @@ export type Context = {
     serviceName: SName,
     options: ServiceInitialiseOptions
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
-  /** @todo */
-  logger: (msg: string, level?: LogLevel) => void;
+  logger: logging.Logger
   /** @internal */
   oclifConfig: Interfaces.Config;
   /**
@@ -81,7 +81,7 @@ export type ServiceInitialiseOptions = {
   /** service instances are recreated when targeting different directories */
   destinationPath: AddressPathAbsolute;
   /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
-  workingPath?: string
+  workingPath: string
 };
 // export type ServiceInitialiseOptions = { context: Context; workingPath: AddressPathRelative }; // workingPath must be runtime value for services
 

@@ -1,5 +1,9 @@
 import { Host } from "@angular-devkit/core/src/virtual-fs/host";
 import {
+  EmptyTree,
+  HostCreateTree,
+  HostDirEntry,
+  HostTree,
   MergeStrategy,
   Rule,
   SchematicContext,
@@ -13,8 +17,12 @@ import {
   Services,
   ServicesStatic,
 } from "../__types__";
-import path from 'path'
-import { join, normalize } from '@angular-devkit/core';
+import path from "path";
+import { join, normalize, virtualFs } from "@angular-devkit/core";
+import { NodeJsSyncHost } from "@angular-devkit/core/node";
+import { SchematicsResettableHostTree } from "./schematics-resettable-host-tree";
+import { BacErrorWrapper, MessageName } from "@business-as-code/error";
+import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
 // import { Options as Options } from "./tasks/service-exec/options";
 
 export interface ServiceOptions<SName extends keyof ServicesStatic> {
@@ -183,9 +191,27 @@ export const mergeWithExternal = (
     context: Context;
     initialiseOptions: ServiceOptionsLite<"schematics">["initialiseOptions"];
   },
-  mergeStrategy: MergeStrategy
+  // mergeStrategy: MergeStrategy
 ): Rule => {
   return (tree: Tree, schematicContext: SchematicContext) => {
+    // console.log(`serviceOptions :>> `, serviceOptions)
+
+    // const debugFs = (schematicContext: SchematicContext) => {
+    //   const liveFsTree = new HostCreateTree(
+    //     // const liveFsTree = new HostCreateTree(
+    //     new virtualFs.ScopedHost(
+    //       new NodeJsSyncHost(),
+    //       getCurrentSchematicHostRoot(schematicContext).original as any
+    //     )
+    //   );
+    //   function getFsContents(tree: Tree, _context: SchematicContext) {
+    //     const treeFiles: string[] = [];
+    //     tree.visit((p) => treeFiles.push(p));
+    //     return treeFiles;
+    //   }
+    //   return getFsContents(liveFsTree, schematicContext);
+    // };
+
     const res = from(
       serviceOptions.context
         .serviceFactory("schematics", {
@@ -193,40 +219,166 @@ export const mergeWithExternal = (
           context: serviceOptions.context,
           destinationPath: getCurrentSchematicHostRoot(schematicContext),
         })
-        .then((schematicsService) =>
-          schematicsService.flush({ tree, action: 'commit' }).then((t) => {
-            // we should be ok now to source a new host tree to run the wrapped Rule with
-            const nextInitialTree = schematicsService.createHostTree();
-            // console.log(`nextInitialTree :>> `, nextInitialTree)
+        .then((schematicsService) => {
+          // console.log(
+          //   `getFsContents(liveFsTree) 1 :>> `,
+          //   debugFs(schematicContext),
+          //   serviceOptions.initialiseOptions,
+          // );
 
-            return schematicsService
-              .runSchematicRule({
-                schematicContext,
-                schematicRule: rule,
-                tree: nextInitialTree,
-              })
-              .then((nextTree) => {
-                // return schematicsService.flush({ tree: nextTree, action: 'report' })
-                // .then(() => {
-                //   tree.merge(nextTree, mergeStrategy);
-                //   // console.log(`tree after :>> `, tree)
-                //   return tree;
-                // })
-                // console.log(`tree :>> `, tree)
-                // console.log(`nextTree :>> `, nextTree)
+          // console.log(`applicableNextTree0, tree :>> `, tree)
 
-                // now we have both trees available for merging...
-                tree.merge(nextTree, mergeStrategy);
-                // console.log(`tree after :>> `, tree)
-                return tree;
+          return schematicsService
+            .flush({ tree, schematicContext, })
+            .then((t) => {
+              // console.log(
+              //   `getFsContents(liveFsTree) 2 :>> `,
+              //   debugFs(schematicContext),
+              //   serviceOptions.initialiseOptions,
+              // );
+              // we should be ok now to source a new host tree to run the wrapped Rule with
+              // const nextInitialTree = schematicsService.createHostTree();
 
-                // // tree.merge(nextTree, mergeStrategy);
-                // nextTree.merge(tree, mergeStrategy);
-                // // console.log(`tree after :>> `, nextTree)
-                // return nextTree;
-              });
-          })
-        )
+              // const nextInitialTree = new HostCreateTree(
+              //   new virtualFs.ScopedHost(
+              //     new NodeJsSyncHost(),
+              //     // workflowHost,
+              //     getCurrentSchematicHostRoot(schematicContext).original as any
+              //     // tree._root,
+              //   )
+              // );
+              // const nextInitialTree = new HostTree() NEED TO EXTEND THIS SO THAT IT CREATES A NON-READONLY _RECORD()
+              // const nextInitialTree = new HostTree()
+
+              // const applicableNextTree = new SchematicsResettableHostTree(getCurrentSchematicHostRoot(schematicContext).original);
+              const applicableNextTree = SchematicsResettableHostTree.fromExisting(getCurrentSchematicHostRoot(schematicContext).original, tree) as Tree;
+              // const applicableNextTree = tree
+              // applicableNextTree.merge(tree, mergeStrategy)
+              // console.log(`applicableNextTree1, tree :>> `, applicableNextTree, tree)
+
+              // applicableNextTree.reset() // this is our custom reset() - @TODO could this be a .branch()?
+
+              // const nextInitialTree = schematicsService.createHostTree();
+              // const nextInitialTree = tree.branch();
+              // nextInitialTree._record.reset()
+              // console.log(`nextInitialTree :>> `, nextInitialTree.actions)
+              // console.log(`nextInitialTree :>> `, nextInitialTree._record, nextInitialTree._record.records())
+              // console.log(
+              //   `getFsContents(liveFsTree) 3 :>> `,
+              //   debugFs(schematicContext),
+              //   serviceOptions.initialiseOptions,
+              // );
+
+              return schematicsService
+                .runSchematicRule({
+                  schematicContext,
+                  schematicRule: rule,
+                  tree: applicableNextTree,
+                })
+                .then((nextTree) => {
+                  // nextTree._record.reset();
+
+                  // console.log(
+                  //   `getFsContents(liveFsTree) 4 :>> `,
+                  //   debugFs(schematicContext),
+                  //   serviceOptions.initialiseOptions,
+                  // );
+
+                  // const debugActions = (tree: Tree) => {
+                  //   return tree.actions.map(
+                  //     (a) =>
+                  //       `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+                  //   );
+                  // };
+                  // console.log(`nextTree preFlush actions :>> `, debugActions(nextTree));
+                  return nextTree;
+
+                  // return schematicsService.flush({
+                  //   tree: nextTree,
+                  //   action: "report",
+                  // }).then(() => nextTree)
+                })
+                .then((nextTree) => {
+                  return nextTree
+                  // return schematicsService
+                  //   .flush({
+                  //     tree: nextTree,
+                  //     // action: "commit",
+                  //     schematicContext,
+                  //   })
+                  //   .then(() => {
+                  //     return nextTree
+
+                  //     // const postRuleEmptyHostTree = new SchematicsResettableHostTree(getCurrentSchematicHostRoot(schematicContext).original, tree)
+                  //     // // const postRuleEmptyHostTree = schematicsService.createHostTree()
+                  //     // console.log(`postRuleEmptyHostTree :>> `, postRuleEmptyHostTree)
+                  //     // return postRuleEmptyHostTree
+                  //     // return nextTree
+                  //   });
+                })
+                .then((nextTree) => {
+                  // nextTree.merge(tree, mergeStrategy)
+
+                  let applicableNextTree = SchematicsResettableHostTree.fromExisting(getCurrentSchematicHostRoot(schematicContext).original, nextTree) as Tree
+                  // let applicableNextTree = nextTree
+
+                  // we absolutely need to merge this nextTree into the previous tree. This is because the tree can't be
+                  // refreshed from disk and it must be complete for when we do operations like .move
+                  // applicableNextTree.merge(nextTree)
+
+                  // applicableNextTree.reset()
+
+
+
+                  // however, although we want its cache, we do need to reset any ._record actions as they've just been flushed
+                  // applicableNextTree._record.reset() // this is our custom reset() - @TODO could this be a .branch()?
+
+                  // const debugActions = (tree: Tree) => {
+                  //   return tree.actions.map(
+                  //     (a) =>
+                  //       `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+                  //   );
+                  // };
+                  // console.log(`nextTree actions :>> `, debugActions(applicableNextTree));
+                  return applicableNextTree;
+
+                  // NEED A CUSTOM HOST+RECORD IMPLEMENTATION THAT WILL PREVENT THE ACTIONS BEING CARRIED ACROSS. MAYBE WITH A CUSTOM .clear()
+
+                  // const nextInitialTree = new HostCreateTree(
+                  //   new virtualFs.ScopedHost(
+                  //     new NodeJsSyncHost(),
+                  //     // workflowHost,
+                  //     getCurrentSchematicHostRoot(schematicContext).original as any
+                  //     // tree._root,
+                  //   )
+                  // );
+                  // nextTree.merge(tree, mergeStrategy)
+                  // return nextTree
+                  // return t;
+                  // tree.merge(nextTree, mergeStrategy)
+                  // return tree;
+                });
+              // // return schematicsService.flush({ tree: nextTree, action: 'report' })
+              // // .then(() => {
+              // //   tree.merge(nextTree, mergeStrategy);
+              // //   // console.log(`tree after :>> `, tree)
+              // //   return tree;
+              // // })
+              // // console.log(`tree :>> `, tree)
+              // // console.log(`nextTree :>> `, nextTree)
+
+              // // now we have both trees available for merging...
+              // // tree.merge(nextTree, mergeStrategy);
+              // // console.log(`tree after :>> `, tree)
+              // return tree;
+
+              // // // tree.merge(nextTree, mergeStrategy);
+              // // nextTree.merge(tree, mergeStrategy);
+              // // // // console.log(`tree after :>> `, nextTree)
+              // // return nextTree; // is branched from previous tree
+              // });
+            });
+        })
     );
     return res;
   };
@@ -314,19 +466,28 @@ export function remove(
   schematicContext: SchematicContext,
   originalPath?: string
 ): void {
+  const originalRemovePath = originalPath ?? filePath;
 
-  const originalRemovePath = originalPath ?? filePath
+  if (!originalPath) {
+    schematicContext.logger.debug(
+      `schematicUtils::remove: call made to remove '${filePath}'`
+    );
+  }
+
+  if (!(tree instanceof SchematicsResettableHostTree)) {
+    throw new Error(`Only custom tree type supported`)
+  }
 
   /** this "double blind deletion" is seen to be effective, dunno why */
   const forceDelete = (path: string) => {
     try {
-      tree.delete(path)
-      tree.delete(path)
-    }
-    catch (err) {
+      tree.delete(path);
+      tree.delete(path);
+    } catch (err) {
+      throw err
       // console.log(`schematicUtils::remove: MEHMEH err :>> `, err);
     }
-  }
+  };
 
   try {
     // as the tree only lists the files, this returns false for directories
@@ -336,7 +497,9 @@ export function remove(
       // if there are neither files nor dirs in the directory entry,
       // it means the directory does not exist
       if (!dirEntry.subdirs.length && !dirEntry.subfiles.length) {
-        schematicContext.logger.info(`schematicUtils::remove: ${filePath} does not exist. OriginalRemovePath: '${originalRemovePath}'`);
+        schematicContext.logger.debug(
+          `schematicUtils::remove: ${filePath} does not exist. OriginalRemovePath: '${originalRemovePath}'`
+        );
         // console.log(`dirEntry.subdirs, dirEntry , tree :>> `, dirEntry.subdirs, dirEntry , tree)
 
         // we do a cheeky forceDelete as this seems to effect changes to FS following wrapExternals
@@ -344,34 +507,54 @@ export function remove(
 
         // otherwise, it exists, seriously !
       } else {
-        schematicContext.logger.info(
+        schematicContext.logger.debug(
           `schematicUtils::remove: deleting files in directory ${filePath}. dirEntry found? ${!!dirEntry}. OriginalRemovePath: '${originalRemovePath}'`
         );
         dirEntry.subfiles.forEach((subFile) => {
-          const subDirFilePath = path.join(filePath, subFile)
+          const subDirFilePath = path.join(filePath, subFile);
           // forceDelete(subDirFilePath)
-          remove(subDirFilePath, tree, schematicContext, originalRemovePath)
-        }
-        );
+          remove(subDirFilePath, tree, schematicContext, originalRemovePath);
+        });
         dirEntry.subdirs.forEach((subDir) => {
-          const subDirDirPath = path.join(filePath, subDir)
-          remove(subDirDirPath, tree, schematicContext, originalRemovePath)
-        }
-        );
+          const subDirDirPath = path.join(filePath, subDir);
+          remove(subDirDirPath, tree, schematicContext, originalRemovePath);
+        });
         if (!originalPath) {
-          remove(filePath, tree, schematicContext, originalRemovePath) // try to remove the now-empty folder (only on tail of first call)
+          schematicContext.logger.debug(
+            `schematicUtils::remove: removing no-empty folder ${filePath}.`
+          );
+          // remove(filePath, tree, schematicContext, originalRemovePath) // try to remove the now-empty folder (only on tail of first call)
+          // forceDelete(filePath) // try to remove the now-empty folder (only on tail of first call)
+
+          // console.log(`tree._record._cache :>> `, tree._record._cache)
+
+
+          tree.rmDir(dirEntry) // try to remove the now-empty folder (only on tail of first call)
+
+          // tree._record.delete(filePath) // NEED A SUPERDUPER WAY OF DELETING TO THE FS HERE
         }
       }
       // if the file exists, delete it the easiest way
     } else {
-      schematicContext.logger.debug(`schematicUtils::remove: deleting file ${filePath}. OriginalRemovePath: '${originalRemovePath}'`);
+      schematicContext.logger.debug(
+        `schematicUtils::remove: deleting file ${filePath}. OriginalRemovePath: '${originalRemovePath}'`
+      );
       // tree.delete(filePath);
       forceDelete(filePath); // double deletion seems to affect the filesystem (which is required with wrapExternal)
-      schematicContext.logger.info(`schematicUtils::remove: file ${filePath} deleted successfully. OriginalRemovePath: '${originalRemovePath}'`);
+      schematicContext.logger.debug(
+        `schematicUtils::remove: file ${filePath} deleted successfully. OriginalRemovePath: '${originalRemovePath}'`
+      );
     }
   } catch (err) {
-    console.log(`schematicUtils::remove: err :>> `, err);
-    throw new Error(`schematicUtils::remove: Could not delete file ${filePath}. OriginalRemovePath: '${originalRemovePath}'`);
+    // console.log(`schematicUtils::remove: err :>> `, err);
+    throw new BacErrorWrapper(
+      MessageName.UNNAMED,
+      `schematicUtils::remove: Error occurred whilst deleting. OriginalRemovePath: '${originalRemovePath}'`,
+      err as Error,
+    );
+    // throw new Error(
+    //   `schematicUtils::remove: Could not delete file, ${filePath}. OriginalRemovePath: '${originalRemovePath}'`
+    // );
   }
 }
 
@@ -380,37 +563,120 @@ export function move(
   from: string,
   to: string,
   tree: Tree,
-  schematicContext: SchematicContext,
+  schematicContext: SchematicContext
 ): void {
+  if (to === undefined) {
+    to = from;
+    from = "/";
+  }
 
-    if (to === undefined) {
-      to = from;
-      from = '/';
+  const fromPath = normalize("/" + from);
+  const toPath = normalize("/" + to);
+
+  if (fromPath === toPath) {
+    return;
+  }
+
+  if (tree.exists(fromPath)) {
+    schematicContext.logger.debug(
+      `schematicUtils::move: folder ${fromPath} being renamed. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+
+    // fromPath is a file
+    tree.rename(fromPath, toPath);
+  } else {
+    schematicContext.logger.debug(
+      `schematicUtils::move: dir ${fromPath} file's being individually renamed. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+
+    const dirEntry = tree.getDir(fromPath)
+    if (!(dirEntry instanceof HostDirEntry)) {
+      throw new Error(`host dir does not exist '${fromPath}'`)
     }
 
-    const fromPath = normalize('/' + from);
-    const toPath = normalize('/' + to);
+    // console.log(`dirEntry :>> `, dirEntry)
 
-    if (fromPath === toPath) {
-      return ;
+    // fromPath is a directory
+    dirEntry.visit((path) => {
+      schematicContext.logger.debug(
+        `schematicUtils::move: dir ${fromPath} -> ${path} being renamed. fromPath: '${path}' toPath: '${join(toPath, path.slice(fromPath.length))}'`
+      );
+      tree.rename(path, join(toPath, path.slice(fromPath.length)));
+
+      // const debugActions = (tree: Tree) => {
+      //   return tree.actions.map(
+      //     (a) =>
+      //       `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+      //   );
+      // };
+      // console.log(`tree.rename actions :>> `, debugActions(tree));
+    });
+
+    schematicContext.logger.debug(
+      `schematicUtils::move: dir ${fromPath} being added to _renameDirs. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+
+    ;(tree as SchematicsResettableHostTree).mvDir(fromPath, toPath)
+  }
+
+  return;
+}
+
+/** original Schematics GH - https://github.com/angular/angular-cli/blob/137651645ca5e7f08cbcdc0d2c080e3518d6c908/packages/angular_devkit/schematics/src/rules/move.ts#L13 */
+export function copy(
+  from: string,
+  to: string,
+  tree: Tree,
+  schematicContext: SchematicContext
+): void {
+  if (to === undefined) {
+    to = from;
+    from = "/";
+  }
+
+  const fromPath = normalize("/" + from);
+  const toPath = normalize("/" + to);
+
+  if (fromPath === toPath) {
+    return;
+  }
+
+  if (tree.exists(fromPath)) {
+    schematicContext.logger.debug(
+      `schematicUtils::copy: folder ${fromPath} being copied. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+
+    // fromPath is a file
+    tree.rename(fromPath, toPath);
+  } else {
+    schematicContext.logger.debug(
+      `schematicUtils::copy: file ${fromPath} being individually copied. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+
+    const dirEntry = tree.getDir(fromPath)
+    if (!(dirEntry instanceof HostDirEntry)) {
+      throw new Error(`host dir does not exist '${fromPath}'`)
     }
 
+    // console.log(`dirEntry :>> `, dirEntry)
 
-    if (tree.exists(fromPath)) {
-      schematicContext.logger.info(`schematicUtils::move: folder ${fromPath} being renamed. fromPath: '${fromPath}' toPath: '${toPath}'`);
+    // fromPath is a directory
+    dirEntry.visit((path) => {
+      tree.create(join(toPath, path.slice(fromPath.length)), tree.get(path)!.content);
 
-      // fromPath is a file
-      tree.rename(fromPath, toPath);
-    } else {
-      schematicContext.logger.info(`schematicUtils::move: file ${fromPath} being individually renamed. fromPath: '${fromPath}' toPath: '${toPath}'`);
+      // const debugActions = (tree: Tree) => {
+      //   return tree.actions.map(
+      //     (a) =>
+      //       `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+      //   );
+      // };
+      // console.log(`tree.rename actions :>> `, debugActions(tree));
+    });
 
-      // fromPath is a directory
-      tree.getDir(fromPath).visit((path) => {
-        tree.rename(path, join(toPath, path.slice(fromPath.length)));
-      });
+    schematicContext.logger.debug(
+      `schematicUtils::copy: file ${fromPath} being individually copied COMPLETE. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+  }
 
-      schematicContext.logger.info(`schematicUtils::move: file ${fromPath} being individually renamed COMPLETE. fromPath: '${fromPath}' toPath: '${toPath}'`);
-    }
-
-    return
+  return;
 }

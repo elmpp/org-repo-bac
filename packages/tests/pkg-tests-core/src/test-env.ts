@@ -5,31 +5,30 @@ import { HostCreateTree, HostTree, Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
   assertIsOk,
+  consoleUtils,
   LogLevel,
   Outputs,
   Result,
   // ServiceOptions,
   schematicUtils,
   Services,
-  ServicesStatic,
+  ServicesStatic
 } from "@business-as-code/core";
 import {
   ArgsInfer,
-  FlagsInfer,
+  FlagsInfer
 } from "@business-as-code/core/commands/base-command";
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-import * as mockStd from "stdout-stderr";
+import { ExpectUtil } from "./jest-utils";
 import { SchematicsRunCommand } from "./schematics/schematics-run-command";
 import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,
-  sanitise,
+  sanitise
 } from "./test-utils";
 import { XfsCacheManager } from "./xfs-cache-manager";
-import fs from 'fs'
-import path from 'path'
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -125,11 +124,12 @@ type EphemeralTestEnvVars = {
   /** deletes and skips cache for this specific test */
   cacheRenewTest: boolean;
 };
+export type TestEnvVars = PersistentTestEnvVars & EphemeralTestEnvVars
 
 export type TestContext = {
-  mockStdStart: () => void;
-  mockStdEnd: (flush?: boolean) => Outputs;
-  envVars: PersistentTestEnvVars & EphemeralTestEnvVars;
+  // mockStdStart: () => void;
+  // mockStdEnd: (flush?: boolean) => Outputs;
+  testEnvVars: TestEnvVars;
   /**
    Runs an oclif command. Inspired by @oclif/test - https://tinyurl.com/2gftlrbb
    Example usage: https://oclif.io/docs/testing
@@ -149,7 +149,7 @@ export type TestContext = {
     >;
     // schematicAddress: string,
     // workspacePath: string,
-  }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number; error: Error }>>;
+  }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, { exitCode: number; error: Error }>>;
   /**
    Allows a service task to be run directly, without need for schematics boilerplating
    */
@@ -196,7 +196,7 @@ export type TestContext = {
     //   // workspacePath: string,
     // } & {}
   ) => Promise<
-    Result<{ exitCode: number; tree: Tree }, never>
+    Result<{ exitCode: number; expectUtil: ExpectUtil }, never>
   >;
   // runSchematic: (options: {
   //   args: any[];
@@ -522,7 +522,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
       createEphemeralTestEnvVars,
       persistentTestEnvVars
     );
-    const envVars = { ...ephemeralTestEnvVars, ...persistentTestEnvVars };
+    const testEnvVars = { ...ephemeralTestEnvVars, ...persistentTestEnvVars };
 
     function createTestContext(): TestContext {
       return {
@@ -570,7 +570,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           if (exitCode === 0) {
             // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = createTree(envVars.workspacePath.original)
+            const tree = createTree(testEnvVars.workspacePath.original)
 
             return {
               success: true,
@@ -603,6 +603,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           // let exitCode = 0;
 
+          mockStdStart()
+
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
             {
@@ -611,34 +613,43 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             },
             parseOutput
           )
-            // .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
-            .catch((error) => {
-              // return this.cat
-              // console.error(error);
-              console.log(`error :>> `, error, error.stack ?? error.message);
-              process.stderr.write(error.stack ?? error.message);
-              // return 1
-              // exitCode = error?.oclif?.exit ?? 1;
+          // .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
+          .catch((error) => {
+            // return this.cat
+            // console.error(error);
+            console.log(`error :>> `, error, error.stack ?? error.message);
+            process.stderr.write(error.stack ?? error.message);
+            // return 1
+            // exitCode = error?.oclif?.exit ?? 1;
 
-              return {
-                success: false,
-                res: {
-                  error,
-                  exitCode: error?.oclif?.exit ?? 1,
-                  // tree,
-                },
-              };
-            });
+            mockStdEnd()
+
+            return {
+              success: false,
+              res: {
+                error,
+                exitCode: error?.oclif?.exit ?? 1,
+                // tree,
+              },
+            };
+          });
 
           if (assertIsOk(res)) {
-            const tree = createTree(envVars.workspacePath.original)
+            const tree = createTree(testEnvVars.workspacePath.original)
+            const outputs = mockStdEnd()
+            const expectUtil = new ExpectUtil({
+              testEnvVars,
+              outputs,
+              tree,
+              exitCode: 0,
+            })
             // Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
 
             return {
               success: true,
               res: {
                 exitCode: 0,
-                tree,
+                expectUtil,
               },
             };
           }
@@ -713,7 +724,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             ArgsInfer<typeof SchematicsRunCommand>
           > = {
             flags: {
-              workspacePath: testContext.envVars.workspacePath.original,
+              workspacePath: testContext.testEnvVars.workspacePath.original,
               // destinationPath: testContext.envVars.workspacePath.original,
               schematicsAddress:
                 "@business-as-code/plugin-core-tests#namespace=run-service-as-rule",
@@ -737,6 +748,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // let exitCode = 0;
           // let error: Error | undefined;
 
+          mockStdStart()
+
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await (SchematicsRunCommand.runDirect<any>(
             {
@@ -746,6 +759,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             parseOutput
           )
           .catch((err) => {
+            mockStdEnd()
             console.log(`testKKKKKKKKKKKKKKK :>> `, err)
             throw err // for test purposes, our is Result<blah, never>
           }))
@@ -754,15 +768,22 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             const resultTree = new HostCreateTree(
               new virtualFs.ScopedHost(
                 new NodeJsSyncHost(),
-                envVars.workspacePath.original as any
+                testEnvVars.workspacePath.original as any
               )
             );
+            const outputs = mockStdEnd()
+            const expectUtil = new ExpectUtil({
+              outputs,
+              testEnvVars,
+              tree: resultTree,
+              exitCode: 0,
+            })
 
             return {
               success: true,
               res: {
                 exitCode: 0,
-                tree: resultTree,
+                expectUtil,
               },
             };
           }
@@ -773,25 +794,31 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
 
         },
-        mockStdStart: () => {
-          mockStd.stdout.start();
-          mockStd.stderr.start();
-        },
-        mockStdEnd: (flush?: boolean) => {
-          mockStd.stdout.stop();
-          mockStd.stderr.stop();
+        // mockStdStart: () => {
+        //   // docs - https://tinyurl.com/24tptzy8
+        //   mockStd.stdout.print = true
+        //   mockStd.stderr.print = true
+        //   mockStd.stdout.stripColor = false
+        //   mockStd.stderr.stripColor = false
 
-          if (flush) {
-            process.stdout.write(mockStd.stdout.output)
-            process.stderr.write(mockStd.stderr.output)
-          }
+        //   mockStd.stdout.start();
+        //   mockStd.stderr.start();
+        // },
+        // mockStdEnd: (flush?: boolean) => {
+        //   mockStd.stdout.stop();
+        //   mockStd.stderr.stop();
 
-          return {
-            stdout: mockStd.stdout.output,
-            stderr: mockStd.stderr.output,
-          };
-        },
-        envVars: {
+        //   if (flush) {
+        //     process.stdout.write(mockStd.stdout.output)
+        //     process.stderr.write(mockStd.stderr.output)
+        //   }
+
+        //   return {
+        //     stdout: mockStd.stdout.output,
+        //     stderr: mockStd.stderr.output,
+        //   };
+        // },
+        testEnvVars: {
           ...ephemeralTestEnvVars,
           ...persistentTestEnvVars,
         },
@@ -800,7 +827,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
     const testContext = await createTestContext();
 
-    await setupFolders(envVars);
+    await setupFolders(testEnvVars);
 
     await run(testContext);
     // try {
@@ -809,5 +836,30 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
     // catch (err) {
     //   console.log(`err when running run() :>> `, err, testContext)
     // }
+  };
+}
+
+function mockStdStart() {
+  // docs - https://tinyurl.com/24tptzy8
+  consoleUtils.stdout.print = true
+  consoleUtils.stderr.print = true
+  // consoleUtils.stdout.stripColor = false
+  // consoleUtils.stderr.stripColor = false
+
+  consoleUtils.stdout.start();
+  consoleUtils.stderr.start();
+}
+function mockStdEnd(): Outputs {
+  consoleUtils.stdout.stop();
+  consoleUtils.stderr.stop();
+
+  // if (flush) {
+  //   process.stdout.write(consoleUtils.stdout.output)
+  //   process.stderr.write(consoleUtils.stderr.output)
+  // }
+
+  return {
+    stdout: consoleUtils.stdout.output,
+    stderr: consoleUtils.stderr.output,
   };
 }

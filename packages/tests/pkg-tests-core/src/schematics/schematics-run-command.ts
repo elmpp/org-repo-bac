@@ -80,6 +80,7 @@ export class SchematicsRunCommand extends BaseCommand<
     const schematicsService = await context.serviceFactory("schematics", {
       context,
       destinationPath: context.workspacePath,
+      workingPath: '.',
     });
 
     const res = await schematicsService.runSchematic({
@@ -93,20 +94,15 @@ export class SchematicsRunCommand extends BaseCommand<
     if (!assertIsOk(res)) {
       switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger(res.res.error.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger(res.res.error.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger(res.res.error.message, "error");
+          context.logger.error(res.res.error.message);
           break;
       }
-    } else {
-      context.logger(
-        `Finished ok. Scaffolded into '${res.res.destinationPath.original}'`,
-        "info"
-      );
     }
 
     return res;

@@ -1,17 +1,16 @@
 import { strings } from "@angular-devkit/core";
 import {
   apply,
-  chain,
-  MergeStrategy,
-  mergeWith,
+  chain, mergeWith,
   move,
   Rule,
   SchematicContext,
   template,
   Tree,
-  url,
+  url
 } from "@angular-devkit/schematics";
 import { constants, schematicUtils } from "@business-as-code/core";
+import { debugRule } from "@business-as-code/tests-core";
 import path from "path";
 import { Schema } from "./schema";
 
@@ -36,15 +35,43 @@ const convertToBareRepo = ({
   const tmpDestinationGitPath = path.join(tmpDestinationPath, ".git");
   const destinationPath = path.join(sourceBasedir, sourceFoldername) + ".git";
 
-  return  (tree: Tree, schematicContext: SchematicContext) => {
+  return  chain([(tree: Tree, schematicContext: SchematicContext) => {
+    // move(workingPath, tmpDestinationPath) // remove
+    // move(tmpDestinationGitPath, destinationPath) // remove
+
+    // schematicUtils.copy(workingPath, tmpDestinationPath, tree, schematicContext) // remove
+    // schematicUtils.copy(tmpDestinationGitPath, destinationPath, tree, schematicContext) // remove
     schematicUtils.move(workingPath, tmpDestinationPath, tree, schematicContext) // remove
     schematicUtils.move(tmpDestinationGitPath, destinationPath, tree, schematicContext) // remove
+
+    // const debugActions = (tree: Tree) => {
+    //   return tree.actions.map(
+    //     (a) => a.kind === 'r' ? `tree$ index: '0'; kind: ${a.kind}; fromPath: ${a.path} -> ${a.to}` : `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+    //   );
+    // };
+    // console.log(`convertToBareRepo actions :>> 1 `, debugActions(tree), tree);
+
     schematicUtils.remove(workingPath, tree, schematicContext);
+
+    // console.log(`convertToBareRepo actions :>> 2 `, debugActions(tree), tree);
     schematicUtils.remove(tmpDestinationPath, tree, schematicContext);
+
+    // tree.create('bollards2/.gitkeep', '')
     // move(workingPath, tmpDestinationPath),
     // move(tmpDestinationGitPath, destinationPath),
+
+
+    // const debugActions = (tree: Tree) => {
+    //   return tree.actions.map(
+    //     (a) =>
+    //       `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+    //   );
+    // };
+    // console.log(`convertToBareRepo actions :>> `, debugActions(tree), tree);
+    // return tree;
+
     return tree
-  }
+  }])
 
   // // console.log(
   // //   `tmpDestinationPath, tmpDestinationGitPath, destinationPath :>> `,
@@ -109,7 +136,7 @@ export default function (options: Schema): Rule {
         throw new Error("root path not supported");
       }
 
-      console.log(`innerOptions :>> `, innerOptions)
+      // console.log(`innerOptions :>> `, innerOptions)
 
       const bareTemplateSource = apply(url("./repo"), [
         template({
@@ -131,6 +158,8 @@ export default function (options: Schema): Rule {
         // ),
         move(path.join(workingPath, `packages/my-package-1`)),
       ]);
+
+
 
       return chain([
         mergeWith(bareTemplateSource),
@@ -161,7 +190,6 @@ export default function (options: Schema): Rule {
               workingPath,
             },
           },
-          MergeStrategy.Overwrite
         ),
         mergeWith(packageTemplateSource1),
         schematicUtils.mergeWithExternal(
@@ -190,6 +218,10 @@ export default function (options: Schema): Rule {
               schematicContext,
             }),
             // convertToBareRepo(innerOptions),
+            (tree: Tree, schematicContext: SchematicContext) => {
+              // tree.create('bollards/.gitkeep', '')
+              return tree
+            }
           ]),
           {
             context: options._bacContext,
@@ -197,9 +229,27 @@ export default function (options: Schema): Rule {
               workingPath,
             },
           },
-          MergeStrategy.Overwrite
         ),
+        debugRule({
+          context: options._bacContext,
+          initialiseOptions: {
+            workingPath
+          },
+        }),
         convertToBareRepo(innerOptions),
+        schematicUtils.mergeWithExternal(
+          chain([
+            (tree: Tree, schematicContext: SchematicContext) => {
+              return tree
+            }
+          ]),
+          {
+            context: options._bacContext,
+            initialiseOptions: {
+              workingPath,
+            },
+          },
+        ),
 
         // convertToBareRepo(innerOptions),
 
@@ -214,11 +264,16 @@ export default function (options: Schema): Rule {
 
     const r = chain([
       createForWorkingPath({ options, workingPath: "repo1", name: "repo1" }),
-      // createForWorkingPath({ options, workingPath: "repo2", name: "repo2" }),
-      // ...createForWorkingPath({ options, workingPath: "repo3", name: "repo3" }),
+      // debugRule({
+      //   context: options._bacContext,
+      //   initialiseOptions: {
+      //     workingPath: 'repo1',
+      //   },
+      // }),
+      createForWorkingPath({ options, workingPath: "repo2", name: "repo2" }),
+      createForWorkingPath({ options, workingPath: "repo3", name: "repo3" }),
     ]);
 
-    console.log(`r :>> `, r)
     return r;
   };
 }

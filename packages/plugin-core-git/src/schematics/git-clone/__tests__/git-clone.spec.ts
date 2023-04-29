@@ -13,8 +13,8 @@ describe("git-clone", () => {
         const res = await testContext.runSchematic({
           parseOutput: {
             flags: {
-              workspacePath: testContext.envVars.workspacePath.original,
-              destinationPath: testContext.envVars.workspacePath.original,
+              workspacePath: testContext.testEnvVars.workspacePath.original,
+              destinationPath: testContext.testEnvVars.workspacePath.original,
               schematicsAddress:
                 "@business-as-code/plugin-core-git#namespace=git-clone",
             },

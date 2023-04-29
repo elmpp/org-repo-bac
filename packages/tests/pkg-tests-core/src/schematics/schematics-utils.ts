@@ -3,18 +3,20 @@
 import { Path, virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import {
+  Action,
   HostCreateTree,
   Rule,
   SchematicContext,
   Tree,
 } from "@angular-devkit/schematics";
 import { NodeWorkflow } from "@angular-devkit/schematics/tools";
-import {
-  schematicUtils
-} from "@business-as-code/core";
+import { schematicUtils } from "@business-as-code/core";
 
 export function debugRule(
-  options: Pick<schematicUtils.ServiceOptionsLite<"git">, "initialiseOptions" | "context">
+  options: Pick<
+    schematicUtils.ServiceOptionsLite<"git">,
+    "initialiseOptions" | "context"
+  >
 ): Rule {
   function getFsContents(tree: Tree, _context: SchematicContext) {
     const treeFiles: string[] = [];
@@ -25,6 +27,11 @@ export function debugRule(
     const fsHost = schematicUtils.getSchematicsEngineHost(schematicContext);
     (schematicContext.engine.workflow as NodeWorkflow)?.engine;
     return fsHost._root as Path;
+  }
+  function getTreeActions(tree: Tree): string[] {
+    return tree.actions.map(
+      (a) => a.kind === 'r' ? `tree$ index: '0'; kind: ${a.kind}; fromPath: ${a.path} -> ${a.to}` : `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+    );
   }
 
   return (tree: Tree, schematicContext: SchematicContext) => {
@@ -40,6 +47,7 @@ export function debugRule(
       cwd: getCwd(tree, schematicContext),
       treeContents: getFsContents(tree, schematicContext),
       fsContents: getFsContents(liveFsTree, schematicContext),
+      actions: getTreeActions(tree),
     };
 
     const gitRule = schematicUtils.wrapServiceAsRule({
@@ -57,7 +65,7 @@ export function debugRule(
             debuggable.logs = await repo.log();
           }
 
-          console.log(`debugRule: :>> `, debuggable);
+          // console.log(`debugRule: :>> `, debuggable);
 
           return tree;
         },

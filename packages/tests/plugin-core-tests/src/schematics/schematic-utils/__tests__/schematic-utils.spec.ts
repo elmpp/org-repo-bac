@@ -7,11 +7,11 @@ describe("schematic-utils", () => {
     it("allows deletion after an external wrap", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.mockStdStart();
+
         const res = await testContext.runSchematic({
           parseOutput: {
             flags: {
-              workspacePath: testContext.envVars.workspacePath.original,
+              workspacePath: testContext.testEnvVars.workspacePath.original,
               schematicsAddress:
                 "@business-as-code/plugin-core-tests#namespace=schematic-utils",
               ["log-level"]: "info",
@@ -24,20 +24,25 @@ describe("schematic-utils", () => {
             nonExistentFlags: {} as any,
           },
         });
-        const outputs = testContext.mockStdEnd();
+
 
         expectIsOk(res);
 
-        expect(outputs.stdout).toMatch("DELETE package.json");
-        expect(outputs.stdout).toMatch("DELETE packages/.gitkeep");
-        expect(outputs.stdout).toMatch("DELETE packages");
+        const expectStdout = res.res.expectUtil.createStdout()
+        expectStdout.lineContainsString({match: /FLUSH$/, occurrences: 2})
+        // expectStdout.lineContainsString({match: /DELETE package.json$/, occurrences: 1})
+        // expectStdout.lineContainsString({match: /DELETE packages\/.gitkeep$/, occurrences: 1})
+        // expectStdout.lineContainsString({match: /DELETE packages\/another-file.txt$/, occurrences: 1})
+        expectStdout.lineContainsString({match: /DELETE DIR packages$/, occurrences: 1}) // includes directories, boom!
+        // expectStdout.lineContainsString({match: /DELETE packages\/nested-folder\/.gitkeep$/, occurrences: 1})
+        // expectStdout.lineContainsString({match: /DELETE packages\/nested-folder\/another-file.txt$/, occurrences: 1})
+        // expectStdout.lineContainsString({match: /DELETE packages\/nested-folder$/, occurrences: 0}) // although nested directories are deleted, they're not reported
 
-        expect(res.res.tree.getDir("./.git")).toBeTruthy(); // tree.getDir() is crap and always returns
-
-        // deletion helper is able to effect changes to FS files even after a wrapExternal block...
-        expect(res.res.tree.exists("./package.json")).toBeFalsy();
-        expect(res.res.tree.exists("./packages/.gitkeep")).toBeFalsy();
-        expect(res.res.tree.exists("./packages")).toBeFalsy();
+        const expectFs = res.res.expectUtil.createFs()
+        expect(expectFs.existsSync("./package.json")).toBeFalsy();
+        expect(expectFs.existsSync("./packages/.gitkeep")).toBeFalsy();
+        expect(expectFs.existsSync("./packages")).toBeFalsy();
+        expect(expectFs.existsSync("./packages/nested-folder")).toBeFalsy();
       });
     });
   });

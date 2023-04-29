@@ -61,24 +61,38 @@ Extra = undefined,
   //   return false
   // }
 
-  static fromError<Extra = undefined, Code extends MessageName = MessageName>(
+  static fromError<Extra = undefined>(
+    err: string | Error,
+    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra }
+  ): BacError<MessageName.UNNAMED, Extra>;
+  static fromError<Extra = undefined>(
+    err: string,
+    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra }
+  ): BacError<MessageName.UNNAMED, Extra>;
+  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     err: BacError,
     options?: { reportCode?: Code; extra?: Extra }
   ): BacError<Code, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName>(
+  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     err: BacErrorWrapper,
     options?: { reportCode?: Code; extra?: Extra }
   ): BacErrorWrapper<Code, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName>(
+  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     err: Error,
     options?: { reportCode?: Code; extra?: Extra }
   ): BacError<Code, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName>(
-    err: BacError | BacErrorWrapper | Error,
+  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
+    errParam: BacError | BacErrorWrapper | Error | string,
     options: { reportCode?: Code; extra?: Extra } = {}
   ): BacError<Code, Extra> | BacErrorWrapper<Code, Extra> {
+
     const { reportCode, extra } = options;
-    if (
+    let err = errParam
+
+    if (typeof err === 'string') {
+      err = new BacError<Code, Extra>(reportCode ?? MessageName.UNNAMED as Code, err)
+    }
+    else if (
       assertIsBacWrappedError<Extra, Code>(err) ||
       assertIsBacError<Extra, Code>(err)
     ) {

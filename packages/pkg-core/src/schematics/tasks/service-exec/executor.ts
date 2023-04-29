@@ -7,7 +7,7 @@
  */
 
 import { SchematicContext, TaskExecutor } from '@angular-devkit/schematics';
-import { assertNonEmpty } from '../../../util';
+import { assertUtils } from '../../../utils';
 import {
   ServiceExecTaskFactoryOptions,
   ServiceExecTaskOptions
@@ -27,7 +27,7 @@ export function serviceExecExecutor(
     // if (options == {}) {
     //   throw new Error(`How is this supposed to work then huh!!`)
     // }
-    assertNonEmpty(options)
+    assertUtils.assertNonEmpty(options)
 
     const {serviceName, serviceOptions, cb, context} = options
 

@@ -54,7 +54,7 @@ describe("workspace init", () => {
           "--name",
           "my-new-workspace",
           "--workspacePath",
-          testContext.envVars.workspacePath.original,
+          testContext.testEnvVars.workspacePath.original,
         ],
         { logLevel: "debug" }
       );
@@ -80,7 +80,7 @@ describe("workspace init", () => {
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
 
       const configPath = addr.pathUtils.join(
-        testContext.envVars.fixturesPath,
+        testContext.testEnvVars.fixturesPath,
         addr.parsePath("mocks/input1.json")
       );
 
@@ -91,7 +91,7 @@ describe("workspace init", () => {
           "--name",
           "my-new-workspace",
           "--workspacePath",
-          testContext.envVars.workspacePath.original,
+          testContext.testEnvVars.workspacePath.original,
           "--configPath",
           configPath.original,
         ],
@@ -143,7 +143,7 @@ describe("workspace init", () => {
             "--blah",
             "noThere",
             "--workspacePath",
-            testContext.envVars.workspacePath.original,
+            testContext.testEnvVars.workspacePath.original,
           ],
           { logLevel: "debug" }
         );
@@ -163,7 +163,7 @@ describe("workspace init", () => {
             "init",
             "nonExistentArg",
             "--workspacePath",
-            testContext.envVars.workspacePath.original,
+            testContext.testEnvVars.workspacePath.original,
           ],
           { logLevel: "debug" }
         );

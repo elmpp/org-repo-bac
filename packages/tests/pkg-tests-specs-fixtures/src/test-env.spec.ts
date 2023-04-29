@@ -22,11 +22,11 @@ describe('test-env', () => {
     await persistentTestEnv.test({},
     async (testContext) => {
 
-      const {envVars} = testContext
+      const {testEnvVars} = testContext
 
-      expect(envVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
-      expect(envVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
-      expect(envVars.workspacePath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
+      expect(testEnvVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
+      expect(testEnvVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
+      expect(testEnvVars.workspacePath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
 
       // console.log(`envVars :>> `, envVars)
 

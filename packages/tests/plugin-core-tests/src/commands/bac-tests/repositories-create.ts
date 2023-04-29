@@ -90,7 +90,7 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
 // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: repositoriesPath})
+    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: repositoriesPath, workingPath: '.'})
 
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
@@ -99,19 +99,17 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
     });
 
     if (!assertIsOk(res)) {
-      switch (res.res.reportCode) {
+      switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
       }
-    } else {
-      context.logger(`Finished ok. Scaffolded into '${res.res.destinationPath.original}'`, "info");
     }
 
     return res

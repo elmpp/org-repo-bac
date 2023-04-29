@@ -11,7 +11,7 @@ describe("repositories-create", () => {
       const res = await testContext.runSchematic({
         parseOutput: {
           flags: {
-            workspacePath: testContext.envVars.workspacePath.original,
+            workspacePath: testContext.testEnvVars.workspacePath.original,
             schematicsAddress:
               "@business-as-code/plugin-core-tests#namespace=repositories-create",
             ["log-level"]: "info",
@@ -25,11 +25,12 @@ describe("repositories-create", () => {
         },
       });
 
-      console.log(`res :>> `, res)
       expectIsOk(res);
 
 
       const assertForWorkingPath = async (workingPath: string) => {
+        const expectFs = res.res.expectUtil.createFs()
+
         await testContext.runSchematicServiceCb({
           serviceOptions: {
             serviceName: "git",
@@ -60,10 +61,10 @@ describe("repositories-create", () => {
               workingPath,
             },
           },
-          tree: res.res.tree,
+          tree: expectFs,
         });
 
-        expect(res.res.tree.exists(`./${workingPath}/package.json`)).toBeFalsy() // bare repo
+        expect(expectFs.exists(`./${workingPath}/package.json`)).toBeFalsy() // bare repo
 
         // expect(
         //   (res.res.tree.readJson(`./${workingPath}/package.json`) as any)?.name
@@ -78,13 +79,15 @@ describe("repositories-create", () => {
       };
 
       await assertForWorkingPath("repo1.git");
-      // await assertForWorkingPath("repo2.git");
-      // await assertForWorkingPath("repo3.git");
+      await assertForWorkingPath("repo2.git");
+      await assertForWorkingPath("repo3.git");
 
-      const dirEntries = res.res.tree.getDir('.')
 
-      expect(dirEntries.subdirs).toHaveLength(1) // cleared up
-      // expect(dirEntries.subdirs).toHaveLength(3) // cleared up
+
+      const expectFs = res.res.expectUtil.createFs()
+      const dirEntries = expectFs.getDir('.')
+
+      expect(dirEntries.subdirs).toHaveLength(3) // cleared up
       console.log(`dirEntries.subdirs :>> `, dirEntries.subdirs)
     });
   });
