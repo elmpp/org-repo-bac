@@ -24,6 +24,7 @@
     "bac": "src/bin/dev.ts"
   },
   "dependencies": {
+    "@business-as-code/core": "workspace:*",
     "@business-as-code/plugin-core-essentials": "workspace:*",
     "@business-as-code/plugin-core-git": "workspace:*",
     "@oclif/command": "^1.8.22",

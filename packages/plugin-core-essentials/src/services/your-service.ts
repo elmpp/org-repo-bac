@@ -14,8 +14,7 @@
 //   }
 // }
 
-import { AddressPathAbsolute } from "@business-as-code/address";
-import { Context, ServiceInitialiseOptions } from "@business-as-code/core";
+import { ServiceInitialiseOptions } from "@business-as-code/core";
 
 declare global {
   namespace Bac {

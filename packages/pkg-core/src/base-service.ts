@@ -15,3 +15,5 @@
 // const BaseService: ServiceStaticInterface = class {
 //   initialise
 // }
+
+export {}

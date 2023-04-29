@@ -74,10 +74,12 @@ export class SchematicResettableDryRunSink extends DryRunSink {
   // protected _filesToCreate = new Map<Path, UpdateBufferBase>();
   // protected _filesToUpdate = new Map<Path, UpdateBufferBase>();
 
+  // @ts-ignore
   protected override _subject = new Subject<ResettableDryRunEvent>();
   // protected _fileDoesNotExistExceptionSet = new Set<string>();
   // protected _fileAlreadyExistExceptionSet = new Set<string>();
 
+  // @ts-ignore
   override readonly reporter: Observable<ResettableDryRunEvent> =
     this._subject.asObservable();
 

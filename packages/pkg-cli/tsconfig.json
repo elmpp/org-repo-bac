@@ -8,6 +8,9 @@
   ],
   "references": [
     {
+      "path": "../pkg-core"
+    },
+    {
       "path": "../plugin-core-essentials"
     },
     {
@@ -23,6 +26,12 @@
     "emitDeclarationOnly": false,
     "noEmit": true,
     "paths": {
+      "@business-as-code/core": [
+        "../pkg-core/src/index.ts"
+      ],
+      "@business-as-code/core/*": [
+        "../pkg-core/src/*"
+      ],
       "@business-as-code/plugin-core-essentials": [
         "../plugin-core-essentials/src/index.ts"
       ],

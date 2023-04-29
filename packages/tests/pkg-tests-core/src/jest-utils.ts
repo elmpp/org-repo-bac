@@ -86,7 +86,7 @@ export class ExpectUtil {
     return new ExpectOut(this.options.outputs.stdout, this.options)
   }
   createStderr(): ExpectOut {
-    return new ExpectOut(this.options.outputs.stdout, this.options)
+    return new ExpectOut(this.options.outputs.stderr, this.options)
   }
   createFs(): ExpectFs & Tree {
     return ExpectFs.fromTree(this.options, this.options.tree)

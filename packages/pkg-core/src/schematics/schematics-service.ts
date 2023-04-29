@@ -1,6 +1,5 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { logging, Path } from "@angular-devkit/core";
-import { createConsoleLogger } from "@angular-devkit/core/node";
 import { Host } from "@angular-devkit/core/src/virtual-fs/host";
 import {
   callRule,
@@ -656,6 +655,7 @@ export class SchematicsService {
   }): SchematicResettableNodeWorkflow {
     const scaffoldBase = path.resolve(__dirname, "../..");
     const cliRoot = process.cwd(); // todo make available through context
+
     const workflowRoot = addr.pathUtils.join(
       this.options.destinationPath,
       addr.parsePath(this.options.workingPath)
@@ -1056,7 +1056,7 @@ export class SchematicsService {
       rootDirectory: this.options.destinationPath.original,
       // rootDirectory: root && getSystemPath(root),
     });
-    // console.log(`workflow.engineHost :>> `, workflow.engineHost);
+    console.log(`workflow.engineHost :>> `, workflow.engineHost);
   }
 
   // context.logger(`registerServicesAsTasks: registering '${context.}' services`)

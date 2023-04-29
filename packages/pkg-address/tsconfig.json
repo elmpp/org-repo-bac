@@ -8,22 +8,13 @@
   ],
   "references": [
     {
-      "path": "../pkg-core"
-    },
-    {
       "path": "../pkg-error"
     }
   ],
   "compilerOptions": {
     "rootDir": "src",
-"outDir": "dist",
+    "outDir": "dist",
     "paths": {
-      "@business-as-code/core": [
-        "../pkg-core/src/index.ts"
-      ],
-      "@business-as-code/core/*": [
-        "../pkg-core/src/*"
-      ],
       "@business-as-code/error": [
         "../pkg-error/src/index.ts"
       ],

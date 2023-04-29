@@ -6,25 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { Path, virtualFs } from "@angular-devkit/core";
-import { HostSink, UnknownActionException } from "@angular-devkit/schematics";
-import {
-  concat,
-  concat as concatObservables,
-  EMPTY,
-  from as observableFrom,
-  Observable,
-  of
-} from "rxjs";
-import { concatMap, ignoreElements, map, reduce, tap } from "rxjs/operators";
+import { virtualFs } from "@angular-devkit/core";
+import { concat as concatObservables, from as observableFrom } from "rxjs";
+import { concatMap, reduce } from "rxjs/operators";
 import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
 import { SchematicResettableDryRunSink } from "./schematics-resettable-dry-run-sink";
-import { ResettableAction, ResettableDeleteDirAction } from "./schematics-resettable-host-tree";
 
 export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
-// export class SchematicResettableHostSink extends HostSink {
+  // export class SchematicResettableHostSink extends HostSink {
 
-  constructor(protected override _host: SchematicResettableScopedNodeJsSyncHost, protected override _force = false) {
+  constructor(
+    protected override _host: SchematicResettableScopedNodeJsSyncHost,
+    protected override _force = false
+  ) {
     super(_host, _force);
   }
 
@@ -193,6 +187,7 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
   //   return EMPTY;
   // }
 
+  // @ts-ignore
   _done() {
     // Really commit everything to the actual filesystem.
     return concatObservables(
@@ -227,9 +222,9 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
         concatMap((path) => {
           // const absPath
           // console.log(`this._host :>> `, this._host)
-          return this._host.deleteDir(path)
+          return this._host.deleteDir(path);
         })
-      ),
+      )
     ).pipe(reduce(() => {}));
   }
 }

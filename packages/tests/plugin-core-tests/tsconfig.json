@@ -22,6 +22,12 @@
       "@business-as-code/error/*": [
         "../../pkg-error/src/*"
       ],
+      "@business-as-code/tests-core": [
+        "../pkg-tests-core/src/index.ts"
+      ],
+      "@business-as-code/tests-core/*": [
+        "../pkg-tests-core/src/*"
+      ]
     }
   },
   "include": [

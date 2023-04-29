@@ -82,12 +82,11 @@ export class MyService {
       () => false
     );
     if (insideRepo) {
-      this.options.context.logger(
+      this.options.context.logger.debug(
         `
         Directory is already under version control.
         Skipping initialization of git.
-      `,
-        "info"
+      `
       );
 
       return;
@@ -106,7 +105,7 @@ export class MyService {
       //   await execute(['commit', `-m "${message}"`]);
       // }
 
-      this.options.context.logger("Successfully initialized git.", "info");
+      this.options.context.logger.debug("Successfully initialized git.");
     } catch {}
   }
 }

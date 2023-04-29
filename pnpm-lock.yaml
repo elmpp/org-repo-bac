@@ -70,9 +70,6 @@ importers:
 
   packages/pkg-address:
     dependencies:
-      '@business-as-code/core':
-        specifier: workspace:*
-        version: link:../pkg-core
       '@business-as-code/error':
         specifier: workspace:*
         version: link:../pkg-error
@@ -89,6 +86,9 @@ importers:
 
   packages/pkg-cli:
     dependencies:
+      '@business-as-code/core':
+        specifier: workspace:*
+        version: link:../pkg-core
       '@business-as-code/plugin-core-essentials':
         specifier: workspace:*
         version: link:../plugin-core-essentials
@@ -317,9 +317,6 @@ importers:
       '@types/node':
         specifier: 18.14.2
         version: 18.14.2
-      stdout-stderr:
-        specifier: ^0.1.13
-        version: 0.1.13
       typescript:
         specifier: 5.0.2
         version: 5.0.2

@@ -1,4 +1,4 @@
-import { FileAlreadyExistException, FileDoesNotExistException, Path, UnknownException } from "@angular-devkit/core";
+import { FileAlreadyExistException, FileDoesNotExistException, Path } from "@angular-devkit/core";
 import { CordHost, CordHostCreate, CordHostDelete, CordHostOverwrite, CordHostRecord, CordHostRename, Host } from "@angular-devkit/core/src/virtual-fs/host";
 import { DirEntry } from "@angular-devkit/schematics";
 import { from as observableFrom, Observable, of, throwError } from "rxjs";
@@ -19,7 +19,7 @@ export class SchematicResettableCordHost extends CordHost {
   /** GH - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/core/src/virtual-fs/host/record.ts#L95 */
   static cloneFrom(recordHost: CordHost): SchematicResettableCordHost {
 
-    const dolly = new SchematicResettableCordHost(recordHost._back);
+    const dolly = new SchematicResettableCordHost((recordHost as SchematicResettableCordHost)._back);
     // console.log(`recordHost._back :>> `, recordHost._back)
 
     // dolly._cache = new Map(recordHost._cache);
@@ -262,6 +262,7 @@ export class SchematicResettableCordHost extends CordHost {
     );
   }
 
+  // @ts-ignore
   override records(): ResettableCordHostRecord[] {
     // console.log(`this._dirsToDelete.values() :>> `, this._dirsToDelete.values())
 

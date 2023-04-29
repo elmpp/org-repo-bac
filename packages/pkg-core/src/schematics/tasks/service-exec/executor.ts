@@ -8,17 +8,17 @@
 
 import { SchematicContext, TaskExecutor } from '@angular-devkit/schematics';
 import { assertUtils } from '../../../utils';
+import { Services } from '../../../__types__';
 import {
   ServiceExecTaskFactoryOptions,
   ServiceExecTaskOptions
 } from './options';
 
-export function serviceExecExecutor(
+export function serviceExecExecutor<SName extends keyof Services>(
   factoryOptions: ServiceExecTaskFactoryOptions,
-): TaskExecutor<ServiceExecTaskOptions> {
-  const rootDirectory = factoryOptions.rootDirectory || process.cwd();
+): TaskExecutor<ServiceExecTaskOptions<SName>> {
 
-  return async (options: ServiceExecTaskOptions = {} as ServiceExecTaskOptions, schematicContext: SchematicContext) => {
+  return async (options: ServiceExecTaskOptions<SName> = {} as ServiceExecTaskOptions<SName>, schematicContext: SchematicContext) => {
 
     // if (!options) {
     //   throw new Error(`How is this supposed to work then huh!!`)
@@ -29,9 +29,9 @@ export function serviceExecExecutor(
     // }
     assertUtils.assertNonEmpty(options)
 
-    const {serviceName, serviceOptions, cb, context} = options
+    const {serviceName, initialiseOptions, cb, context} = options
 
-    const service = await context!.serviceFactory(serviceName, serviceOptions)
+    const service = await context!.serviceFactory(serviceName, initialiseOptions)
 
     return cb({service, serviceName})
 

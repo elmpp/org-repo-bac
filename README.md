@@ -10,6 +10,8 @@
 
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
 
+ - p moon root:publishDev
+
 ## Tasks
 
 *General*

@@ -1,7 +1,5 @@
-import { Result, assertIsOk } from "@business-as-code/core";
 import { addr } from "@business-as-code/address";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import assert from "assert";
 import {
   expectIsFail,
   expectIsOk,
@@ -84,6 +82,8 @@ describe("workspace init", () => {
         addr.parsePath("mocks/input1.json")
       );
 
+console.log(`configPath :>> `, configPath)
+
       const res = await testContext.command(
         [
           "workspace",
@@ -110,7 +110,17 @@ describe("workspace init", () => {
       //   `res.res.tree.read('./BOLLOCKS.md') :>> `,
       //   res.res.tree.readText("./BOLLOCKS.md")
       // );
-      expect(res.res.tree.readText("./BOLLOCKS.md")).toEqual("PANTS");
+
+      const expectStdout = res.res.expectUtil.createStdout()
+      const expectStderr = res.res.expectUtil.createStderr()
+      const expectFs = res.res.expectUtil.createFs()
+      // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
+      // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})
+
+      expect(expectFs.readText("./BOLLOCKS.md")).toEqual("PANTS");
+
+
+      console.log(`testContext.testEnvVars.workspacePath.original :>> `, testContext.testEnvVars.workspacePath.original)
 
       // expect(exitCode).toEqual(0)
 
@@ -122,20 +132,25 @@ describe("workspace init", () => {
       const persistentTestEnv = await createPersistentTestEnv({});
 
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.mockStdStart()
+        // testContext.mockStdStart();
         const res = await testContext.command(["does-not-exist"], {
           logLevel: "debug",
         });
-        const outputs = testContext.mockStdEnd()
 
         expectIsFail(res);
-        expect(outputs.stderr).toMatch(`command does-not-exist not found`)
+
+        const expectStdout = res.res.expectUtil.createStdout()
+        const expectStderr = res.res.expectUtil.createStderr()
+        expectStderr.lineContainsString({match: 'command does-not-exist not found', occurrences: 1})
+        expectStdout.lineContainsString({match: 'command does-not-exist not found', occurrences: 0})
+
+        // expect(res.res.outputs.stderr).toMatch(`command does-not-exist not found`);
       });
     });
     it("incorrect command flags", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.mockStdStart()
+
         const res = await testContext.command(
           [
             "workspace",
@@ -147,16 +162,36 @@ describe("workspace init", () => {
           ],
           { logLevel: "debug" }
         );
-        const outputs = testContext.mockStdEnd()
+
 
         expectIsFail(res);
-        expect(outputs.stderr).toMatch(`Error: Nonexistent flag: --blah`)
-      });
+
+        const expectStdout = res.res.expectUtil.createStdout()
+        const expectStderr = res.res.expectUtil.createStderr()
+        expectStderr.lineContainsString({match: 'Error: Nonexistent flag: --blah', occurrences: 1})
+        expectStdout.lineContainsString({match: 'Error: Nonexistent flag: --blah', occurrences: 1}) // oclif diverts to stdout?
+
+      })
+
+      // const persistentTestEnv = await createPersistentTestEnv({});
+      // await persistentTestEnv.test({}, async (testContext) => {
+      //   // testContext.mockStdStart();
+      //   const res = await testContext.command(["does-not-exist"], {
+      //     logLevel: "debug",
+      //   });
+
+      //   expectIsFail(res);
+
+      //   const expectStdout = res.res.expectUtil.createStdout()
+      //   const expectStderr = res.res.expectUtil.createStderr()
+      //   expectStderr.lineContainsString({match: 'Error: Nonexistent flag: --blah', occurrences: 1})
+      //   expectStdout.lineContainsString({match: 'Error: Nonexistent flag: --blah', occurrences: 0})
+      // });
     });
     it("incorrect command args", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.mockStdStart()
+
         const res = await testContext.command(
           [
             "workspace",
@@ -167,29 +202,29 @@ describe("workspace init", () => {
           ],
           { logLevel: "debug" }
         );
-        const outputs = testContext.mockStdEnd()
+
 
         expectIsFail(res);
-        expect(outputs.stderr).toMatch(`Error: command workspace:init:nonExistentArg not found`)
+        const expectStdout = res.res.expectUtil.createStdout()
+        const expectStderr = res.res.expectUtil.createStderr()
+        expectStderr.lineContainsString({match: `Error: command workspace:init:nonExistentArg not found`, occurrences: 1})
+        expectStdout.lineContainsString({match: `Error: command workspace:init:nonExistentArg not found`, occurrences: 0})
       });
     });
     it("--workspacePath is required", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.mockStdStart()
+
         const res = await testContext.command(
-          [
-            "workspace",
-            "init",
-            "--name",
-            "something",
-          ],
+          ["workspace", "init", "--name", "something"],
           { logLevel: "debug" }
         );
-        const outputs = testContext.mockStdEnd()
 
         expectIsFail(res);
-        expect(outputs.stderr).toMatch(`Missing required flag workspacePath`)
+        const expectStdout = res.res.expectUtil.createStdout()
+        const expectStderr = res.res.expectUtil.createStderr()
+        expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
+        expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1}) // oclif diverts to stdout
       });
     });
   });

@@ -1,13 +1,15 @@
 import { z } from "zod";
-import { languageSchema, languageVariantSchema, projectTypeSchema, sourceLocation } from "./common";
-import { ProjectMetadataConfig } from "@moonrepo/types";
-import { expectTypeOf } from "expect-type";
+import {
+  languageSchema,
+  languageVariantSchema,
+  projectTypeSchema,
+  sourceLocation,
+} from "./common";
 
 /**
  defines the non-common attributes of a Project that must be detected during Source import
  */
 const baseProjectSchema = z.object({
-
   /** blah blah */
   language: languageSchema,
   languageVariant: z.optional(languageVariantSchema),
@@ -15,21 +17,20 @@ const baseProjectSchema = z.object({
   name: z.string(),
   dependsOn: z.optional(z.string()),
   // aliases: z.array(z.string()),
-})
+});
 
 // type BaseProject = z.infer<typeof baseProjectSchema>
 
-export const projectConfigSchema = baseProjectSchema.merge(z.object({
-  active: z.optional(z.boolean()),
-  location: sourceLocation,
-})
-)
-
+export const projectConfigSchema = baseProjectSchema.merge(
+  z.object({
+    active: z.optional(z.boolean()),
+    location: sourceLocation,
+  })
+);
 
 // type BaseProjectSchema = z.infer<typeof baseProjectSchema>
 
 // expectTypeOf<BaseProjectSchema>().toMatchTypeOf<ProjectMetadataConfig>()
-
 
 // export type BaseProject = {
 //   language: Language
@@ -37,4 +38,3 @@ export const projectConfigSchema = baseProjectSchema.merge(z.object({
 //   name: string
 //   aliases: Aliases
 // }
-

@@ -63,7 +63,7 @@ describe("config", () => {
           protocol: "git",
           active: true,
           detectProject: {
-            language: "typescript",
+            language: "javascript",
             name: "lib1",
             type: "library",
             active: true,
@@ -84,7 +84,7 @@ describe("config", () => {
           protocol: "NOTVALIDPROTOCOL",
           active: true,
           detectProject: {
-            language: "typescript",
+            language: "javascript",
             name: "lib1",
             type: "library",
             active: true,

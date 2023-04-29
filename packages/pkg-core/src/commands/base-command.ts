@@ -2,18 +2,18 @@
 // advanced BaseCommand Salesforce example - https://tinyurl.com/2lexro75
 import { logging } from "@angular-devkit/core";
 import { createConsoleLogger } from "@angular-devkit/core/node";
-import { Logger } from "@angular-devkit/core/src/logger";
-import * as ansiColors from "ansi-colors";
 import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative,
+  assertIsAddressPathRelative
 } from "@business-as-code/address";
-import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
+import { BacError, MessageName } from "@business-as-code/error";
 import { Command, Config, Errors, Flags, Interfaces, Performance } from "@oclif/core";
+import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import ModuleLoader from "@oclif/core/lib/module-loader";
+import * as ansiColors from "ansi-colors";
 import { fileURLToPath } from "url";
 import { SchematicsService } from "../schematics/schematics-service";
 import {
@@ -25,9 +25,8 @@ import {
   ServiceInitialiseOptions,
   Services,
   ServicesStatic,
-  ValueOf,
+  ValueOf
 } from "../__types__";
-import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 
 export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
   typeof BaseCommand["baseFlags"] & T["flags"]
@@ -63,7 +62,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     argv?: string[] | undefined,
     opts?: Interfaces.LoadOptions
   ): Promise<ReturnType<T["run"]>> {
-    console.log(`:>> DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd`);
     if (!argv) argv = process.argv.slice(2);
 
     // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
@@ -296,7 +294,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     await this.initialise({parseOutput, config: this.config});
     const context = await this.createContext(parseOutput);
-    console.log(`context :>> `, context)
+
     const res = await this.execute(context);
 
     if (!assertIsOk(res)) {

@@ -1,19 +1,24 @@
 {
   "extends": "../../../tsconfig.options.json",
-  "include": ["../../../types/**/*", "src/**/*", "*.spec.*", "*.js", "*.ts", "../../pkg-core/src/schematics/schematics-service.ts"],
+  "include": [
+    "../../../types/**/*",
+    "src/**/*",
+    "*.spec.*",
+    "*.js",
+    "*.ts"
+  ],
   "references": [
     {
       "path": "../../pkg-address"
     },
     {
       "path": "../../pkg-core"
+    },
+    {
+      "path": "../../pkg-error"
     }
   ],
   "compilerOptions": {
-    // "baseUrl": "src",
-    // "emitDeclarationOnly": false,
-    // "noEmit": true,
-
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
@@ -28,6 +33,12 @@
       ],
       "@business-as-code/core/*": [
         "../../pkg-core/src/*"
+      ],
+      "@business-as-code/error": [
+        "../../pkg-error/src/index.ts"
+      ],
+      "@business-as-code/error/*": [
+        "../../pkg-error/src/*"
       ]
     }
   }

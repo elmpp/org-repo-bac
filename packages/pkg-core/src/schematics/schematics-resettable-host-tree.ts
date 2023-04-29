@@ -1,8 +1,6 @@
 import { Path, virtualFs } from "@angular-devkit/core";
-import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { CordHost } from "@angular-devkit/core/src/virtual-fs/host";
 import { Action, ActionBase, CreateFileAction, DeleteFileAction, DirEntry, HostTree, OverwriteFileAction, RenameFileAction, Tree } from "@angular-devkit/schematics";
-import { SchematicResettableNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
+import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
 import { SchematicResettableCordHost } from "./schematics-resettable-cord-host";
 
 export interface ResettableDeleteDirAction extends ActionBase {
@@ -17,10 +15,14 @@ export class SchematicsResettableHostTree extends HostTree {
     // const ins = new SchematicsResettableHostTree(workspacePath)
     // ins.merge(tree)
 
+    // @ts-ignore
     const ins = new SchematicsResettableHostTree(this._backend);
+    // @ts-ignore
     ins._record = SchematicResettableCordHost.cloneFrom(tree._record);
     // ins._record = tree._record.clone();
+    // @ts-ignore
     ins._recordSync = new virtualFs.SyncDelegateHost(ins._record);
+    // @ts-ignore
     ins._ancestry = new Set(tree._ancestry).add(tree._id);
 
     // console.log(`ins._record :>> `, ins._record)
@@ -29,7 +31,7 @@ export class SchematicsResettableHostTree extends HostTree {
   }
 
   // constructor(workspacePath: string) {
-  constructor(public override _backend: SchematicResettableNodeJsSyncHost) {
+  constructor(public override _backend: SchematicResettableScopedNodeJsSyncHost) {
   // constructor(public override _backend: virtualFs.ReadonlyHost<{}>) {
     // const backend = new virtualFs.ScopedHost(
     //       new NodeJsSyncHost(),
@@ -46,12 +48,16 @@ export class SchematicsResettableHostTree extends HostTree {
     // this._recordSync = new virtualFs.SyncDelegateHost(this._record);
   }
 
+  protected getRecord(): SchematicResettableCordHost {
+    return (this as any)._record
+  }
+
   private override *generateActions(): Iterable<ResettableAction> {
-    for (const record of this._record.records()) {
+    for (const record of this.getRecord().records()) {
       switch (record.kind) {
         case 'create':
           yield {
-            id: this._id,
+            id: (this as any)._id,
             parent: 0,
             kind: 'c',
             path: record.path,
@@ -60,7 +66,7 @@ export class SchematicsResettableHostTree extends HostTree {
           break;
         case 'overwrite':
           yield {
-            id: this._id,
+            id: (this as any)._id,
             parent: 0,
             kind: 'o',
             path: record.path,
@@ -69,7 +75,7 @@ export class SchematicsResettableHostTree extends HostTree {
           break;
         case 'rename':
           yield {
-            id: this._id,
+            id: (this as any)._id,
             parent: 0,
             kind: 'r',
             path: record.from,
@@ -78,7 +84,7 @@ export class SchematicsResettableHostTree extends HostTree {
           break;
         case 'delete':
           yield {
-            id: this._id,
+            id: (this as any)._id,
             parent: 0,
             kind: 'd',
             path: record.path,
@@ -87,7 +93,7 @@ export class SchematicsResettableHostTree extends HostTree {
           break;
         case 'deleteDir':
           yield {
-            id: this._id,
+            id: (this as any)._id,
             parent: 0,
             kind: 't',
             path: record.path,
@@ -98,6 +104,7 @@ export class SchematicsResettableHostTree extends HostTree {
     }
   }
 
+  // @ts-ignore
   override get actions(): ResettableAction[] {
     // Create a list of all records until we hit our original backend. This is to support branches
     // that diverge from each others.
@@ -126,7 +133,7 @@ export class SchematicsResettableHostTree extends HostTree {
     //       );
     //     }
 
-    this._record.rmDir(dirEntry)
+    this.getRecord().rmDir(dirEntry)
   }
 
   /**
@@ -151,16 +158,16 @@ export class SchematicsResettableHostTree extends HostTree {
     //       );
     //     }
 
-    this._record.mvDir(fromPath, toPath)
+    this.getRecord().mvDir(fromPath, toPath)
   }
 
-  reset() {
-    // this._record._filesToCreate = new Set();
-    // this._record._filesToRename = new Map();
-    // this._record._filesToRenameRevert = new Map();
-    // this._record._filesToDelete = new Set();
-    // this._record._filesToOverwrite = new Set();
-  }
+  // reset() {
+  //   // this._record._filesToCreate = new Set();
+  //   // this._record._filesToRename = new Map();
+  //   // this._record._filesToRenameRevert = new Map();
+  //   // this._record._filesToDelete = new Set();
+  //   // this._record._filesToOverwrite = new Set();
+  // }
 
 
 }

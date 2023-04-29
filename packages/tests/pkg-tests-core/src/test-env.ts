@@ -18,6 +18,7 @@ import {
   ArgsInfer,
   FlagsInfer
 } from "@business-as-code/core/commands/base-command";
+import { BacError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -137,7 +138,7 @@ export type TestContext = {
   command: (
     args: string[],
     options?: { logLevel?: LogLevel }
-  ) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+  ) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, { exitCode: number; error: Error; expectUtil: ExpectUtil; }>>;
   /**
    Allows a schematic to be run directly without going through the cli arg parsing etc
    */
@@ -149,7 +150,7 @@ export type TestContext = {
     >;
     // schematicAddress: string,
     // workspacePath: string,
-  }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, { exitCode: number; error: Error }>>;
+  }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, { exitCode: number; error: Error; expectUtil: ExpectUtil; }>>;
   /**
    Allows a service task to be run directly, without need for schematics boilerplating
    */
@@ -543,7 +544,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           process.chdir(cliPath.original);
           const argsWithAdditional = [...args, "--log-level", logLevel];
-
+console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
           //   argsWithAdditional,
@@ -552,6 +553,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // );
 
           let exitCode = 0;
+          let error = undefined
+          mockStdStart()
 
           /**  */
           await oclifCore
@@ -560,23 +563,33 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               // debug: 9,
             }) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
-            .catch((error) => {
+            .catch((anError) => {
               // return this.cat
               // console.error(error);
-              process.stderr.write(error.stack ?? error.message);
+              process.stderr.write(anError.stack ?? anError.message);
               // return 1
-              exitCode = error?.oclif?.exit ?? 1;
+              exitCode = anError?.oclif?.exit ?? 1;
+              error = anError
             });
+
+            const outputs = mockStdEnd()
+            const tree = createTree(testEnvVars.workspacePath.original)
+            const expectUtil = new ExpectUtil({
+              testEnvVars,
+              outputs,
+              tree,
+              exitCode: 0,
+            })
+
 
           if (exitCode === 0) {
             // create a virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
-            const tree = createTree(testEnvVars.workspacePath.original)
 
             return {
               success: true,
               res: {
                 exitCode,
-                tree,
+                expectUtil,
               },
             };
           }
@@ -585,9 +598,21 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             success: false,
             res: {
               exitCode,
-              // tree,
+              error: BacError.fromError(error ?? `Command exited with non-zero code. See stderr for more info`),
+              expectUtil,
             },
           };
+
+
+          // return {
+          //   success: false,
+          //   res: {
+          //     exitCode,
+          //     expectUtil,
+          //     error:
+          //     // tree,
+          //   },
+          // };
 
           // return await oclifCore.({type: 'cjs', dir: checkoutMntPath.original, args})
           // return {
@@ -622,27 +647,44 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             // return 1
             // exitCode = error?.oclif?.exit ?? 1;
 
-            mockStdEnd()
-
-            return {
-              success: false,
-              res: {
-                error,
-                exitCode: error?.oclif?.exit ?? 1,
-                // tree,
-              },
-            };
-          });
-
-          if (assertIsOk(res)) {
-            const tree = createTree(testEnvVars.workspacePath.original)
             const outputs = mockStdEnd()
+            const tree = createTree(testEnvVars.workspacePath.original)
             const expectUtil = new ExpectUtil({
               testEnvVars,
               outputs,
               tree,
               exitCode: 0,
             })
+
+            return {
+              success: false,
+              res: {
+                error,
+                exitCode: error?.oclif?.exit ?? 1,
+                expectUtil,
+                // tree,
+              },
+            };
+          });
+
+          const outputs = mockStdEnd()
+            const tree = createTree(testEnvVars.workspacePath.original)
+            const expectUtil = new ExpectUtil({
+              testEnvVars,
+              outputs,
+              tree,
+              exitCode: 0,
+            })
+
+          if (assertIsOk(res)) {
+            // const tree = createTree(testEnvVars.workspacePath.original)
+            // const outputs = mockStdEnd()
+            // const expectUtil = new ExpectUtil({
+            //   testEnvVars,
+            //   outputs,
+            //   tree,
+            //   exitCode: 0,
+            // })
             // Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
 
             return {
@@ -660,6 +702,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               res: {
                 exitCode: 1,
                 error: res.res.error as Error,
+                expectUtil,
               },
             };
           }

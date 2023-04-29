@@ -1,9 +1,9 @@
-import { addr } from "@business-as-code/address";
 import {
   assertIsOk,
   BaseCommand,
   ContextCommand,
   Flags,
+  Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { MessageName } from "@business-as-code/error";
 

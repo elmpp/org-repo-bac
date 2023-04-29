@@ -9,6 +9,7 @@
 import { Sink, UnsuccessfulWorkflowExecution } from "@angular-devkit/schematics";
 import { NodeWorkflow } from "@angular-devkit/schematics/tools";
 import { Observable, of, Subject, throwError } from "rxjs";
+import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
 import { ResettableDryRunEvent, SchematicResettableDryRunSink } from "./schematics-resettable-dry-run-sink";
 import { SchematicResettableHostSink } from "./schematics-resettable-host-sink";
 
@@ -16,7 +17,9 @@ import { SchematicResettableHostSink } from "./schematics-resettable-host-sink";
  * A workflow specifically for Node tools.
  */
 export class SchematicResettableNodeWorkflow extends NodeWorkflow {
+  // @ts-ignore
   protected override _reporter: Subject<ResettableDryRunEvent> = new Subject();
+  // @ts-ignore
   override get reporter(): Observable<ResettableDryRunEvent> {
     return this._reporter.asObservable();
   }
@@ -47,7 +50,7 @@ export class SchematicResettableNodeWorkflow extends NodeWorkflow {
       },
 
       // Only add a HostSink if this is not a dryRun.
-      ...(!this._dryRun ? [new SchematicResettableHostSink(this._host, this._force)] : []),
+      ...(!this._dryRun ? [new SchematicResettableHostSink(this._host as SchematicResettableScopedNodeJsSyncHost, this._force)] : []),
     ];
   }
 }

@@ -16,18 +16,20 @@ import {
   template,
   url,
 } from "@angular-devkit/schematics";
-import { wrapServiceAsRule } from "@business-as-code/core";
+import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
+import { schematicUtils } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
   return (_tree, schematicContext) => {
     // console.log(`options.destinationPath :>> `, options.destinationPath);
     // console.log(`context :>> `, context.engine.workflow.engineHost)
-
+console.log(`options :>> `, options)
     const baseTemplateSource = apply(url("./files"), [
       // partitionApplyMerge(
       // (p) => !/\/src\/.*?\/bare\//.test(p),
       template({
+        pmRegistry: 'https://registry.npmjs.org',
         ...options,
         // coreVersion,
         // schematicsVersion,
@@ -39,19 +41,34 @@ export default function (options: Schema): Rule {
       // move(destinationPath),
     ]);
 
-    // context.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
-    // context.addTask(new NodePackageInstallTask({workingDirectory: options.destinationPath, quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+    const pnpmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+    schematicContext.addTask(schematicUtils.wrapServiceAsTask({
+      serviceOptions: {
+        serviceName: "git",
+        cb: async ({ service }) => {
+          const logs = await service.getRepository().log();
+          console.log(`logs shown as part of task :>> `, logs)
+        },
+        initialiseOptions: {
+          workingPath: '.',
+        },
+        context: options._bacContext,
+      },
+      schematicContext,
+    }), [pnpmTaskHandle]);
 
     return chain([
       mergeWith(baseTemplateSource),
-      wrapServiceAsRule({
+      schematicUtils.wrapServiceAsRule({
         serviceOptions: {
           serviceName: "git",
           cb: async ({ service }) => {
             // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
             await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
           },
-          initialiseOptions: {},
+          initialiseOptions: {
+            workingPath: '.',
+          },
           context: options._bacContext,
         },
         schematicContext,
@@ -65,14 +82,16 @@ export default function (options: Schema): Rule {
 
       //   USE GIT SERVICE - https://github.com/nodegit/nodegit/blob/master/examples/create-new-repo.js#L13
       // ),
-      wrapServiceAsRule({
+      schematicUtils.wrapServiceAsRule({
         serviceOptions: {
           serviceName: "myService",
           cb: async ({ service }) => {
             await service.func1({ someRandomProps: "bollocks" });
           },
           // workingPath: addr.parsePath(".") as AddressPathRelative,
-          initialiseOptions: {},
+          initialiseOptions: {
+            workingPath: '.',
+          },
           context: options._bacContext,
         },
         schematicContext,

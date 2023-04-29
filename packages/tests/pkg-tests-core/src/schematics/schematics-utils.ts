@@ -3,7 +3,6 @@
 import { Path, virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import {
-  Action,
   HostCreateTree,
   Rule,
   SchematicContext,
@@ -29,8 +28,10 @@ export function debugRule(
     return fsHost._root as Path;
   }
   function getTreeActions(tree: Tree): string[] {
-    return tree.actions.map(
-      (a) => a.kind === 'r' ? `tree$ index: '0'; kind: ${a.kind}; fromPath: ${a.path} -> ${a.to}` : `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+    return tree.actions.map((a) =>
+      a.kind === "r"
+        ? `tree$ index: '0'; kind: ${a.kind}; fromPath: ${a.path} -> ${a.to}`
+        : `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
     );
   }
 

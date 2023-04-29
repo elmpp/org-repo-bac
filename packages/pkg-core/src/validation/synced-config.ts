@@ -7,7 +7,8 @@ import { projectConfigSchema } from "./project";
  */
 export const configSchema = z.object({
   version: z.number(),
-  projects: z.array(projectConfigSchema.merge({})),
+  projects: z.array(projectConfigSchema),
+  // projects: z.array(projectConfigSchema.merge({})),
 });
 
 export type Config = z.infer<typeof configSchema>;

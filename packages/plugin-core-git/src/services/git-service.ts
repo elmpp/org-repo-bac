@@ -2,11 +2,9 @@ import { ServiceInitialiseOptions } from '@business-as-code/core';
 import { BacError, MessageName } from '@business-as-code/error';
 // import nodeGit, { Repository } from 'nodegit'
 // import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
-import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
-import path from 'path'
-import fs from 'fs'
 import { addr, AddressPathAbsolute } from '@business-as-code/address';
 import { xfs } from '@business-as-code/fslib';
+import simpleGitFactory, { CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions } from 'simple-git';
 
 declare global {
   namespace Bac {
@@ -52,7 +50,7 @@ export class GitService {
     const workspacePathAbsolute = GitService.getWorkingDestinationPath(options)
 
     if (!(await xfs.existsPromise(workspacePathAbsolute.address))) {
-      options.context.logger(`gitService: service initialised on a non-existent path '${workspacePathAbsolute.original}'. Is this really what you desire?`)
+      options.context.logger.warn(`gitService: service initialised on a non-existent path '${workspacePathAbsolute.original}'. Is this really what you desire?`)
       return ins
     }
 

@@ -1,5 +1,4 @@
 // import { constants } from '@monotonous/common'
-import { constants } from '@business-as-code/core'
 import { BacError, MessageName } from '@business-as-code/error'
 import type { Address, InitialiseOptions } from './address'
 import { AddressDescriptor, AddressPackage, AddressPackageDescriptor, AddressPackageIdent, AddressPackageStringified, AddressPathAbsolute } from './__types__'
@@ -219,7 +218,7 @@ export const createAddressPackage = (addressIns: Address, parseParams: Initialis
     // } as AddressDescriptor<'paramIdentPackage'>,
 
     clone,
-    root: addressIns.parseAsType(constants.WORKROOT_IDENT, 'paramIdentPackage'),
+    root: addressIns.parseAsType('root', 'paramIdentPackage'),
     resolve,
     resolveRoot,
     // resolveTemplate,

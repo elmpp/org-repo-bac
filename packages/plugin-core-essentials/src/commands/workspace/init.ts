@@ -96,7 +96,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // console.log(`context.services :>> `, context.services);
 
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath})
+    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath, workingPath: '.'})
 
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
@@ -116,22 +116,36 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       // force: true,
       // workingPath: addr.pathUtils.dot,
     });
-
+console.log(`res :>> `, res)
     if (!assertIsOk(res)) {
-      switch (res.res.reportCode) {
+      switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger(res.res.message, "error");
+          context.logger.error(res.res.error.message);
           break;
       }
-    } else {
-      context.logger(`Finished ok. Scaffolded into '${res.res.destinationPath.original}'`, "info");
     }
+
+    // if (!assertIsOk(res)) {
+    //   switch (res.res.reportCode) {
+    //     case MessageName.SCHEMATICS_ERROR:
+    //       context.logger(res.res.message, "error");
+    //       break;
+    //     case MessageName.SCHEMATICS_INVALID_ADDRESS:
+    //       context.logger(res.res.message, "error");
+    //       break;
+    //     case MessageName.SCHEMATICS_NOT_FOUND:
+    //       context.logger(res.res.message, "error");
+    //       break;
+    //   }
+    // } else {
+    //   context.logger(`Finished ok. Scaffolded into '${res.res.destinationPath.original}'`, "info");
+    // }
 
     return res
 

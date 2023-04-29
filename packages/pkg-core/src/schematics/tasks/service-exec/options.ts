@@ -1,9 +1,7 @@
 import {
-  Context,
-  ServiceInitialiseOptions,
-  Services,
-  ServicesStatic,
+  Services
 } from "../../../__types__";
+import { ServiceOptions } from "../../schematics-utils";
 
 export const ServiceExecName = "service-exec";
 
@@ -26,7 +24,7 @@ export interface ServiceExecTaskFactoryOptions {
 // }
 
 export type ServiceExecTaskOptions<SName extends keyof Services> =
-  Options<SName>;
+  ServiceOptions<SName>;
 // export interface ServiceExecTaskOptions {
 //   // workingDirectory: string;
 //   options: Options<keyof ServicesStatic>; // must be optional due to TaskExecutor having optional params
