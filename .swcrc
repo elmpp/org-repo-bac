@@ -13,7 +13,7 @@
     "externalHelpers": false
   },
   "module": {
-    "type": "commonjs",
+    "type": "es6",
     "noInterop": false
   },
   "sourceMaps": true

@@ -10,6 +10,7 @@ import { strings } from "@angular-devkit/core";
 import {
   apply,
   chain,
+  MergeStrategy,
   mergeWith,
   Rule,
   schematic,
@@ -18,13 +19,15 @@ import {
 } from "@angular-devkit/schematics";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
 import { schematicUtils } from "@business-as-code/core";
+import { schematicTestUtils } from "@business-as-code/tests-core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
   return (_tree, schematicContext) => {
     // console.log(`options.destinationPath :>> `, options.destinationPath);
     // console.log(`context :>> `, context.engine.workflow.engineHost)
-console.log(`options :>> `, options)
+// console.log(`options :>> `, options)
+
     const baseTemplateSource = apply(url("./files"), [
       // partitionApplyMerge(
       // (p) => !/\/src\/.*?\/bare\//.test(p),
@@ -42,37 +45,63 @@ console.log(`options :>> `, options)
     ]);
 
     const pnpmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
-    schematicContext.addTask(schematicUtils.wrapServiceAsTask({
-      serviceOptions: {
-        serviceName: "git",
-        cb: async ({ service }) => {
-          const logs = await service.getRepository().log();
-          console.log(`logs shown as part of task :>> `, logs)
-        },
-        initialiseOptions: {
-          workingPath: '.',
-        },
-        context: options._bacContext,
-      },
-      schematicContext,
-    }), [pnpmTaskHandle]);
+    // schematicContext.addTask(schematicUtils.wrapServiceAsTask({
+    //   serviceOptions: {
+    //     serviceName: "bac",
+    //     cb: async ({ service }) => {
+    //       const res = await service.run({cmd: 'help', options: {throwOnFail: true}})
+    //     },
+    //     initialiseOptions: {
+    //       workingPath: '.',
+    //     },
+    //     context: options._bacContext,
+    //   },
+    //   schematicContext,
+    // }), [pnpmTaskHandle]);
 
     return chain([
       mergeWith(baseTemplateSource),
-      schematicUtils.wrapServiceAsRule({
-        serviceOptions: {
-          serviceName: "git",
-          cb: async ({ service }) => {
-            // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
-            await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+      schematicUtils.branchMerge(
+        schematicUtils.wrapServiceAsRule({
+          serviceOptions: {
+            serviceName: "git",
+            cb: async ({ service }) => {
+              // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+              await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+            },
+            initialiseOptions: {
+              workingPath: '.',
+            },
+            context: options._bacContext,
           },
+          schematicContext,
+        }),
+        {
+          context: options._bacContext,
           initialiseOptions: {
             workingPath: '.',
           },
-          context: options._bacContext,
         },
-        schematicContext,
-      }),
+        MergeStrategy.Overwrite,
+      ),
+      // schematicUtils.wrapServiceAsRule({
+      //   serviceOptions: {
+      //     serviceName: "git",
+      //     cb: async ({ service }) => {
+      //       // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+      //       await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+      //     },
+      //     initialiseOptions: {
+      //       workingPath: '.',
+      //     },
+      //     context: options._bacContext,
+      //   },
+      //   schematicContext,
+      // }),
+      schematicTestUtils.debugRule({context: options._bacContext,
+        initialiseOptions: {
+          workingPath: '.',
+        },}),
       // wrapTaskAsRule(
       //   // new RepositoryInitializerTask(".", {
       //   //   email: constants.DEFAULT_COMMITTER_EMAIL,
@@ -82,20 +111,20 @@ console.log(`options :>> `, options)
 
       //   USE GIT SERVICE - https://github.com/nodegit/nodegit/blob/master/examples/create-new-repo.js#L13
       // ),
-      schematicUtils.wrapServiceAsRule({
-        serviceOptions: {
-          serviceName: "myService",
-          cb: async ({ service }) => {
-            await service.func1({ someRandomProps: "bollocks" });
-          },
-          // workingPath: addr.parsePath(".") as AddressPathRelative,
-          initialiseOptions: {
-            workingPath: '.',
-          },
-          context: options._bacContext,
-        },
-        schematicContext,
-      }),
+      // schematicUtils.wrapServiceAsRule({
+      //   serviceOptions: {
+      //     serviceName: "myService",
+      //     cb: async ({ service }) => {
+      //       await service.func1({ someRandomProps: "bollocks" });
+      //     },
+      //     // workingPath: addr.parsePath(".") as AddressPathRelative,
+      //     initialiseOptions: {
+      //       workingPath: '.',
+      //     },
+      //     context: options._bacContext,
+      //   },
+      //   schematicContext,
+      // }),
       // wrapTaskAsRule(
       //   new RepositoryInitializerTask("repo", {
       //     email: constants.DEFAULT_COMMITTER_EMAIL,

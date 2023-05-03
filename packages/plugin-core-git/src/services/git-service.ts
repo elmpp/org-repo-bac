@@ -1,4 +1,4 @@
-import { ServiceInitialiseOptions } from '@business-as-code/core';
+import { ServiceInitialiseCommonOptions } from '@business-as-code/core';
 import { BacError, MessageName } from '@business-as-code/error';
 // import nodeGit, { Repository } from 'nodegit'
 // import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
@@ -20,7 +20,7 @@ declare global {
   // }
 }
 
-type Options = ServiceInitialiseOptions & {
+type Options = ServiceInitialiseCommonOptions & {
 
 }
 

@@ -14,7 +14,7 @@
 //   }
 // }
 
-import { ServiceInitialiseOptions } from "@business-as-code/core";
+import { ServiceInitialiseCommonOptions } from "@business-as-code/core";
 
 declare global {
   namespace Bac {
@@ -36,11 +36,11 @@ declare global {
 
 export class YourService {
   static title = 'yourService'
-  static async initialise(options: ServiceInitialiseOptions) {
+  static async initialise(options: ServiceInitialiseCommonOptions) {
     return new YourService(options)
   }
 
-  constructor(protected options: ServiceInitialiseOptions) {
+  constructor(protected options: ServiceInitialiseCommonOptions) {
 
   }
 

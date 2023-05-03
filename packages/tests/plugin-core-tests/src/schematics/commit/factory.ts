@@ -1,14 +1,12 @@
 import { chain, Rule } from "@angular-devkit/schematics";
-import { constants, wrapServiceAsRule } from "@business-as-code/core";
-import { debugRule } from "@business-as-code/tests-core";
+import { constants, schematicUtils } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
   return (_tree, schematicContext) => {
-
     const r = chain([
-      // debugRule(options),
-      wrapServiceAsRule({
+      // schematicTestUtils.debugRule(options),
+      schematicUtils.wrapServiceAsRule({
         serviceOptions: {
           serviceName: "git",
           cb: async ({ service }) => {
@@ -46,11 +44,13 @@ export default function (options: Schema): Rule {
             // );
           },
           context: options._bacContext,
-          initialiseOptions: {},
+          initialiseOptions: {
+            workingPath: ".",
+          },
         },
-        schematicContext
-  }),
-      // debugRule(options),
+        schematicContext,
+      }),
+      // schematicTestUtils.debugRule(options),
     ]);
     return r;
   };

@@ -15,7 +15,7 @@ export const constants = {
   //   padding: 3,
   // },
 
-  // ENVIRONMENT_PREFIX: `mnt_`,
+  ENVIRONMENT_PREFIX: `bac_`,
   // CACHE_FOLDER_FILENAME: `.monotonous`,
   // CACHE_FOLDER_LIB_FILENAME: `lib`,
   // CACHE_FOLDER_TMP_FILENAME: `tmp`,

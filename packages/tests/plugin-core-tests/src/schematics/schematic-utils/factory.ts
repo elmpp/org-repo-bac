@@ -11,7 +11,7 @@ import {
   url,
 } from "@angular-devkit/schematics";
 import { constants, schematicUtils } from "@business-as-code/core";
-import { debugRule } from "@business-as-code/tests-core";
+import { schematicTestUtils } from "@business-as-code/tests-core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
@@ -26,7 +26,7 @@ export default function (options: Schema): Rule {
 
     return chain([
       mergeWith(bareTemplateSource),
-      schematicUtils.mergeWithExternal(
+      schematicUtils.flushBranchMerge(
         schematicUtils.wrapServiceAsRule({
           serviceOptions: {
             serviceName: "git",
@@ -52,7 +52,6 @@ export default function (options: Schema): Rule {
             workingPath: ".",
           },
         },
-        MergeStrategy.Overwrite
       ),
       (tree: Tree, schematicContext: SchematicContext) => {
         schematicUtils.remove("./package.json", tree, schematicContext); // should be allowed to delete this file even though was created before/during an external wrap
@@ -62,7 +61,7 @@ export default function (options: Schema): Rule {
         schematicUtils.remove("./packages", tree, schematicContext); // should be allowed to delete this folder even though was created before/during an external wrap
         return tree;
       },
-      debugRule({
+      schematicTestUtils.debugRule({
           context: options._bacContext,
           initialiseOptions: {
             workingPath: '.',

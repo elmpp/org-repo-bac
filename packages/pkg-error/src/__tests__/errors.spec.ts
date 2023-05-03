@@ -1,4 +1,4 @@
-import {BacError, BacErrorWrapper} from '../errors'
+import {assertIsBacError, assertIsBacWrappedError, BacError, BacErrorWrapper} from '../errors'
 import { MessageName } from '../message-name'
 // import os from 'os'
 
@@ -25,17 +25,17 @@ describe('errors', () => {
       expect(err.reportCode).toEqual(MessageName.UNNAMED)
       expect(err.message).toEqual('hello')
     })
-    it('allows prefixing of the message', () => {
-      const err = new BacError(MessageName.UNNAMED, 'hello')
+    // it('allows prefixing of the message', () => {
+    //   const err = new BacError(MessageName.UNNAMED, 'hello')
 
-      expect(err.message).toEqual('hello')
-      expect(err.reportCode).toEqual(MessageName.UNNAMED)
+    //   expect(err.message).toEqual('hello')
+    //   expect(err.reportCode).toEqual(MessageName.UNNAMED)
 
-      BacError.prefixMessage(err, `additional. `)
+    //   BacError.prefixMessage(err, `additional. `)
 
-      expect(err.message).toEqual('additional. hello')
-      expect(err.reportCode).toEqual(MessageName.UNNAMED)
-    })
+    //   expect(err.message).toEqual('additional. hello')
+    //   expect(err.reportCode).toEqual(MessageName.UNNAMED)
+    // })
     // it('compatible with clipanion', () => {
     //   const err = new BacError(MessageName.UNNAMED, 'hello', {type: 'clipanionGeneral'})
 
@@ -45,10 +45,21 @@ describe('errors', () => {
     //   expect(err.extra).toBeUndefined()
     // })
 
+    describe('getMessageForError', () => {
+      it('uses full amount', () => {
+        expect(BacError.getMessageForError(new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah'))).toMatch(new RegExp(`Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`, 's'))
+      })
+    })
+
     describe('fromError', () => {
       it('bacError', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
         const coerced = BacError.fromError(err)
+
+        expect(assertIsBacError(coerced)).toBeTruthy()
+        expect(assertIsBacWrappedError(coerced)).toBeFalsy()
+
+        // console.log(`Object.keys(coerced) :>> `, Object.keys(coerced))
 
         expect(coerced).toHaveProperty('message', 'hello')
         expect(coerced).toHaveProperty('reportCode', MessageName.UNNAMED)

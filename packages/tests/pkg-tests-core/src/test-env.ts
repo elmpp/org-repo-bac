@@ -18,7 +18,9 @@ import {
   ArgsInfer,
   FlagsInfer
 } from "@business-as-code/core/commands/base-command";
-import { BacError } from "@business-as-code/error";
+import { SchematicResettableScopedNodeJsSyncHost } from "@business-as-code/core/src/schematics/schematic-resettable-scoped-node-js-sync-host";
+import { SchematicsResettableHostTree } from "@business-as-code/core/src/schematics/schematics-resettable-host-tree";
+import { assertIsBacError, assertIsBacWrappedError, assertIsError, BacError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -465,6 +467,17 @@ async function setupFolders(
  virtualFs tree (i.e. same as schematics) - https://tinyurl.com/2mj4lzfv
  */
 function createTree(workspacePath: string): Tree {
+// function createTree(workspacePath: string): SchematicsResettableHostTree {
+  // const tree = new SchematicsResettableHostTree(
+  //   new SchematicResettableScopedNodeJsSyncHost(
+  //     workspacePath as any,
+  //   )
+  // );
+  // const tree = new HostCreateTree(
+  //   new SchematicResettableScopedNodeJsSyncHost(
+  //     workspacePath as any,
+  //   )
+  // );
   const tree = new HostCreateTree(
     new virtualFs.ScopedHost(
       new NodeJsSyncHost(),
@@ -544,7 +557,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           process.chdir(cliPath.original);
           const argsWithAdditional = [...args, "--log-level", logLevel];
-console.log(`argsWithAdditional :>> `, argsWithAdditional)
+// console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
           //   argsWithAdditional,
@@ -564,10 +577,11 @@ console.log(`argsWithAdditional :>> `, argsWithAdditional)
             }) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((anError) => {
-              // return this.cat
-              // console.error(error);
-              process.stderr.write(anError.stack ?? anError.message);
-              // return 1
+
+              /**
+               DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING
+               */
+
               exitCode = anError?.oclif?.exit ?? 1;
               error = anError
             });
@@ -577,7 +591,7 @@ console.log(`argsWithAdditional :>> `, argsWithAdditional)
             const expectUtil = new ExpectUtil({
               testEnvVars,
               outputs,
-              tree,
+              tree: tree as Tree,
               exitCode: 0,
             })
 
@@ -640,19 +654,21 @@ console.log(`argsWithAdditional :>> `, argsWithAdditional)
           )
           // .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
           .catch((error) => {
-            // return this.cat
-            // console.error(error);
-            console.log(`error :>> `, error, error.stack ?? error.message);
-            process.stderr.write(error.stack ?? error.message);
-            // return 1
-            // exitCode = error?.oclif?.exit ?? 1;
+
+
+            /**
+             DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING
+            */
+
+            // exitCode = anError?.oclif?.exit ?? 1;
+            // error = anError
 
             const outputs = mockStdEnd()
             const tree = createTree(testEnvVars.workspacePath.original)
             const expectUtil = new ExpectUtil({
               testEnvVars,
               outputs,
-              tree,
+              tree: tree as Tree,
               exitCode: 0,
             })
 
@@ -672,7 +688,7 @@ console.log(`argsWithAdditional :>> `, argsWithAdditional)
             const expectUtil = new ExpectUtil({
               testEnvVars,
               outputs,
-              tree,
+              tree: tree as Tree,
               exitCode: 0,
             })
 

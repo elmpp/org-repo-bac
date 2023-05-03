@@ -8,3 +8,6 @@ export type ExcludeEmptyProperties<T> = Pick<T, {[K in keyof T]-?: T[K] extends 
 export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void
         ? I
         : never
+export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? UnwrapPromise<U> : T
+// export type SetRequired<BaseType, Keys extends keyof BaseType> = Pick<BaseType, Exclude<keyof BaseType, Keys>> &
+//         Required<Pick<BaseType, Keys>>

@@ -13,7 +13,7 @@
 // }
 
 import { addr, AddressPathRelative } from "@business-as-code/address";
-import { ServiceInitialiseOptions } from "@business-as-code/core";
+import { ServiceInitialiseCommonOptions } from "@business-as-code/core";
 import { spawn, SpawnOptions } from "child_process";
 
 declare global {
@@ -34,11 +34,11 @@ declare global {
 
 export class MyService {
   static title = "myService";
-  static async initialise(options: ServiceInitialiseOptions) {
+  static async initialise(options: ServiceInitialiseCommonOptions) {
     return new MyService(options);
   }
 
-  constructor(protected options: ServiceInitialiseOptions) {}
+  constructor(protected options: ServiceInitialiseCommonOptions) {}
 
   static staticFunc1() {}
   async func1({someRandomProps, workingPath = addr.pathUtils.dot}: { someRandomProps: string, workingPath?: AddressPathRelative }) {

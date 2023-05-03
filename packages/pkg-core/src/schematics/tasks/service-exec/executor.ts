@@ -15,7 +15,7 @@ import {
 } from './options';
 
 export function serviceExecExecutor<SName extends keyof Services>(
-  factoryOptions: ServiceExecTaskFactoryOptions,
+  _?: ServiceExecTaskFactoryOptions,
 ): TaskExecutor<ServiceExecTaskOptions<SName>> {
 
   return async (options: ServiceExecTaskOptions<SName> = {} as ServiceExecTaskOptions<SName>, schematicContext: SchematicContext) => {

@@ -8,7 +8,7 @@ export default function (options: Schema): Rule {
   return (_tree, schematicContext) => {
 
     const r = chain([
-      // debugRule(options),
+      // schematicTestUtils.debugRule(options),
       wrapServiceAsRule({
         serviceOptions: {
           serviceName: "git",
@@ -51,7 +51,7 @@ export default function (options: Schema): Rule {
         },
         schematicContext
   }),
-      // debugRule(options),
+      // schematicTestUtils.debugRule(options),
     ]);
     return r;
   };

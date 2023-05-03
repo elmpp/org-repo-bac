@@ -9,10 +9,14 @@ module.exports = {
     // ...Object.valuestsjPreset.transform.map(t => require.resolve('ts-jest')), // https://tinyurl.com/yyc4pzyb
     // Object.fromEntries(Object.entries(obj).map(([key, val]) => [key, iteratee(val, key)] as [string, string]))
     // '^.+\\.tsx?$': require.resolve('ts-jest')
-    '^.+\\.tsx?$': ['@swc/jest'],
+    '^.+\\.(t|j)sx?$': ['@swc/jest'],
   },
+  /** some deps are pure esmodules that swc/jest doesn't understand */
+  transformIgnorePatterns: [
+    '/node_modules/!(?!(execa)/)', // i.e. include execa for transformation
+  ],
   // testMatch: ['**/__tests__/**/*.spec.ts?(x)', '**/__tests__/**/*.spec.js?(x)', '**/tests/**/*.spec.ts?(x)'],
-  testMatch: ['**/*.spec.ts?(x)'],
+  testMatch: ['**/*.spec.[t|j]s?(x)'],
 
   testPathIgnorePatterns: [
     '\\.(deletable.*?)$',

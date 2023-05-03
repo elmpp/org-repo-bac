@@ -10,8 +10,8 @@ export function assertIsError(errorLike: any): errorLike is Error {
   return (
     errorLike instanceof Error ||
     // (errorLike?.stack && errorLike?.message) ||
-    errorLike?.message ||
-    (errorLike?.diagnosticText && errorLike?.diagnosticCodes)
+    !!errorLike?.message ||
+    !!(errorLike?.diagnosticText && errorLike?.diagnosticCodes)
   );
 }
 export function assertIsBacError<
@@ -24,7 +24,7 @@ export function assertIsBacWrappedError<
   Extra = undefined,
   Code extends MessageName = MessageName
 >(errorLike: any): errorLike is BacErrorWrapper<Code, Extra> {
-  return assertIsError(errorLike) && !!(errorLike as BacErrorWrapper).wrapped;
+  return assertIsError(errorLike) && !!((errorLike as BacErrorWrapper).wrapped);
 }
 
 // https://github.com/arcanis/clipanion/blob/665d2ab3125be0f247009799d01da9ca5f6fd24f/sources/errors.ts#L3
@@ -98,6 +98,8 @@ Extra = undefined,
     ) {
       if (reportCode) err.reportCode = reportCode;
       if (extra) err.extra = extra;
+
+      // console.log(`err :>> `, Object.keys(err))
       return err;
     }
     return new BacError<Code, Extra>(
@@ -107,9 +109,24 @@ Extra = undefined,
     );
   }
 
-  static prefixMessage(err: Error, prefixMessage: string) {
-    err.message = `${prefixMessage}${err.message}`;
+  static getMessageForError(err: string | BacError | BacErrorWrapper): string {
+    if (typeof err === 'string') {
+      return err
+    }
+    if (assertIsBacWrappedError(err)) {
+      return err.message
+    }
+    // console.log(`err :>> `, assertIsBacWrappedError(err), assertIsBacError(err), assertIsError(err), err?.message, err)
+    if (assertIsBacError(err)) {
+      return BacError.formatMessageName(err.reportCode, err.message);
+    }
+    console.log(`Object.keys(err) :>> `, Object.keys(err))
+    throw new Error('WUT')
   }
+
+  // static prefixMessage(err: Error, prefixMessage: string) {
+  //   err.message = `${prefixMessage}${err.message}`;
+  // }
 
   constructor(code: Code, message: string, { extra }: { extra?: Extra } = {}) {
     // super(BacError.formatMessageName(code, message))
@@ -225,7 +242,6 @@ Extra = undefined,
     if (assertIsError(wrappable)) {
       wrappable = wrappable.stack ?? wrappable.message;
     }
-    console.log(`wrappable :>> `, wrappable)
     const lines = wrappable.split(os.EOL);
     return `Error: ${message}\nWrapped error:\n${lines
       .map((line) => `  ${line}`)

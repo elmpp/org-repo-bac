@@ -82,7 +82,7 @@ describe("workspace init", () => {
         addr.parsePath("mocks/input1.json")
       );
 
-console.log(`configPath :>> `, configPath)
+// console.log(`configPath :>> `, configPath)
 
       const res = await testContext.command(
         [
@@ -95,7 +95,7 @@ console.log(`configPath :>> `, configPath)
           "--configPath",
           configPath.original,
         ],
-        { logLevel: "debug" }
+        { logLevel: "info" }
       );
 
       // if (assertIsOk(res)) {
@@ -117,10 +117,39 @@ console.log(`configPath :>> `, configPath)
       // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
       // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})
 
-      expect(expectFs.readText("./BOLLOCKS.md")).toEqual("PANTS");
+      res.res.expectUtil.createText(expectFs.readText("./.npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
+      res.res.expectUtil.createText(expectFs.readText("./BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic workspace-configure
+      expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
+      res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
+
+      // {
+      //   "name": "my-new-workspace",
+      //   "version": "0.0.0",
+      //   "description": "A schematics",
+      //   "scripts": {
+      //     "build": "tsc -p tsconfig.json",
+      //     "test": "npm run build && jasmine src/**/*_spec.js"
+      //   },
+      //   "keywords": [
+      //     "schematics"
+      //   ],
+      //   "license": "MIT",
+      //   "schematics": "./src/collection.json",
+      //   "dependencies": {
+      //     "@moonrepo/cli": "*"
+      //   },
+      //   "devDependencies": {
+      //     "@types/node": "^14.15.0"
+      //   }
+      // }
+      res.res.expectUtil.createText(expectFs.readText("./package.json"))
+        .lineContainsString({match: `"name": "my-new-workspace"`, occurrences: 1})
+        .lineContainsString({match: `"private": true`, occurrences: 1})
+
+      // expect(expectFs.readText("./README.md")).toEqual("PANTS");
 
 
-      console.log(`testContext.testEnvVars.workspacePath.original :>> `, testContext.testEnvVars.workspacePath.original)
+      // console.log(`testContext.testEnvVars.workspacePath.original :>> `, testContext.testEnvVars.workspacePath.original)
 
       // expect(exitCode).toEqual(0)
 

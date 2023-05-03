@@ -2,6 +2,7 @@ import { join, normalize } from "@angular-devkit/core";
 import { Host } from "@angular-devkit/core/src/virtual-fs/host";
 import {
   HostDirEntry,
+  MergeStrategy,
   Rule,
   SchematicContext,
   TaskConfigurationGenerator,
@@ -28,7 +29,8 @@ export interface ServiceOptions<SName extends keyof ServicesStatic> {
   }) => Promise<any>;
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
   serviceName: SName;
-  initialiseOptions: ServiceInitialiseOptions;
+  initialiseOptions: ServiceInitialiseOptions<SName>;
+  // initialiseOptions: ServiceInitialiseCommonOptions;
   // initialiseOptions: ServiceInitialiseOptions;
   // workingPath: AddressPathRelative
   context: Context;
@@ -140,7 +142,7 @@ export const wrapServiceAsTask = <SName extends keyof Services>({
     },
   };
 
-  return new ServiceExecTask(options)
+  return new ServiceExecTask(options);
 
   // return new class() {
 
@@ -227,9 +229,9 @@ export const wrapServiceAsTask = <SName extends keyof Services>({
 // };
 
 /**
- Flushes to disk and merges the outcome of the wrapped rule
+ Flushes to disk, branches the tree and merges the outcome of the wrapped rule
  */
-export const mergeWithExternal = (
+export const flushBranchMerge = (
   rule: Rule,
   serviceOptions: {
     context: Context;
@@ -296,7 +298,7 @@ export const mergeWithExternal = (
 
               // const applicableNextTree = new SchematicsResettableHostTree(getCurrentSchematicHostRoot(schematicContext).original);
               const applicableNextTree =
-                SchematicsResettableHostTree.fromExisting(
+                SchematicsResettableHostTree.branchFromFs(
                   getCurrentSchematicHostRoot(schematicContext).original,
                   tree
                 ) as Tree;
@@ -368,7 +370,7 @@ export const mergeWithExternal = (
                   // nextTree.merge(tree, mergeStrategy)
 
                   let applicableNextTree =
-                    SchematicsResettableHostTree.fromExisting(
+                    SchematicsResettableHostTree.branchFromFs(
                       getCurrentSchematicHostRoot(schematicContext).original,
                       nextTree
                     ) as Tree;
@@ -427,6 +429,49 @@ export const mergeWithExternal = (
               // // // // console.log(`tree after :>> `, nextTree)
               // // return nextTree; // is branched from previous tree
               // });
+            });
+        })
+    );
+    return res;
+  };
+};
+
+/**
+ Branches the tree and merges the outcome of the wrapped rule
+ */
+export const branchMerge = (
+  rule: Rule,
+  serviceOptions: {
+    context: Context;
+    initialiseOptions: ServiceOptionsLite<"schematics">["initialiseOptions"];
+  },
+  mergeStrategy: MergeStrategy,
+): Rule => {
+  return (tree: Tree, schematicContext: SchematicContext) => {
+    const res = from(
+      serviceOptions.context
+        .serviceFactory("schematics", {
+          ...serviceOptions.initialiseOptions,
+          context: serviceOptions.context,
+          destinationPath: getCurrentSchematicHostRoot(schematicContext),
+        })
+        .then((schematicsService) => {
+          return schematicsService
+            .runSchematicRule({
+              schematicContext,
+              schematicRule: rule,
+              tree,
+            })
+            .then((nextTree) => {
+              let applicableNextTree =
+                SchematicsResettableHostTree.branchFromTree(
+                  // getCurrentSchematicHostRoot(schematicContext).original,
+                  // tree,
+                  nextTree,
+                  mergeStrategy , // incoming changes will overwrite if existent
+                ) as Tree;
+              // console.log(`applicableNextTree.readText('./README.md') :>> `, applicableNextTree.readText('./README.md'))
+              return applicableNextTree;
             });
         })
     );

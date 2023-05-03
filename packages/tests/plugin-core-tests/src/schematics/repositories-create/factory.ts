@@ -10,7 +10,7 @@ import {
   url
 } from "@angular-devkit/schematics";
 import { constants, schematicUtils } from "@business-as-code/core";
-import { debugRule } from "@business-as-code/tests-core";
+import { schematicTestUtils } from "@business-as-code/tests-core";
 import path from "path";
 import { Schema } from "./schema";
 
@@ -163,7 +163,7 @@ export default function (options: Schema): Rule {
 
       return chain([
         mergeWith(bareTemplateSource),
-        schematicUtils.mergeWithExternal(
+        schematicUtils.flushBranchMerge(
           schematicUtils.wrapServiceAsRule({
             serviceOptions: {
               serviceName: "git",
@@ -192,7 +192,7 @@ export default function (options: Schema): Rule {
           },
         ),
         mergeWith(packageTemplateSource1),
-        schematicUtils.mergeWithExternal(
+        schematicUtils.flushBranchMerge(
           chain([
             schematicUtils.wrapServiceAsRule({
               serviceOptions: {
@@ -230,14 +230,14 @@ export default function (options: Schema): Rule {
             },
           },
         ),
-        debugRule({
+        schematicTestUtils.debugRule({
           context: options._bacContext,
           initialiseOptions: {
             workingPath
           },
         }),
         convertToBareRepo(innerOptions),
-        schematicUtils.mergeWithExternal(
+        schematicUtils.flushBranchMerge(
           chain([
             (tree: Tree, schematicContext: SchematicContext) => {
               return tree
@@ -253,7 +253,7 @@ export default function (options: Schema): Rule {
 
         // convertToBareRepo(innerOptions),
 
-        // debugRule({
+        // schematicTestUtils.debugRule({
         //   context: options._bacContext,
         //   initialiseOptions: {
         //     workingPath
@@ -264,7 +264,7 @@ export default function (options: Schema): Rule {
 
     const r = chain([
       createForWorkingPath({ options, workingPath: "repo1", name: "repo1" }),
-      // debugRule({
+      // schematicTestUtils.debugRule({
       //   context: options._bacContext,
       //   initialiseOptions: {
       //     workingPath: 'repo1',

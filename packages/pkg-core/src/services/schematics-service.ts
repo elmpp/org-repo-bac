@@ -36,14 +36,15 @@ import * as ansiColors from "ansi-colors";
 import path from "path";
 import { from, Observable, of, Subject, throwError } from "rxjs";
 import { concatMap, finalize, ignoreElements } from "rxjs/operators";
-import { Context, Result, ServiceInitialiseOptions } from "../__types__";
-import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
+import { Context, Result, ServiceInitialiseCommonOptions } from "../__types__";
+import { SchematicResettableScopedNodeJsSyncHost } from "../schematics/schematic-resettable-scoped-node-js-sync-host";
 import {
   ResettableDryRunEvent,
   SchematicResettableDryRunSink,
-} from "./schematics-resettable-dry-run-sink";
-import { SchematicResettableHostSink } from "./schematics-resettable-host-sink";
-import { SchematicResettableNodeWorkflow } from "./schematics-resettable-node-workflow";
+} from "../schematics/schematics-resettable-dry-run-sink";
+import { SchematicResettableHostSink } from "../schematics/schematics-resettable-host-sink";
+import { SchematicResettableNodeWorkflow } from "../schematics/schematics-resettable-node-workflow";
+import { ServiceExecTaskFactoryOptions } from "../schematics/tasks/service-exec/options";
 
 declare global {
   namespace Bac {
@@ -85,7 +86,7 @@ const colors = ansiColors.create();
 
 let lastInstance: SchematicsService | undefined = undefined;
 
-type Options = ServiceInitialiseOptions & {
+type Options = ServiceInitialiseCommonOptions & {
   /** whether to commit the tree */
   dryRun?: boolean;
   /** overrides conflicts */
@@ -177,26 +178,26 @@ export class SchematicsService {
     // this.registerServicesAsTasks({context, workflow: this.workflow});
   }
 
-  createHostTree(): Host {
-    // const nodeHost = new NodeJsSyncHost()
-    // const workflowHost = this.getCurrentFsHost()._delegate
+  // createHostTree(): Host {
+  //   // const nodeHost = new NodeJsSyncHost()
+  //   // const workflowHost = this.getCurrentFsHost()._delegate
 
-    // console.log(`nodeHost, workflowHost :>> `, nodeHost, workflowHost)
+  //   // console.log(`nodeHost, workflowHost :>> `, nodeHost, workflowHost)
 
-    const nextTree = new SchematicResettableScopedNodeJsSyncHost(
-      this.options.destinationPath.original as any
-    );
-    // const nextTree = new HostCreateTree(
-    //   new virtualFs.ScopedHost(
-    //     new NodeJsSyncHost(),
-    //     // workflowHost,
-    //     this.options.destinationPath.original as any
-    //   )
-    // );
+  //   const nextTree = new SchematicResettableScopedNodeJsSyncHost(
+  //     this.options.destinationPath.original as any
+  //   );
+  //   // const nextTree = new HostCreateTree(
+  //   //   new virtualFs.ScopedHost(
+  //   //     new NodeJsSyncHost(),
+  //   //     // workflowHost,
+  //   //     this.options.destinationPath.original as any
+  //   //   )
+  //   // );
 
-    // console.log(`prevTree, nextTree :>> `, prevTree, nextTree)
-    return nextTree;
-  }
+  //   // console.log(`prevTree, nextTree :>> `, prevTree, nextTree)
+  //   return nextTree;
+  // }
 
   // /**
   //  Runs a schematic directly, no workflow involvement. This returns an observer so can be merged into
@@ -626,13 +627,23 @@ export class SchematicsService {
         message = `Error: ${err instanceof Error ? err.message : err}`;
       }
 
+      const error = BacErrorWrapper.fromError(
+        err as Error,
+        {
+          reportCode: MessageName.SCHEMATICS_ERROR,
+        }
+      )
+
+      // console.log(`error.message :>> 1 `, error.message)
+
       return {
         res: {
-          error: new BacErrorWrapper(
-            MessageName.SCHEMATICS_ERROR,
-            `${message}. Supplied path: '${schematicPath.original}'`,
-            err as Error
-          ),
+          error,
+          // error: new BacErrorWrapper(
+          //   MessageName.SCHEMATICS_ERROR,
+          //   `${message}. Supplied path: '${schematicPath.original}'`,
+          //   err as Error
+          // ),
         },
         success: false,
       };
@@ -1041,13 +1052,14 @@ export class SchematicsService {
       `registerServicesAsTasks: registering tasks`
     );
 
-    const taskExecutorFactory: TaskExecutorFactory<{ rootDirectory: string }> =
+    const taskExecutorFactory: TaskExecutorFactory<any> =
       // very vanilla factory-level params; we'll be creating the services per usage
       // Parameters<ServicesStatic[typeof serviceName]["initialise"]>
       {
         name: "service-exec",
         create: (options) =>
-          import("../").then((mod) => mod.serviceExecExecutor(options!)),
+        // @ts-ignore
+          import("../schematics").then((mod) => mod.serviceExecExecutor(options!)),
         // create: (options) => import('../schematics/tasks/service-exec/executor').then((mod) => mod.default(options!)),
       };
 
@@ -1056,7 +1068,6 @@ export class SchematicsService {
       rootDirectory: this.options.destinationPath.original,
       // rootDirectory: root && getSystemPath(root),
     });
-    console.log(`workflow.engineHost :>> `, workflow.engineHost);
   }
 
   // context.logger(`registerServicesAsTasks: registering '${context.}' services`)
@@ -1300,7 +1311,7 @@ export class SchematicsService {
   // }
 
   // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L220
-  protected async setupSchematics(options: ServiceInitialiseOptions): Promise<{
+  protected async setupSchematics(options: ServiceInitialiseCommonOptions): Promise<{
     workflow: SchematicResettableNodeWorkflow;
     schematicsMap: SchematicsMap;
   }> {

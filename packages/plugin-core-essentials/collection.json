@@ -1,8 +1,8 @@
 {
   "schematics": {
     "workspace-init": {
-      "factory": "./src/schematics/workspace-bare/factory",
-      "schema": "./src/schematics/workspace-bare/schema.json",
+      "factory": "./src/schematics/workspace-init/factory",
+      "schema": "./src/schematics/workspace-init/schema.json",
       "description": "Create an empty workspace"
     },
     "workspace-configure": {

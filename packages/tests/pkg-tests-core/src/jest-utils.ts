@@ -82,11 +82,14 @@ export class ExpectUtil {
     ) // i.e. not the cache path
   }
 
-  createStdout(): ExpectOut {
-    return new ExpectOut(this.options.outputs.stdout, this.options)
+  createStdout(): ExpectText {
+    return new ExpectText(this.options.outputs.stdout, this.options)
   }
-  createStderr(): ExpectOut {
-    return new ExpectOut(this.options.outputs.stderr, this.options)
+  createStderr(): ExpectText {
+    return new ExpectText(this.options.outputs.stderr, this.options)
+  }
+  createText(text: string): ExpectText {
+    return new ExpectText(text, this.options)
   }
   createFs(): ExpectFs & Tree {
     return ExpectFs.fromTree(this.options, this.options.tree)
@@ -123,7 +126,7 @@ class ExpectFs extends HostTree {
   }
 }
 
-class ExpectOut {
+class ExpectText {
   options: Options
   outputRaw: string
   outputLines: string[]
@@ -183,7 +186,7 @@ class ExpectOut {
     occurrences: number
     stripAnsi?: boolean
     // formattingMatch?: {nodeProcessIdx: number; virtualProcessIdx: number; pkg?: {relativeCwd: string}}
-  }) {
+  }): ExpectText {
     // const escapedSearchStr = escapeForRegexp(match)
 
     const getRegExpForMatch = (match: string | RegExp): RegExp => {
@@ -246,7 +249,7 @@ class ExpectOut {
         // )
         // failMessage = `expectOut#lineContainsString: Expected '${this.outputLines.length}' (supplied=Infinity) occurrences of '${match}'. FormattingMatch: '${[formattingMatch?.nodeProcessIdx ?? '-', formattingMatch?.virtualProcessIdx ?? '-', formattingMatch?.pkg ?? '-']}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${found.length}'. Missed '${missed.length}' Content : '${this.outputRaw}'`
       }
-      return
+      return this
     }
     if (occurrences === -1) {
       if (found.length === 0) {
@@ -261,7 +264,7 @@ class ExpectOut {
       } else {
         // expect(true).toEqual(true) // keep assertions number consistent
       }
-      return
+      return this
     }
 
     if (occurrences !== found.length) {
@@ -296,9 +299,9 @@ class ExpectOut {
     if (failMessage!) {
       const debugPath = this.persistToTmp(this.getOutputLines(stripAnsi).join(os.EOL))
       throw createAssertFail(`${failMessage}. DestinationPath: '${this.options.testEnvVars.workspacePath.original}'. Content: '(${debugPath.original})'`)
-      return
     }
     expect(true).toEqual(true) // keep assertions number consistent
+    return this
   }
 
   protected getOutputLines(stripAnsi?: boolean): string[] {

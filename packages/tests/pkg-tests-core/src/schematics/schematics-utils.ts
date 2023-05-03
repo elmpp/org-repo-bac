@@ -66,7 +66,7 @@ export function debugRule(
             debuggable.logs = await repo.log();
           }
 
-          // console.log(`debugRule: :>> `, debuggable);
+          console.log(`debugRule: :>> `, debuggable);
 
           return tree;
         },

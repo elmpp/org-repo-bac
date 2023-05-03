@@ -5,10 +5,11 @@ import { ServiceOptions } from "../../schematics-utils";
 
 export const ServiceExecName = "service-exec";
 
-export interface ServiceExecTaskFactoryOptions {
-  rootDirectory: string;
-  // context: Context // supply at usage task level below
-}
+export type ServiceExecTaskFactoryOptions = never // Service Tasks aren't "primed" like other services
+// export interface ServiceExecTaskFactoryOptions {
+//   rootDirectory: string;
+//   // context: Context // supply at usage task level below
+// }
 
 // export interface Options<SName extends keyof ServicesStatic> {
 //   cb: (options: {

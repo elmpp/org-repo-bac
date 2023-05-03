@@ -3,7 +3,7 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import { Command, Interfaces } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import { expectTypeOf } from "expect-type";
-import { ArgsInfer, FlagsInfer } from "../commands/base-command";
+import { ArgsInfer, BaseParseOutput, FlagsInfer } from "../commands/base-command";
 import { ValueOf } from "./util";
 
 export * from "./type-utils";
@@ -39,10 +39,10 @@ export type ServicesStatic = {
 /** ball of values made available to command methods. Includes oclif cliOptions */
 export type ContextCommand<T extends typeof Command> = {
   /** values coming out of oclif command phase */
-  cliOptions: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+  cliOptions: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> & BaseParseOutput;
   serviceFactory: (<SName extends keyof ServicesStatic>(
     serviceName: SName,
-    options: ServiceInitialiseOptions
+    options: ServiceInitialiseCommonOptions
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
   logger: logging.Logger;
   // logger: (msg: string, level?: LogLevel) => void;
@@ -57,10 +57,13 @@ export type ContextCommand<T extends typeof Command> = {
 
 /** ball of values made available to "userspace" methods */
 export type Context = {
+  /** common values coming out of the command phase (i.e. the baseFlags/baseArgs) */
+  cliOptions: BaseParseOutput;
+  // cliOptions: ParserOutput<BaseFlags, BaseFlags, {}>;
   // services: Services
   serviceFactory: (<SName extends keyof ServicesStatic>(
     serviceName: SName,
-    options: ServiceInitialiseOptions
+    options: ServiceInitialiseCommonOptions
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
   logger: logging.Logger
   /** @internal */
@@ -76,19 +79,20 @@ export type Context = {
 // export type Static<TClass extends IStaticInterface & { new(...args: any[]): any }, IStaticInterface>
 //   = MyInstanceType<TClass>;
 
-export type ServiceInitialiseOptions = {
+export type ServiceInitialiseCommonOptions = {
   context: Context;
   /** service instances are recreated when targeting different directories */
   destinationPath: AddressPathAbsolute;
   /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
   workingPath: string
 };
+export type ServiceInitialiseOptions<SName extends keyof Services> = Parameters<ServicesStatic[SName]['initialise']>[0]
 // export type ServiceInitialiseOptions = { context: Context; workingPath: AddressPathRelative }; // workingPath must be runtime value for services
 
 export type ServiceStaticInterface = {
   title: string;
   initialise(
-    options: ServiceInitialiseOptions
+    options: ServiceInitialiseCommonOptions
   ): Promise<ValueOf<Services> | undefined>;
   // initialise<T extends {new (...args: any[]): T}>(options: ContextPrivate): Promise<T>;
   // new (...args: any[]): any;

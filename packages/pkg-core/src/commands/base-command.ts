@@ -6,16 +6,25 @@ import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative
+  assertIsAddressPathRelative,
 } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
-import { Command, Config, Errors, Flags, Interfaces, Performance } from "@oclif/core";
-import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
+import {
+  Command,
+  Config,
+  Errors,
+  Flags,
+  Interfaces,
+  Performance,
+  ux,
+} from "@oclif/core";
+import { OclifError, PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
 import { fileURLToPath } from "url";
-import { SchematicsService } from "../schematics/schematics-service";
+import { BacService } from "../services";
+import { SchematicsService } from "../services/schematics-service";
 import {
   assertIsOk,
   Context,
@@ -25,7 +34,7 @@ import {
   ServiceInitialiseOptions,
   Services,
   ServicesStatic,
-  ValueOf
+  ValueOf,
 } from "../__types__";
 
 export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
@@ -37,6 +46,12 @@ export type ArgsInfer<T extends typeof Command> = Interfaces.InferredArgs<
 
 const colors = ansiColors.create();
 
+export type BaseParseOutput = {
+  flags: {
+    ["log-level"]: LogLevel;
+  };
+};
+
 export abstract class BaseCommand<T extends typeof Command> extends Command {
   // add the --json flag
   static override enableJsonFlag = true;
@@ -47,8 +62,9 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       summary: "Specify level for logging.",
       options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
       helpGroup: "GLOBAL",
+      default: "info",
     })(),
-  };
+  } satisfies { [key in keyof BaseParseOutput["flags"]]: any };
 
   // @ts-ignore: not set in constructor
   protected logger: logging.Logger;
@@ -82,20 +98,22 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // @ts-ignore
     cmd.ctor.oclifConfig = opts;
 
-
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
 
     // @ts-ignore
     return cmd._run<ReturnType<T["run"]>>();
   }
 
-  async initialise(options: {config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>}) {
+  async initialise(options: {
+    config: Config;
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+  }) {
     this.logger = this.createLogger(options);
   }
 
   override warn(input: string | Error) {
     if (!this.jsonEnabled()) {
-      this.logger.warn(BacError.fromError(input).toString())
+      this.logger.warn(BacError.fromError(input).toString());
       Errors.warn(input);
     }
     return input;
@@ -121,9 +139,9 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       exit?: number | false;
     } & PrettyPrintableError = {}
   ) {
-    this.logger.error(BacError.fromError(input).toString())
+    this.logger.error(BacError.fromError(input).toString());
     /** Oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L245 */
-    return super.error(input, options as any)
+    return super.error(input, options as any);
     // return Errors.error(input, options as any);
   }
   //   override error(input: string | Error, options: {
@@ -138,7 +156,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   //   }
   override log(message = "", ...args: any[]) {
     if (!this.jsonEnabled()) {
-      this.logger.log('debug', message, args.reduce((acc, a, k) => ({...acc, k: a}), {}))
+      this.logger.log(
+        "debug",
+        message,
+        args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
+      );
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
       // stream_1.stdout.write((0, util_1.format)(message, ...args) + "\n");
@@ -146,7 +168,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   }
   override logToStderr(message = "", ...args: any[]) {
     if (!this.jsonEnabled()) {
-      this.logger.log('error', message, args.reduce((acc, a, k) => ({...acc, k: a}), {}))
+      this.logger.log(
+        "error",
+        message,
+        args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
+      );
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
       // stream_1.stderr.write((0, util_1.format)(message, ...args) + "\n");
@@ -156,19 +182,28 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   /**
    standardise on the schematic logger for compatibility. Oclif hides usage behind a .log method so easily transformed
    */
-  protected createLogger({parseOutput}: {config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>}): logging.Logger {
-
-    const logger = createConsoleLogger(parseOutput.flags['log-level'] === 'debug', process.stdout, process.stderr, {
-      info: (s) => s,
-      debug: (s) => {
-        // console.log(s); // not required
-        return s;
-      },
-      // debug: (s) => s,
-      warn: (s) => colors.bold.yellow(s),
-      error: (s) => colors.bold.red(s),
-      fatal: (s) => colors.bold.red(s),
-    });
+  protected createLogger({
+    parseOutput,
+  }: {
+    config: Config;
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+  }): logging.Logger {
+    const logger = createConsoleLogger(
+      parseOutput.flags["log-level"] === "debug",
+      process.stdout,
+      process.stderr,
+      {
+        info: (s) => s,
+        debug: (s) => {
+          // console.log(s); // not required
+          return s;
+        },
+        // debug: (s) => s,
+        warn: (s) => colors.bold.yellow(s),
+        error: (s) => colors.bold.red(s),
+        fatal: (s) => colors.bold.red(s),
+      }
+    );
     return logger;
   }
 
@@ -237,6 +272,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   }): Promise<Context["serviceFactory"]> {
     const coreServices = {
       schematics: SchematicsService,
+      bac: BacService,
     };
 
     const staticServices = (await plugins.reduce(async (accum, plugin) => {
@@ -258,11 +294,14 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     const factory = async <SName extends keyof Services>(
       serviceName: SName,
-      options: ServiceInitialiseOptions
+      initialiseOptions: ServiceInitialiseOptions<SName>
+      // initialiseOptions: ServiceOptions<SName>
     ): Promise<Services[SName]> => {
       const staticService = staticServices[serviceName];
+      // console.log(`staticServices :>> `, staticServices)
+      // console.log(`staticService, serviceName :>> `, staticService, serviceName)
       const serviceIns = (await staticService.initialise(
-        options
+        initialiseOptions as any // more weird static class stuff
       )) as Services[SName];
 
       if (!serviceIns) {
@@ -286,25 +325,22 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   }
 
   async run(): Promise<void> {
-    const parseOutput = await this.parse<
+    const parseOutput = (await this.parse<
       FlagsInfer<T>,
       FlagsInfer<T>,
       ArgsInfer<T>
-    >();
+    >()) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+      BaseParseOutput;
 
-    await this.initialise({parseOutput, config: this.config});
+    await this.initialise({ parseOutput, config: this.config });
     const context = await this.createContext(parseOutput);
 
     const res = await this.execute(context);
 
     if (!assertIsOk(res)) {
       const err = res.res.error;
-      const oclifError = {
-        ...err,
-        exitCode: err?.extra?.exitCode ?? 1, // oclif understands error.exitCode - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L333
-      };
-      process.exitCode = oclifError.exitCode;
-      throw oclifError; // will end up in this.catch()
+      ;(err as any).exitCode = err?.extra?.exitCode ?? 1 // make it look like an OclifError
+      throw err; // will end up in this.catch()
     }
     return;
   }
@@ -341,16 +377,18 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
    @internal
    */
   async runDirect(
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+      BaseParseOutput
   ): Promise<Result<unknown, unknown>> {
-    await this.initialise({parseOutput, config: this.config});
+    await this.initialise({ parseOutput, config: this.config });
     const context = await this.createContext(parseOutput);
     const res = await this.execute(context);
     return res;
   }
 
   protected async createContext(
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+      BaseParseOutput
   ): Promise<ContextCommand<T>> {
     // type ServiceMap = Bac.Services
     const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
@@ -387,14 +425,45 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected override async catch(
     err: Error & { exitCode?: number }
   ): Promise<any> {
-    /** super.catch doesn't seem to log errors outside of json so handle this specifically */
-    if (!this.jsonEnabled()) {
-      console.error(err);
+    return super.catch(err);
+
+    process.exitCode = process.exitCode ?? err.exitCode ?? 1
+    if (this.jsonEnabled()) {
+      this.logJson(this.toErrorJson(err))
+    } else {
+      if (!err.message) throw err
+      try {
+        ux.action.stop(colors.red('!'))
+      } catch {}
+
+      throw err
     }
 
-    // add any custom logic to handle errors from the command
-    // or simply return the parent class error handling
-    return super.catch(err);
+
+
+    // /** super.catch doesn't seem to log errors outside of json so handle this specifically */
+    // if (!this.jsonEnabled()) {
+    //   // console.error(err);
+    // }
+
+
+    // // add any custom logic to handle errors from the command
+    // // or simply return the parent class error handling
+    // return err; // parent class error handler actually strips properties
+    // // return super.catch(err);
+  }
+
+  // called after run and catch regardless of whether or not the command errored
+  protected override async finally(_: Error | undefined): Promise<any> {
+    try {
+      const config = Errors.config;
+      if (config.errorLogger) {
+        await config.errorLogger.flush();
+      }
+    }
+    catch (error) {
+        // console.error(error);
+    }
   }
 
   protected getWorkspacePath = (
@@ -419,9 +488,4 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     return pathAddress;
   };
-
-  protected override async finally(_: Error | undefined): Promise<any> {
-    // called after run and catch regardless of whether or not the command errored
-    return super.finally(_);
-  }
 }
