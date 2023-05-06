@@ -7,7 +7,7 @@ import {
 
 /** simply ensures the testEnv core util is operating properly */
 describe("workspace init", () => {
-  jest.setTimeout(25000);
+  jest.setTimeout(15000);
 
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
@@ -94,8 +94,10 @@ describe("workspace init", () => {
           testContext.testEnvVars.workspacePath.original,
           "--configPath",
           configPath.original,
+          "--cliPmRegistry",
+          'http://localhost:4873',
         ],
-        { logLevel: "info" }
+        { logLevel: "debug" }
       );
 
       // if (assertIsOk(res)) {
@@ -111,8 +113,8 @@ describe("workspace init", () => {
       //   res.res.tree.readText("./BOLLOCKS.md")
       // );
 
-      const expectStdout = res.res.expectUtil.createStdout()
-      const expectStderr = res.res.expectUtil.createStderr()
+      // const expectStdout = res.res.expectUtil.createStdout()
+      // const expectStderr = res.res.expectUtil.createStderr()
       const expectFs = res.res.expectUtil.createFs()
       // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
       // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})

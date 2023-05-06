@@ -22,6 +22,12 @@
       "@business-as-code/error/*": [
         "../../pkg-error/src/*"
       ],
+      "@business-as-code/fslib": [
+        "../../pkg-fslib/src/index.ts"
+      ],
+      "@business-as-code/fslib/*": [
+        "../../pkg-fslib/src/*"
+      ],
       "@business-as-code/tests-core": [
         "../pkg-tests-core/src/index.ts"
       ],
@@ -46,6 +52,9 @@
     },
     {
       "path": "../../pkg-error"
+    },
+    {
+      "path": "../../pkg-fslib"
     },
     {
       "path": "../pkg-tests-core"

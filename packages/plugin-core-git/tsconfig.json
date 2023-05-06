@@ -1,13 +1,63 @@
 {
   "extends": "../../tsconfig.options.json",
-  
-  // moonrepo docs for libraries - https://tinyurl.com/2mkdn2uk
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "paths": {
+      "@business-as-code/address": [
+        "../pkg-address/src/index.ts"
+      ],
+      "@business-as-code/address/*": [
+        "../pkg-address/src/*"
+      ],
+      "@business-as-code/core": [
+        "../pkg-core/src/index.ts"
+      ],
+      "@business-as-code/core/*": [
+        "../pkg-core/src/*"
+      ],
+      "@business-as-code/error": [
+        "../pkg-error/src/index.ts"
+      ],
+      "@business-as-code/error/*": [
+        "../pkg-error/src/*"
+      ],
+      "@business-as-code/fslib": [
+        "../pkg-fslib/src/index.ts"
+      ],
+      "@business-as-code/fslib/*": [
+        "../pkg-fslib/src/*"
+      ],
+      "@business-as-code/tests-core": [
+        "../tests/pkg-tests-core/src/index.ts"
+      ],
+      "@business-as-code/tests-core/*": [
+        "../tests/pkg-tests-core/src/*"
+      ]
+    }
   },
-  "include": ["../../types/**/*", "src/**/*", "tests/**/*", "*.js", "*.ts"],
-  "references": [
+  "include": [
+    "../../types/**/*",
+    "src/**/*",
+    "tests/**/*",
+    "*.js",
+    "*.ts"
   ],
-  
+  "references": [
+    {
+      "path": "../pkg-address"
+    },
+    {
+      "path": "../pkg-core"
+    },
+    {
+      "path": "../pkg-error"
+    },
+    {
+      "path": "../pkg-fslib"
+    },
+    {
+      "path": "../tests/pkg-tests-core"
+    }
+  ]
 }

@@ -67,14 +67,29 @@
     "**/*.skip.*",
     "**/*.ignore.*/**/*",
     "**/*.ignore/**/*",
+
     // "**/dist/**/*"
   ],
   "ts-node": {
     "files": true,
+    // "debug": true,
     "swc": true,
+    // "transpileOnly": true, // not required with "swc: true"
+    // "moduleTypes": {
+    //   // "webpack.config.ts": "cjs",
+    //   // Globs are also supported with the same behavior as tsconfig "include"
+    //   // "**/execa/**/*": "cjs"
+    //   ".": "cjs"
+    // },
+    // "ignore": [
+    //   // "/node_modules/"
+    //   "/node_modules/execa/"
+    // ],
     "compilerOptions": {
       "importHelpers": false,
+      // "module": "NodeNext",
       "module": "CommonJS",
+      // "target": "ESNext",
       "allowJs": true, // to compile .js execa
     }
   },

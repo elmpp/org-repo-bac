@@ -9,6 +9,9 @@
   "references": [
     {
       "path": "../pkg-error"
+    },
+    {
+      "path": "../pkg-fslib"
     }
   ],
   "compilerOptions": {
@@ -20,6 +23,12 @@
       ],
       "@business-as-code/error/*": [
         "../pkg-error/src/*"
+      ],
+      "@business-as-code/fslib": [
+        "../pkg-fslib/src/index.ts"
+      ],
+      "@business-as-code/fslib/*": [
+        "../pkg-fslib/src/*"
       ]
     }
   }

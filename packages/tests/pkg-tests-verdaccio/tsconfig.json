@@ -1,16 +1,21 @@
 {
   "extends": "../../../tsconfig.options.json",
-  "include": ["../../../types/**/*", "src/**/*", "*.spec.*", "*.js", "*.ts"],
+  "include": [
+    "../../../types/**/*",
+    "src/**/*",
+    "*.spec.*",
+    "*.js",
+    "*.ts"
+  ],
   "references": [
     {
       "path": "../../pkg-core"
+    },
+    {
+      "path": "../../pkg-fslib"
     }
   ],
   "compilerOptions": {
-    // "baseUrl": "src",
-    // "emitDeclarationOnly": false,
-    // "noEmit": true,
-
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
@@ -19,6 +24,12 @@
       ],
       "@business-as-code/core/*": [
         "../../pkg-core/src/*"
+      ],
+      "@business-as-code/fslib": [
+        "../../pkg-fslib/src/index.ts"
+      ],
+      "@business-as-code/fslib/*": [
+        "../../pkg-fslib/src/*"
       ]
     }
   }

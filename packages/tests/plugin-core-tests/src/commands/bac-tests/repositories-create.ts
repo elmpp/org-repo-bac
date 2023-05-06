@@ -27,22 +27,18 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
 
   static override flags = {
     // name: Flags.string({
-    //   char: "n",
     //   description: "Repository name",
     //   required: true,
     // }),
     repositoriesPath: Flags.string({
-      char: "r",
       description: "Repositories name",
       required: false,
     }),
     workspacePath: Flags.string({
-      char: "w",
       description: "Workspace name",
       required: false,
     }),
     // configPath: Flags.string({
-    //   char: "c",
     //   description: "Relative or absolute path to a workspace configuration",
     //   required: false,
     // }),
@@ -50,7 +46,6 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
 
   static override args = {
     // path: Args.string({
-    //   char: "d",
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),

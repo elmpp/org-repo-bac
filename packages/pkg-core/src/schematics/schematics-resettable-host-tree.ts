@@ -10,9 +10,8 @@ import {
   MergeStrategy,
   OverwriteFileAction,
   RenameFileAction,
-  Tree,
+  Tree
 } from "@angular-devkit/schematics";
-import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
 import { SchematicResettableCordHost } from "./schematics-resettable-cord-host";
 
 export interface ResettableDeleteDirAction extends ActionBase {
@@ -243,9 +242,9 @@ export class SchematicsResettableHostTree extends HostTree {
       strategy |= MergeStrategy.Overwrite;
     }
 
-    const creationConflictAllowed =
-      (strategy & MergeStrategy.AllowCreationConflict) ==
-      MergeStrategy.AllowCreationConflict;
+    // const _creationConflictAllowed =
+    //   (strategy & MergeStrategy.AllowCreationConflict) ==
+    //   MergeStrategy.AllowCreationConflict;
     const overwriteConflictAllowed =
       (strategy & MergeStrategy.AllowOverwriteConflict) ==
       MergeStrategy.AllowOverwriteConflict;

@@ -21,26 +21,35 @@ function getProjectsFromMoon(selector: (options: {name: string, projectType: str
 
 	// const cwd = context?.cwd ?? process.cwd()
 
-	type MoonProjectQueryResponse = {projects: {aliases: string[], type: string}[]}
+	type MoonProjectQueryResponse = {projects: {alias: string, type: string}[]}
 
 	const moonProjectQueryResponseJson = execSync('pnpm moon query projects --json', {shell: true as any, encoding: 'utf8'})
 	// console.log(`moonProjectQueryResponseJson :>> `, moonProjectQueryResponseJson)
 
+	let moonProjectQueryResponse: MoonProjectQueryResponse
 	try {
-		const moonProjectQueryResponse: MoonProjectQueryResponse = JSON.parse(moonProjectQueryResponseJson)
-		// console.log(`moonProjectQueryRes :>> `, moonProjectQueryResponse)
-
-
-		return moonProjectQueryResponse.projects.filter(p => selector({
-			name: p.aliases[0],
-			projectType: p.type,
-			tags: [],
-		}))
-		.map(p => p.aliases[0])
+		moonProjectQueryResponse = JSON.parse(moonProjectQueryResponseJson)
 	}
 	catch (err) {
-		console.log(`could not parse :>> `, moonProjectQueryResponseJson)
+			console.log(`could not parse :>> `, moonProjectQueryResponseJson)
+			throw err
 	}
+
+	// console.log(`moonProjectQueryRes :>> `, moonProjectQueryResponse!)
+
+
+	return moonProjectQueryResponse!.projects.filter(p => selector({
+		name: p.alias,
+		projectType: p.type,
+		tags: [],
+	}))
+	// .map(p => {
+	// 	console.log(`p :>> `, p)
+	// 	return p
+	// })
+	.map(p => p.alias)
+	.filter(p => p)
+
 }
 
 const projectsFromMoon = getProjectsFromMoon(

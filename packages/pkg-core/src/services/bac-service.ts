@@ -63,7 +63,7 @@ export class BacService {
     options?: DoExecOptionsLite;
   }): Promise<any> {
     const args = {
-      cmd: `bac ${options.cmd}`,
+      cmd: `pnpm bac ${options.cmd}`,
       options: {
         ...(options.options ?? {}),
         context: this.options.context,

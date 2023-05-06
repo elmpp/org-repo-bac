@@ -66,7 +66,8 @@ tasks:
       # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
       - '@globs(testFixtures)'
     platform: 'node'
-    runFromWorkspaceRoot: true
+    options:
+      runFromWorkspaceRoot: true
   test:
     deps:
       - '~:testFixtures'
@@ -74,7 +75,8 @@ tasks:
       - '@globs(testNonFixtures)'
     command: 'pnpm jest --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures'
     platform: 'node'
-    runFromWorkspaceRoot: true
+    options:
+      runFromWorkspaceRoot: true
     # local: true
   testWatch:
     deps:
@@ -83,26 +85,65 @@ tasks:
       - '@globs(testNonFixtures)'
     command: 'pnpm jest --watch --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures'
     platform: 'node'
-    runFromWorkspaceRoot: true
     local: true # disables moon caching etc
+    options:
+      runFromWorkspaceRoot: true
+  buildClean:
+    deps:
+      # - ':lint' # run it in all
+    # inputs:
+    #   - '@globs(sources)'
+    command: 'tsc --build --clean'
+    platform: 'node'
+    local: true
   build:
     deps:
+      - '~:buildClean'
       # - ':lint' # run it in all
     # inputs:
     #   - '@globs(sources)'
     command: 'tsc --build'
     platform: 'node'
+    local: true
+  buildWatch:
+    deps:
+      - '~:buildClean'
+      # - ':lint' # run it in all
+    # inputs:
+    #   - '@globs(sources)'
+    command: 'tsc --build --watch'
+    platform: 'node'
+    local: true
     # local: true
   # returnFail:
   #   command: "bash -c '$(exit 1)'"
   #   platform: 'system'
   #   local: true
+  unpublishDev:
+    deps:
+      # - ~:returnFail
+      - ~:build
+      - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+      - '@business-as-code/tests-verdaccio:verdaccioLogin'
+    options:
+      runDepsInParallel: false
+      outputStyle: 'stream'
+      # outputStyle: 'buffer'
+
+    # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
+    command: 'pnpm unpublish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # inputs:
+    #   - ../
+    # runFromWorkspaceRoot: true
+    # platform: 'system'
+    local: true
   publishDev:
     deps:
       # - ~:returnFail
       - ~:build
-      - pkg-tests-verdaccio:verdaccioEnsureRunning
-      - pkg-tests-verdaccio:verdaccioLogin
+      - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+      - '@business-as-code/tests-verdaccio:verdaccioLogin'
+      - ~:unpublishDev
     options:
       runDepsInParallel: false
       outputStyle: 'stream'

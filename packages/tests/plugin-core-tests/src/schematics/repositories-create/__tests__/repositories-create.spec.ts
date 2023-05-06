@@ -14,7 +14,7 @@ describe("repositories-create", () => {
             workspacePath: testContext.testEnvVars.workspacePath.original,
             schematicsAddress:
               "@business-as-code/plugin-core-tests#namespace=repositories-create",
-            ["log-level"]: "info",
+            ["logLevel"]: "info",
             json: false,
           },
           args: {},

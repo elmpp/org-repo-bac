@@ -18,9 +18,7 @@ import {
   ArgsInfer,
   FlagsInfer
 } from "@business-as-code/core/commands/base-command";
-import { SchematicResettableScopedNodeJsSyncHost } from "@business-as-code/core/src/schematics/schematic-resettable-scoped-node-js-sync-host";
-import { SchematicsResettableHostTree } from "@business-as-code/core/src/schematics/schematics-resettable-host-tree";
-import { assertIsBacError, assertIsBacWrappedError, assertIsError, BacError } from "@business-as-code/error";
+import { BacError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -556,7 +554,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // console.log(`cliPath.original :>> `, cliPath.original)
 
           process.chdir(cliPath.original);
-          const argsWithAdditional = [...args, "--log-level", logLevel];
+          const argsWithAdditional = [...args, "--logLevel", logLevel];
 // console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
@@ -638,7 +636,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
 
           // process.chdir(cliPath.original);
-          // const argsWithAdditional = [...args, "--log-level", logLevel];
+          // const argsWithAdditional = [...args, "--logLevel", logLevel];
 
           // let exitCode = 0;
 
@@ -759,7 +757,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
 
           // process.chdir(cliPath.original);
-          // const argsWithAdditional = [...args, "--log-level", logLevel];
+          // const argsWithAdditional = [...args, "--logLevel", logLevel];
 
           const parseOutput: ParserOutput<
             FlagsInfer<typeof SchematicsRunCommand> & {
@@ -794,7 +792,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 cb,
                 serviceName,
               },
-              ["log-level"]: "info",
+              ["logLevel"]: "info",
               ["json"]: false,
             },
             args: {},

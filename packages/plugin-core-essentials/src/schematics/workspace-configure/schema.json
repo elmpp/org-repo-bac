@@ -21,5 +21,5 @@
       "description": "Ubiquitous bac context"
     }
   },
-  "required": ["name"]
+  "required": ["name", "_bacContext"]
 }

@@ -24,17 +24,14 @@ export class SchematicsRunCommand extends BaseCommand<
   static override flags = {
     // payload: Flags.custom({
     //     // parse: async (): Promise<any> => {},
-    //     // char: 'p',
     //     // description: 'team to use',
     //     // default: () => {},
     // }),
     workspacePath: Flags.string({
-      char: "w",
       description: "Workspace name",
       required: true,
     }),
     schematicsAddress: Flags.string({
-      char: "s",
       description: "Schematics Address",
       required: true,
     }),
@@ -43,6 +40,8 @@ export class SchematicsRunCommand extends BaseCommand<
   static override args = {};
 
   async execute(context: ContextCommand<typeof SchematicsRunCommand>) {
+
+
     // let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
     // if (!assertIsAddressPath(repositoriesPath)) {
     //   throw new BacError(
@@ -75,7 +74,7 @@ export class SchematicsRunCommand extends BaseCommand<
     // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-
+    console.error(`context.cliOptions.flags :>> `, context.cliOptions.flags)
     // console.log(`(context.cliOptions.flags as any).initialiseOptions :>> `, (context.cliOptions.flags as any).payload.initialiseOptions)
     const schematicsService = await context.serviceFactory("schematics", {
       context,
@@ -83,11 +82,13 @@ export class SchematicsRunCommand extends BaseCommand<
       workingPath: '.',
     });
 
+
+
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
       context: context,
-      options: (context.cliOptions.flags as any).payload,
+      options: (context.cliOptions.flags as any).schematicOptions,
       // destinationPath: workspacePath,
     });
 

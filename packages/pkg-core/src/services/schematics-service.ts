@@ -1,6 +1,5 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { logging, Path } from "@angular-devkit/core";
-import { Host } from "@angular-devkit/core/src/virtual-fs/host";
 import {
   callRule,
   Collection,
@@ -8,14 +7,13 @@ import {
   SchematicContext,
   Sink,
   TaskExecutorFactory,
-  Tree,
-  UnsuccessfulWorkflowExecution,
+  Tree
 } from "@angular-devkit/schematics";
 import { BaseWorkflow } from "@angular-devkit/schematics/src/workflow";
 import {
   NodeModulesEngineHost,
   NodePackageDoesNotSupportSchematics,
-  NodeWorkflowOptions,
+  NodeWorkflowOptions
 } from "@angular-devkit/schematics/tools";
 import {
   addr,
@@ -23,12 +21,12 @@ import {
   AddressPackageScaffoldIdent,
   AddressPackageScaffoldIdentString,
   AddressPathAbsolute,
-  AddressPathAbsoluteString,
+  AddressPathAbsoluteString
 } from "@business-as-code/address";
 import {
   BacError,
   BacErrorWrapper,
-  MessageName,
+  MessageName
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import { Interfaces } from "@oclif/core";
@@ -36,15 +34,18 @@ import * as ansiColors from "ansi-colors";
 import path from "path";
 import { from, Observable, of, Subject, throwError } from "rxjs";
 import { concatMap, finalize, ignoreElements } from "rxjs/operators";
-import { Context, Result, ServiceInitialiseCommonOptions } from "../__types__";
 import { SchematicResettableScopedNodeJsSyncHost } from "../schematics/schematic-resettable-scoped-node-js-sync-host";
 import {
   ResettableDryRunEvent,
-  SchematicResettableDryRunSink,
+  SchematicResettableDryRunSink
 } from "../schematics/schematics-resettable-dry-run-sink";
 import { SchematicResettableHostSink } from "../schematics/schematics-resettable-host-sink";
 import { SchematicResettableNodeWorkflow } from "../schematics/schematics-resettable-node-workflow";
-import { ServiceExecTaskFactoryOptions } from "../schematics/tasks/service-exec/options";
+import {
+  Context,
+  Result,
+  ServiceInitialiseCommonOptions
+} from "../__types__";
 
 declare global {
   namespace Bac {
@@ -72,15 +73,13 @@ type SchematicsCollectionsMap = Map<
     address: AddressPackage;
   }
 >;
-type SchematicsMap = Map<
-  AddressPackageScaffoldIdentString,
-  {
-    plugin: Interfaces.Plugin;
-    collection: Collection<any, any>;
-    collectionPath: AddressPathAbsolute;
-    address: AddressPackageScaffoldIdent;
-  }
->;
+type SchematicsMapEntry = {
+  plugin: Interfaces.Plugin;
+  collection: Collection<any, any>;
+  collectionPath: AddressPathAbsolute;
+  address: AddressPackageScaffoldIdent;
+};
+type SchematicsMap = Map<AddressPackageScaffoldIdentString, SchematicsMapEntry>;
 
 const colors = ansiColors.create();
 
@@ -557,7 +556,7 @@ export class SchematicsService {
       };
     }
 
-    const debug = true; // @todo - make available from oclif
+    // const debug = true; // @todo - make available from oclif
     const allowPrivate = true; // @todo - make available from oclif
 
     // Indicate to the user when nothing has been done. This is automatically set to off when there's
@@ -571,8 +570,20 @@ export class SchematicsService {
 
     const workflow = this.workflow;
 
+    const optionsAsCommand = (schematicMapEntry: SchematicsMapEntry) => {
+      // const blacklist = [] as string[];
+      // const envs = Object.entries(options.env!)
+      //   .filter(([key, val]) => !blacklist.includes(key))
+      //   .map(([key, val]) => `${key}='${val}'`)
+      //   .join(` `);
+      // if (options.shell) {
+      // }
+      // return `(cd ${context.workspacePath.original}; p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} ${Object.values(objectMapAndFilter(schematicsOptions, (v, k) => `--${k}=${v}`))})`;
+      const schematicOptionsJson = JSON.stringify(options) // sans _bacContext
+      return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} --schematicOptions='${schematicOptionsJson}'`;
+    };
     context.logger.debug(
-      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.destinationPath.original}'`
+      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.destinationPath.original}'${this.options.context.cliOptions.flags["logLevel"] === 'debug' ? `, Full cmd: '${optionsAsCommand(schematicMapEntry)}'` : ''}`
     );
 
     /**
@@ -601,7 +612,7 @@ export class SchematicsService {
           // options: schematicOptions,
 
           allowPrivate: allowPrivate,
-          debug: true,
+          debug: this.options.context.cliOptions.flags["logLevel"] === 'debug',
         })
         .toPromise();
 
@@ -616,23 +627,20 @@ export class SchematicsService {
         success: true,
       };
     } catch (err) {
-      let message: string;
-      if (err instanceof UnsuccessfulWorkflowExecution) {
-        // "See above" because we already printed the error.
-        message = "The Schematic workflow failed. See above.";
-        // context.logger("The Schematic workflow failed. See above.", "error");
-      } else if (debug && err instanceof Error) {
-        message = `An error occured:\n${err.stack}`;
-      } else {
-        message = `Error: ${err instanceof Error ? err.message : err}`;
-      }
-
-      const error = BacErrorWrapper.fromError(
-        err as Error,
-        {
-          reportCode: MessageName.SCHEMATICS_ERROR,
-        }
-      )
+      // let message: string;
+      // if (err instanceof UnsuccessfulWorkflowExecution) {
+      //   // "See above" because we already printed the error.
+      //   message = "The Schematic workflow failed. See above.";
+      //   // context.logger("The Schematic workflow failed. See above.", "error");
+      // } else if (debug && err instanceof Error) {
+      //   message = `An error occured:\n${err.stack}`;
+      // } else {
+      //   message = `Error: ${err instanceof Error ? err.message : err}`;
+      // }
+console.log(`err :>> `, err)
+      const error = BacErrorWrapper.fromError(err as Error, {
+        reportCode: MessageName.SCHEMATICS_ERROR,
+      });
 
       // console.log(`error.message :>> 1 `, error.message)
 
@@ -1058,8 +1066,10 @@ export class SchematicsService {
       {
         name: "service-exec",
         create: (options) =>
-        // @ts-ignore
-          import("../schematics").then((mod) => mod.serviceExecExecutor(options!)),
+          // @ts-ignore
+          import("../schematics").then((mod) =>
+            mod.serviceExecExecutor(options!)
+          ),
         // create: (options) => import('../schematics/tasks/service-exec/executor').then((mod) => mod.default(options!)),
       };
 
@@ -1311,7 +1321,9 @@ export class SchematicsService {
   // }
 
   // https://github.com/angular/angular-cli/blob/d15d44d3a4fcc7727fb87a005fa383b58cefae91/packages/angular_devkit/schematics_cli/bin/schematics.ts#L220
-  protected async setupSchematics(options: ServiceInitialiseCommonOptions): Promise<{
+  protected async setupSchematics(
+    options: ServiceInitialiseCommonOptions
+  ): Promise<{
     workflow: SchematicResettableNodeWorkflow;
     schematicsMap: SchematicsMap;
   }> {

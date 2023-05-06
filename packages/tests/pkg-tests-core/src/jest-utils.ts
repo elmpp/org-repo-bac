@@ -420,7 +420,7 @@ type JestSyncExpectationResult = {
   message: () => string
 }
 
-expect.extend({
+;(globalThis as any)?.expect && expect.extend({
   arrayContainingObjectProperty<P extends string | string[]>(
     received: any[],
     propertyPath: P,

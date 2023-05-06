@@ -32,7 +32,6 @@ export default function (options: Schema): Rule {
       // partitionApplyMerge(
       // (p) => !/\/src\/.*?\/bare\//.test(p),
       template({
-        pmRegistry: 'https://registry.npmjs.org',
         ...options,
         // coreVersion,
         // schematicsVersion,
@@ -44,20 +43,22 @@ export default function (options: Schema): Rule {
       // move(destinationPath),
     ]);
 
-    const pnpmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
-    // schematicContext.addTask(schematicUtils.wrapServiceAsTask({
-    //   serviceOptions: {
-    //     serviceName: "bac",
-    //     cb: async ({ service }) => {
-    //       const res = await service.run({cmd: 'help', options: {throwOnFail: true}})
-    //     },
-    //     initialiseOptions: {
-    //       workingPath: '.',
-    //     },
-    //     context: options._bacContext,
-    //   },
-    //   schematicContext,
-    // }), [pnpmTaskHandle]);
+    const pmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+    // const addDepTaskHandle = schematicContext.addTask(new NodePackageInstallTask({packageName: '@business-as-code/cli', workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
+
+    schematicContext.addTask(schematicUtils.wrapServiceAsTask({
+      serviceOptions: {
+        serviceName: "bac",
+        cb: async ({ service }) => {
+          await service.run({cmd: 'help', options: {throwOnFail: true}})
+        },
+        initialiseOptions: {
+          workingPath: '.',
+        },
+        context: options._bacContext,
+      },
+      schematicContext,
+    }), [pmTaskHandle]);
 
     return chain([
       mergeWith(baseTemplateSource),

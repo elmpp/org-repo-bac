@@ -1,5 +1,4 @@
 import * as oclif from '@oclif/core';
-console.log(`:>> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL`);
 
 // const project = path.join(__dirname, '../..', 'tsconfig.json')
 

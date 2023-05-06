@@ -14,7 +14,7 @@ describe("schematic-utils", () => {
               workspacePath: testContext.testEnvVars.workspacePath.original,
               schematicsAddress:
                 "@business-as-code/plugin-core-tests#namespace=schematic-utils",
-              ["log-level"]: "info",
+              ["logLevel"]: "info",
               json: false,
             },
             args: {},

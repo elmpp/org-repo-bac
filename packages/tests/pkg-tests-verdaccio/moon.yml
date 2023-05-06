@@ -19,7 +19,12 @@ $schema: 'https://moonrepo.dev/schemas/project.json'
 # This setting requires a map, where the key is a unique name for the task,
 # and the value is an object of task parameters.
 tasks:
+  verdaccioStopBackground:
+    command: 'pnpm run verdaccio:stopBackground'
+    local: true
   verdaccioRunBackground:
+    deps:
+      - '~:verdaccioStopBackground'
     command: 'pnpm run verdaccio:runBackground'
     # command: 'pnpm jest --passWithNoTests @in(0)'
     # inputs:
@@ -32,9 +37,6 @@ tasks:
     #   - 'blah'
     local: true
     # platform: 'node'
-  verdaccioKillBackground:
-    command: 'pnpm run verdaccio:killBackground'
-    local: true
   verdaccioLogin:
     command: 'pnpm run verdaccio:login'
     options:

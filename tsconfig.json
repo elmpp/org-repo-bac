@@ -19,10 +19,19 @@
       "path": "packages/pkg-error"
     },
     {
+      "path": "packages/pkg-fslib"
+    },
+    {
       "path": "packages/plugin-core-essentials"
     },
     {
+      "path": "packages/plugin-core-git"
+    },
+    {
       "path": "packages/tests/pkg-tests-core"
+    },
+    {
+      "path": "packages/tests/pkg-tests-git-mock-server"
     },
     {
       "path": "packages/tests/pkg-tests-specs-fixtures"

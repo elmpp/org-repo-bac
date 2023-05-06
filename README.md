@@ -12,6 +12,15 @@
 
  - p moon root:publishDev
 
+Oclif commands
+
+ - p dev:runCli plugins --core
+
+## Build commands
+
+ - p moon run root:publishDev (moon fast build with local publish)
+ - p moon run root:publishDev (moon fast build with local publish)
+
 ## Tasks
 
 *General*

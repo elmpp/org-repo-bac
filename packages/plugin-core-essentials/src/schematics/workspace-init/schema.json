@@ -19,17 +19,15 @@
     "cliVersion": {
       "type": "string",
       "description": "The version of BaC",
-      "default": "latest"
     },
-    "pmRegistry": {
+    "cliPmRegistry": {
       "type": "string",
       "description": "Allows BaC to be built from a local registry if required",
-      "default": false
     },
     "_bacContext": {
       "type": "object",
       "description": "Ubiquitous bac context"
     }
   },
-  "required": ["name", "_bacContext"]
+  "required": ["name", "cliVersion", "cliPmRegistry", "_bacContext"]
 }

@@ -7,8 +7,7 @@
   "types": "src/index.ts",
   "publishConfig": {
     "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "bin": "bin/run"
+    "typings": "dist/index.d.ts"
   },
   "keywords": [
     "generator",
@@ -18,8 +17,7 @@
   "files": [
     "LICENSE",
     "README.md",
-    "dist",
-    "bin"
+    "dist"
   ],
   "peerDependencies": {
     "@angular-devkit/core": "*",

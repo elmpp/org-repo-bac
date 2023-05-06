@@ -52,6 +52,26 @@ describe('errors', () => {
     })
 
     describe('fromError', () => {
+      it('keeps original stack', async () => {
+        let anErrorWithStack: Error
+        function throwSite() {
+          try {
+            throw new Error('meh')
+          }
+          catch (err) {
+            anErrorWithStack = err as Error
+          }
+        }
+
+        throwSite()
+        // const err = new BacError(MessageName.UNNAMED, 'hello')
+        const coerced = BacError.fromError(anErrorWithStack!)
+
+        expect(assertIsBacError(coerced)).toBeTruthy()
+        expect(assertIsBacWrappedError(coerced)).toBeFalsy()
+
+        expect(coerced.stack).toMatch('at throwSite')
+      })
       it('bacError', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
         const coerced = BacError.fromError(err)

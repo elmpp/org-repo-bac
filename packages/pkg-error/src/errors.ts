@@ -102,11 +102,14 @@ Extra = undefined,
       // console.log(`err :>> `, Object.keys(err))
       return err;
     }
-    return new BacError<Code, Extra>(
+    const nextErr = new BacError<Code, Extra>(
       reportCode ?? (MessageName.UNNAMED as Code),
       err.message,
       { extra }
     );
+    // @ts-ignore
+    nextErr.stack = err.stack
+    return nextErr
   }
 
   static getMessageForError(err: string | BacError | BacErrorWrapper): string {

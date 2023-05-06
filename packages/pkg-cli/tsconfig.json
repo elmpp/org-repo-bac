@@ -14,6 +14,9 @@
       "path": "../plugin-core-essentials"
     },
     {
+      "path": "../plugin-core-git"
+    },
+    {
       "path": "../tests/pkg-tests-core"
     },
     {
@@ -24,7 +27,6 @@
     "rootDir": "src",
     "outDir": "dist",
     "emitDeclarationOnly": false,
-    "noEmit": true,
     "paths": {
       "@business-as-code/core": [
         "../pkg-core/src/index.ts"
@@ -37,6 +39,12 @@
       ],
       "@business-as-code/plugin-core-essentials/*": [
         "../plugin-core-essentials/src/*"
+      ],
+      "@business-as-code/plugin-core-git": [
+        "../plugin-core-git/src/index.ts"
+      ],
+      "@business-as-code/plugin-core-git/*": [
+        "../plugin-core-git/src/*"
       ],
       "@business-as-code/plugin-core-tests": [
         "../tests/plugin-core-tests/src/index.ts"

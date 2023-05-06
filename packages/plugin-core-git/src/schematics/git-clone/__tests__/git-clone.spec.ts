@@ -1,4 +1,3 @@
-import { wrapServiceAsRule } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 import { expectIsOk } from "@business-as-code/tests-core/src/test-utils";
 
@@ -14,9 +13,11 @@ describe("git-clone", () => {
           parseOutput: {
             flags: {
               workspacePath: testContext.testEnvVars.workspacePath.original,
-              destinationPath: testContext.testEnvVars.workspacePath.original,
+              // destinationPath: testContext.testEnvVars.workspacePath.original,
               schematicsAddress:
                 "@business-as-code/plugin-core-git#namespace=git-clone",
+              json: false,
+              logLevel: 'info',
             },
             args: {},
             argv: [],
@@ -28,7 +29,13 @@ describe("git-clone", () => {
 
         expectIsOk(res);
 
-        expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
+        const expectFs = res.res.expectUtil.createFs();
+        // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
+        expect(
+          res.res.expectUtil
+            .createText(expectFs.readText("./README.md"))
+            .lineContainsString({ match: `# bac-tester`, occurrences: 1 })
+        );
       });
     });
     // it("clone bare", async () => {

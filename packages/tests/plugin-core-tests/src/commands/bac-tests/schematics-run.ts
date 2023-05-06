@@ -15,32 +15,104 @@ export class BacTestsSchematicsRun extends BaseCommand<
 > {
   static override description = "Runs arbitrary schematic";
 
+  // constructor(...args: any[]) {
+  //   super(...args)
+  // }
   //   static override examples = [
   //     `$ oex hello friend --from oclif
   // Produces the repos in the fixtures directory
   // `,
   //   ];
 
+  // define flags that can be inherited by any command that extends BaseCommand
+  static override baseFlags = {
+    ...BaseCommand.baseFlags,
+    schematicOptions: Flags.custom<Record<string, unknown>>({
+      summary: "Schematic Options",
+      // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
+      helpGroup: "GLOBAL",
+      parse: async (jsonString: string) => {
+        try {
+          const parsed = JSON.parse(jsonString);
+          return parsed;
+        } catch (err) {
+          throw err;
+        }
+      },
+      default: {},
+    })(),
+  };
+
   static override flags = {
     // payload: Flags.custom({
     //     parse: async (): Promise<any> => {},
-    //     char: 'p',
     //     description: 'team to use',
     //     default: () => {},
     // }),
     workspacePath: Flags.string({
-      char: "w",
       description: "Workspace name",
       required: true,
     }),
     schematicsAddress: Flags.string({
-      char: "s",
       description: "Schematics Address",
       required: true,
     }),
+    // name: Flags.string({
+    //   description: "Schematics Address",
+    //   // parse: async (input) => {
+    //   //   console.log(`input :>> `, input)
+    //   //   return 'pap'
+    //   // }
+    //   // required: true,
+    // }),
+    // schematicOptions: Flags.custom<any>({
+    //   description: "Schematics Options",
+    //   parse: async (jsonString) => {
+    //     // console.log(`input :>> `, input)
+    //     // return 'pap'
+    //     return JSON.parse(jsonString)
+    //   }
+    //   // required: true,
+    // }),
   };
 
   static override args = {};
+
+  // override async run(): Promise<void> {
+
+  //   try {
+  //     const parseOutput = (await this.parse<
+  //       FlagsInfer<typeof SchematicsRunCommand>,
+  //       FlagsInfer<typeof SchematicsRunCommand>,
+  //       ArgsInfer<typeof SchematicsRunCommand>
+  //     >()) as ParserOutput<FlagsInfer<typeof SchematicsRunCommand>, FlagsInfer<typeof SchematicsRunCommand>, ArgsInfer<typeof SchematicsRunCommand>> &
+  //       BaseParseOutput;
+  //   }
+  //   catch (err) {
+
+  //   }
+
+  //   await this.initialise({ parseOutput, config: this.config });
+  //   const context = await this.createContext(parseOutput);
+
+  //   const res = await this.execute(context);
+
+  //   if (!assertIsOk(res)) {
+  //     const err = res.res.error;
+  //     ;(err as any).exitCode = err?.extra?.exitCode ?? 1 // make it look like an OclifError
+  //     throw err; // will end up in this.catch()
+  //   }
+  //   return;
+  // }
+
+  // protected override async catch(
+  //   err: Error & { exitCode?: number }
+  // ): Promise<any> {
+  //   // console.log(`err :>> `, require('util').inspect(err, {showHidden: false, depth: undefined, colors: true}))
+  //   console.log(`err.parse.output :>> `, err.parse.output)
+
+  //   return
+  // }
 
   async execute(context: ContextCommand<typeof BacTestsSchematicsRun>) {
     // let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
@@ -85,7 +157,7 @@ export class BacTestsSchematicsRun extends BaseCommand<
       // address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
       context,
-      options: (context.cliOptions.flags as any).payload,
+      options: context.cliOptions.flags["schematicOptions"]!,
       // destinationPath: workspacePath,
       // dryRun: false,
       // force: true,

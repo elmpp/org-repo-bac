@@ -6,7 +6,7 @@
     "*.spec.*",
     "*.js",
     "*.ts",
-    "**/schema.json",
+    "src/**/schema.json",
     "../../types/**/*"
   ],
   "references": [
@@ -18,6 +18,9 @@
     },
     {
       "path": "../pkg-error"
+    },
+    {
+      "path": "../pkg-fslib"
     },
     {
       "path": "../tests/pkg-tests-core"
@@ -44,6 +47,12 @@
       ],
       "@business-as-code/error/*": [
         "../pkg-error/src/*"
+      ],
+      "@business-as-code/fslib": [
+        "../pkg-fslib/src/index.ts"
+      ],
+      "@business-as-code/fslib/*": [
+        "../pkg-fslib/src/*"
       ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"

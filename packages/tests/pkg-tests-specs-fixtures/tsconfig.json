@@ -16,6 +16,9 @@
     },
     {
       "path": "../pkg-tests-core"
+    },
+    {
+      "path": "../pkg-tests-git-mock-server"
     }
   ],
   "compilerOptions": {

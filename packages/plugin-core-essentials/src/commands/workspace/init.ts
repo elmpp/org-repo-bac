@@ -26,43 +26,39 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   static override flags = {
     name: Flags.string({
-      char: "n",
       description: "Workspace name",
       required: true,
     }),
     workspacePath: Flags.string({
-      char: "w",
       description: "Workspace name",
       required: true,
     }),
     configPath: Flags.string({
-      char: "c",
       description: "Relative or absolute path to a workspace configuration",
       required: false,
+    }),
+    cliVersion: Flags.string({
+      description: "Specify a Bac cli version",
+      required: false,
+      default: "*",
+    }),
+    cliPmRegistry: Flags.string({
+      description: "Specify a package manager registry to load the Bac cli",
+      required: false,
+      default: "http://localhost:4873",
     }),
   };
 
   static override args = {
     // path: Args.string({
-    //   char: "d",
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
   };
 
   async execute(context: ContextCommand<typeof WorkspaceInit>) {
-    // console.log(`execute:context :>> `, context)
-    // context.services.myService.somethingelse()
 
-    // const { args } = await this.parse(WorkspaceInit);
-    // console.log(
-    //   `context.cliOptions.args.path :>> `,
-    //   context.cliOptions.args.path
-    // );
-    // console.log(`context.cliOptions :>> `, context.cliOptions);
-    // const poo = ParserOutput<T['flags'], T['flags'], T['args']>
-    // type DD = WorkspaceInit['flags']
-    // type DDd = WorkspaceInit['args']
+    // console.log(`context.cliOptions :>> `, context.cliOptions)
 
     let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
     if (!assertIsAddressPath(workspacePath)) {
@@ -102,9 +98,11 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
       context,
       options: {
-        name: context.cliOptions.flags.name,
-        // destinationPath: context.cliOptions.flags.workspacePath,
-        configPath: context.cliOptions.flags.configPath,
+        ...context.cliOptions.flags,
+        // name: context.cliOptions.flags.name,
+        // // destinationPath: context.cliOptions.flags.workspacePath,
+        // configPath: context.cliOptions.flags.configPath,
+
         // name: 'cunt',
         // author: 'boloerguie',
 

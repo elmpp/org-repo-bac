@@ -1,14 +1,12 @@
 import { strings } from "@angular-devkit/core";
 import {
   apply,
-  chain,
-  MergeStrategy,
-  mergeWith,
+  chain, mergeWith,
   Rule,
   SchematicContext,
   template,
   Tree,
-  url,
+  url
 } from "@angular-devkit/schematics";
 import { constants, schematicUtils } from "@business-as-code/core";
 import { schematicTestUtils } from "@business-as-code/tests-core";

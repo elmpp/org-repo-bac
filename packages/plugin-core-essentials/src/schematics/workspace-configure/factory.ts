@@ -8,30 +8,19 @@
 
 import { strings } from "@angular-devkit/core";
 import {
-  Rule,
-  apply,
-  mergeWith,
-  move,
-  partitionApplyMerge,
-  template,
-  url,
-  chain,
+  apply, chain, mergeWith, Rule, template,
+  url
 } from "@angular-devkit/schematics";
-import {
-  NodePackageInstallTask,
-  RepositoryInitializerTask,
-} from "@angular-devkit/schematics/tasks";
-import { Schema } from "./schema";
-import path from "path";
-import { wrapTaskAsRule, constants } from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
 import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative,
+  assertIsAddressPathRelative
 } from "@business-as-code/address";
+import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
+import path from "path";
+import { Schema } from "./schema";
 
 
 export default function (options: Schema): Rule {

@@ -1,11 +1,23 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
+// const {
+//   execa,
+//   ExecaError,
+//   ExecaReturnValue,
+//   Options: ExecaOptions,
+// } = await import("execa");
+import execa from "execa";
 import {
-  execa,
   ExecaError,
   ExecaReturnValue,
   Options as ExecaOptions,
 } from "execa";
+// import {
+//   execa,
+//   ExecaError,
+//   ExecaReturnValue,
+//   Options as ExecaOptions,
+// } from "execa";
 import { constants } from "../constants";
 import { assertIsOk, Context, fail, ok, Outputs, Result } from "../__types__";
 import { objectMapAndFilter } from "./object-utils";
@@ -126,7 +138,7 @@ export async function doExec({
       YARN_IGNORE_CWD: "true",
     } satisfies ExecaOptions["env"],
     // verbose: true,
-    verbose: context.cliOptions.flags["log-level"] === "debug",
+    // verbose: context.cliOptions.flags["logLevel"] === "debug",
     // stdio,
   };
 

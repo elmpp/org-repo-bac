@@ -6,7 +6,7 @@ import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative,
+  assertIsAddressPathRelative
 } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
 import {
@@ -14,11 +14,10 @@ import {
   Config,
   Errors,
   Flags,
-  Interfaces,
-  Performance,
-  ux,
+  Interfaces, Performance,
+  ux
 } from "@oclif/core";
-import { OclifError, PrettyPrintableError } from "@oclif/core/lib/interfaces";
+import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
@@ -34,12 +33,21 @@ import {
   ServiceInitialiseOptions,
   Services,
   ServicesStatic,
-  ValueOf,
+  ValueOf
 } from "../__types__";
 
+// export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
+//   typeof BaseCommand["baseFlags"] & T["flags"]
+// >
 export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
-  typeof BaseCommand["baseFlags"] & T["flags"]
->;
+  T["baseFlags"] & T["flags"]
+>
+// export type FlagsInfer<T extends typeof Command> = NullishToOptional<Interfaces.InferredFlags<
+//   T["baseFlags"] & T["flags"]
+// >>
+// export type FlagsInfer<T> = T extends {flags: unknown} ? Interfaces.InferredFlags<
+//   typeof BaseCommand["baseFlags"] & T["flags"]
+// > : never;
 export type ArgsInfer<T extends typeof Command> = Interfaces.InferredArgs<
   T["args"]
 >;
@@ -48,7 +56,8 @@ const colors = ansiColors.create();
 
 export type BaseParseOutput = {
   flags: {
-    ["log-level"]: LogLevel;
+    ["logLevel"]: LogLevel;
+    // ["options"]: Record<string, any>;
   };
 };
 
@@ -58,18 +67,27 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   // define flags that can be inherited by any command that extends BaseCommand
   static override baseFlags = {
-    "log-level": Flags.custom<LogLevel>({
+    "logLevel": Flags.custom<LogLevel>({
       summary: "Specify level for logging.",
       options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
       helpGroup: "GLOBAL",
       default: "info",
+      required: true,
     })(),
+    // "options": Flags.custom<Record<string, unknown>>({
+    //   summary: "Additional ",
+    //   // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
+    //   helpGroup: "GLOBAL",
+    //   default: {},
+    // })(),
   } satisfies { [key in keyof BaseParseOutput["flags"]]: any };
 
   // @ts-ignore: not set in constructor
   protected logger: logging.Logger;
   protected static oclifConfig: Interfaces.Config;
 
+  // protected flags!: any;
+  // protected args!: any;
   protected flags!: FlagsInfer<T>;
   protected args!: ArgsInfer<T>;
 
@@ -104,12 +122,26 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return cmd._run<ReturnType<T["run"]>>();
   }
 
+  /** Our custom initialise hook. Do not use 'init' which is an oclif base method */
   async initialise(options: {
     config: Config;
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }) {
     this.logger = this.createLogger(options);
   }
+
+  // public override async init(): Promise<void> {
+  //   await super.init()
+  //   const {args, flags} = await this.parse({
+  //     flags: this.ctor.flags,
+  //     baseFlags: (super.ctor as typeof BaseCommand).baseFlags,
+  //     args: this.ctor.args,
+  //     strict: this.ctor.strict,
+  //   })
+  //   console.log(`args, flags :>> `, args, flags)
+  //   this.flags = flags as FlagsInfer<T>
+  //   this.args = args as ArgsInfer<T>
+  // }
 
   override warn(input: string | Error) {
     if (!this.jsonEnabled()) {
@@ -189,7 +221,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }): logging.Logger {
     const logger = createConsoleLogger(
-      parseOutput.flags["log-level"] === "debug",
+      parseOutput.flags["logLevel"] === "debug",
       process.stdout,
       process.stderr,
       {
@@ -264,6 +296,18 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return services;
   }
 
+  // protected override async parse<F extends FlagOutput, B extends FlagOutput, A extends ArgOutput>(options?: Input<F, B, A>, argv = this.argv): Promise<ParserOutput<F, B, A>> {
+  //   if (!options) options = this.ctor as Input<F, B, A>
+  //   const opts = {context: this, ...options}
+  //   // the spread operator doesn't work with getters so we have to manually add it here
+  //   opts.flags = options?.flags
+  //   opts.args = options?.args
+  //   const results = await Parser.parse<F, B, A>(argv, opts)
+  //   this.warnIfFlagDeprecated(results.flags ?? {})
+
+  //   return results
+  // }
+
   protected async loadServiceFactory({
     plugins,
   }: {
@@ -325,12 +369,25 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   }
 
   async run(): Promise<void> {
-    const parseOutput = (await this.parse<
-      FlagsInfer<T>,
-      FlagsInfer<T>,
-      ArgsInfer<T>
-    >()) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+
+    const parseOutput = await this.parse({
+      flags: {
+        ...this.ctor.flags,
+        ...(this.ctor as typeof BaseCommand).baseFlags,
+      },
+      // flags: this.ctor.flags,
+      // baseFlags: (this.ctor as typeof BaseCommand).baseFlags,
+      args: this.ctor.args,
+      strict: this.ctor.strict,
+    }) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput;
+    // const parseOutput = (await this.parse<
+    //   FlagsInfer<T>,
+    //   FlagsInfer<T>,
+    //   ArgsInfer<T>
+    // >()) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+    //   BaseParseOutput;
+      // console.log(`parseOutput :>> `, parseOutput)
 
     await this.initialise({ parseOutput, config: this.config });
     const context = await this.createContext(parseOutput);

@@ -1,6 +1,7 @@
 # verdaccio docs - https://tinyurl.com/2q9w56nt
 
-storage: ../../../.moon/cache/verdaccio
+storage: /tmp/bac-tests/verdaccio
+# storage: ../../../.moon/cache/verdaccio
 
 # # verdaccio-memory
 # store:
@@ -28,6 +29,11 @@ uplinks:
   #     type: bearer
   #     token: dsyTcamuhMd8GlsakOhP5A==
 packages:
+  "@business-as-code/*":
+    access: $all
+    publish: $authenticated
+    unpublish: $authenticated
+    # proxy: npmjs // prevents EPUBLISHCONFLICT fails when --force pushing locally
   "@*/*":
     access: $all
     publish: $authenticated

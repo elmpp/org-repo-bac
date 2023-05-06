@@ -21,16 +21,18 @@ projects:
     root: '.' # moon root-level project - https://tinyurl.com/2od9bpc4
   globs:
     - 'apps/*'
-    # - 'packages/*'
-    - 'packages/pkg-cli'
-    - 'packages/pkg-core'
-    - 'packages/plugin-core-essentials'
-    - 'packages/pkg-address'
-    - 'packages/pkg-error'
-    - 'packages/tests/pkg-tests-core'
-    - 'packages/tests/pkg-tests-verdaccio'
-    - 'packages/tests/pkg-tests-specs-fixtures'
-    - 'packages/tests/plugin-core-tests'
+    - 'packages/*'
+    - 'packages/tests/*'
+    # WHY ????
+    # - 'packages/pkg-cli'
+    # - 'packages/pkg-core'
+    # - 'packages/plugin-core-essentials'
+    # - 'packages/pkg-address'
+    # - 'packages/pkg-error'
+    # - 'packages/tests/pkg-tests-core'
+    # - 'packages/tests/pkg-tests-verdaccio'
+    # - 'packages/tests/pkg-tests-specs-fixtures'
+    # - 'packages/tests/plugin-core-tests'
 
 generator:
   templates:

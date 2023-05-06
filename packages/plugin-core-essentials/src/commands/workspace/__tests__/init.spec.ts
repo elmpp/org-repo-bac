@@ -33,10 +33,10 @@ describe('workspace init', () => {
         stderr: '',
       }
 
-      testContext.mockStdStart()
+      // testContext.mockStdStart()
       await testContext.command(['help'])
       // await testContext.command(['something', 'else'])
-      outputs = testContext.mockStdEnd()
+      // outputs = testContext.mockStdEnd()
 
       console.log(`outputs :>> `, outputs)
     })

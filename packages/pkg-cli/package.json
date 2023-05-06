@@ -7,7 +7,10 @@
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
-    "bin": "dist/bin/run.js"
+    "bin": {
+      "bac": "dist/bin/run.js",
+      "bac-test": "dist/bin/dev.js"
+    }
   },
   "keywords": [
     "typescript",
@@ -21,7 +24,8 @@
     "bin"
   ],
   "bin": {
-    "bac": "src/bin/dev.ts"
+    "bac": "src/bin/run.ts",
+    "bac-test": "src/bin/dev.ts"
   },
   "dependencies": {
     "@business-as-code/core": "workspace:*",

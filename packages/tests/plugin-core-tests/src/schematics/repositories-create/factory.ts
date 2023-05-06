@@ -130,7 +130,7 @@ export default function (options: Schema): Rule {
       workingPath: string;
       name: string;
     }): Rule => {
-      const { options, workingPath, name } = innerOptions;
+      const { options, workingPath } = innerOptions;
 
       if (workingPath === ".") {
         throw new Error("root path not supported");
