@@ -28,7 +28,7 @@
     "zod": "^3.20.6"
   },
   "devDependencies": {
-    "@moonrepo/types": "^0.0.16",
+    "@moonrepo/types": "^1.0.2",
     "@types/node": "18.14.2",
     "expect-type": "^0.15.0",
     "ts-to-zod": "^2.0.1",

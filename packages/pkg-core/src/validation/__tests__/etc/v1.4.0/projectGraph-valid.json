@@ -1,0 +1,135 @@
+{
+  "aliases": {
+    "@business-as-code/error": "pkg-error",
+    "@business-as-code/plugin-core-moon": "plugin-core-moon",
+    "@business-as-code/plugin-core-git": "plugin-core-git",
+    "@business-as-code/fslib": "pkg-fslib",
+    "root": "root",
+    "@business-as-code/core": "pkg-core",
+    "@business-as-code/tests-verdaccio": "pkg-tests-verdaccio",
+    "@business-as-code/address": "pkg-address",
+    "@business-as-code/tests-specs-fixtures": "pkg-tests-specs-fixtures",
+    "@business-as-code/tests-core": "pkg-tests-core",
+    "@business-as-code/plugin-core-essentials": "plugin-core-essentials",
+    "@business-as-code/plugin-core-tests": "plugin-core-tests",
+    "git-http-mock-server": "pkg-tests-git-mock-server",
+    "@business-as-code/cli": "pkg-cli"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "alias": "@business-as-code/fslib",
+        "config": {},
+        "dependencies": {},
+        "fileGroups": {
+          "configs": {
+            "files": [],
+            "globs": [
+              "*.{js,json}"
+            ],
+            "id": "configs"
+          },
+          "sources": {
+            "files": [],
+            "globs": [
+              "src/**/*",
+              "**/*.spec.*"
+            ],
+            "id": "sources"
+          }
+        },
+        "id": "pkg-fslib",
+        "inheritedConfig": {
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "sources": [
+              "src/**/*",
+              "**/*.spec.*"
+            ]
+          },
+          "tasks": {
+            "publish": {
+              "command": "pnpm publish --",
+              "inputs": [
+                "@globs(sources)"
+              ],
+              "platform": "node"
+            }
+          }
+        },
+        "language": "typescript",
+        "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-fslib",
+        "source": "packages/pkg-fslib",
+        "tasks": {
+          "publish": {
+            "args": [
+              "publish",
+              "--"
+            ],
+            "command": "pnpm",
+            "deps": [],
+            "env": {},
+            "flags": [],
+            "globalInputs": [
+              "/.moon/tasks/typescript.yml",
+              "/.moon/*.yml"
+            ],
+            "id": "publish",
+            "inputs": [
+              "@globs(sources)"
+            ],
+            "inputGlobs": [
+              "packages/pkg-fslib/**/*.spec.*",
+              ".moon/*.yml",
+              "packages/pkg-fslib/src/**/*"
+            ],
+            "inputPaths": [
+              ".moon/tasks/typescript.yml"
+            ],
+            "inputVars": [],
+            "options": {
+              "affectedFiles": null,
+              "cache": true,
+              "envFile": null,
+              "mergeArgs": "append",
+              "mergeDeps": "append",
+              "mergeEnv": "append",
+              "mergeInputs": "append",
+              "mergeOutputs": "append",
+              "outputStyle": null,
+              "retryCount": 0,
+              "runDepsInParallel": true,
+              "runInCi": true,
+              "runFromWorkspaceRoot": false,
+              "shell": true
+            },
+            "outputs": [],
+            "outputGlobs": [],
+            "outputPaths": [],
+            "platform": "node",
+            "target": "pkg-fslib:publish",
+            "type": "test"
+          }
+        },
+        "type": "unknown"
+      }
+    ],
+    "node_holes": [],
+    "edge_property": "directed",
+    "edges": [
+      [
+        2,
+        0,
+        null
+      ]
+    ]
+  },
+  "indices": {
+    "plugin-core-git": 5
+  },
+  "sources": {
+    "plugin-core-git": "packages/plugin-core-git"
+  }
+}
