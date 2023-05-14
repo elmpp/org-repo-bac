@@ -10,7 +10,11 @@
 
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
 
- - p moon root:publishDev
+ - p moon run root:publishDev // -> when failing: p moon run root:buildWatch
+
+  - (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login)
+
+ - pnpm ls -r; pnpm view @business-as-code/cli --registry http://localhost:4873/
 
 Oclif commands
 
@@ -18,7 +22,6 @@ Oclif commands
 
 ## Build commands
 
- - p moon run root:publishDev (moon fast build with local publish)
  - p moon run root:publishDev (moon fast build with local publish)
 
 ## Tasks

@@ -7,3 +7,7 @@ export function assertNonEmpty<
     );
   }
 }
+
+export function assertUnreachable(_x: never): never {
+  throw new Error(`Unreachable codepath encountered. See previous stacktrace entry. Value: '${JSON.stringify(_x)}'`);
+}

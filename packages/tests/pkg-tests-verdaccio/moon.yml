@@ -22,6 +22,8 @@ tasks:
   verdaccioStopBackground:
     command: 'pnpm run verdaccio:stopBackground'
     local: true
+    # options:
+    #   persistent: true # disables moon caching etc
   verdaccioRunBackground:
     deps:
       - '~:verdaccioStopBackground'
@@ -36,16 +38,17 @@ tasks:
     # outputs:
     #   - 'blah'
     local: true
+    # options:
+    #   persistent: true # disables moon caching etc
     # platform: 'node'
   verdaccioLogin:
     command: 'pnpm run verdaccio:login'
+    # local: true
     options:
       outputStyle: 'buffer-only-failure'
-    # command: 'pnpm jest --passWithNoTests @in(0)'
-    local: true
-    # platform: 'node'
+      # persistent: true # disables moon caching etc
   verdaccioEnsureRunning:
     command: 'pnpm run verdaccio:ensureRunning'
-    # command: 'pnpm jest --passWithNoTests @in(0)'
-    local: true
-    # platform: 'node'
+    # local: true
+    # options:
+    #   persistent: true # disables moon caching etc

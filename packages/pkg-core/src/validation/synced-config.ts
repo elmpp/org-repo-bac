@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { projectConfigSchema } from "./project";
+import { projectSchema } from "./project";
 
 /**
  configs are executable and contingent upon the project sources being imported. This
@@ -7,7 +7,7 @@ import { projectConfigSchema } from "./project";
  */
 export const configSchema = z.object({
   version: z.number(),
-  projects: z.array(projectConfigSchema),
+  projects: z.array(projectSchema),
   // projects: z.array(projectConfigSchema.merge({})),
 });
 

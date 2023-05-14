@@ -577,7 +577,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             .catch((anError) => {
 
               /**
-               DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING
+               DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING - see BaseCommand#catch
                */
 
               exitCode = anError?.oclif?.exit ?? 1;
@@ -655,7 +655,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
 
             /**
-             DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING
+             DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING - see BaseCommand#catch
             */
 
             // exitCode = anError?.oclif?.exit ?? 1;

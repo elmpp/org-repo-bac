@@ -5,15 +5,12 @@ import {
   assertIsAddressPathRelative,
 } from "@business-as-code/address";
 import {
-  assertIsOk,
   BaseCommand,
   ContextCommand,
   Flags,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
-
 
 export class WorkspaceInit extends BaseCommand<typeof WorkspaceInit> {
   static override description = "Creates an empty workspace";
@@ -57,7 +54,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   };
 
   async execute(context: ContextCommand<typeof WorkspaceInit>) {
-
     // console.log(`context.cliOptions :>> `, context.cliOptions)
 
     let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
@@ -79,73 +75,79 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         `Path '${workspacePath.original}' must be absolute/relative`
       );
     }
-    if (!(await xfs.existsPromise(workspacePath.address))) {
-      const workspacePathParent = addr.pathUtils.dirname(workspacePath);
-      if (!(await xfs.existsPromise(workspacePathParent.address))) {
-        throw new BacError(
-          MessageName.FS_PATH_FORMAT_ERROR,
-          `Parent path '${workspacePathParent.original}' must be present when creating workspace at '${workspacePath.original}'`
-        );
-      }
-      await xfs.mkdirpPromise(workspacePath.address);
-    }
 
-    // console.log(`context.services :>> `, context.services);
-
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath, workingPath: '.'})
-
-    const res = await schematicsService.runSchematic({
-      address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
+    const res = await context.lifecycles.initialise.initialiseWorkspace({
       context,
-      options: {
-        ...context.cliOptions.flags,
-        // name: context.cliOptions.flags.name,
-        // // destinationPath: context.cliOptions.flags.workspacePath,
-        // configPath: context.cliOptions.flags.configPath,
-
-        // name: 'cunt',
-        // author: 'boloerguie',
-
-
-
-      },
-      // destinationPath: workspacePath,
-      // dryRun: false,
-      // force: true,
-      // workingPath: addr.pathUtils.dot,
+      destinationPath: workspacePath,
+      workingPath: ".",
     });
+    return res;
 
-    if (!assertIsOk(res)) {
-      switch (res.res.error.reportCode) {
-        case MessageName.SCHEMATICS_ERROR:
-          context.logger.error(res.res.error.message);
-          break;
-        case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger.error(res.res.error.message);
-          break;
-        case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger.error(res.res.error.message);
-          break;
-      }
-    }
-
-    // if (!assertIsOk(res)) {
-    //   switch (res.res.reportCode) {
-    //     case MessageName.SCHEMATICS_ERROR:
-    //       context.logger(res.res.message, "error");
-    //       break;
-    //     case MessageName.SCHEMATICS_INVALID_ADDRESS:
-    //       context.logger(res.res.message, "error");
-    //       break;
-    //     case MessageName.SCHEMATICS_NOT_FOUND:
-    //       context.logger(res.res.message, "error");
-    //       break;
+    // if (!(await xfs.existsPromise(workspacePath.address))) {
+    //   const workspacePathParent = addr.pathUtils.dirname(workspacePath);
+    //   if (!(await xfs.existsPromise(workspacePathParent.address))) {
+    //     throw new BacError(
+    //       MessageName.FS_PATH_FORMAT_ERROR,
+    //       `Parent path '${workspacePathParent.original}' must be present when creating workspace at '${workspacePath.original}'`
+    //     );
     //   }
-    // } else {
-    //   context.logger(`Finished ok. Scaffolded into '${res.res.destinationPath.original}'`, "info");
+    //   await xfs.mkdirpPromise(workspacePath.address);
     // }
 
-    return res
+    // // console.log(`context.services :>> `, context.services);
+
+    // const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath, workingPath: '.'})
+
+    // const res = await schematicsService.runSchematic({
+    //   address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
+    //   context,
+    //   options: {
+    //     ...context.cliOptions.flags,
+    //     // name: context.cliOptions.flags.name,
+    //     // // destinationPath: context.cliOptions.flags.workspacePath,
+    //     // configPath: context.cliOptions.flags.configPath,
+
+    //     // name: 'cunt',
+    //     // author: 'boloerguie',
+
+    //   },
+    //   // destinationPath: workspacePath,
+    //   // dryRun: false,
+    //   // force: true,
+    //   // workingPath: addr.pathUtils.dot,
+    // });
+
+    // if (!assertIsOk(res)) {
+    //   switch (res.res.error.reportCode) {
+    //     case MessageName.SCHEMATICS_ERROR:
+    //       context.logger.error(res.res.error.message);
+    //       break;
+    //     case MessageName.SCHEMATICS_INVALID_ADDRESS:
+    //       context.logger.error(res.res.error.message);
+    //       break;
+    //     case MessageName.SCHEMATICS_NOT_FOUND:
+    //       context.logger.error(res.res.error.message);
+    //       break;
+    //   }
+    // }
+
+    // // if (!assertIsOk(res)) {
+    // //   switch (res.res.reportCode) {
+    // //     case MessageName.SCHEMATICS_ERROR:
+    // //       context.logger(res.res.message, "error");
+    // //       break;
+    // //     case MessageName.SCHEMATICS_INVALID_ADDRESS:
+    // //       context.logger(res.res.message, "error");
+    // //       break;
+    // //     case MessageName.SCHEMATICS_NOT_FOUND:
+    // //       context.logger(res.res.message, "error");
+    // //       break;
+    // //   }
+    // // } else {
+    // //   context.logger(`Finished ok. Scaffolded into '${res.res.destinationPath.original}'`, "info");
+    // // }
+
+    // return res
 
     //   override async run(): Promise<void> {
     //     }

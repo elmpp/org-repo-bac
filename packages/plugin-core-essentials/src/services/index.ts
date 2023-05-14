@@ -1,6 +1,5 @@
-import { ServiceStaticInterface } from '@business-as-code/core'
-import {MyService} from './my-service'
-import {YourService} from './your-service'
+export {MyService} from './my-service'
+export {YourService} from './your-service'
 
 // declare global {
 //   interface Bac {
@@ -10,4 +9,3 @@ import {YourService} from './your-service'
 //   }
 // }
 
-export const services: ServiceStaticInterface[] = [MyService, YourService]

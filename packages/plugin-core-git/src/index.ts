@@ -1,4 +1,4 @@
-import { ServiceStaticInterface } from '@business-as-code/core'
+import { Plugin } from '@business-as-code/core'
 import { GitService } from './services/git-service'
 
 // declare global {
@@ -9,4 +9,11 @@ import { GitService } from './services/git-service'
 //   }
 // }
 
-export const services: ServiceStaticInterface[] = [GitService]
+// export const services: ServiceStaticInterface[] = [GitService]
+
+export const plugin = {
+  services: [GitService],
+  initialise: ({context}) => {
+
+  },
+} satisfies Plugin

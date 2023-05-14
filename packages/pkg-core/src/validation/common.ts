@@ -7,9 +7,7 @@ import { addr, AddressType } from "@business-as-code/address";
 import { expectTypeOf } from "expect-type";
 import { z } from "zod";
 import {
-  MoonProject,
-  MoonProjectType,
-  MoonProjectLanguage,
+  MoonProjectLanguage, MoonProjectType
 } from "./moon/by-state-files/__types__";
 
 /** the origin providers. Will be only core plugins so we know their handles upfront */

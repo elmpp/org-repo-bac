@@ -14,14 +14,18 @@ import {
   Config,
   Errors,
   Flags,
-  Interfaces, Performance,
+  Interfaces,
+  Performance,
   ux
 } from "@oclif/core";
 import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
+import os from 'os';
 import { fileURLToPath } from "url";
+import util from 'util';
+import { setupLifecycles } from "../lifecycles";
 import { BacService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
 import {
@@ -29,11 +33,11 @@ import {
   Context,
   ContextCommand,
   LogLevel,
+  Plugin,
   Result,
   ServiceInitialiseOptions,
   Services,
-  ServicesStatic,
-  ValueOf
+  ServicesStatic
 } from "../__types__";
 
 // export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
@@ -41,7 +45,7 @@ import {
 // >
 export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
   T["baseFlags"] & T["flags"]
->
+>;
 // export type FlagsInfer<T extends typeof Command> = NullishToOptional<Interfaces.InferredFlags<
 //   T["baseFlags"] & T["flags"]
 // >>
@@ -67,7 +71,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   // define flags that can be inherited by any command that extends BaseCommand
   static override baseFlags = {
-    "logLevel": Flags.custom<LogLevel>({
+    logLevel: Flags.custom<LogLevel>({
       summary: "Specify level for logging.",
       options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
       helpGroup: "GLOBAL",
@@ -82,7 +86,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // })(),
   } satisfies { [key in keyof BaseParseOutput["flags"]]: any };
 
-  // @ts-ignore: not set in constructor
+  // @ts-ignore - set in initialise and used optionally in .log()
   protected logger: logging.Logger;
   protected static oclifConfig: Interfaces.Config;
 
@@ -90,6 +94,21 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   // protected args!: any;
   protected flags!: FlagsInfer<T>;
   protected args!: ArgsInfer<T>;
+
+  constructor(argv: string[], config: Config) {
+    super(argv, config)
+    this.id = this.ctor.id
+    // try {
+    //   this.debug = require('debug')(this.id ? `${this.config.bin}:${this.id}` : this.config.bin)
+    // } catch {
+    //   this.debug = () => {}
+    // }
+
+    /** oclif expects .debug to have debug's util.format api - https://tinyurl.com/2j67ajot */
+    this.debug = (...args: any[]) => {
+      return this.log(util.format(...args))
+    }
+  }
 
   static override async run<T extends Command>(
     this: new (argv: string[], config: Config) => T,
@@ -128,6 +147,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }) {
     this.logger = this.createLogger(options);
+    // console.log(`this.logger :>> `, this.logger)
   }
 
   // public override async init(): Promise<void> {
@@ -186,9 +206,17 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   // } & PrettyPrintableError) {
   //       return Errors.error(input, options) as any;
   //   }
+
+  // NOTE THAT .DEBUG IS OVERRIDDEN IN THE CONSTRUCTOR, ANNOYINGLY BY OCLIF
+  // protected override debug(message = "", ...args: any[]) {
+  //   console.log(`message :>> `, message)
+  //   return this.log(message, ...args)
+  // }
   override log(message = "", ...args: any[]) {
     if (!this.jsonEnabled()) {
-      this.logger.log(
+      // console.log(`message :>> `, message)
+      // console.log(`this.logger :>> `, this.logger, this)
+      this.logger?.log(
         "debug",
         message,
         args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
@@ -239,7 +267,75 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return logger;
   }
 
-  async loadServicesForPlugin({
+  protected loadPluginExport = async ({
+    pluginPath,
+    plugin,
+    debug,
+  }: {
+    pluginPath: AddressPathAbsolute;
+    plugin: Interfaces.Plugin;
+    debug?: boolean;
+  }): Promise<Plugin> => {
+    try {
+      // const p = path.join(plugin.pjson.oclif.commands, ...id.split(':'))
+      const { isESM, module, filePath } = await ModuleLoader.loadWithData(
+        plugin,
+        pluginPath.original
+      );
+      debug &&
+        this.debug(
+          isESM
+            ? "LoadServicesForPlugin: (import)"
+            : "LoadServicesForPlugin: (require)",
+          filePath
+        );
+
+      // console.log(`plugin.type :>> `, plugin.type)
+
+      if (!module.plugin && plugin.type === 'user' && plugin.name !== '@business-as-code/cli') {
+        // this.error(`Plugin package does not have a named export 'plugin'. Package: '${plugin.name}', plugin type: '${plugin.type}', package path: '${pluginPath.original}'`)
+        // return {}
+      }
+      return module?.plugin ?? {};
+    } catch (error: any) {
+      throw error;
+    }
+  };
+
+  protected async loadInitialiserForPlugin({
+    plugin,
+    parseOutput,
+  }: {
+    plugin: Interfaces.Plugin;
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+      BaseParseOutput;
+  }): Promise<NonNullable<Plugin["initialise"]>> {
+    const marker = Performance.mark(
+      `plugin.loadInitialiserForPlugin#${plugin.name}`,
+      { plugin: plugin.name }
+    );
+
+    const noop = (...args: any[]) => {};
+    const initialiseFunc = await this.loadPluginExport({
+      pluginPath: addr.parseAsType(plugin.root, "portablePathPosixAbsolute"),
+      plugin,
+      debug: true,
+    }).then((mod) => {
+      // console.log(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
+      if (!mod.initialise) {
+        this.debug(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
+        return noop
+      }
+      return mod.initialise
+
+    }
+    );
+
+    marker?.stop();
+    return initialiseFunc;
+  }
+
+  protected async loadServicesForPlugin({
     plugin,
   }: {
     plugin: Interfaces.Plugin;
@@ -249,40 +345,13 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       { plugin: plugin.name }
     );
 
-    const findExportFromModule = (packageModule: any) => {
-      if (packageModule.services && Array.isArray(packageModule.services))
-        return packageModule.services;
-    };
-
-    const loadPlugin = async (
-      packagePath: AddressPathAbsolute
-    ): Promise<ValueOf<ServicesStatic>[]> => {
-      let m;
-      try {
-        // const p = path.join(plugin.pjson.oclif.commands, ...id.split(':'))
-        const { isESM, module, filePath } = await ModuleLoader.loadWithData(
-          plugin,
-          packagePath.original
-        );
-        this.debug(
-          isESM
-            ? "LoadServicesForPlugin: (import)"
-            : "LoadServicesForPlugin: (require)",
-          filePath
-        );
-        m = module;
-      } catch (error: any) {
-        throw error;
-      }
-
-      const services = findExportFromModule(m);
-      if (!services) return [];
-      return services;
-    };
-
-    const services = (
-      await loadPlugin(
-        addr.parseAsType(plugin.root, "portablePathPosixAbsolute")
+    const pluginServices = (
+      await this.loadPluginExport({
+        pluginPath: addr.parseAsType(plugin.root, "portablePathPosixAbsolute"),
+        plugin,
+        debug: true,
+      }).then((pluginMod) =>
+        pluginMod.services && Array.isArray(pluginMod.services) ? pluginMod.services : []
       )
     ).reduce(
       (acc, staticService) => ({
@@ -293,7 +362,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     );
 
     marker?.stop();
-    return services;
+    return pluginServices;
   }
 
   // protected override async parse<F extends FlagOutput, B extends FlagOutput, A extends ArgOutput>(options?: Input<F, B, A>, argv = this.argv): Promise<ParserOutput<F, B, A>> {
@@ -344,6 +413,14 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       const staticService = staticServices[serviceName];
       // console.log(`staticServices :>> `, staticServices)
       // console.log(`staticService, serviceName :>> `, staticService, serviceName)
+      if (!staticService) {
+        this.error(
+          `Attempting initialisation of unknown service '${serviceName}'. Loaded services: '${Object.keys(
+            staticServices
+          ).join(", ")}'`
+        );
+      }
+
       const serviceIns = (await staticService.initialise(
         initialiseOptions as any // more weird static class stuff
       )) as Services[SName];
@@ -368,9 +445,36 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return factory;
   }
 
-  async run(): Promise<void> {
+  // static async runDirect<T extends typeof Command>(
+    static async runDirect<T extends typeof Command>(
+      this: new (...args: any[]) => T,
+      // this: new (config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>) => T,
+      // argv?: string[] | undefined,
+      opts: Interfaces.LoadOptions,
+      parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
+    ): Promise<Result<unknown, { error: Error }>> {
+      const config = await Config.load(
+        opts || require.main?.filename || __dirname
+      );
+      const cmd = new this([] as any[], config);
+      if (!cmd.id) {
+        const id = cmd.constructor.name.toLowerCase();
+        cmd.id = id;
+        // @ts-ignore
+        cmd.ctor.id = id;
+      }
+      // @ts-ignore
+      cmd.ctor.oclifConfig = config;
 
-    const parseOutput = await this.parse({
+      // await (cmd as T & { initialise: () => Promise<void> }).initialise();
+
+      // @ts-ignore
+      const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);
+      return directRes;
+    }
+
+  async run(): Promise<void> {
+    const parseOutput = (await this.parse({
       flags: {
         ...this.ctor.flags,
         ...(this.ctor as typeof BaseCommand).baseFlags,
@@ -379,7 +483,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       // baseFlags: (this.ctor as typeof BaseCommand).baseFlags,
       args: this.ctor.args,
       strict: this.ctor.strict,
-    }) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+    })) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput;
     // const parseOutput = (await this.parse<
     //   FlagsInfer<T>,
@@ -387,47 +491,20 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     //   ArgsInfer<T>
     // >()) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
     //   BaseParseOutput;
-      // console.log(`parseOutput :>> `, parseOutput)
+    // console.log(`parseOutput :>> `, parseOutput)
 
     await this.initialise({ parseOutput, config: this.config });
-    const context = await this.createContext(parseOutput);
+    const context = await this.setupContext({ parseOutput });
+    await this.initialisePlugins({ context, parseOutput });
 
     const res = await this.execute(context);
 
     if (!assertIsOk(res)) {
       const err = res.res.error;
-      ;(err as any).exitCode = err?.extra?.exitCode ?? 1 // make it look like an OclifError
+      (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
       throw err; // will end up in this.catch()
     }
     return;
-  }
-
-  // static async runDirect<T extends typeof Command>(
-  static async runDirect<T extends typeof Command>(
-    this: new (...args: any[]) => T,
-    // this: new (config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>) => T,
-    // argv?: string[] | undefined,
-    opts: Interfaces.LoadOptions,
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
-  ): Promise<Result<unknown, { error: Error }>> {
-    const config = await Config.load(
-      opts || require.main?.filename || __dirname
-    );
-    const cmd = new this([] as any[], config);
-    if (!cmd.id) {
-      const id = cmd.constructor.name.toLowerCase();
-      cmd.id = id;
-      // @ts-ignore
-      cmd.ctor.id = id;
-    }
-    // @ts-ignore
-    cmd.ctor.oclifConfig = config;
-
-    // await (cmd as T & { initialise: () => Promise<void> }).initialise();
-
-    // @ts-ignore
-    const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);
-    return directRes;
   }
 
   /**
@@ -438,15 +515,19 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       BaseParseOutput
   ): Promise<Result<unknown, unknown>> {
     await this.initialise({ parseOutput, config: this.config });
-    const context = await this.createContext(parseOutput);
+    const context = await this.setupContext({ parseOutput });
+    await this.initialisePlugins({ context, parseOutput });
+
     const res = await this.execute(context);
     return res;
   }
 
-  protected async createContext(
+  protected async setupContext({
+    parseOutput,
+  }: {
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-      BaseParseOutput
-  ): Promise<ContextCommand<T>> {
+      BaseParseOutput;
+  }): Promise<ContextCommand<T>> {
     // type ServiceMap = Bac.Services
     const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
 
@@ -465,44 +546,127 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       logger: this.logger,
     });
 
-    const context: ContextCommand<T> = {
+    const context = {
       oclifConfig,
       cliOptions: parseOutput,
       logger: this.logger,
       serviceFactory,
       workspacePath: this.getWorkspacePath(parseOutput.flags["workspacePath"]),
     };
-    return context;
+
+    const contextCommand: ContextCommand<T> = {
+      ...context,
+      lifecycles: setupLifecycles({context}),
+    };
+    return contextCommand;
+  }
+
+  protected async initialisePlugins({
+    parseOutput,
+    context,
+  }: {
+    context: ContextCommand<T>;
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+      BaseParseOutput;
+  }) {
+    const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
+
+    // strategy: loop through all registered services and initialise blindly.
+    // don't need to worry about multiple subscriptions etc due to tapable
+    // being compiled - https://tinyurl.com/2jlzp5vr
+
+    // hookmap - https://tinyurl.com/2mqyusrc
+    // inspired by webpack's api - https://webpack.js.org/contribute/writing-a-plugin/
+    // const createLifecycles = () => {
+    //   return lifecycles;
+    // };
+
+    // const hookFactory: HookFactory = ()
+
+    // /** events occurring during bac sync */
+    // const workspaceInitHookMap = new HookMap((key: "pre" | "after") => {});
+
+    // const hookMap = new HookMap((key: "workspaceInit" | "workspaceSync") => {
+    //   switch (key) {
+    //     case "workspaceInit":
+    //       break;
+    //     case "workspaceSync":
+    //       break;
+    //     default:
+    //       assertUnreachable(key);
+    //   }
+    // }, "bac");
+
+    // const lifecycles = await createLifecycles()
+
+    await Promise.all(
+      oclifConfig.plugins.map(async (plugin) => {
+        const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
+          parseOutput,
+          plugin,
+        });
+        return pluginInitialiserFunc({ context });
+      })
+    ).catch(err => {
+      throw err
+      console.log(`err :>> `, err)
+    })
+
+    // (await oclifConfig.plugins.forEach(async (accum, plugin) => {
+    //   const acc = await accum;
+    //   // const staticPluginServices = await this.loadServicesForPlugin({
+    //   //   plugin,
+    //   // });
+    //   // if (!staticPluginServices) {
+    //   //   return acc;
+    //   // }
+
+    //   const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
+    //     parseOutput,
+    //     plugin,
+    //   })
+
+    //   return {
+    //     ...acc,
+    //     ...staticPluginServices,
+    //   };
+    // }, Promise.resolve(coreServices))) as ServicesStatic;
   }
 
   abstract execute(
     context: ContextCommand<T>
   ): Promise<Result<unknown, { error: BacError<MessageName, any> }>>;
 
+
+  /** oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L332 */
   protected override async catch(
     err: Error & { exitCode?: number }
   ): Promise<any> {
-    return super.catch(err);
+    // return super.catch(err); // does not actually log to stderr so define own
 
-    process.exitCode = process.exitCode ?? err.exitCode ?? 1
+    process.exitCode = process.exitCode ?? err.exitCode ?? 1;
     if (this.jsonEnabled()) {
-      this.logJson(this.toErrorJson(err))
+      this.logJson(this.toErrorJson(err));
     } else {
-      if (!err.message) throw err
+      // if (!err.message) throw err;
       try {
-        ux.action.stop(colors.red('!'))
+        ux.action.stop(colors.red("!"));
+        // Note this should be the only place where caught errors are to be output!!!
       } catch {}
 
-      throw err
+      process.stderr.write(`${os.EOL.repeat(2)}
+        ${colors.red(BacError.getMessageForError(err))}
+        ${os.EOL.repeat(2)}
+      `)
+      // console.log(`:>> BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`, this.jsonEnabled(), BacError.getMessageForError(err));
+
+      throw err; // we DO want to rethrow here after writing to stderr
     }
-
-
 
     // /** super.catch doesn't seem to log errors outside of json so handle this specifically */
     // if (!this.jsonEnabled()) {
     //   // console.error(err);
     // }
-
 
     // // add any custom logic to handle errors from the command
     // // or simply return the parent class error handling
@@ -517,9 +681,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       if (config.errorLogger) {
         await config.errorLogger.flush();
       }
-    }
-    catch (error) {
-        // console.error(error);
+    } catch (error) {
+      // console.error(error);
     }
   }
 

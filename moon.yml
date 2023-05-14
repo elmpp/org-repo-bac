@@ -77,7 +77,6 @@ tasks:
     platform: 'node'
     options:
       runFromWorkspaceRoot: true
-    # local: true
   testWatch:
     deps:
       - '~:testFixtures'
@@ -85,9 +84,10 @@ tasks:
       - '@globs(testNonFixtures)'
     command: 'pnpm jest --watch --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures'
     platform: 'node'
-    local: true # disables moon caching etc
+    local: true
     options:
       runFromWorkspaceRoot: true
+      # persistent: true # disables moon caching etc
   buildClean:
     deps:
       # - ':lint' # run it in all
@@ -95,7 +95,11 @@ tasks:
     #   - '@globs(sources)'
     command: 'tsc --build --clean'
     platform: 'node'
-    local: true
+    options:
+      runFromWorkspaceRoot: true
+    # local: true
+    # options:
+      # persistent: true # disables moon caching etc
   build:
     deps:
       - '~:buildClean'
@@ -104,7 +108,11 @@ tasks:
     #   - '@globs(sources)'
     command: 'tsc --build'
     platform: 'node'
-    local: true
+    options:
+      runFromWorkspaceRoot: true
+    # local: true
+    # options:
+      # persistent: true # disables moon caching etc
   buildWatch:
     deps:
       - '~:buildClean'
@@ -114,52 +122,66 @@ tasks:
     command: 'tsc --build --watch'
     platform: 'node'
     local: true
-    # local: true
+    options:
+      runFromWorkspaceRoot: true
+    # options:
+      # persistent: true # disables moon caching etc
   # returnFail:
   #   command: "bash -c '$(exit 1)'"
   #   platform: 'system'
-  #   local: true
+  doUnpublish:
+    command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/ || true' # https://tinyurl.com/2okqdgo7
+    platform: system
+    options:
+      runFromWorkspaceRoot: true
   unpublishDev:
     deps:
       # - ~:returnFail
       - ~:build
       - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
       - '@business-as-code/tests-verdaccio:verdaccioLogin'
+      - ~:doUnpublish
     options:
       runDepsInParallel: false
       outputStyle: 'stream'
+      # persistent: true # disables moon caching etc
       # outputStyle: 'buffer'
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-    command: 'pnpm unpublish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # inputs:
     #   - ../
     # runFromWorkspaceRoot: true
     # platform: 'system'
-    local: true
   publishDev:
     deps:
       # - ~:returnFail
       - ~:build
-      - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
-      - '@business-as-code/tests-verdaccio:verdaccioLogin'
-      - ~:unpublishDev
+      # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+      # - '@business-as-code/tests-verdaccio:verdaccioLogin'
+      - ~:doUnpublish
+      # - ~:unpublishDev
+    # local: true
     options:
       runDepsInParallel: false
       outputStyle: 'stream'
+      runFromWorkspaceRoot: true
+      # persistent: true
       # outputStyle: 'buffer'
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
     command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # inputs:
     #   - ../
     # runFromWorkspaceRoot: true
     # platform: 'system'
-    local: true
   publish:
     deps:
       - ~:build
     command: 'pnpm publish -r --force' # https://tinyurl.com/2okqdgo7
+    options:
+      runFromWorkspaceRoot: true
     # platform: 'system'
   # sends artifacts to the local verdaccio
 
@@ -170,4 +192,3 @@ tasks:
   #   #   - '@globs(sources)'
   #   command: 'tsc --build'
   #   platform: 'node'
-  #   local: true

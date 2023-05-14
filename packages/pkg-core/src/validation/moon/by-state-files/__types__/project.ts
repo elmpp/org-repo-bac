@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { projectDependencySchema, projectSchema, taskSchema, taskTypeSchema } from "../moon-project";
+import { projectDependencySchema, projectSchema, taskSchema, taskTypeSchema } from "../project";
 
 export type MoonTaskType = z.infer<typeof taskTypeSchema>
 export type MoonFileGroup = z.infer<typeof taskTypeSchema>

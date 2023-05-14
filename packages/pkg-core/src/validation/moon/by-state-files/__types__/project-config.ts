@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { dependencyConfigSchema, dependencyScopeSchema, inheritedTasksConfigSchema, projectConfigSchema, projectLanguageSchema, projectMetadataConfigSchema, projectToolchainConfigSchema, projectToolchainNodeConfigSchema, projectToolchainTypeScriptConfigSchema, projectTypeSchema, projectWorkspaceConfigSchema, taskConfigSchema, taskMergeStrategySchema, taskOptionsConfigSchema, taskOutputStyleSchema } from '../moon-project-config';
+import { dependencyConfigSchema, dependencyScopeSchema, inheritedTasksConfigSchema, projectConfigSchema, projectLanguageSchema, projectMetadataConfigSchema, projectToolchainConfigSchema, projectToolchainNodeConfigSchema, projectToolchainTypeScriptConfigSchema, projectTypeSchema, projectWorkspaceConfigSchema, taskConfigSchema, taskMergeStrategySchema, taskOptionsConfigSchema, taskOutputStyleSchema } from '../project-config';
 
 export type MoonDependencyScope = z.infer<typeof dependencyScopeSchema>
 export type MoonDependencyConfig = z.infer<typeof dependencyConfigSchema>

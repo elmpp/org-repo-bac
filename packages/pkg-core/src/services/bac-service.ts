@@ -65,6 +65,7 @@ export class BacService {
     const args = {
       cmd: `pnpm bac ${options.cmd}`,
       options: {
+        shell: true,
         ...(options.options ?? {}),
         context: this.options.context,
         cwd: addr.pathUtils.join(

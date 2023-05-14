@@ -63,12 +63,15 @@ describe("config", () => {
           protocol: "git",
           active: true,
           detectProject: {
-            language: "javascript",
-            name: "lib1",
-            type: "library",
-            active: true,
-            location: `path:/something/else`,
-          },
+            stage: {
+              language: "javascript",
+              // name: "lib1",
+              type: "library",
+
+              // active: true,
+              // location: `path:/something/else`,
+            },
+          } as any,
         },
       ],
     } satisfies Config;
@@ -89,7 +92,7 @@ describe("config", () => {
             type: "library",
             active: true,
             location: `url:git@github.com:elmpp/org-repo-bac.git`,
-          },
+          } as any,
         },
       ],
     } satisfies Config;

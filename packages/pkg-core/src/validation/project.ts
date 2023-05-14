@@ -1,13 +1,8 @@
 import { z } from "zod";
 import {
-  languageSchema,
-  languageVariantSchema,
-  originProviderTypeSchema,
-  projectTypeSchema,
-  sourceLocation,
-  teamProviderTypeSchema,
+  originProviderTypeSchema, teamProviderTypeSchema
 } from "./common";
-import {projectSchema as moonProjectSchema} from './moon/by-state-files/project'
+import { projectSchema as moonProjectSchema } from './moon/by-state-files/project';
 
 /**
  defines the non-common attributes of a Project that must be detected during Source import
@@ -51,7 +46,7 @@ const teamSchema = z.object({
   description: z.string().optional(),
 })
 
-const projectSchema = z.object({
+export const projectSchema = z.object({
   stage: baseMoonProjectSchema, // we're calling the /repo area 'stage'
   origin: projectOriginSchema,
   teams: z.record(z.string(), teamSchema),

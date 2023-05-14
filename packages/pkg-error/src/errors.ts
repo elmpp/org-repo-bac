@@ -112,18 +112,23 @@ Extra = undefined,
     return nextErr
   }
 
-  static getMessageForError(err: string | BacError | BacErrorWrapper): string {
+  static getMessageForError(err: string | BacError | BacErrorWrapper | Error): string {
     if (typeof err === 'string') {
       return err
     }
     if (assertIsBacWrappedError(err)) {
-      return err.message
+      return err.stack
     }
-    // console.log(`err :>> `, assertIsBacWrappedError(err), assertIsBacError(err), assertIsError(err), err?.message, err)
+    // console.log(`err :>> `, assertIsBacWrappedError(err), assertIsBacError(err), assertIsError(err), err?.stack, err)
     if (assertIsBacError(err)) {
-      return BacError.formatMessageName(err.reportCode, err.message);
+      return BacError.formatMessageName(err.reportCode, err.stack);
     }
+    if (err.stack) {
+      return err.stack
+    }
+
     console.log(`Object.keys(err) :>> `, Object.keys(err))
+
     throw new Error('WUT')
   }
 

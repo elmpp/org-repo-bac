@@ -25,6 +25,7 @@
     "execa": "^5.1.1",
     "get-stream": "^6.0.1",
     "rxjs": "6.6.7",
+    "tapable": "^2.2.1",
     "zod": "^3.20.6"
   },
   "devDependencies": {

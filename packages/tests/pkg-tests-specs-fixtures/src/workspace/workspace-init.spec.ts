@@ -105,6 +105,8 @@ describe("workspace init", () => {
       // }
       // assertIsOk()
 
+      // console.log(`res :>> `, res)
+
       expectIsOk(res);
 
       // console.log(`res.res.tree. :>> `, res.res.tree.getDir("."));
@@ -118,6 +120,9 @@ describe("workspace init", () => {
       const expectFs = res.res.expectUtil.createFs()
       // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
       // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})
+
+      // console.log(`res :>> `, res)
+      // console.log(`expectFs :>> `, expectFs)
 
       res.res.expectUtil.createText(expectFs.readText("./.npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
       res.res.expectUtil.createText(expectFs.readText("./BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic workspace-configure

@@ -1,7 +1,7 @@
 import type {Tree} from '@angular-devkit/schematics'
 import { z } from "zod";
 import { sourceLocation } from './common';
-import { projectConfigSchema } from "./project";
+import { projectSchema } from "./project";
 
 const baseProjectSourceSchema = z.object({
   protocol: z.literal('git'),
@@ -23,11 +23,11 @@ export const projectSourceConfigSchema = baseProjectSourceSchema.merge(z.object(
         sourceLocation: sourceLocation,
       }))
       .returns(z.optional(
-        projectConfigSchema,
+        projectSchema,
         // .implement((x) => )
       )),
     ),
-    projectConfigSchema,
+    projectSchema,
   ])
 })
 )

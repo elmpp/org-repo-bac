@@ -3,7 +3,12 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import { Command, Interfaces } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import { expectTypeOf } from "expect-type";
-import { ArgsInfer, BaseParseOutput, FlagsInfer } from "../commands/base-command";
+import {
+  ArgsInfer,
+  BaseParseOutput,
+  FlagsInfer,
+} from "../commands/base-command";
+import { Lifecycles } from "../lifecycles";
 import { ValueOf } from "./util";
 
 export * from "./type-utils";
@@ -15,6 +20,8 @@ export type Outputs = {
 };
 
 export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
+
+// export type LifecycleTypes = 'workspaceInit' | 'workspaceSync'
 
 /** instance types of all loaded services */
 export type Services = {
@@ -39,7 +46,8 @@ export type ServicesStatic = {
 /** ball of values made available to command methods. Includes oclif cliOptions */
 export type ContextCommand<T extends typeof Command> = {
   /** values coming out of oclif command phase */
-  cliOptions: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> & BaseParseOutput;
+  cliOptions: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+    BaseParseOutput;
   serviceFactory: (<SName extends keyof ServicesStatic>(
     serviceName: SName,
     options: ServiceInitialiseCommonOptions
@@ -53,6 +61,8 @@ export type ContextCommand<T extends typeof Command> = {
    Note that this will differ from values in services etc
    */
   workspacePath: AddressPathAbsolute;
+
+  lifecycles: Lifecycles;
 };
 
 /** ball of values made available to "userspace" methods */
@@ -65,7 +75,7 @@ export type Context = {
     serviceName: SName,
     options: ServiceInitialiseCommonOptions
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
-  logger: logging.Logger
+  logger: logging.Logger;
   /** @internal */
   oclifConfig: Interfaces.Config;
   /**
@@ -84,9 +94,11 @@ export type ServiceInitialiseCommonOptions = {
   /** service instances are recreated when targeting different directories */
   destinationPath: AddressPathAbsolute;
   /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
-  workingPath: string
+  workingPath: string;
 };
-export type ServiceInitialiseOptions<SName extends keyof Services> = Parameters<ServicesStatic[SName]['initialise']>[0]
+export type ServiceInitialiseOptions<SName extends keyof Services> = Parameters<
+  ServicesStatic[SName]["initialise"]
+>[0];
 // export type ServiceInitialiseOptions = { context: Context; workingPath: AddressPathRelative }; // workingPath must be runtime value for services
 
 export type ServiceStaticInterface = {
@@ -96,6 +108,12 @@ export type ServiceStaticInterface = {
   ): Promise<ValueOf<Services> | undefined>;
   // initialise<T extends {new (...args: any[]): T}>(options: ContextPrivate): Promise<T>;
   // new (...args: any[]): any;
+};
+
+export type Plugin = {
+  services?: ServiceStaticInterface[];
+  /** gives opportunity to subscribe to hooks */
+  initialise?: (options: { context: ContextCommand<any> }) => void;
 };
 
 // export type ServiceStaticInterface<T extends {new (...args: any): any}> = Static<T, _ServiceStaticInterface>

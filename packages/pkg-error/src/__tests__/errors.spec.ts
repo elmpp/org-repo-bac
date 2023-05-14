@@ -46,6 +46,11 @@ describe('errors', () => {
     // })
 
     describe('getMessageForError', () => {
+      it('includes stack', () => {
+        const res = BacError.getMessageForError(new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah'))
+        expect(res).toMatch(new RegExp(`Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`, 's'))
+        expect(res).toMatch(new RegExp(/^\s+at.*/, 'gm'))
+      })
       it('uses full amount', () => {
         expect(BacError.getMessageForError(new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah'))).toMatch(new RegExp(`Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`, 's'))
       })

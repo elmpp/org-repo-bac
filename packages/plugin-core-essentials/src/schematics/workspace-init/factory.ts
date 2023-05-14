@@ -44,6 +44,7 @@ export default function (options: Schema): Rule {
     ]);
 
     const pmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+    const pmTaskHandle2 = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
     // const addDepTaskHandle = schematicContext.addTask(new NodePackageInstallTask({packageName: '@business-as-code/cli', workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
 
     schematicContext.addTask(schematicUtils.wrapServiceAsTask({
@@ -58,7 +59,7 @@ export default function (options: Schema): Rule {
         context: options._bacContext,
       },
       schematicContext,
-    }), [pmTaskHandle]);
+    }), [pmTaskHandle2]);
 
     return chain([
       mergeWith(baseTemplateSource),
