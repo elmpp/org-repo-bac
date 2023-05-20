@@ -1,4 +1,4 @@
 $schema: 'https://moonrepo.dev/schemas/project.json'
 # docs - https://tinyurl.com/2qk3kdhv
 
-type: 'unknown'
+type: 'library' # define as library so that it can be snapshotted and thus available when running bac-tests in workspaces

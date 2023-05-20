@@ -225,7 +225,7 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*
@@ -253,10 +253,10 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../pkg-error
       '@business-as-code/fslib':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../pkg-fslib
       simple-git:
         specifier: ^3.17.0
@@ -271,9 +271,6 @@ importers:
       '@types/node':
         specifier: ^18.15.3
         version: 18.15.3
-      expect-type:
-        specifier: ^0.15.0
-        version: 0.15.0
 
   packages/plugin-core-scaffold.ignore:
     dependencies:
@@ -290,10 +287,10 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../pkg-error
       '@business-as-code/fslib':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../pkg-fslib
       ansi-colors:
         specifier: ^4.1.3
@@ -317,7 +314,7 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*
@@ -474,7 +471,7 @@ importers:
         specifier: workspace:*
         version: link:../../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520081253
+        specifier: workspace:0.0.0-bollards-20230520145106
         version: link:../../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*

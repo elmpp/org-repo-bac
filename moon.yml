@@ -48,6 +48,7 @@ fileGroups:
 # and the value is an object of task parameters.
 tasks:
 
+  # ------- changesets publishing --------------
   changesetInit:
     command: 'changeset init' # changesets - https://tinyurl.com/2p65m9on
     # local: true
@@ -88,6 +89,8 @@ tasks:
     deps:
       - root:build
       - ~:changesetSnapshotVersion
+      - '~:verdaccioEnsureRunning' # https://github.com/moonrepo/moon/issues/859
+      - '~:verdaccioLogin'
       # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning' # https://github.com/moonrepo/moon/issues/859
       # - '@business-as-code/tests-verdaccio:verdaccioLogin'
     env:
@@ -107,6 +110,43 @@ tasks:
       # - '@globs(testFixtures)'
       # - '@globs(testNonFixtures)'
     platform: 'node'
+
+  # ------- verdaccio ----------
+  verdaccioStopBackground:
+    command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:stopBackground'
+    local: true
+    # options:
+    #   persistent: true # disables moon caching etc
+  verdaccioRunBackground:
+    deps:
+      - '~:verdaccioStopBackground'
+    command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:runBackground'
+    # command: 'pnpm jest --passWithNoTests @in(0)'
+    # inputs:
+    #   - 'tests/pkg-tests-specs-fixtures'
+    #   # - '/tests/pkg-tests-specs-fixtures/**/*'
+    #   # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
+    #   # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
+    #   # - '@globs(testFixtures)'
+    # outputs:
+    #   - 'blah'
+    local: true
+    # options:
+    #   persistent: true # disables moon caching etc
+    # platform: 'node'
+  verdaccioLogin:
+    command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:login'
+    # local: true
+    options:
+      outputStyle: 'buffer-only-failure'
+      # persistent: true # disables moon caching etc
+  verdaccioEnsureRunning:
+    command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:ensureRunning'
+
+    # local: true
+    # options:
+    #   persistent: true # disables moon caching etc
+
 
   # lint:
   #   command: 'eslint'

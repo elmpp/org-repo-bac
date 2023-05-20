@@ -10,7 +10,7 @@ describe("git-service", () => {
     it("clone standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        const res = await testContext.runSchematicServiceCb({
+        const res = await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
             cb: async ({ service }) => {
@@ -36,7 +36,7 @@ describe("git-service", () => {
             .lineContainsString({ match: `# bac-tester`, occurrences: 1 })
         );
 
-        await testContext.runSchematicServiceCb({
+        await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
             cb: async ({ service }) => {
@@ -107,7 +107,7 @@ describe("git-service", () => {
     it("initialise standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        const res = await testContext.runSchematicServiceCb({
+        const res = await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
             cb: async ({ service }) => {
@@ -124,7 +124,7 @@ describe("git-service", () => {
 
         // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
 
-        await testContext.runSchematicServiceCb({
+        await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
             cb: async ({ service }) => {

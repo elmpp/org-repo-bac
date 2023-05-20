@@ -1,4 +1,3 @@
-import { expectTypeOf } from "expect-type"
 
 // Type-fest - https://tinyurl.com/ybucjwqz
 export type Simplify<T> = {[KeyType in keyof T]: T[KeyType]}
@@ -18,9 +17,3 @@ export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? UnwrapPromise<U>
 export type SetOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
 
 export type NullishToOptional<T extends object> = Partial<IncludeMatchingProperties<T, undefined>> & ExcludeMatchingProperties<T, undefined>
-type NullishToOptionalTest = Simplify<NullishToOptional<{a: 'a' | undefined, b?: 'b', c: 'c'}>>
-expectTypeOf<NullishToOptionalTest>().toEqualTypeOf<{
-        a?: 'a',
-        b?: 'b',
-        c: 'c',
-}>()

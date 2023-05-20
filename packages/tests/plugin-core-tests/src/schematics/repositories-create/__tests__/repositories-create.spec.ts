@@ -31,7 +31,7 @@ describe("repositories-create", () => {
       const assertForWorkingPath = async (workingPath: string) => {
         const expectFs = res.res.expectUtil.createFs()
 
-        await testContext.runSchematicServiceCb({
+        await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
             cb: async ({ service }) => {

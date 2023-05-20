@@ -1,10 +1,13 @@
 {
   "name": "@business-as-code/plugin-core-git",
-  "version": "0.0.0-bollards-20230520081808",
+  "version": "0.0.0-bollards-20230520145558",
   "description": "Core plugin package @business-as-code/plugin-core-git",
   "main": "src/index.ts",
   "files": [],
   "types": "src/index.ts",
+  "scripts": {
+    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json"
+  },
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
@@ -18,14 +21,16 @@
     "@angular-devkit/schematics": "^15.2.4",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230520081808",
-    "@business-as-code/fslib": "workspace:0.0.0-bollards-20230520081808",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230520145558",
+    "@business-as-code/fslib": "workspace:0.0.0-bollards-20230520145558",
     "simple-git": "^3.17.0"
   },
   "devDependencies": {
     "@business-as-code/tests-core": "workspace:*",
     "@types/jest": "^29.4.0",
-    "@types/node": "^18.15.3",
-    "expect-type": "^0.15.0"
+    "@types/node": "^18.15.3"
+  },
+  "oclif": {
+    "commands": "./dist/commands"
   }
 }

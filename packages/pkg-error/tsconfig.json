@@ -3,6 +3,7 @@
   "include": ["../../types/**/*", "src/**/*", "*.spec.*", "*.js", "*.ts"],
   "references": [],
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist"
   }
 }

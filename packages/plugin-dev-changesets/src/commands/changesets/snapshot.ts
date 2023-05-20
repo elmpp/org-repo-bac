@@ -84,7 +84,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         return acc;
       }, {} as Record<string, "major" | "minor" | "patch">),
     };
-console.log(`context.workspacePath :>> `, context.workspacePath)
+
     await schematicService.runSchematic({
       address: `@business-as-code/plugin-dev-changesets#namespace=changeset-generate`,
       context,

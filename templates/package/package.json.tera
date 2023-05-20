@@ -25,6 +25,11 @@ force: true
     "package.json"
   ],
   "types": "src/index.ts",
+  "scripts": {
+    {% if type_variant == 'plugin-core' or type_variant == 'plugin-dev' or type_variant == 'plugin' -%}
+    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json"
+    {% endif -%}
+  }
 
   {% if type == 'library' or type == 'application' -%}
   ,

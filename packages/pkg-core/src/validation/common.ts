@@ -4,11 +4,7 @@ import { addr, AddressType } from "@business-as-code/address";
 //   ProjectType as MoonProjectType,
 // } from "@moonrepo/types";
 
-import { expectTypeOf } from "expect-type";
 import { z } from "zod";
-import {
-  MoonProjectLanguage, MoonProjectType
-} from "./moon/by-state-files/__types__";
 
 /** the origin providers. Will be only core plugins so we know their handles upfront */
 export const originProviderTypeSchema = z.union([
@@ -19,7 +15,7 @@ export const originProviderTypeSchema = z.union([
 export const teamProviderTypeSchema = z.union([
   z.literal("codeowners"),
   /** passed through during config */
-  z.literal('config')
+  z.literal("config"),
 ]);
 
 export const languageSchema = z.union([
@@ -93,8 +89,3 @@ export type ProjectLanguage = z.infer<typeof languageSchema>;
 export type ProjectLanguageVariant = z.infer<typeof languageVariantSchema>;
 export type Project = z.infer<typeof projectTypeSchema>;
 // export type SourceLocation = z.infer<typeof projectTypeSchema>;
-
-// ensure the values that will go into Moon should match
-expectTypeOf<ProjectLanguage>().toMatchTypeOf<MoonProjectLanguage>();
-expectTypeOf<ProjectLanguageVariant>().toMatchTypeOf<MoonProjectLanguage>();
-expectTypeOf<Project>().toMatchTypeOf<MoonProjectType>();

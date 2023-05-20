@@ -19,6 +19,7 @@
   - (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login)
 
  - pnpm ls -r --depth 1; pnpm view @business-as-code/cli --registry http://localhost:4873/; pnpm view @business-as-code/cli@bollards --registry http://localhost:4873/
+ - p moon query projects 'projectType=application || projectType=library' # snapshottable projects
 
 Oclif commands
 

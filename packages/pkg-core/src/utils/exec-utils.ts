@@ -154,7 +154,7 @@ export async function doExec({
 
   const optionsAsCommand = (cmd: string, options: ExecaOptions): string => {
     const blacklist = [] as string[];
-    const envs = Object.entries(options.env!)
+    const envs = Object.entries(options.env ?? {})
       .filter(([key, val]) => !blacklist.includes(key))
       .map(([key, val]) => `${key}='${val}'`)
       .join(` `);
@@ -171,7 +171,10 @@ export async function doExec({
   );
 
   try {
-    const execaResult = await execa(cmd, execaOptions);
+    // Execa docs for 5.1.1 - https://tinyurl.com/2qefunlh
+    const execaResultPromise = execa(cmd, execaOptions)
+    execaResultPromise.stdout!.pipe(process.stdout);
+    const execaResult = await execaResultPromise
     const successPayload = {
       execa: execaResult,
       outputs: {

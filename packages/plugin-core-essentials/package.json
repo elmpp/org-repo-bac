@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/plugin-core-essentials",
   "library": "lib",
-  "version": "0.0.0-bollards-20230520081808",
+  "version": "0.0.0-bollards-20230520145558",
   "description": "Core Plugin package @business-as-code/plugin-core-essentials",
   "main": "src/index.ts",
   "files": [
@@ -10,6 +10,9 @@
     "dist"
   ],
   "types": "src/index.ts",
+  "scripts": {
+    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json"
+  },
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
@@ -28,7 +31,7 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230520081808",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230520145558",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
@@ -36,7 +39,7 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./dist/commands",
     "topics": {
       "initialise": {
         "description": "Initialising of content"

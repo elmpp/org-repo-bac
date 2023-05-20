@@ -52,16 +52,35 @@ describe("test-env-smoke-test-stage0", () => {
       //   res.res.tree.readText("./BOLLOCKS.md")
       // );
 
-      // const expectStdout = res.res.expectUtil.createStdout()
+      const expectStdout = res.res.expectUtil.createStdout()
       // const expectStderr = res.res.expectUtil.createStderr()
       const expectFs = res.res.expectUtil.createFs()
       // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
-      // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})
+
+      expectStdout.lineContainsString({match: new RegExp(`@business-as-code/cli/.*-bollards-.*`), occurrences: 1}) // local snapshot used
 
       // console.log(`res :>> `, res)
       // console.log(`expectFs :>> `, expectFs)
 
       // console.log(`expectFs. :>> `, expectFs.debug())
+
+      // const res = await testContext.runServiceCb(
+      //   [
+      //     "initialise",
+      //     "workspace",
+      //     "--name",
+      //     "my-new-workspace",
+      //     "--workspacePath",
+      //     testContext.testEnvVars.workspacePath.original,
+      //     "--configPath",
+      //     configPath.original,
+      //     "--cliVersion",
+      //     'bollards', // the localcli dist tag
+      //     "--registry",
+      //     'http://localhost:4873',
+      //   ],
+      //   { logLevel: "debug" }
+      // );
 
       expectFs.exists('.npmrc')
       res.res.expectUtil.createText(expectFs.readText(".npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up

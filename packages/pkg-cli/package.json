@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/cli",
-  "version": "0.0.0-bollards-20230520081808",
+  "version": "0.0.0-bollards-20230520145558",
   "description": "Tool package @business-as-code/cli",
   "main": "src/index.ts",
   "files": [

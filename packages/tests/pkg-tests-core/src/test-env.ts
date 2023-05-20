@@ -156,9 +156,9 @@ export type TestContext = {
     // workspacePath: string,
   }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, { exitCode: number; error: Error; expectUtil: ExpectUtil; }>>;
   /**
-   Allows a service task to be run directly, without need for schematics boilerplating
+   Allows a service task to be run directly
    */
-  runSchematicServiceCb: <SName extends keyof Services>(
+  runServiceCb: <SName extends keyof Services>(
     options: {
       serviceOptions: ServiceOptionsTestLite<SName>;
       /** optional Source path for the Rule. Defaults to an empty() Source */
@@ -826,7 +826,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           //   },
           // };
         },
-        runSchematicServiceCb: async ({
+        runServiceCb: async ({
           serviceOptions: { cb, serviceName, initialiseOptions },
           originPath,
           tree,

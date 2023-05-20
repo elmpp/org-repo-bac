@@ -19,37 +19,37 @@ type: 'tool'
 #
 # This setting requires a map, where the key is a unique name for the task,
 # and the value is an object of task parameters.
-tasks:
-  verdaccioStopBackground:
-    command: 'pnpm run verdaccio:stopBackground'
-    local: true
-    # options:
-    #   persistent: true # disables moon caching etc
-  verdaccioRunBackground:
-    deps:
-      - '~:verdaccioStopBackground'
-    command: 'pnpm run verdaccio:runBackground'
-    # command: 'pnpm jest --passWithNoTests @in(0)'
-    # inputs:
-    #   - 'tests/pkg-tests-specs-fixtures'
-    #   # - '/tests/pkg-tests-specs-fixtures/**/*'
-    #   # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
-    #   # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
-    #   # - '@globs(testFixtures)'
-    # outputs:
-    #   - 'blah'
-    local: true
-    # options:
-    #   persistent: true # disables moon caching etc
-    # platform: 'node'
-  verdaccioLogin:
-    command: 'pnpm run verdaccio:login'
-    local: true
-    options:
-      outputStyle: 'buffer-only-failure'
-      # persistent: true # disables moon caching etc
-  verdaccioEnsureRunning:
-    command: 'pnpm run verdaccio:ensureRunning'
-    local: true
-    # options:
-    #   persistent: true # disables moon caching etc
+# tasks:
+#   verdaccioStopBackground:
+#     command: 'pnpm run verdaccio:stopBackground'
+#     local: true
+#     # options:
+#     #   persistent: true # disables moon caching etc
+#   verdaccioRunBackground:
+#     deps:
+#       - '~:verdaccioStopBackground'
+#     command: 'pnpm run verdaccio:runBackground'
+#     # command: 'pnpm jest --passWithNoTests @in(0)'
+#     # inputs:
+#     #   - 'tests/pkg-tests-specs-fixtures'
+#     #   # - '/tests/pkg-tests-specs-fixtures/**/*'
+#     #   # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
+#     #   # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
+#     #   # - '@globs(testFixtures)'
+#     # outputs:
+#     #   - 'blah'
+#     local: true
+#     # options:
+#     #   persistent: true # disables moon caching etc
+#     # platform: 'node'
+#   verdaccioLogin:
+#     command: 'pnpm run verdaccio:login'
+#     local: true
+#     options:
+#       outputStyle: 'buffer-only-failure'
+#       # persistent: true # disables moon caching etc
+#   verdaccioEnsureRunning:
+#     command: 'pnpm run verdaccio:ensureRunning'
+#     local: true
+#     # options:
+#     #   persistent: true # disables moon caching etc

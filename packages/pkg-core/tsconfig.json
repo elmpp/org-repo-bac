@@ -19,6 +19,7 @@
     }
   ],
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist",
     "paths": {
       "@business-as-code/address": [
