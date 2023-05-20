@@ -225,7 +225,7 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*
@@ -253,10 +253,10 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../pkg-error
       '@business-as-code/fslib':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../pkg-fslib
       simple-git:
         specifier: ^3.17.0
@@ -287,10 +287,10 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../pkg-error
       '@business-as-code/fslib':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../pkg-fslib
       ansi-colors:
         specifier: ^4.1.3
@@ -314,7 +314,7 @@ importers:
         specifier: workspace:*
         version: link:../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*
@@ -471,7 +471,7 @@ importers:
         specifier: workspace:*
         version: link:../../pkg-core
       '@business-as-code/error':
-        specifier: workspace:0.0.0-bollards-20230520145106
+        specifier: workspace:0.0.0-bollards-20230520181149
         version: link:../../pkg-error
       '@business-as-code/fslib':
         specifier: workspace:*

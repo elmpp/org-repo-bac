@@ -12,7 +12,7 @@
   // moonrepo docs for libraries - https://tinyurl.com/2mkdn2uk
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "./dist"
+    "outDir": "dist"
   },
   "include": ["../../types/**/*", "src/**/*", "tests/**/*", "*.js", "*.ts"],
   "references": [

@@ -1,12 +1,13 @@
 {
   "name": "@business-as-code/tests-verdaccio",
   "private": true,
-  "version": "0.0.0-bollards-20230520145558",
+  "version": "0.0.0-bollards-20230520182205",
   "description": "Tool package @business-as-code/tests-verdaccio",
   "main": "src/index.ts",
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "collection.json"
   ],
   "scripts": {
     "//verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873",

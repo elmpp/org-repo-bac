@@ -11,7 +11,8 @@
   "main": "src/index.ts",
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "collection.json"
   ],
   "devDependencies": {
     "@business-as-code/address": "workspace:*",

@@ -22,12 +22,14 @@ force: true
   "main": "src/index.ts",
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "collection.json"
   ],
   "types": "src/index.ts",
   "scripts": {
     {% if type_variant == 'plugin-core' or type_variant == 'plugin-dev' or type_variant == 'plugin' -%}
-    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json"
+    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json; sed -i'' -D 's/\".\/src\//.\/dist\//g' collection.json",
+    "postpack": "jq '.oclif.commands=\"./src/commands\"' package.json | sponge package.json; sed -i'' -D 's/\".\/dist\//.\/src\//g' collection.json"
     {% endif -%}
   }
 

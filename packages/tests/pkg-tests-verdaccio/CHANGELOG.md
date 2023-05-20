@@ -1,5 +1,61 @@
 # @business-as-code/tests-verdaccio
 
+## 0.0.0-bollards-20230520182205
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520182205
+  - @business-as-code/fslib@0.0.0-bollards-20230520182205
+
+## 0.0.0-bollards-20230520181149
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520181149
+  - @business-as-code/fslib@0.0.0-bollards-20230520181149
+
+## 0.0.0-bollards-20230520180422
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520180422
+  - @business-as-code/fslib@0.0.0-bollards-20230520180422
+
+## 0.0.0-bollards-20230520180230
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520180230
+  - @business-as-code/fslib@0.0.0-bollards-20230520180230
+
+## 0.0.0-bollards-20230520175844
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520175844
+  - @business-as-code/fslib@0.0.0-bollards-20230520175844
+
+## 0.0.0-bollards-20230520174805
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520174805
+  - @business-as-code/fslib@0.0.0-bollards-20230520174805
+
+## 0.0.0-bollards-20230520174015
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230520174015
+  - @business-as-code/fslib@0.0.0-bollards-20230520174015
+
 ## 0.0.0-bollards-20230520145558
 
 ### Patch Changes

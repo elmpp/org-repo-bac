@@ -11,8 +11,8 @@
       "description": "Applies configuration to a workspace"
     },
     // "blank": {
-    //   "factory": "./src/schematics/blank/factory",
-    //   "schema": "./src/schematics/blank/schema.json",
+    //   "factory": ./src/schematics/blank/factory",
+    //   "schema": ./src/schematics/blank/schema.json",
     //   "description": "Create an empty schematic project or add a blank schematic to the current project."
     // },
     // "my-schematic": {
