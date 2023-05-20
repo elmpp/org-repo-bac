@@ -25,9 +25,12 @@ import * as ansiColors from "ansi-colors";
 import os from 'os';
 import { fileURLToPath } from "url";
 import util from 'util';
+import { constants } from "../constants";
+import * as coreHooks from '../hooks';
 import { setupLifecycles } from "../lifecycles";
-import { BacService } from "../services";
+import { BacService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
+import { findUp } from "../utils/fs-utils";
 import {
   assertIsOk,
   Context,
@@ -35,8 +38,7 @@ import {
   LogLevel,
   Plugin,
   Result,
-  ServiceInitialiseOptions,
-  Services,
+  ServiceInitialiseLiteOptions, Services,
   ServicesStatic
 } from "../__types__";
 
@@ -61,6 +63,7 @@ const colors = ansiColors.create();
 export type BaseParseOutput = {
   flags: {
     ["logLevel"]: LogLevel;
+    // ["workspacePath"]?: string;
     // ["options"]: Record<string, any>;
   };
 };
@@ -78,6 +81,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       default: "info",
       required: true,
     })(),
+    // workspacePath: Flags.string({
+    //   description: "Explicit option to set workspacePath",
+    //   // helpGroup: "GLOBAL",
+    //   required: false,
+    // }),
+
     // "options": Flags.custom<Record<string, unknown>>({
     //   summary: "Additional ",
     //   // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
@@ -379,13 +388,16 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   protected async loadServiceFactory({
     plugins,
+    workspacePath,
   }: {
     plugins: Interfaces.Plugin[];
     logger: Context["logger"];
+    workspacePath: AddressPathAbsolute,
   }): Promise<Context["serviceFactory"]> {
     const coreServices = {
-      schematics: SchematicsService,
       bac: BacService,
+      moon: MoonService,
+      schematics: SchematicsService,
     };
 
     const staticServices = (await plugins.reduce(async (accum, plugin) => {
@@ -407,7 +419,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
     const factory = async <SName extends keyof Services>(
       serviceName: SName,
-      initialiseOptions: ServiceInitialiseOptions<SName>
+      initialiseOptionsLite: ServiceInitialiseLiteOptions<SName>
       // initialiseOptions: ServiceOptions<SName>
     ): Promise<Services[SName]> => {
       const staticService = staticServices[serviceName];
@@ -422,7 +434,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       }
 
       const serviceIns = (await staticService.initialise(
-        initialiseOptions as any // more weird static class stuff
+        {
+          ...initialiseOptionsLite,
+          workspacePath,
+        } // more weird static class stuff
       )) as Services[SName];
 
       if (!serviceIns) {
@@ -513,7 +528,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   async runDirect(
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput
-  ): Promise<Result<unknown, unknown>> {
+  ): Promise<Result<unknown, any>> {
     await this.initialise({ parseOutput, config: this.config });
     const context = await this.setupContext({ parseOutput });
     await this.initialisePlugins({ context, parseOutput });
@@ -541,9 +556,12 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     //   this.log(msg);
     // };
 
+    const workspacePath = await this.getWorkspacePath(parseOutput.flags["workspacePath"])
+
     const serviceFactory = await this.loadServiceFactory({
       plugins: oclifConfig.plugins,
       logger: this.logger,
+      workspacePath,
     });
 
     const context = {
@@ -551,7 +569,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       cliOptions: parseOutput,
       logger: this.logger,
       serviceFactory,
-      workspacePath: this.getWorkspacePath(parseOutput.flags["workspacePath"]),
+      workspacePath: await this.getWorkspacePath(parseOutput.flags["workspacePath"]),
     };
 
     const contextCommand: ContextCommand<T> = {
@@ -581,24 +599,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     //   return lifecycles;
     // };
 
-    // const hookFactory: HookFactory = ()
-
-    // /** events occurring during bac sync */
-    // const workspaceInitHookMap = new HookMap((key: "pre" | "after") => {});
-
-    // const hookMap = new HookMap((key: "workspaceInit" | "workspaceSync") => {
-    //   switch (key) {
-    //     case "workspaceInit":
-    //       break;
-    //     case "workspaceSync":
-    //       break;
-    //     default:
-    //       assertUnreachable(key);
-    //   }
-    // }, "bac");
-
-    // const lifecycles = await createLifecycles()
-
     await Promise.all(
       oclifConfig.plugins.map(async (plugin) => {
         const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
@@ -606,7 +606,9 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
           plugin,
         });
         return pluginInitialiserFunc({ context });
-      })
+      }).concat(Object.values(coreHooks).map(async coreHook => {
+        return coreHook({ context });
+      }))
     ).catch(err => {
       throw err
       console.log(`err :>> `, err)
@@ -686,10 +688,17 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     }
   }
 
-  protected getWorkspacePath = (
+  protected async getWorkspacePath(
     pathRelOrAbsoluteNative?: string
-  ): AddressPathAbsolute => {
+  ): Promise<AddressPathAbsolute> {
     if (!pathRelOrAbsoluteNative) {
+      // when not supplied we derive it from the current install
+      const workspacePathByDotfile = await findUp(addr.parsePath(__dirname) as AddressPathAbsolute, constants.RC_FILENAME)
+
+      if (workspacePathByDotfile) {
+        return workspacePathByDotfile
+      }
+
       throw new BacError(
         MessageName.WORKSPACE_CWD_UNRESOLVABLE,
         `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?`

@@ -149,7 +149,7 @@ export class BacTestsSchematicsRun extends BaseCommand<
     // console.log(`context.services :>> `, context.services);
     const schematicsService = await context.serviceFactory("schematics", {
       context,
-      destinationPath: context.workspacePath,
+      // workspacePath: context.workspacePath,
       workingPath: ".",
     });
 

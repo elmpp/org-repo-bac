@@ -28,6 +28,9 @@
       "path": "packages/plugin-core-git"
     },
     {
+      "path": "packages/plugin-dev-changesets"
+    },
+    {
       "path": "packages/tests/pkg-tests-core"
     },
     {

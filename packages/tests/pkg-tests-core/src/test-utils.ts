@@ -1,4 +1,3 @@
-import { assertIsOk, Result } from "@business-as-code/core"
 import assert from "assert"
 import path from 'path'
 
@@ -22,17 +21,17 @@ export function getCurrentTestNameSanitised(strict: boolean = true): string | un
 export const sanitise = (str: string): string => str.replace(/['"~><]/, '').replace(/[\s;+/\\]+/g, '_')
 
 
-export function expectIsOk<T extends Result<any, any>>(res: T): asserts res is Extract<T, {success: true}> {
-  if (assertIsOk(res)) {
-    return
-  }
-  // fail(new Error(`res is not successful`)) // can't use jest fail() - https://tinyurl.com/2hu8zcpo
-  throw new Error(`Expected res to be successful. '${JSON.stringify(res)}'`)
-}
-export function expectIsFail<T extends Result<any, any>>(res: T): asserts res is Extract<T, {success: false}> {
-  if (!assertIsOk(res)) {
-    return
-  }
-  // fail(new Error(`res is not successful`)) // can't use jest fail() - https://tinyurl.com/2hu8zcpo
-  throw new Error(`Expected res to be fail. '${JSON.stringify(res)}'`)
-}
+// export function expectIsOk<T extends Result<any, any>>(res: T): asserts res is Extract<T, {success: true}> {
+//   if (assertIsOk(res)) {
+//     return
+//   }
+//   // fail(new Error(`res is not successful`)) // can't use jest fail() - https://tinyurl.com/2hu8zcpo
+//   throw new Error(`Expected res to be successful. '${JSON.stringify(res)}'`)
+// }
+// export function expectIsFail<T extends Result<any, any>>(res: T): asserts res is Extract<T, {success: false}> {
+//   if (!assertIsOk(res)) {
+//     return
+//   }
+//   // fail(new Error(`res is not successful`)) // can't use jest fail() - https://tinyurl.com/2hu8zcpo
+//   throw new Error(`Expected res to be fail. '${JSON.stringify(res)}'`)
+// }

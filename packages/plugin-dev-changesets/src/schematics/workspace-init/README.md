@@ -1,0 +1,1 @@
+This schematic just sets up the bare structure. 'workspace-configure' will apply configuration to the bare scaffold

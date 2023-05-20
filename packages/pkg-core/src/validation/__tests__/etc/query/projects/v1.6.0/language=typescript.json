@@ -1,0 +1,506 @@
+{
+  "projects": [
+    {
+      "alias": "@business-as-code/address",
+      "config": {
+        "type": "library",
+        "$schema": "https://moonrepo.dev/schemas/project.json"
+      },
+      "dependencies": {
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/**/*",
+            "!packages/pkg-address/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/src/**/*",
+            "!packages/pkg-address/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-address",
+      "inheritedConfig": {
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "tasks": {
+          "changesetInit": {
+            "command": "changeset init",
+            "platform": "node"
+          },
+          "changesetSnapshotAddChangeset": {
+            "command": "changeset add --empty",
+            "platform": "node"
+          },
+          "changesetSnapshotPublish": {
+            "command": "changeset publish --no-git-tag --tag bollards",
+            "deps": [
+              "changesetSnapshotVersion"
+            ],
+            "inputs": [
+              "@globs(publishable)"
+            ],
+            "options": {
+              "runFromWorkspaceRoot": true
+            },
+            "platform": "node"
+          },
+          "changesetSnapshotPublishLocal": {
+            "command": "changeset publish --no-git-tag -u foo --tag bollards",
+            "deps": [
+              "root:build",
+              "changesetSnapshotVersion"
+            ],
+            "env": {
+              "npm_config_registry": "http://localhost:4873",
+              "npm_config_user": "foo"
+            },
+            "inputs": [
+              "@globs(publishable)"
+            ],
+            "options": {
+              "runFromWorkspaceRoot": true
+            },
+            "platform": "node"
+          },
+          "changesetSnapshotVersion": {
+            "command": "changeset version --snapshot bollards",
+            "deps": [
+              "changesetInit",
+              "changesetSnapshotAddChangeset"
+            ],
+            "platform": "node"
+          },
+          "changesetStatus": {
+            "command": "changeset status",
+            "platform": "node"
+          },
+          "publish": {
+            "command": "pnpm publish --",
+            "inputs": [
+              "@globs(sources)"
+            ],
+            "platform": "node"
+          }
+        }
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-address",
+      "source": "packages/pkg-address",
+      "tasks": {
+        "changesetInit": {
+          "args": [
+            "init"
+          ],
+          "command": "changeset",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "changesetInit",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:changesetInit",
+          "type": "test"
+        },
+        "changesetSnapshotAddChangeset": {
+          "args": [
+            "add",
+            "--empty"
+          ],
+          "command": "changeset",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotAddChangeset",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:changesetSnapshotAddChangeset",
+          "type": "test"
+        },
+        "changesetSnapshotPublish": {
+          "args": [
+            "publish",
+            "--no-git-tag",
+            "--tag",
+            "bollards"
+          ],
+          "command": "changeset",
+          "deps": [
+            "pkg-address:changesetSnapshotVersion"
+          ],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotPublish",
+          "inputs": [
+            "@globs(publishable)"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/**/*",
+            "!packages/pkg-address/src/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:changesetSnapshotPublish",
+          "type": "test"
+        },
+        "changesetSnapshotPublishLocal": {
+          "args": [
+            "publish",
+            "--no-git-tag",
+            "-u",
+            "foo",
+            "--tag",
+            "bollards"
+          ],
+          "command": "changeset",
+          "deps": [
+            "root:build",
+            "pkg-address:changesetSnapshotVersion"
+          ],
+          "env": {
+            "npm_config_registry": "http://localhost:4873",
+            "npm_config_user": "foo"
+          },
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotPublishLocal",
+          "inputs": [
+            "@globs(publishable)"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/**/*",
+            "!packages/pkg-address/src/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:changesetSnapshotPublishLocal",
+          "type": "test"
+        },
+        "changesetSnapshotVersion": {
+          "args": [
+            "version",
+            "--snapshot",
+            "bollards"
+          ],
+          "command": "changeset",
+          "deps": [
+            "pkg-address:changesetInit",
+            "pkg-address:changesetSnapshotAddChangeset"
+          ],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotVersion",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:changesetSnapshotVersion",
+          "type": "test"
+        },
+        "changesetStatus": {
+          "args": [
+            "status"
+          ],
+          "command": "changeset",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "changesetStatus",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:changesetStatus",
+          "type": "test"
+        },
+        "publish": {
+          "args": [
+            "publish",
+            "--"
+          ],
+          "command": "pnpm",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/tasks/typescript.yml",
+            "/.moon/*.yml"
+          ],
+          "id": "publish",
+          "inputs": [
+            "@globs(sources)"
+          ],
+          "inputGlobs": [
+            "packages/pkg-address/src/**/*",
+            ".moon/*.yml",
+            "!packages/pkg-address/src/**/*.spec.[tj]s"
+          ],
+          "inputPaths": [
+            ".moon/tasks/typescript.yml"
+          ],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "pkg-address:publish",
+          "type": "test"
+        }
+      },
+      "type": "library"
+    }
+  ],
+  "options": {
+    "alias": null,
+    "affected": false,
+    "id": null,
+    "json": true,
+    "language": null,
+    "query": "language=typescript",
+    "source": null,
+    "tags": null,
+    "tasks": null,
+    "type_of": null
+  }
+}

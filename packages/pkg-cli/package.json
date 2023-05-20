@@ -1,8 +1,14 @@
 {
   "name": "@business-as-code/cli",
-  "version": "0.0.1",
+  "version": "0.0.0-bollards-20230520081808",
   "description": "Tool package @business-as-code/cli",
   "main": "src/index.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist",
+    "bin"
+  ],
   "types": "src/index.ts",
   "publishConfig": {
     "main": "dist/index.js",
@@ -16,12 +22,6 @@
     "typescript",
     "generator",
     "oclif"
-  ],
-  "files": [
-    "LICENSE",
-    "README.md",
-    "dist",
-    "bin"
   ],
   "bin": {
     "bac": "src/bin/run.ts",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@business-as-code/plugin-core-tests": "workspace:*",
+    "@business-as-code/plugin-dev-changesets": "workspace:*",
     "@types/node": "18.14.2",
     "typescript": "5.0.2"
   },
@@ -57,6 +58,7 @@
     ],
     "devPlugins": [
       "@business-as-code/plugin-core-tests",
+      "@business-as-code/plugin-dev-changesets",
       "@oclif/plugin-plugins"
     ]
   }

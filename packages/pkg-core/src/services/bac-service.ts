@@ -1,6 +1,6 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { doExec, doExecThrow } from "../utils/exec-utils";
+import { doExec } from "../utils/exec-utils";
 import { ServiceInitialiseCommonOptions } from "../__types__";
 
 declare global {
@@ -21,7 +21,11 @@ type Options = ServiceInitialiseCommonOptions & {
 type DoExecOptionsLite = Omit<
   Parameters<typeof doExec>[0]["options"],
   "context" | "cwd"
-> & {throwOnFail?: boolean}
+>
+// type DoExecOptionsLite = Omit<
+//   Parameters<typeof doExec>[0]["options"],
+//   "context" | "cwd"
+// > & {throwOnFail?: boolean}
 
 /**
  Provides programmatic way to interact with a Bac instance
@@ -42,14 +46,14 @@ export class BacService {
 
   protected async initialise(options: Options) {}
 
-  async run(options: {
-    cmd: string;
-    options: DoExecOptionsLite & { throwOnFail: true };
-  }): ReturnType<typeof doExecThrow>;
-  async run(options: {
-    cmd: string;
-    options: DoExecOptionsLite & { throwOnFail: false };
-  }): ReturnType<typeof doExec>;
+  // async run(options: {
+  //   cmd: string;
+  //   options: DoExecOptionsLite & { throwOnFail: true };
+  // }): ReturnType<typeof doExecThrow>;
+  // async run(options: {
+  //   cmd: string;
+  //   options: DoExecOptionsLite & { throwOnFail: false };
+  // }): ReturnType<typeof doExec>;
   async run(options: {
     cmd: string;
     options?: DoExecOptionsLite;
@@ -69,15 +73,15 @@ export class BacService {
         ...(options.options ?? {}),
         context: this.options.context,
         cwd: addr.pathUtils.join(
-          this.options.destinationPath,
+          this.options.workspacePath,
           addr.parsePath(this.options.workingPath)
         ) as AddressPathAbsolute,
       },
     }
 
-    if (options.options?.throwOnFail) {
-      return doExecThrow(args);
-    }
+    // if (options.options?.throwOnFail) {
+    //   return doExecThrow(args);
+    // }
     return doExec(args);
   }
 }

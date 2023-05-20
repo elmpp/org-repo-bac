@@ -4,20 +4,20 @@ import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 
 export const initialiseWorkspace: NonNullable<Plugin['initialise']> = (initialiseOptions) => {
-  initialiseOptions.context.lifecycles.initialise.hooks.initialiseWorkspace.tapPromise('@business-as-code/plugin-core-essentials', async ({context, destinationPath, workingPath}) => {
+  initialiseOptions.context.lifecycles.initialise.hooks.initialiseWorkspace.tapPromise('@business-as-code/plugin-core-essentials', async ({context, workspacePath, workingPath}) => {
 
-    if (!(await xfs.existsPromise(destinationPath.address))) {
-      const workspacePathParent = addr.pathUtils.dirname(destinationPath);
+    if (!(await xfs.existsPromise(workspacePath.address))) {
+      const workspacePathParent = addr.pathUtils.dirname(workspacePath);
       if (!(await xfs.existsPromise(workspacePathParent.address))) {
         throw new BacError(
           MessageName.FS_PATH_FORMAT_ERROR,
-          `Parent path '${workspacePathParent.original}' must be present when creating workspace at '${destinationPath.original}'`
+          `Parent path '${workspacePathParent.original}' must be present when creating workspace at '${workspacePath.original}'`
         );
       }
-      await xfs.mkdirpPromise(destinationPath.address);
+      await xfs.mkdirpPromise(workspacePath.address);
     }
 
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath, workingPath})
+    const schematicsService = await context.serviceFactory('schematics', {context, workingPath})
 
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
@@ -25,7 +25,7 @@ export const initialiseWorkspace: NonNullable<Plugin['initialise']> = (initialis
       options: {
         ...context.cliOptions.flags,
         // name: context.cliOptions.flags.name,
-        // // destinationPath: context.cliOptions.flags.workspacePath,
+        // // workspacePath: context.cliOptions.flags.workspacePath,
         // configPath: context.cliOptions.flags.configPath,
 
         // name: 'cunt',

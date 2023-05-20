@@ -12,7 +12,7 @@ import {
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 
-export class WorkspaceInit extends BaseCommand<typeof WorkspaceInit> {
+export class InitialiseWorkspace extends BaseCommand<typeof InitialiseWorkspace> {
   static override description = "Creates an empty workspace";
 
   static override examples = [
@@ -37,9 +37,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     cliVersion: Flags.string({
       description: "Specify a Bac cli version",
       required: false,
-      default: "*",
+      default: "latest",
     }),
-    cliPmRegistry: Flags.string({
+    registry: Flags.string({
       description: "Specify a package manager registry to load the Bac cli",
       required: false,
       default: "http://localhost:4873",
@@ -47,13 +47,24 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   };
 
   static override args = {
+    // firstArg: Args.string(
+    //   {
+    //     name: 'workspace',               // name of arg to show in help and reference with args[name]
+    //     required: false,            // make the arg required with `required: true`
+    //     description: 'output file', // help description
+    //     hidden: true,               // hide this arg from help
+    //     // parse: input => 'output',   // instead of the user input, return a different value
+    //     default: 'world',           // default value if no arg input
+    //     options: ['a', 'b'],        // only allow input to be from a discrete set
+    //   }
+    // ),
     // path: Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
   };
 
-  async execute(context: ContextCommand<typeof WorkspaceInit>) {
+  async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
 
     let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
@@ -78,7 +89,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     const res = await context.lifecycles.initialise.initialiseWorkspace({
       context,
-      destinationPath: workspacePath,
+      workspacePath,
       workingPath: ".",
     });
     return res;

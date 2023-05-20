@@ -1,7 +1,7 @@
 // import {oclifTest, oclifExpect} from './oclif'
 import { virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { HostCreateTree, HostTree, Tree } from "@angular-devkit/schematics";
+import { HostCreateTree, Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
   assertIsOk,
@@ -23,6 +23,7 @@ import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import { ExpectUtil } from "./jest-utils";
+import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
 import { SchematicsRunCommand } from "./schematics/schematics-run-command";
 import {
   getCurrentTestFilenameSanitised,
@@ -39,7 +40,7 @@ type ServiceOptionsTestLite<SName extends keyof ServicesStatic> = Omit<
 > & {
   initialiseOptions: Omit<
     schematicUtils.ServiceOptions<SName>["initialiseOptions"],
-    "context" | "destinationPath"
+    "context" | "workspacePath"
   >;
 };
 
@@ -61,6 +62,7 @@ type CreateEphemeralTestEnvVars = {
   workspacePath?: (options: {
     testsPath: AddressPathAbsolute;
     testName: string;
+    checkoutPath: AddressPathAbsolute;
   }) => AddressPathAbsolute;
   /** supply if you want to save a copy of the content (if tests pass) */
   savePath?: (options: {
@@ -87,7 +89,9 @@ type CreatePersistentTestEnvVars = {
   // /** supply if you want to save a copy of the content (if tests pass) */
   // savePath?: (options: {testsPath: AddressPathAbsolute, cachePath: AddressPathAbsolute, fixturesPath: AddressPathAbsolute}) => AddressPathAbsolute
   /** the base path for further folders. We do this to allow cache and content folders to be contained */
-  basePath?: () => AddressPathAbsolute;
+  // basePath?: () => AddressPathAbsolute;
+  // /** a test filename must include a -stage[0-9] suffix to  */
+  // testFilename?: () => string;
   // /** the cache base path. Tests are free to save cache entries that will allow be within here. Defaults to basePath/cache */
   // cachePath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   // /** the base path for the saveCacheManager. Defaults to basePath/fixtures */
@@ -226,21 +230,42 @@ export type RunFunction = (context: TestContext) => Promise<void>;
 //   command: oclifTestWithExpect,
 // }
 
+const basePaths = {
+  /** single test that smoke tests the test setup */
+  stage0: addr.parsePath("/tmp/bac-tests/stage0") as AddressPathAbsolute,
+  /** heavy scaffolding that will be made available to successive stages via testContext.copy() */
+  stage1: addr.parsePath("/tmp/bac-tests/stage1") as AddressPathAbsolute,
+  /** stage2 tests */
+  stage2: addr.parsePath("/tmp/bac-tests/stage1") as AddressPathAbsolute,
+}
+
+const checkoutPath = addr.pathUtils.resolve(
+  addr.parsePPath(__dirname),
+  // addr.parsePPath('../../../mnt-pkg-cli/src/bin')
+  addr.parsePPath("../../../..")
+) as AddressPathAbsolute;
+
 async function doCreatePersistentTestEnvs(
   createPersistentTestEnvVars: CreatePersistentTestEnvVars
 ): Promise<PersistentTestEnvVars> {
-  const checkoutPath = addr.pathUtils.resolve(
-    addr.parsePPath(__dirname),
-    // addr.parsePPath('../../../mnt-pkg-cli/src/bin')
-    addr.parsePPath("../../../..")
-  ) as AddressPathAbsolute;
-
   // console.log(`checkoutPath :>> `, checkoutPath)
   // throw new Error()
 
-  const basePath =
-    createPersistentTestEnvVars.basePath?.() ??
-    (addr.parsePath("/tmp/bac-tests") as AddressPathAbsolute);
+  const testFilename = getCurrentTestFilenameSanitised();
+
+  // if (!!testFilename.match(/-stage[0-9]$/)) {
+  //   throw new Error(`All testEnv tests must live within a test file with filename /[^/s]+-stage[0-9]$/. This is used for grouping when running + defines the basePath for outputted content`)
+  // }
+
+  // const basePath =
+  //   createPersistentTestEnvVars.basePath?.() ??
+  //   (addr.parsePath("/tmp/bac-tests") as AddressPathAbsolute);
+
+  const stageFromTestFilename = testFilename.match(/-(stage[0-9])\.spec\.[tj]sx?$/)?.[1]
+  if (!stageFromTestFilename || !basePaths[stageFromTestFilename as keyof typeof basePaths]) {
+    throw new Error(`All testEnv tests must live within a test file with filename /[^/s]+-stage[0-9]$/. This is used for grouping when running + defines the basePath for outputted content. Filename found: '${testFilename}'. StageNames key found: '${stageFromTestFilename}', BasePaths: '${Object.keys(basePaths)}'`)
+  }
+  const basePath = basePaths[stageFromTestFilename as keyof typeof basePaths]
 
   // const basePath = createPersistentTestEnvVars.basePath?.() ?? addr.pathUtils.join(checkoutPath, addr.parsePath('etc/var')) as AddressPathAbsolute
   // const testsPath =
@@ -324,6 +349,7 @@ async function doCreateEphemeralTestEnvVars(
     createEphemeralTestEnvVars.workspacePath?.({
       testsPath: persistentTestEnvVars.testsPath,
       testName: processNamespace,
+      checkoutPath,
     }) ??
     (addr.pathUtils.join(
       persistentTestEnvVars.testsPath,
@@ -476,12 +502,61 @@ function createTree(workspacePath: string): Tree {
   //     workspacePath as any,
   //   )
   // );
-  const tree = new HostCreateTree(
+  // const tree = new DelegateTree(
+  //   // new SchematicResettableScopedNodeJsSyncHost(workspacePath as Path)
+  // );
+  // const tree = new HostCreateTree(
+  //   new SchematicResettableScopedNodeJsSyncHost(workspacePath as Path)
+  // );
+
+  // console.log(`schematicUtils. :>> `, schematicUtils.getHostRoot(tree))
+  // const tree = new DelegateTree(new virtualFs.ScopedHost(
+  //     new NodeJsSyncHost(),
+  //     workspacePath as any,
+  //   ))
+  // class UnitTestTree extends DelegateTree {
+  //   get files() {
+  //     const result: string[] = [];
+  //     this.visit((path) => result.push(path));
+
+  //     return result;
+  //   }
+
+  //   readContent(path: string): string {
+  //     const buffer = this.read(path);
+  //     if (buffer === null) {
+  //       return '';
+  //     }
+
+  //     return buffer.toString();
+  //   }
+  // }
+  // const tree = new UnitTestTree(new NodeJsAsyncHost)
+
+
+  // loads a host tree that does not do an upfront records load and instead hits its backend for exists checks etc - DOES NOT WORK FOR TREE.GETTEXT/GETJSON ETC
+  // const tree = new HostTree(
+  //   // const liveFsTree = new HostCreateTree(
+  //   new virtualFs.ScopedHost(
+  //     new NodeJsSyncHost(),
+  //     workspacePath as Path,
+  //   )
+  // );
+
+  const tree = new HostCreateLazyTree(
     new virtualFs.ScopedHost(
       new NodeJsSyncHost(),
       workspacePath as any,
     )
   );
+
+  // const tree = new HostCreateTree(
+  //   new virtualFs.ScopedHost(
+  //     new NodeJsSyncHost(),
+  //     workspacePath as any,
+  //   )
+  // );
+  // const tree = new SchematicResettableScopedNodeJsSyncHost(workspacePath as Path);
 
   // const origExists = tree.exists
   // tree.exists = (filePath: string) => {
@@ -497,21 +572,18 @@ function createTree(workspacePath: string): Tree {
      improved exists that supports folders and checks the actual FS
      Original Schematics GH implementation - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/tree/host-tree.ts#L330
      */
-    exists(this: HostTree, filePath: string): boolean {
-      // const origRes = origExists(filePath)
-      // const fullPathIndeed = this._normalizePath(filePath)
-      const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
+     // exists(this: HostTree, filePath: string): boolean {
+    //   const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
+    //   console.log(`(this as any)._recordSync :>> `, (this as any)._recordSync)
+    //   console.log(`this._normalizePath(filePath) :>> `, this._normalizePath(filePath))
+    //   return origRes
+    // },
 
-      return origRes
-      // const origRes = (this as any)._recordSync.isFile(this._normalizePath(filePath));
-      // if (origRes) {
-      //   return origRes
-      // }
+    // getDir(this: SchematicResettableScopedNodeJsSyncHost, filePath: string): boolean {
+    //   const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
+    //   return origRes
+    // },
 
-      // const fullPath = path.join(workspacePath, filePath)
-      // // console.log(`fullPath, fs.existsSync(fullPath) :>> `, fullPath, fs.existsSync(filePath))
-      // return fs.existsSync(fullPath)
-    }
   })
 
   return tree
@@ -538,6 +610,10 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
     function createTestContext(): TestContext {
       return {
+        /** copies from the initialise tranche of tests */
+        // copy: async (sourcePath: AddressPathRelative, destinationPath: AddressPathRelative) => {
+
+        // },
         command: async (args: string[], options = {}) => {
           const { logLevel = "info" } = options;
 
@@ -585,6 +661,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             });
 
             const outputs = mockStdEnd()
+
             const tree = createTree(testEnvVars.workspacePath.original)
             const expectUtil = new ExpectUtil({
               testEnvVars,
@@ -887,6 +964,9 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
     await setupFolders(testEnvVars);
 
     await run(testContext);
+
+    console.info(`---- TEST COMPLETE. DestinationPath: '${testContext.testEnvVars.workspacePath.original}' ----`)
+
     // try {
     //   await run(testContext)
     // }

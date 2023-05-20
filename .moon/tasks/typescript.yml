@@ -20,7 +20,13 @@ fileGroups:
   # List of non-test source files.
   sources:
     - 'src/**/*'
-    - '**/*.spec.*'
+    - '!src/**/*.spec.[tj]s'
+    # - '**/*.spec.*'
+
+  # assume all except source (can't access package.json#files)
+  publishable:
+    - '**/*'
+    - '!src/**/*'
 
   # # List of non-source test files.
   # testFixtures:
@@ -47,14 +53,7 @@ fileGroups:
 # #
 # # This setting requires a map, where the key is a unique name for the task,
 # # and the value is an object of task parameters.
-tasks:
-  publish:
-    command: 'pnpm publish --'
-    inputs:
-      - '@globs(sources)'
-      # - '@globs(testFixtures)'
-      # - '@globs(testNonFixtures)'
-    platform: 'node'
+# tasks:
   # testFixtures:
   #   inputs:
   #     - '@globs(testFixtures)'

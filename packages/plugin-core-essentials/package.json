@@ -1,9 +1,14 @@
 {
   "name": "@business-as-code/plugin-core-essentials",
   "library": "lib",
-  "version": "0.0.1",
+  "version": "0.0.0-bollards-20230520081808",
   "description": "Core Plugin package @business-as-code/plugin-core-essentials",
   "main": "src/index.ts",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
   "types": "src/index.ts",
   "publishConfig": {
     "main": "dist/index.js",
@@ -14,11 +19,6 @@
     "typescript",
     "oclif"
   ],
-  "files": [
-    "LICENSE",
-    "README.md",
-    "dist"
-  ],
   "peerDependencies": {
     "@angular-devkit/core": "*",
     "@angular-devkit/schematics": "*"
@@ -28,7 +28,7 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:^0.0.1",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230520081808",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
@@ -38,8 +38,11 @@
   "oclif": {
     "commands": "./src/commands",
     "topics": {
-      "workspace": {
-        "description": "Workspace-related actions"
+      "initialise": {
+        "description": "Initialising of content"
+      },
+      "run": {
+        "description": "Running of commands"
       }
     }
   }

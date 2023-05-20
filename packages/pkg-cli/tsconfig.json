@@ -17,6 +17,9 @@
       "path": "../plugin-core-git"
     },
     {
+      "path": "../plugin-dev-changesets"
+    },
+    {
       "path": "../tests/pkg-tests-core"
     },
     {
@@ -51,6 +54,12 @@
       ],
       "@business-as-code/plugin-core-tests/*": [
         "../tests/plugin-core-tests/src/*"
+      ],
+      "@business-as-code/plugin-dev-changesets": [
+        "../plugin-dev-changesets/src/index.ts"
+      ],
+      "@business-as-code/plugin-dev-changesets/*": [
+        "../plugin-dev-changesets/src/*"
       ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"

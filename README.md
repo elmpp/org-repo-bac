@@ -1,10 +1,14 @@
 
 ## Generator command
 # # --type "application" | "library"  | "tool" | "unknown" ; --type_variant "plugin" | 'plugin-core' | 'library' | 'entrypoint'
- - p moon g package ./packages/pkg-cli --defaults -- --type 'library' --type_variant 'entrypoint' --name '@business-as-code/cli'
- - p moon g package ./packages/plugin-myplugin --defaults -- --type 'library' --type_variant 'plugin' --name '@business-as-code/plugin-myplugin'
- - p moon g package ./packages/plugin-core-essentials --defaults -- --type 'library' --type_variant 'plugin-core' --name '@business-as-code/plugin-core-myplugin'
- - p m ls # list workspaces + deps
+ - p moon g package ./packages/pkg-cli --defaults -- --type 'application' --type_variant 'entrypoint' --name '@business-as-code/cli' # entrypoint application
+ - p moon g package ./packages/pkg-core --defaults -- --type 'library' --type_variant 'library' --name '@business-as-code/core' # core package (not plugin)
+ - p moon g package ./packages/plugin-myplugin --defaults -- --type 'library' --type_variant 'plugin' --name '@business-as-code/plugin-myplugin' # normal plugin
+ - p moon g package ./packages/plugin-core-essentials --defaults -- --type 'library' --type_variant 'plugin-core' --name '@business-as-code/plugin-core-myplugin' # core plugin
+ - p moon g package ./packages/plugin-dev-myplugin --defaults -- --type 'library' --type_variant 'plugin-dev' --name '@business-as-code/plugin-dev-myplugin' # private plugin loaded as dev dependency, not published
+
+ - p multi ls # list all workspaces + deps // list all projects, using pnpm
+ - p moon project-graph
 
  - run verdaccio: p moon run pkg-tests-verdaccio:verdaccioKillBackground; p moon run pkg-tests-verdaccio:verdaccioRunBackground
 
@@ -14,11 +18,12 @@
 
   - (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login)
 
- - pnpm ls -r; pnpm view @business-as-code/cli --registry http://localhost:4873/
+ - pnpm ls -r --depth 1; pnpm view @business-as-code/cli --registry http://localhost:4873/; pnpm view @business-as-code/cli@bollards --registry http://localhost:4873/
 
 Oclif commands
 
- - p dev:runCli plugins --core
+ - p dev:runCli plugins --core  // show all packages
+ - p dev:runCli plugins --core  // show all commands
 
 ## Build commands
 

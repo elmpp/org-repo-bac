@@ -12,6 +12,7 @@ export enum MessageName {
   GIT_SERVICE_REPOSITORY_UNINITIALISED = 10,
   EXEC_SPAWN_ERROR = 11, // the spawned process can't be created. This is different to an error during process setup
   EXEC_SERVICE = 12, // error during process execution
+  SERVICE_INITIALISATION_ERROR = 13, // error during service initialisation. Services define their own checks but usually cwd
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink
   // TEST_ENV = 3, // ignorable message that is used within tests
   // PLUGIN_INSTALLATION_UNDECLARED = 10,

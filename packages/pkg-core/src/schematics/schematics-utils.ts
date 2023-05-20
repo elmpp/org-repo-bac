@@ -41,7 +41,7 @@ export type ServiceOptionsLite<SName extends keyof ServicesStatic> = Omit<
 > & {
   initialiseOptions: Omit<
     ServiceOptions<SName>["initialiseOptions"],
-    "context" | "destinationPath"
+    "context" | "workspacePath"
   >;
 };
 
@@ -49,13 +49,13 @@ export type ServiceOptionsLite<SName extends keyof ServicesStatic> = Omit<
  naughty naughty
  @internal
  */
-export function getSchematicsEngineHost(
+export function getEngineHost(
   context: SchematicContext
 ): Host & { _root: string } {
   return (context.engine.workflow as any)._host;
 }
 
-const getCurrentSchematicHostRoot = (
+export const getHostRoot = (
   context: SchematicContext
 ): AddressPathAbsolute => {
   return addr.parsePath(
@@ -106,7 +106,7 @@ export const wrapServiceAsRule = <SName extends keyof Services>({
     initialiseOptions: {
       ...serviceOptions.initialiseOptions,
       context: serviceOptions.context,
-      destinationPath: getCurrentSchematicHostRoot(schematicContext),
+      workspacePath: getHostRoot(schematicContext),
     },
   };
   return wrapServiceCbAsRule({ serviceOptions: options });
@@ -138,7 +138,7 @@ export const wrapServiceAsTask = <SName extends keyof Services>({
     initialiseOptions: {
       ...serviceOptions.initialiseOptions,
       context: serviceOptions.context,
-      destinationPath: getCurrentSchematicHostRoot(schematicContext),
+      workspacePath: getHostRoot(schematicContext),
     },
   };
 
@@ -263,7 +263,7 @@ export const flushBranchMerge = (
         .serviceFactory("schematics", {
           ...serviceOptions.initialiseOptions,
           context: serviceOptions.context,
-          destinationPath: getCurrentSchematicHostRoot(schematicContext),
+          // workspacePath: getHostRoot(schematicContext),
         })
         .then((schematicsService) => {
           // console.log(
@@ -299,7 +299,7 @@ export const flushBranchMerge = (
               // const applicableNextTree = new SchematicsResettableHostTree(getCurrentSchematicHostRoot(schematicContext).original);
               const applicableNextTree =
                 SchematicsResettableHostTree.branchFromFs(
-                  getCurrentSchematicHostRoot(schematicContext).original,
+                  getHostRoot(schematicContext).original,
                   tree
                 ) as Tree;
               // const applicableNextTree = tree
@@ -371,7 +371,7 @@ export const flushBranchMerge = (
 
                   let applicableNextTree =
                     SchematicsResettableHostTree.branchFromFs(
-                      getCurrentSchematicHostRoot(schematicContext).original,
+                      getHostRoot(schematicContext).original,
                       nextTree
                     ) as Tree;
                   // let applicableNextTree = nextTree
@@ -453,7 +453,7 @@ export const branchMerge = (
         .serviceFactory("schematics", {
           ...serviceOptions.initialiseOptions,
           context: serviceOptions.context,
-          destinationPath: getCurrentSchematicHostRoot(schematicContext),
+          // workspacePath: getHostRoot(schematicContext),
         })
         .then((schematicsService) => {
           return schematicsService

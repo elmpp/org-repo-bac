@@ -47,6 +47,67 @@ fileGroups:
 # This setting requires a map, where the key is a unique name for the task,
 # and the value is an object of task parameters.
 tasks:
+
+  changesetInit:
+    command: 'changeset init' # changesets - https://tinyurl.com/2p65m9on
+    # local: true
+    options:
+      runFromWorkspaceRoot: true
+  changesetStatus:
+    command: 'changeset status' # changesets - https://tinyurl.com/2lf7y8ty - return non-zero to prevent duplicate snapshots
+    # local: true
+    options:
+      runFromWorkspaceRoot: true
+  changesetAddSnapshotChangeset:
+    # command: 'changeset add --empty' # we need to add a changeset when creating a snapshot in order to allow bumping of versions to proceed
+    command: 'pnpm dev:runCli changesets snapshot --registry http://localhost:4873 --workspacePath $workspaceRoot' # we need to add a changeset when creating a snapshot in order to allow bumping of versions to proceed
+    # local: true
+    options:
+      runFromWorkspaceRoot: true
+
+  changesetSnapshotVersion:
+    deps:
+      - '~:changesetInit'
+      - '~:changesetAddSnapshotChangeset'
+      - '~:changesetStatus'
+      # - '@business-as-code/plugin-dev-changesets:init'
+      # - '@business-as-code/plugin-dev-changesets:addSnapshotChangeset'
+      # - '@business-as-code/plugin-dev-changesets:status'
+    command: 'changeset version --snapshot bollards' # changesets - https://tinyurl.com/2p65m9on
+    options:
+      runDepsInParallel: false
+  changesetSnapshotPublish:
+    deps:
+      - ~:changesetSnapshotVersion
+    inputs:
+      - '@globs(publishable)'
+    command: 'changeset publish --no-git-tag --tag bollards' # changesets - https://tinyurl.com/2p65m9on
+    options:
+      runFromWorkspaceRoot: true
+  changesetSnapshotPublishLocal:
+    deps:
+      - root:build
+      - ~:changesetSnapshotVersion
+      # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning' # https://github.com/moonrepo/moon/issues/859
+      # - '@business-as-code/tests-verdaccio:verdaccioLogin'
+    env:
+      npm_config_registry: http://localhost:4873
+      npm_config_user: foo
+    inputs:
+      - '@globs(publishable)'
+    # command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    command: 'changeset publish --no-git-tag -u foo --tag bollards' # changesets - https://tinyurl.com/2p65m9on
+    options:
+      runFromWorkspaceRoot: true
+      runDepsInParallel: false
+  publish:
+    command: 'pnpm publish --'
+    inputs:
+      - '@globs(sources)'
+      # - '@globs(testFixtures)'
+      # - '@globs(testNonFixtures)'
+    platform: 'node'
+
   # lint:
   #   command: 'eslint'
   #   inputs:
@@ -102,7 +163,7 @@ tasks:
       # persistent: true # disables moon caching etc
   build:
     deps:
-      - '~:buildClean'
+      # - '~:buildClean'
       # - ':lint' # run it in all
     # inputs:
     #   - '@globs(sources)'
@@ -129,61 +190,63 @@ tasks:
   # returnFail:
   #   command: "bash -c '$(exit 1)'"
   #   platform: 'system'
-  doUnpublish:
-    command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/ || true' # https://tinyurl.com/2okqdgo7
-    platform: system
-    options:
-      runFromWorkspaceRoot: true
-  unpublishDev:
-    deps:
-      # - ~:returnFail
-      - ~:build
-      - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
-      - '@business-as-code/tests-verdaccio:verdaccioLogin'
-      - ~:doUnpublish
-    options:
-      runDepsInParallel: false
-      outputStyle: 'stream'
-      # persistent: true # disables moon caching etc
-      # outputStyle: 'buffer'
+  # doUnpublish:
+  #   command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/ || true' # https://tinyurl.com/2okqdgo7
+  #   platform: system
+  #   options:
+  #     runFromWorkspaceRoot: true
+  # unpublishDev:
+  #   deps:
+  #     # - ~:returnFail
+  #     - ~:build
+  #     - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+  #     - '@business-as-code/tests-verdaccio:verdaccioLogin'
+  #     - ~:doUnpublish
+  #   options:
+  #     runDepsInParallel: false
+  #     outputStyle: 'stream'
+  #     # persistent: true # disables moon caching etc
+  #     # outputStyle: 'buffer'
 
-    # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-    # command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
-    # inputs:
-    #   - ../
-    # runFromWorkspaceRoot: true
-    # platform: 'system'
-  publishDev:
-    deps:
-      # - ~:returnFail
-      - ~:build
-      # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
-      # - '@business-as-code/tests-verdaccio:verdaccioLogin'
-      - ~:doUnpublish
-      # - ~:unpublishDev
-    # local: true
-    options:
-      runDepsInParallel: false
-      outputStyle: 'stream'
-      runFromWorkspaceRoot: true
-      # persistent: true
-      # outputStyle: 'buffer'
+  #   # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
+  #   # command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+  #   # inputs:
+  #   #   - ../
+  #   # runFromWorkspaceRoot: true
+  #   # platform: 'system'
+  # publishDev:
+  #   deps:
+  #     # - ~:returnFail
+  #     - ~:build
+  #     # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+  #     # - '@business-as-code/tests-verdaccio:verdaccioLogin'
+  #     - ~:doUnpublish
+  #     # - ~:unpublishDev
+  #   # local: true
+  #   options:
+  #     runDepsInParallel: false
+  #     outputStyle: 'stream'
+  #     runFromWorkspaceRoot: true
+  #     # persistent: true
+  #     # outputStyle: 'buffer'
 
-    # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-    command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
-    # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
-    # inputs:
-    #   - ../
-    # runFromWorkspaceRoot: true
-    # platform: 'system'
-  publish:
-    deps:
-      - ~:build
-    command: 'pnpm publish -r --force' # https://tinyurl.com/2okqdgo7
-    options:
-      runFromWorkspaceRoot: true
+  #   # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
+  #   command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+  #   # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+  #   # inputs:
+  #   #   - ../
+  #   # runFromWorkspaceRoot: true
+  #   # platform: 'system'
+  # publish:
+  #   deps:
+  #     - ~:build
+  #   command: 'pnpm publish -r --force' # https://tinyurl.com/2okqdgo7
+  #   options:
+  #     runFromWorkspaceRoot: true
     # platform: 'system'
   # sends artifacts to the local verdaccio
+
+
 
   # publishLocal:
   #   deps:

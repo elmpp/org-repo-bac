@@ -10,7 +10,7 @@ export class InitialiseLifecycle {
   hooks = {
     beforeInitialiseWorkspace: new AsyncSeriesHook<{
         context: Context;
-        destinationPath: AddressPathAbsolute;
+        workspacePath: AddressPathAbsolute;
         workingPath: string;
       }>([
       "options",
@@ -18,7 +18,7 @@ export class InitialiseLifecycle {
     initialiseWorkspace: new AsyncSeriesBailHook<
       {
         context: Context;
-        destinationPath: AddressPathAbsolute;
+        workspacePath: AddressPathAbsolute;
         workingPath: string;
       },
       Result<
@@ -32,7 +32,7 @@ export class InitialiseLifecycle {
     >(["options"]),
     afterInitialiseWorkspace: new AsyncSeriesHook<{
         context: Context;
-        destinationPath: AddressPathAbsolute;
+        workspacePath: AddressPathAbsolute;
         workingPath: string;
       }>([
       "options",

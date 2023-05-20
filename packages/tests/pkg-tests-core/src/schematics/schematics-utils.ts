@@ -6,26 +6,26 @@ import {
   HostCreateTree,
   Rule,
   SchematicContext,
-  Tree,
+  Tree
 } from "@angular-devkit/schematics";
-import { NodeWorkflow } from "@angular-devkit/schematics/tools";
 import { schematicUtils } from "@business-as-code/core";
 
+export function getFiles(tree: Tree) {
+  const treeFiles: string[] = [];
+  tree.visit((p) => !p.match('node_modules/') && treeFiles.push(p));
+  // tree.visit((p) => !!p.match(/(?!\/?node_modules\/.+)/) && treeFiles.push(p));
+  return treeFiles;
+}
 export function debugRule(
   options: Pick<
     schematicUtils.ServiceOptionsLite<"git">,
     "initialiseOptions" | "context"
-  >
+  > & {withRealFs?: boolean}
 ): Rule {
-  function getFsContents(tree: Tree, _context: SchematicContext) {
+  function getFsContents(tree: Tree) {
     const treeFiles: string[] = [];
     tree.visit((p) => treeFiles.push(p));
     return treeFiles;
-  }
-  function getCwd(tree: Tree, schematicContext: SchematicContext): Path {
-    const fsHost = schematicUtils.getSchematicsEngineHost(schematicContext);
-    (schematicContext.engine.workflow as NodeWorkflow)?.engine;
-    return fsHost._root as Path;
   }
   function getTreeActions(tree: Tree): string[] {
     return tree.actions.map((a) =>
@@ -40,18 +40,18 @@ export function debugRule(
       // const liveFsTree = new HostCreateTree(
       new virtualFs.ScopedHost(
         new NodeJsSyncHost(),
-        getCwd(tree, schematicContext)
+        schematicUtils.getHostRoot(schematicContext).original as Path,
       )
     );
 
     const debuggable: Record<string, any> = {
-      cwd: getCwd(tree, schematicContext),
-      treeContents: getFsContents(tree, schematicContext),
-      fsContents: getFsContents(liveFsTree, schematicContext),
+      cwd: schematicUtils.getHostRoot(schematicContext).original,
+      treeContents: getFsContents(tree),
+      fsContents: getFsContents(liveFsTree),
       actions: getTreeActions(tree),
     };
 
-    const gitRule = schematicUtils.wrapServiceAsRule({
+    const withGitRule = schematicUtils.wrapServiceAsRule({
       serviceOptions: {
         serviceName: "git",
         cb: async ({ service }) => {
@@ -75,6 +75,6 @@ export function debugRule(
       schematicContext,
     });
 
-    return gitRule;
+    return withGitRule;
   };
 }

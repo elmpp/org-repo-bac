@@ -1,0 +1,22 @@
+{
+  "name": "<%= dasherize(name) %>",
+  "version": "0.0.0",
+  "description": "A schematics",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && jasmine src/**/*_spec.js"
+  },
+  "keywords": [
+    "schematics"
+  ],
+  "license": "MIT",
+  "schematics": "./src/collection.json",
+  "dependencies": {
+    "@business-as-code/cli": "<%= cliVersion %>",
+    "@moonrepo/cli": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^14.15.0"
+  }
+}

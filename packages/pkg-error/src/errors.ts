@@ -230,14 +230,14 @@ Extra = undefined,
 
   // constructor(code: MessageName, message: string, error: Error, typeOrExitCode?: ErrorTypeOrExitCode) {
   constructor(
-    code: Code,
+    code: Code | undefined,
     message: string,
     error: Error,
     options: { extra?: Extra } = {}
   ) {
     // super(`${message}'.\nRethrowing the error: "${error.message}"`)
     const nextStack = BacErrorWrapper.inlineWrapError(message, error);
-    super(code, nextStack, options);
+    super((code ?? (error as BacError).reportCode ?? MessageName.UNNAMED) as Code, nextStack, options);
     this.wrapped = error;
     if (error.stack) {
       // @ts-ignore

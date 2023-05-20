@@ -8,25 +8,33 @@ force: true
   "description": "Application entrypoint package {{name}}",
   {% elif type_variant == 'library' -%}
   "description": "Library package {{name}}",
+  "private": true,
   {% elif type_variant == 'plugin-core' -%}
   "description": "Core plugin package {{name}}",
+  {% elif type_variant == 'plugin-dev' -%}
+  "description": "Dev plugin package {{name}}",
+  "private": true,
   {% elif type_variant == 'plugin' -%}
   "description": "Publishable plugin package {{name}}",
   {% else -%}
   WUT
   {% endif -%}
   "main": "src/index.ts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "types": "src/index.ts",
+
   {% if type == 'library' or type == 'application' -%}
   ,
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
   }
-  {% else -%}
-  "private": true
   {% endif -%}
-  {% if type_variant == 'plugin-core' or type_variant == 'plugin' -%}
+
+  {% if type_variant == 'plugin-core' or type_variant == 'plugin-dev' or type_variant == 'plugin' -%}
   "oclif": {
     "commands": "./src/commands",
   }

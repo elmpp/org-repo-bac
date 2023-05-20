@@ -85,7 +85,7 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
 // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: repositoriesPath, workingPath: '.'})
+    const schematicsService = await context.serviceFactory('schematics', {context, workingPath: '.'})
 
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,

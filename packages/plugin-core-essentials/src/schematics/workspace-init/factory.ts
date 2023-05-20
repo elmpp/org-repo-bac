@@ -15,10 +15,10 @@ import {
   Rule,
   schematic,
   template,
-  url,
+  url
 } from "@angular-devkit/schematics";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
-import { schematicUtils } from "@business-as-code/core";
+import { expectIsOk, schematicUtils } from "@business-as-code/core";
 import { schematicTestUtils } from "@business-as-code/tests-core";
 import { Schema } from "./schema";
 
@@ -44,14 +44,14 @@ export default function (options: Schema): Rule {
     ]);
 
     const pmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
-    const pmTaskHandle2 = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
+    // const pmTaskHandle2 = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
     // const addDepTaskHandle = schematicContext.addTask(new NodePackageInstallTask({packageName: '@business-as-code/cli', workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
 
     schematicContext.addTask(schematicUtils.wrapServiceAsTask({
       serviceOptions: {
         serviceName: "bac",
         cb: async ({ service }) => {
-          await service.run({cmd: 'help', options: {throwOnFail: true}})
+          expectIsOk(await service.run({cmd: 'help'}))
         },
         initialiseOptions: {
           workingPath: '.',
@@ -59,7 +59,7 @@ export default function (options: Schema): Rule {
         context: options._bacContext,
       },
       schematicContext,
-    }), [pmTaskHandle2]);
+    }), [pmTaskHandle]);
 
     return chain([
       mergeWith(baseTemplateSource),

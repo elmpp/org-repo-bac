@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/tests-specs-fixtures",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.0-bollards-20230519070635",
   "description": "Tool package @business-as-code/tests-specs-fixtures",
   "scripts": {
     "dev:mockGitServerHttp": "cd repositories && git-http-mock-server",
@@ -9,6 +9,10 @@
     "dev:mockGitServerSshAnonymous": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=false git-ssh-mock-server"
   },
   "main": "src/index.ts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "devDependencies": {
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",

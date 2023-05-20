@@ -39,7 +39,7 @@ export const moonProjectGraph = z.object({
   sources: z.record(z.string(), z.string()),
 });
 
-// type MoonProjectGraph = z.infer<typeof moonProjectGraph>;
+export type MoonProjectGraph = z.infer<typeof moonProjectGraph>;
 // expectTypeOf<MoonProjectGraphSubset>().toMatchTypeOf<>
 
 // type BaseProject = z.infer<typeof baseProjectSchema>

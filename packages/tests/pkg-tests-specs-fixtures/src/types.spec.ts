@@ -1,4 +1,5 @@
 import {
+  Context,
   ContextCommand,
   Flags,
   LogLevel,
@@ -100,6 +101,9 @@ describe("types", () => {
           workspacePath: object;
         }>();
       });
+      it("ContextCommand must be assignable to Context", () => {
+        expectTypeOf<ContextCommand<any>>().toMatchTypeOf<Context>(); // Context must be a subset of ContextCommand to enable the commands to use the serviceFactory
+      })
     });
     // it("contextPrivate", () => {
     //   expectTypeOf<ContextPrivate>().toMatchTypeOf<{

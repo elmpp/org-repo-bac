@@ -1,6 +1,6 @@
 /** ensure our schematic amendments are ok, such as the 'external' semantics */
+import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import { expectIsOk } from "@business-as-code/tests-core/src/test-utils";
 
 describe("schematic-utils", () => {
   describe("external", () => {

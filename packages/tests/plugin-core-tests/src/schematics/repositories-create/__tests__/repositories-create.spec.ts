@@ -1,5 +1,5 @@
+import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import { expectIsOk } from "@business-as-code/tests-core/src/test-utils";
 import assert from "assert";
 
 describe("repositories-create", () => {

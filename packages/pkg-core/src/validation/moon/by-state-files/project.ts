@@ -57,7 +57,8 @@ export const taskOptionsSchema = z.object({
   runDepsInParallel: z.boolean(),
   runInCi: z.boolean().optional(),
   runFromWorkspaceRoot: z.boolean(),
-  shell: z.boolean()
+  shell: z.boolean(),
+  persistent: z.boolean().optional(), // v1.6.0 onwards
 }).strict()
 
 export const taskSchema = z.object({

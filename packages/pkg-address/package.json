@@ -1,9 +1,13 @@
 {
   "name": "@business-as-code/address",
   "library": "lib",
-  "version": "0.0.1",
+  "version": "0.0.0-bollards-20230520081808",
   "description": "Library package @business-as-code/address",
   "main": "src/index.ts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"

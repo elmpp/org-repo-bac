@@ -515,7 +515,7 @@ export class SchematicsService {
         res: {
           error: new BacError(
             MessageName.SCHEMATICS_ERROR,
-            `DestinationPath '${this.options.destinationPath.original}' must exist before scaffolding`
+            `DestinationPath '${this.options.workspacePath.original}' must exist before scaffolding`
           ),
         },
       };
@@ -579,11 +579,12 @@ export class SchematicsService {
       // if (options.shell) {
       // }
       // return `(cd ${context.workspacePath.original}; p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} ${Object.values(objectMapAndFilter(schematicsOptions, (v, k) => `--${k}=${v}`))})`;
-      const schematicOptionsJson = JSON.stringify(options) // sans _bacContext
+      const schematicOptionsJson = JSON.stringify(Object.keys(options)) // sans _bacContext
+      // const schematicOptionsJson = JSON.stringify(options) // sans _bacContext
       return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} --schematicOptions='${schematicOptionsJson}'`;
     };
     context.logger.debug(
-      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.destinationPath.original}'${this.options.context.cliOptions.flags["logLevel"] === 'debug' ? `, Full cmd: '${optionsAsCommand(schematicMapEntry)}'` : ''}`
+      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.workspacePath.original}'${this.options.context.cliOptions.flags["logLevel"] === 'debug' ? `, Full cmd: '${optionsAsCommand(schematicMapEntry)}'` : ''}`
     );
 
     /**
@@ -676,7 +677,7 @@ console.log(`err :>> `, err)
     const cliRoot = process.cwd(); // todo make available through context
 
     const workflowRoot = addr.pathUtils.join(
-      this.options.destinationPath,
+      this.options.workspacePath,
       addr.parsePath(this.options.workingPath)
     ).original as Path;
     // const workflowRoot = (destinationPath?.original ?? process.cwd()) as Path;
@@ -1075,7 +1076,7 @@ console.log(`err :>> `, err)
 
     workflow.engineHost.registerTaskExecutor(taskExecutorFactory, {
       // context,
-      rootDirectory: this.options.destinationPath.original,
+      rootDirectory: this.options.workspacePath.original,
       // rootDirectory: root && getSystemPath(root),
     });
   }

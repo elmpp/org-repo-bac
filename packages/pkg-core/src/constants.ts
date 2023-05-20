@@ -22,6 +22,7 @@ export const constants = {
   // DATABASE_MAIN_FILENAME: `db.sqlite`,
   WORKROOT_IDENT: `root`,
   DEFAULT_COMMITTER: 'no reply <no-reply@bac.com>',
+  RC_FILENAME: 'bac.yml',
   // DEFAULT_COMMITTER_NAME: 'no reply',
   // DEFAULT_COMMITTER_EMAIL: 'no-reply@bac.com',
   // WORKING_PACKAGE_IDENT: '@monotonous/mnt-working', // name of the gitignored /packages/mnt-working package that all projects will have added
@@ -57,10 +58,4 @@ export const constants = {
   // STREAMS_END_TIMEOUT: 10000, // 5000 is reliably needed during some tests
 
   // // when needing a concrete Mnt.MapUtil.StackKeys
-  // /** @internal */
-  // CANONICAL_WORKROOT_FSNAME: 'workrootInit' as Mnt.MapUtil.StackKeys,
-  // /** @internal */
-  // CANONICAL_WORKTREE_FSNAME: 'worktreeInit' as Mnt.MapUtil.StackKeys,
-  // /** @internal */
-  // CANONICAL_WORKSPACE_FSNAME: 'workspaceInit' as Mnt.MapUtil.StackKeys,
 }

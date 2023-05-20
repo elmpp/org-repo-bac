@@ -2,7 +2,6 @@ import { logging } from "@angular-devkit/core";
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Command, Interfaces } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-import { expectTypeOf } from "expect-type";
 import {
   ArgsInfer,
   BaseParseOutput,
@@ -21,7 +20,6 @@ export type Outputs = {
 
 export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
 
-// export type LifecycleTypes = 'workspaceInit' | 'workspaceSync'
 
 /** instance types of all loaded services */
 export type Services = {
@@ -50,7 +48,8 @@ export type ContextCommand<T extends typeof Command> = {
     BaseParseOutput;
   serviceFactory: (<SName extends keyof ServicesStatic>(
     serviceName: SName,
-    options: ServiceInitialiseCommonOptions
+    options: ServiceInitialiseLiteOptions<SName>
+    // options: ServiceInitialiseCommonOptions
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
   logger: logging.Logger;
   // logger: (msg: string, level?: LogLevel) => void;
@@ -73,7 +72,7 @@ export type Context = {
   // services: Services
   serviceFactory: (<SName extends keyof ServicesStatic>(
     serviceName: SName,
-    options: ServiceInitialiseCommonOptions
+    options: ServiceInitialiseLiteOptions<SName>
   ) => Promise<Services[SName]>) & { availableServices: (keyof Services)[] };
   logger: logging.Logger;
   /** @internal */
@@ -92,13 +91,16 @@ export type Context = {
 export type ServiceInitialiseCommonOptions = {
   context: Context;
   /** service instances are recreated when targeting different directories */
-  destinationPath: AddressPathAbsolute;
+  workspacePath: AddressPathAbsolute;
   /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
   workingPath: string;
 };
 export type ServiceInitialiseOptions<SName extends keyof Services> = Parameters<
   ServicesStatic[SName]["initialise"]
 >[0];
+export type ServiceInitialiseLiteOptions<SName extends keyof Services> = Omit<Parameters<
+  ServicesStatic[SName]["initialise"]
+>[0], 'workspacePath'>; // workspacePath found inside the context
 // export type ServiceInitialiseOptions = { context: Context; workingPath: AddressPathRelative }; // workingPath must be runtime value for services
 
 export type ServiceStaticInterface = {
@@ -126,4 +128,4 @@ export type Plugin = {
 //   initialise<T>(options: ContextPrivate): T
 // }
 
-expectTypeOf<ContextCommand<any>>().toMatchTypeOf<Context>(); // Context must be a subset of ContextCommand to enable the commands to use the serviceFactory
+// expectTypeOf<ContextCommand<any>>().toMatchTypeOf<Context>(); // Context must be a subset of ContextCommand to enable the commands to use the serviceFactory

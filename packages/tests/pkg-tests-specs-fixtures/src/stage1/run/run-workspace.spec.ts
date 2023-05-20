@@ -1,12 +1,9 @@
 import { addr } from "@business-as-code/address";
+import { expectIsFail, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import {
-  expectIsFail,
-  expectIsOk,
-} from "@business-as-code/tests-core/src/test-utils";
 
 /** simply ensures the testEnv core util is operating properly */
-describe("workspace init", () => {
+describe("run workspace", () => {
   jest.setTimeout(15000);
 
   // it ('blah', async () => {
@@ -23,7 +20,7 @@ describe("workspace init", () => {
   // })
 
   // })
-  it("creates a skeleton workspace without configPath", async () => {
+  it("run commands against checkout repo (i.e. this one)", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       // const {envVars} = testContext
@@ -94,7 +91,7 @@ describe("workspace init", () => {
           testContext.testEnvVars.workspacePath.original,
           "--configPath",
           configPath.original,
-          "--cliPmRegistry",
+          "--registry",
           'http://localhost:4873',
         ],
         { logLevel: "debug" }

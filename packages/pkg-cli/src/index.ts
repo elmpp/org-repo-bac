@@ -2,6 +2,7 @@ import "@business-as-code/core";
 import "@business-as-code/plugin-core-essentials";
 import "@business-as-code/plugin-core-git";
 import "@business-as-code/plugin-core-tests";
+import "@business-as-code/plugin-dev-changesets";
 
 // all plugins must be imported here
 declare global {

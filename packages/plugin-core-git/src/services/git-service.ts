@@ -81,7 +81,7 @@ export class GitService {
   }
 
   protected static getWorkingDestinationPath(options: Options): AddressPathAbsolute {
-    return addr.pathUtils.join(options.destinationPath, addr.parsePath(options.workingPath ?? '.')) as AddressPathAbsolute
+    return addr.pathUtils.join(options.workspacePath, addr.parsePath(options.workingPath ?? '.')) as AddressPathAbsolute
   }
 
   getRepository(strict: false): undefined | SimpleGit
@@ -116,7 +116,7 @@ export class GitService {
     const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
     await simpleGit.clone(
       url,
-      this.options.destinationPath.original,
+      this.options.workspacePath.original,
       options,
     )
     // @todo - error handling

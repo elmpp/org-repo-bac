@@ -78,7 +78,7 @@ export class SchematicsRunCommand extends BaseCommand<
     // console.log(`(context.cliOptions.flags as any).initialiseOptions :>> `, (context.cliOptions.flags as any).payload.initialiseOptions)
     const schematicsService = await context.serviceFactory("schematics", {
       context,
-      destinationPath: context.workspacePath,
+      // workspacePath: context.workspacePath,
       workingPath: '.',
     });
 

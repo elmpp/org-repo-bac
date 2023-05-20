@@ -1,0 +1,29 @@
+$schema: 'https://moonrepo.dev/schemas/project.json'
+# docs - https://tinyurl.com/2qk3kdhv
+
+type: 'library'
+
+# tasks:
+  # init:
+  #   command: 'changeset init' # changesets - https://tinyurl.com/2p65m9on
+  #   # local: true
+  #   # options:
+  #   #   runFromWorkspaceRoot: true
+  # status:
+  #   command: 'changeset status' # changesets - https://tinyurl.com/2lf7y8ty - return non-zero to prevent duplicate snapshots
+  #   # local: true
+  #   options:
+  #     runFromWorkspaceRoot: true
+  # addSnapshotChangeset:
+  #   # command: 'changeset add --empty' # we need to add a changeset when creating a snapshot in order to allow bumping of versions to proceed
+  #   command: 'pnpm dev:runCli changesets snapshot --registry http://localhost:4873 --workspacePath $workspaceRoot' # we need to add a changeset when creating a snapshot in order to allow bumping of versions to proceed
+  #   # local: true
+  #   options:
+  #     runFromWorkspaceRoot: true
+    # changesets",
+    #       "snapshot",
+    #       "--registry",
+    #       "http://localhost:4873",
+    #       "--workspacePath",
+    #       // testContext.testEnvVars.workspacePath.original,
+    #       testContext.testEnvVars.checkoutPath.original,

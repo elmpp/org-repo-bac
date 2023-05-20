@@ -3,6 +3,7 @@ $schema: 'https://moonrepo.dev/schemas/template.json'
 title: 'New BaC Package'
 description: 'Create a new BaC package'
 variables:
+  # moon docs re. type - https://tinyurl.com/2onb9fs4
   type:
     type: 'enum'
     values:
@@ -26,6 +27,8 @@ variables:
         label: 'Library'
       - value: 'plugin-core'
         label: 'Core Plugin'
+      - value: 'plugin-dev'
+        label: 'Dev Plugin'
       - value: 'plugin'
         label: 'Plugin'
     default: 'library'

@@ -6,21 +6,14 @@ import { BacError, MessageName } from "@business-as-code/error";
 //   ExecaReturnValue,
 //   Options: ExecaOptions,
 // } = await import("execa");
-import execa from "execa";
-import {
-  ExecaError,
-  ExecaReturnValue,
-  Options as ExecaOptions,
-} from "execa";
+import execa, { ExecaError, ExecaReturnValue, Options as ExecaOptions } from "execa";
 // import {
 //   execa,
 //   ExecaError,
 //   ExecaReturnValue,
 //   Options as ExecaOptions,
 // } from "execa";
-import { constants } from "../constants";
 import { assertIsOk, Context, fail, ok, Outputs, Result } from "../__types__";
-import { objectMapAndFilter } from "./object-utils";
 
 // export interface ExecOptions
 //   extends Omit<import("child_process").SpawnOptions, "stdio" | "env" | "cwd"> {
@@ -75,7 +68,7 @@ export async function doExec({
 }: {
   cmd: string;
   options: DoExecOptions;
-}): Promise<Result<{outputs: Outputs; execa: ExecaReturnValue;}, ExecError>> {
+}): Promise<Result<{ outputs: Outputs; execa: ExecaReturnValue }, ExecError>> {
   // }): Promise<{success: boolean, outputs: Outputs}> {
   const {
     context,
@@ -88,36 +81,36 @@ export async function doExec({
 
   // const {JEST_WORKER_ID, ...allowableProcessEnvs} = process.env
 
-  const filterAndStringifyEnvs = (
-    envs: Record<string, string>
-  ): Record<string, string> => {
-    // return Object.entries(envs).map(([key, val]) => (val && val.toString() && !`${val}`.includes(`'`)) ? `${key}='${val}'` : '').join(` `)
-    return objectMapAndFilter(envs, (val, key) => {
-      const nonMntWhitelist = [
-        // https://tinyurl.com/24gbgbln
-        "TEMP",
-        "TMP",
-        "TMPDIR",
-      ];
-      const mntBlacklist = [
-        "MNT_REPORT_TYPE", // envTest process uses PassthroughReport
-      ];
+  // const filterAndStringifyEnvs = (
+  //   envs: Record<string, string>
+  // ): Record<string, string> => {
+  //   // return Object.entries(envs).map(([key, val]) => (val && val.toString() && !`${val}`.includes(`'`)) ? `${key}='${val}'` : '').join(` `)
+  //   return objectMapAndFilter(envs, (val, key) => {
+  //     const nonMntWhitelist = [
+  //       // https://tinyurl.com/24gbgbln
+  //       "TEMP",
+  //       "TMP",
+  //       "TMPDIR",
+  //     ];
+  //     const mntBlacklist = [
+  //       "MNT_REPORT_TYPE", // envTest process uses PassthroughReport
+  //     ];
 
-      /** we need a good strategy for passing through envs */
-      if (
-        (!key.toLowerCase().startsWith(constants.ENVIRONMENT_PREFIX) &&
-          !nonMntWhitelist.includes(key.toUpperCase())) ||
-        mntBlacklist.includes(key.toUpperCase())
-      ) {
-        return objectMapAndFilter.skip;
-      }
-      /** if isn't stringifyable or has non-json friendly chars don't allow */
-      if (val && val.toString() && !`${val}`.includes(`'`)) {
-        return val;
-      }
-      return objectMapAndFilter.skip;
-    });
-  };
+  //     /** we need a good strategy for passing through envs */
+  //     if (
+  //       (!key.toLowerCase().startsWith(constants.ENVIRONMENT_PREFIX) &&
+  //         !nonMntWhitelist.includes(key.toUpperCase())) ||
+  //       mntBlacklist.includes(key.toUpperCase())
+  //     ) {
+  //       return objectMapAndFilter.skip;
+  //     }
+  //     /** if isn't stringifyable or has non-json friendly chars don't allow */
+  //     if (val && val.toString() && !`${val}`.includes(`'`)) {
+  //       return val;
+  //     }
+  //     return objectMapAndFilter.skip;
+  //   });
+  // };
 
   // const stdio: StdioOptions = ["inherit", "pipe", "pipe"];
 
@@ -126,23 +119,22 @@ export async function doExec({
   /** Execa options - https://tinyurl.com/2qndy7hr */
   const execaOptions: ExecaOptions = {
     // shell: true,
+    extendEnv: true,
     ...spawnOptions,
     cwd: spawnOptions.cwd.original,
-    env: {
-      ...filterAndStringifyEnvs({
-        // ...toEnvironmentSettings(context.configuration.initialSettings), // pass along anything that was in this process's explicit initialSetting
-        ...(process.env as Record<string, string>), // want to keep any environment variables
-      }), // required
-      // PATH: process.env.PATH,
-      FORCE_COLOR: "1", // spawn dropping terminal colours - https://tinyurl.com/yyhl9kmu
-      YARN_IGNORE_CWD: "true",
-    } satisfies ExecaOptions["env"],
+    // env: {
+    //   ...filterAndStringifyEnvs({
+    //     // ...toEnvironmentSettings(context.configuration.initialSettings), // pass along anything that was in this process's explicit initialSetting
+    //     ...(process.env as Record<string, string>), // want to keep any environment variables
+    //   }), // required
+    //   // PATH: process.env.PATH,
+    //   FORCE_COLOR: "1", // spawn dropping terminal colours - https://tinyurl.com/yyhl9kmu
+    //   YARN_IGNORE_CWD: "true",
+    // } satisfies ExecaOptions["env"],
     // verbose: true,
     // verbose: context.cliOptions.flags["logLevel"] === "debug",
     // stdio,
   };
-
-  console.log(`execaOptions :>> `, execaOptions)
 
   // const fullSpawnOptions: CommonSpawnOptions = {
   //   shell: true,
@@ -167,7 +159,6 @@ export async function doExec({
       .map(([key, val]) => `${key}='${val}'`)
       .join(` `);
     if (options.shell) {
-
     }
     return `(cd ${options.cwd}; ${envs} ${cmd};)`;
   };
@@ -191,13 +182,16 @@ export async function doExec({
     return ok(successPayload);
   } catch (err) {
     const caughtError = err as ExecaError;
-    const execError = BacError.fromError(caughtError, {reportCode: MessageName.EXEC_SERVICE, extra: {
-      execa: caughtError,
-      outputs: {
-        stdout: caughtError.stdout,
-        stderr: caughtError.stderr,
+    const execError = BacError.fromError(caughtError, {
+      reportCode: MessageName.EXEC_SERVICE,
+      extra: {
+        execa: caughtError,
+        outputs: {
+          stdout: caughtError.stdout,
+          stderr: caughtError.stderr,
+        },
       },
-    }})
+    });
     // (
     //   MessageName.EXEC_SERVICE,
     //   caughtError.message,
@@ -234,7 +228,7 @@ export async function doExecThrow(options: {
   options: DoExecOptions;
 }): Promise<{ execa: ExecaReturnValue; outputs: Outputs }> {
   const res = await doExec(options);
-// console.log(`reswwwwwwwwwww :>> `, res.res, Object.keys(res.res))
+  // console.log(`reswwwwwwwwwww :>> `, res.res, Object.keys(res.res))
   if (assertIsOk(res)) {
     return res.res;
   }

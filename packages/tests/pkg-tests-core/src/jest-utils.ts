@@ -14,18 +14,20 @@
 //   // splittable?: PackageUpstreamPushStatus
 // }
 
-import { HostTree, Tree } from "@angular-devkit/schematics"
+import { Tree } from "@angular-devkit/schematics"
 import { addr, AddressPathAbsolute } from "@business-as-code/address"
 import { Outputs, stringUtils } from "@business-as-code/core"
 import { assertIsError } from "@business-as-code/error"
-import { TestEnvVars } from "./test-env"
-import os from 'os'
 import { xfs } from "@business-as-code/fslib"
+import os from 'os'
+import { TestEnvVars } from "./test-env"
+import { virtualFs } from "@angular-devkit/core"
+import { NodeJsSyncHost } from "@angular-devkit/core/node"
 // @ts-ignore
 import expectMatchers from 'expect/build/matchers'
 import fs from 'fs'
-import { virtualFs } from "@angular-devkit/core"
 import path from 'path'
+import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree"
 
 // const REGEX_STRIP_ANSI_ESCAPE_CODES = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
 
@@ -103,10 +105,17 @@ export class ExpectUtil {
 }
 
 /** small wrapper around the tree */
-class ExpectFs extends HostTree {
+class ExpectFs extends HostCreateLazyTree {
+// class ExpectFs extends HostTree {
   options: Options
 
-  constructor(options: Options, protected override _backend: virtualFs.ReadonlyHost<{}> = new virtualFs.Empty()) {
+  // constructor(options: Options, protected override _backend: virtualFs.ReadonlyHost<{}> = new virtualFs.Empty()) {
+  constructor(options: Options) {
+    console.log(`options.testEnvVars.workspacePath :>> `, options.testEnvVars.workspacePath)
+    const _backend = new virtualFs.ScopedHost(
+      new NodeJsSyncHost(),
+      options.testEnvVars.workspacePath.original as any,
+    )
     super(_backend)
     this.options = options
   }
@@ -114,7 +123,7 @@ class ExpectFs extends HostTree {
   static fromTree(options: Options, tree: Tree): ExpectFs {
     // return new ExpectFs(tree._backend, options)
     const nextIns = new ExpectFs(options)
-    nextIns.merge(tree)
+    nextIns.merge(tree) // may not actually be required here - driven purely from fs?
     return nextIns
   }
 
@@ -124,6 +133,12 @@ class ExpectFs extends HostTree {
     // console.log(`this.options.tree :>> `, this.options.tree)
     return this.options.tree.exists(filePath) || fs.existsSync(filePathAbs)
   }
+
+  // debug() {
+  //   return {
+  //     files: schematicTestUtils.getFiles(this.options.tree),
+  //   }
+  // }
 }
 
 class ExpectText {
