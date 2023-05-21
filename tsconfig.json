@@ -46,7 +46,7 @@
       "path": "packages/tests/pkg-tests-verdaccio"
     },
     {
-      "path": "packages/tests/plugin-core-tests"
+      "path": "packages/tests/plugin-dev-tests"
     }
   ]
 }

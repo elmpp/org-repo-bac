@@ -103,7 +103,7 @@ tasks:
       # persistent: true # disables moon caching etc
   build:
     deps:
-      # - '~:buildClean'
+      - '~:buildClean'
       # - ':lint' # run it in all
     # inputs:
     #   - '@globs(sources)'

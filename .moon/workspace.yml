@@ -32,7 +32,7 @@ projects:
     # - 'packages/tests/pkg-tests-core'
     # - 'packages/tests/pkg-tests-verdaccio'
     # - 'packages/tests/pkg-tests-specs-fixtures'
-    # - 'packages/tests/plugin-core-tests'
+    # - 'packages/tests/plugin-dev-tests'
 
 generator:
   templates:

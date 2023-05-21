@@ -1,7 +1,7 @@
 {
-  "name": "@business-as-code/plugin-core-tests",
-  "version": "0.0.0-bollards-20230521084442",
-  "description": "Publishable plugin package @business-as-code/plugin-core-tests",
+  "name": "@business-as-code/plugin-dev-tests",
+  "version": "0.0.0-bollards-20230521111204",
+  "description": "Publishable plugin package @business-as-code/plugin-dev-tests",
   "main": "src/index.ts",
   "files": [
     "dist",
@@ -10,8 +10,8 @@
   ],
   "types": "src/index.ts",
   "scripts": {
-    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/src\\//.\\/dist\\//g' collection.json",
-    "postpack": "jq '.oclif.commands=\"./src/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/dist\\//.\\/src\\//g' collection.json"
+    "prepack": "bac-prepack",
+    "postpack": "bac-postpack"
   },
   "publishConfig": {
     "main": "dist/index.js",
@@ -26,10 +26,11 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230521084442",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230521111204",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
+    "@business-as-code/plugin-dev-essentials": "workspace:*",
     "@business-as-code/tests-core": "workspace:*",
     "@types/node": "^18.15.3",
     "expect-type": "^0.15.0"

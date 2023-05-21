@@ -861,7 +861,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               workspacePath: testContext.testEnvVars.workspacePath.original,
               // destinationPath: testContext.envVars.workspacePath.original,
               schematicsAddress:
-                "@business-as-code/plugin-core-tests#namespace=run-service-as-rule",
+                "@business-as-code/plugin-dev-tests#namespace=run-service-as-rule",
               payload: {
                 initialiseOptions,
                 originPath: originPath?.original,

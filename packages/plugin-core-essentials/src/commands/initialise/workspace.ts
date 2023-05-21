@@ -39,10 +39,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       required: false,
       default: "latest",
     }),
-    registry: Flags.string({
+    cliRegistry: Flags.string({
       description: "Specify a package manager registry to load the Bac cli",
       required: false,
-      default: "http://localhost:4873",
+      // default: "http://localhost:4873",
     }),
   };
 

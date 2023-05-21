@@ -13,7 +13,7 @@ describe("schematic-utils", () => {
             flags: {
               workspacePath: testContext.testEnvVars.workspacePath.original,
               schematicsAddress:
-                "@business-as-code/plugin-core-tests#namespace=schematic-utils",
+                "@business-as-code/plugin-dev-tests#namespace=schematic-utils",
               ["logLevel"]: "info",
               json: false,
             },

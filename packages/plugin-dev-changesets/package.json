@@ -1,8 +1,7 @@
 {
   "name": "@business-as-code/plugin-dev-changesets",
-  "version": "0.0.0-bollards-20230521084442",
+  "version": "0.0.0-bollards-20230521111204",
   "description": "Dev plugin package @business-as-code/plugin-dev-changesets",
-  "private": true,
   "main": "src/index.ts",
   "files": [
     "dist",
@@ -29,7 +28,7 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230521084442",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230521111204",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {

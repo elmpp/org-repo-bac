@@ -3,6 +3,6 @@ export interface Schema {
   name: string,
   configPath?: string,
   cliVersion?: string
-  registry?: string
+  cliRegistry?: string
   _bacContext: import('@business-as-code/core').Context
 }

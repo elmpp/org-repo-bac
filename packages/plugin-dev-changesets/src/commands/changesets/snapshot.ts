@@ -97,10 +97,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // the strategy is just to create a changeset file for all the publishable projects (defined as type {library,application})
     // Changeset doesn't offer any generation options - https://github.com/changesets/changesets/issues/862
 
-    console.log(
-      `snapshotProjects.pro :>> `,
-      snapshotProjects.projects.map((p) => p.alias)
-    );
+    // console.log(
+    //   `snapshotProjects.pro :>> `,
+    //   snapshotProjects.projects.map((p) => p.alias)
+    // );
 
     // console.log(`snapshotProjects :>> `, snapshotProjects)
 

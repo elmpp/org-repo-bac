@@ -88,7 +88,7 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
     const schematicsService = await context.serviceFactory('schematics', {context, workingPath: '.'})
 
     const res = await schematicsService.runSchematic({
-      address: `@business-as-code/plugin-core-tests#namespace=repositories-create`,
+      address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
       context,
       options: {},
     });

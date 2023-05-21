@@ -31,7 +31,7 @@ describe("test-env-smoke-test-stage0", () => {
           configPath.original,
           "--cliVersion",
           'bollards', // the localcli dist tag
-          "--registry",
+          "--cliRegistry",
           'http://localhost:4873',
         ],
         { logLevel: "debug" }

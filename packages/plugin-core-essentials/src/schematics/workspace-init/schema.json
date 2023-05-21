@@ -20,7 +20,7 @@
       "type": "string",
       "description": "The version of BaC",
     },
-    "registry": {
+    "cliRegistry": {
       "type": "string",
       "description": "Allows BaC to be built from a local registry if required",
     },

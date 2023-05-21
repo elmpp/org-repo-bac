@@ -11,7 +11,7 @@
     "@business-as-code/tests-specs-fixtures": "pkg-tests-specs-fixtures",
     "@business-as-code/tests-core": "pkg-tests-core",
     "@business-as-code/plugin-core-essentials": "plugin-core-essentials",
-    "@business-as-code/plugin-core-tests": "plugin-core-tests",
+    "@business-as-code/plugin-dev-tests": "plugin-dev-tests",
     "git-http-mock-server": "pkg-tests-git-mock-server",
     "@business-as-code/cli": "pkg-cli"
   },
@@ -702,7 +702,7 @@
         "type": "library"
       },
       {
-        "alias": "@business-as-code/plugin-core-tests",
+        "alias": "@business-as-code/plugin-dev-tests",
         "config": {
           "type": "library",
           "$schema": "https://moonrepo.dev/schemas/project.json"
@@ -756,7 +756,7 @@
             "id": "sources"
           }
         },
-        "id": "plugin-core-tests",
+        "id": "plugin-dev-tests",
         "inheritedConfig": {
           "fileGroups": {
             "configs": [
@@ -778,8 +778,8 @@
           }
         },
         "language": "typescript",
-        "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/plugin-core-tests",
-        "source": "packages/tests/plugin-core-tests",
+        "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/plugin-dev-tests",
+        "source": "packages/tests/plugin-dev-tests",
         "tasks": {
           "publish": {
             "args": [
@@ -799,9 +799,9 @@
               "@globs(sources)"
             ],
             "inputGlobs": [
-              "packages/tests/plugin-core-tests/**/*.spec.*",
+              "packages/tests/plugin-dev-tests/**/*.spec.*",
               ".moon/*.yml",
-              "packages/tests/plugin-core-tests/src/**/*"
+              "packages/tests/plugin-dev-tests/src/**/*"
             ],
             "inputPaths": [
               ".moon/tasks/typescript.yml"
@@ -827,7 +827,7 @@
             "outputGlobs": [],
             "outputPaths": [],
             "platform": "node",
-            "target": "plugin-core-tests:publish",
+            "target": "plugin-dev-tests:publish",
             "type": "test"
           }
         },
@@ -1116,11 +1116,11 @@
             "source": "implicit",
             "via": "@business-as-code/core"
           },
-          "plugin-core-tests": {
-            "id": "plugin-core-tests",
+          "plugin-dev-tests": {
+            "id": "plugin-dev-tests",
             "scope": "development",
             "source": "implicit",
-            "via": "@business-as-code/plugin-core-tests"
+            "via": "@business-as-code/plugin-dev-tests"
           },
           "plugin-core-moon": {
             "id": "plugin-core-moon",
@@ -2706,7 +2706,7 @@
     "pkg-tests-specs-fixtures": 14,
     "pkg-tests-core": 4,
     "pkg-error": 1,
-    "plugin-core-tests": 6,
+    "plugin-dev-tests": 6,
     "plugin-core-essentials": 8,
     "pkg-core": 3
   },
@@ -2724,7 +2724,7 @@
     "pkg-tests-core": "packages/tests/pkg-tests-core",
     "pkg-error": "packages/pkg-error",
     "plugin-core-essentials": "packages/plugin-core-essentials",
-    "plugin-core-tests": "packages/tests/plugin-core-tests",
+    "plugin-dev-tests": "packages/tests/plugin-dev-tests",
     "pkg-core": "packages/pkg-core"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "git-http-mock-server",
   "private": true,
-  "version": "0.0.0-bollards-20230519070635",
+  "version": "0.0.0-bollards-20230521111204",
   "description": "Clone and push to git repository test fixtures over HTTP.",
   "exports": "./index.js",
   "bin": {

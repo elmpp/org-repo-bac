@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/tests-specs-fixtures",
   "private": true,
-  "version": "0.0.0-bollards-20230519070635",
+  "version": "0.0.0-bollards-20230521111204",
   "description": "Tool package @business-as-code/tests-specs-fixtures",
   "scripts": {
     "dev:mockGitServerHttp": "cd repositories && git-http-mock-server",

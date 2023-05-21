@@ -521,11 +521,11 @@
           "source": "implicit",
           "via": "@business-as-code/plugin-dev-changesets"
         },
-        "plugin-core-tests": {
-          "id": "plugin-core-tests",
+        "plugin-dev-tests": {
+          "id": "plugin-dev-tests",
           "scope": "development",
           "source": "implicit",
-          "via": "@business-as-code/plugin-core-tests"
+          "via": "@business-as-code/plugin-dev-tests"
         }
       },
       "fileGroups": {
@@ -5718,7 +5718,7 @@
       "type": "library"
     },
     {
-      "alias": "@business-as-code/plugin-core-tests",
+      "alias": "@business-as-code/plugin-dev-tests",
       "config": {
         "$schema": "https://moonrepo.dev/schemas/project.json"
       },
@@ -5758,28 +5758,28 @@
         "configs": {
           "files": [],
           "globs": [
-            "packages/tests/plugin-core-tests/*.{js,json}"
+            "packages/tests/plugin-dev-tests/*.{js,json}"
           ],
           "id": "configs"
         },
         "publishable": {
           "files": [],
           "globs": [
-            "packages/tests/plugin-core-tests/**/*",
-            "!packages/tests/plugin-core-tests/src/**/*"
+            "packages/tests/plugin-dev-tests/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*"
           ],
           "id": "publishable"
         },
         "sources": {
           "files": [],
           "globs": [
-            "packages/tests/plugin-core-tests/src/**/*",
-            "!packages/tests/plugin-core-tests/src/**/*.spec.[tj]s"
+            "packages/tests/plugin-dev-tests/src/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*.spec.[tj]s"
           ],
           "id": "sources"
         }
       },
-      "id": "plugin-core-tests",
+      "id": "plugin-dev-tests",
       "inheritedConfig": {
         "fileGroups": {
           "configs": [
@@ -5856,8 +5856,8 @@
         }
       },
       "language": "typescript",
-      "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/plugin-core-tests",
-      "source": "packages/tests/plugin-core-tests",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/plugin-dev-tests",
+      "source": "packages/tests/plugin-dev-tests",
       "tasks": {
         "changesetInit": {
           "args": [
@@ -5876,7 +5876,7 @@
             "**/*"
           ],
           "inputGlobs": [
-            "packages/tests/plugin-core-tests/**/*",
+            "packages/tests/plugin-dev-tests/**/*",
             ".moon/*.yml"
           ],
           "inputPaths": [
@@ -5904,7 +5904,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:changesetInit",
+          "target": "plugin-dev-tests:changesetInit",
           "type": "test"
         },
         "changesetSnapshotAddChangeset": {
@@ -5925,7 +5925,7 @@
             "**/*"
           ],
           "inputGlobs": [
-            "packages/tests/plugin-core-tests/**/*",
+            "packages/tests/plugin-dev-tests/**/*",
             ".moon/*.yml"
           ],
           "inputPaths": [
@@ -5953,7 +5953,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:changesetSnapshotAddChangeset",
+          "target": "plugin-dev-tests:changesetSnapshotAddChangeset",
           "type": "test"
         },
         "changesetSnapshotPublish": {
@@ -5965,7 +5965,7 @@
           ],
           "command": "changeset",
           "deps": [
-            "plugin-core-tests:changesetSnapshotVersion"
+            "plugin-dev-tests:changesetSnapshotVersion"
           ],
           "env": {},
           "flags": [],
@@ -5978,8 +5978,8 @@
             "@globs(publishable)"
           ],
           "inputGlobs": [
-            "packages/tests/plugin-core-tests/**/*",
-            "!packages/tests/plugin-core-tests/src/**/*",
+            "packages/tests/plugin-dev-tests/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*",
             ".moon/*.yml"
           ],
           "inputPaths": [
@@ -6007,7 +6007,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:changesetSnapshotPublish",
+          "target": "plugin-dev-tests:changesetSnapshotPublish",
           "type": "test"
         },
         "changesetSnapshotPublishLocal": {
@@ -6022,7 +6022,7 @@
           "command": "changeset",
           "deps": [
             "root:build",
-            "plugin-core-tests:changesetSnapshotVersion"
+            "plugin-dev-tests:changesetSnapshotVersion"
           ],
           "env": {
             "npm_config_registry": "http://localhost:4873",
@@ -6038,8 +6038,8 @@
             "@globs(publishable)"
           ],
           "inputGlobs": [
-            "packages/tests/plugin-core-tests/**/*",
-            "!packages/tests/plugin-core-tests/src/**/*",
+            "packages/tests/plugin-dev-tests/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*",
             ".moon/*.yml"
           ],
           "inputPaths": [
@@ -6067,7 +6067,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:changesetSnapshotPublishLocal",
+          "target": "plugin-dev-tests:changesetSnapshotPublishLocal",
           "type": "test"
         },
         "changesetSnapshotVersion": {
@@ -6078,8 +6078,8 @@
           ],
           "command": "changeset",
           "deps": [
-            "plugin-core-tests:changesetInit",
-            "plugin-core-tests:changesetSnapshotAddChangeset"
+            "plugin-dev-tests:changesetInit",
+            "plugin-dev-tests:changesetSnapshotAddChangeset"
           ],
           "env": {},
           "flags": [],
@@ -6092,7 +6092,7 @@
             "**/*"
           ],
           "inputGlobs": [
-            "packages/tests/plugin-core-tests/**/*",
+            "packages/tests/plugin-dev-tests/**/*",
             ".moon/*.yml"
           ],
           "inputPaths": [
@@ -6120,7 +6120,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:changesetSnapshotVersion",
+          "target": "plugin-dev-tests:changesetSnapshotVersion",
           "type": "test"
         },
         "changesetStatus": {
@@ -6140,7 +6140,7 @@
             "**/*"
           ],
           "inputGlobs": [
-            "packages/tests/plugin-core-tests/**/*",
+            "packages/tests/plugin-dev-tests/**/*",
             ".moon/*.yml"
           ],
           "inputPaths": [
@@ -6168,7 +6168,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:changesetStatus",
+          "target": "plugin-dev-tests:changesetStatus",
           "type": "test"
         },
         "publish": {
@@ -6189,9 +6189,9 @@
             "@globs(sources)"
           ],
           "inputGlobs": [
-            "!packages/tests/plugin-core-tests/src/**/*.spec.[tj]s",
+            "!packages/tests/plugin-dev-tests/src/**/*.spec.[tj]s",
             ".moon/*.yml",
-            "packages/tests/plugin-core-tests/src/**/*"
+            "packages/tests/plugin-dev-tests/src/**/*"
           ],
           "inputPaths": [
             ".moon/tasks/typescript.yml"
@@ -6218,7 +6218,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-core-tests:publish",
+          "target": "plugin-dev-tests:publish",
           "type": "test"
         }
       },

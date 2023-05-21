@@ -11,7 +11,7 @@
     "@business-as-code/tests-specs-fixtures": "pkg-tests-specs-fixtures",
     "@business-as-code/tests-core": "pkg-tests-core",
     "@business-as-code/plugin-core-essentials": "plugin-core-essentials",
-    "@business-as-code/plugin-core-tests": "plugin-core-tests",
+    "@business-as-code/plugin-dev-tests": "plugin-dev-tests",
     "git-http-mock-server": "pkg-tests-git-mock-server",
     "@business-as-code/cli": "pkg-cli"
   },

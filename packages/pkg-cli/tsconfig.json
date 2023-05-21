@@ -26,7 +26,7 @@
       "path": "../tests/pkg-tests-core"
     },
     {
-      "path": "../tests/plugin-core-tests"
+      "path": "../tests/plugin-dev-tests"
     }
   ],
   "compilerOptions": {
@@ -52,11 +52,11 @@
       "@business-as-code/plugin-core-git/*": [
         "../plugin-core-git/src/*"
       ],
-      "@business-as-code/plugin-core-tests": [
-        "../tests/plugin-core-tests/src/index.ts"
+      "@business-as-code/plugin-dev-tests": [
+        "../tests/plugin-dev-tests/src/index.ts"
       ],
-      "@business-as-code/plugin-core-tests/*": [
-        "../tests/plugin-core-tests/src/*"
+      "@business-as-code/plugin-dev-tests/*": [
+        "../tests/plugin-dev-tests/src/*"
       ],
       "@business-as-code/plugin-dev-changesets": [
         "../plugin-dev-changesets/src/index.ts"

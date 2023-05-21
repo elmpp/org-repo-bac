@@ -28,6 +28,12 @@
       "@business-as-code/fslib/*": [
         "../../pkg-fslib/src/*"
       ],
+      "@business-as-code/plugin-dev-essentials": [
+        "../../plugin-dev-essentials/src/index.ts"
+      ],
+      "@business-as-code/plugin-dev-essentials/*": [
+        "../../plugin-dev-essentials/src/*"
+      ],
       "@business-as-code/tests-core": [
         "../pkg-tests-core/src/index.ts"
       ],
@@ -55,6 +61,9 @@
     },
     {
       "path": "../../pkg-fslib"
+    },
+    {
+      "path": "../../plugin-dev-essentials"
     },
     {
       "path": "../pkg-tests-core"
