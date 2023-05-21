@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/tests-core",
-  "version": "0.0.0-bollards-20230521111204",
+  "version": "0.0.0-bollards-20230521161933",
   "description": "Tool package @business-as-code/tests-core",
   "main": "src/index.ts",
   "files": [

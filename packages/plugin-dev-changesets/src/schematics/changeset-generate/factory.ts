@@ -3,7 +3,6 @@ import {
   apply,
   chain,
   mergeWith,
-  move,
   Rule,
   template,
   url
@@ -24,7 +23,8 @@ export default function (options: Schema): Rule {
       schematicUtils.getHostRoot(schematicContext).original,
       changesetsFolder
     );
-    const changesetFilename = `changeset-${getRandomInt(99999)}.md`;
+    // const changesetFilename = `changeset-${getRandomInt(99999)}.md`;
+    const rand = getRandomInt(99999)
 
     if (!fs.existsSync(changesetsPath)) {
       throw new Error(
@@ -37,12 +37,13 @@ export default function (options: Schema): Rule {
         ...options,
         dot: ".",
         dasherize: strings.dasherize,
+        rand,
       }),
-      move(changesetsFolder),
-      move(
-        `${changesetsFolder}/changeset.md`,
-        `${changesetsFolder}/${changesetFilename}`
-      ),
+      // move(changesetsFolder),
+      // move(
+      //   `${changesetsFolder}/changeset.md`,
+      //   `${changesetsFolder}/${changesetFilename}`
+      // ),
     ]);
 
     // console.log(`schematicTestUtils.getFiles(tree) :>> `, schematicTestUtils.getFiles(tree))

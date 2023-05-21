@@ -1,5 +1,23 @@
 # @business-as-code/error
 
+## 0.0.0-bollards-20230521161933
+
+### Patch Changes
+
+- new message
+
+## 0.0.0-bollards-20230521161816
+
+### Patch Changes
+
+- new message
+
+## 0.0.0-bollards-20230521112329
+
+### Patch Changes
+
+- new message
+
 ## 0.0.0-bollards-20230521111204
 
 ### Patch Changes
