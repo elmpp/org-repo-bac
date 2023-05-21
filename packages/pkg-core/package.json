@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/core",
   "library": "lib",
-  "version": "0.0.0-bollards-20230520182205",
+  "version": "0.0.0-bollards-20230521070624",
   "description": "Library package @business-as-code/core",
   "main": "src/index.ts",
   "files": [

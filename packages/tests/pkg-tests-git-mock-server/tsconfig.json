@@ -1,7 +1,9 @@
 {
   "extends": "../../../tsconfig.options.json",
   "include": [
-    "**/*"
+    // "**/*" // don't need to compile anything here
   ],
+  "compilerOptions": {
+  },
   "references": []
 }

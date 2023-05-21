@@ -1,5 +1,118 @@
 # @business-as-code/plugin-core-essentials
 
+## 0.0.0-bollards-20230521070624
+
+### Patch Changes
+
+- new message
+- new message
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230521070624
+  - @business-as-code/core@0.0.0-bollards-20230521070624
+  - @business-as-code/error@0.0.0-bollards-20230521070624
+  - @business-as-code/fslib@0.0.0-bollards-20230521070624
+
+## 0.0.0-bollards-20230521065148
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230521065148
+  - @business-as-code/core@0.0.0-bollards-20230521065148
+  - @business-as-code/error@0.0.0-bollards-20230521065148
+  - @business-as-code/fslib@0.0.0-bollards-20230521065148
+
+## 0.0.0-bollards-20230520194736
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520194736
+  - @business-as-code/core@0.0.0-bollards-20230520194736
+  - @business-as-code/error@0.0.0-bollards-20230520194736
+  - @business-as-code/fslib@0.0.0-bollards-20230520194736
+  - @business-as-code/tests-core@0.0.0-bollards-20230520194736
+
+## 0.0.0-bollards-20230520191024
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520191024
+  - @business-as-code/core@0.0.0-bollards-20230520191024
+  - @business-as-code/error@0.0.0-bollards-20230520191024
+  - @business-as-code/fslib@0.0.0-bollards-20230520191024
+
+## 0.0.0-bollards-20230520190936
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520190936
+  - @business-as-code/core@0.0.0-bollards-20230520190936
+  - @business-as-code/error@0.0.0-bollards-20230520190936
+  - @business-as-code/fslib@0.0.0-bollards-20230520190936
+
+## 0.0.0-bollards-20230520190630
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520190630
+  - @business-as-code/core@0.0.0-bollards-20230520190630
+  - @business-as-code/error@0.0.0-bollards-20230520190630
+  - @business-as-code/fslib@0.0.0-bollards-20230520190630
+
+## 0.0.0-bollards-20230520184509
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520184509
+  - @business-as-code/core@0.0.0-bollards-20230520184509
+  - @business-as-code/error@0.0.0-bollards-20230520184509
+  - @business-as-code/fslib@0.0.0-bollards-20230520184509
+
+## 0.0.0-bollards-20230520184209
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520184209
+  - @business-as-code/core@0.0.0-bollards-20230520184209
+  - @business-as-code/error@0.0.0-bollards-20230520184209
+  - @business-as-code/fslib@0.0.0-bollards-20230520184209
+
+## 0.0.0-bollards-20230520183922
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520183922
+  - @business-as-code/core@0.0.0-bollards-20230520183922
+  - @business-as-code/error@0.0.0-bollards-20230520183922
+  - @business-as-code/fslib@0.0.0-bollards-20230520183922
+
+## 0.0.0-bollards-20230520182953
+
+### Patch Changes
+
+- new message
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230520182953
+  - @business-as-code/core@0.0.0-bollards-20230520182953
+  - @business-as-code/error@0.0.0-bollards-20230520182953
+  - @business-as-code/fslib@0.0.0-bollards-20230520182953
+
 ## 0.0.0-bollards-20230520182205
 
 ### Patch Changes

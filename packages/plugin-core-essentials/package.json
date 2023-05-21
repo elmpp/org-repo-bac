@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/plugin-core-essentials",
   "library": "lib",
-  "version": "0.0.0-bollards-20230520182205",
+  "version": "0.0.0-bollards-20230521070624",
   "description": "Core Plugin package @business-as-code/plugin-core-essentials",
   "main": "src/index.ts",
   "files": [
@@ -12,8 +12,8 @@
   ],
   "types": "src/index.ts",
   "scripts": {
-    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json; sed -i'' -D 's/\"./src//./dist//g' collection.json",
-    "postpack": "jq '.oclif.commands=\"./src/commands\"' package.json | sponge package.json; sed -i'' -D 's/\"./dist//./src//g' collection.json"
+    "prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/src\\//.\\/dist\\//g' collection.json",
+    "postpack": "jq '.oclif.commands=\"./src/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/dist\\//.\\/src\\//g' collection.json"
   },
   "publishConfig": {
     "main": "dist/index.js",
@@ -33,7 +33,7 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230520182205",
+    "@business-as-code/error": "workspace:*",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
@@ -41,7 +41,7 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./dist/commands",
+    "commands": "./src/commands",
     "topics": {
       "initialise": {
         "description": "Initialising of content"

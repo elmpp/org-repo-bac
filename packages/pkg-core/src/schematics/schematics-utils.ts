@@ -1,6 +1,8 @@
-import { join, normalize } from "@angular-devkit/core";
+import { join, normalize, Path, virtualFs } from "@angular-devkit/core";
+import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Host } from "@angular-devkit/core/src/virtual-fs/host";
 import {
+  HostCreateTree,
   HostDirEntry,
   MergeStrategy,
   Rule,
@@ -12,6 +14,7 @@ import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacErrorWrapper, MessageName } from "@business-as-code/error";
 import path from "path";
 import { from } from "rxjs";
+import { schematicUtils } from ".";
 import {
   Context,
   ServiceInitialiseOptions,
@@ -20,6 +23,7 @@ import {
 } from "../__types__";
 import { SchematicsResettableHostTree } from "./schematics-resettable-host-tree";
 import { ServiceExecTask } from "./tasks";
+
 // import { Options as Options } from "./tasks/service-exec/options";
 
 export interface ServiceOptions<SName extends keyof ServicesStatic> {
@@ -779,4 +783,67 @@ export function copy(
   }
 
   return;
+}
+
+export function debugRule(
+  options: Pick<
+    schematicUtils.ServiceOptionsLite<"git">,
+    "initialiseOptions" | "context"
+  > & {withRealFs?: boolean}
+): Rule {
+  function getFsContents(tree: Tree) {
+    const treeFiles: string[] = [];
+    tree.visit((p) => treeFiles.push(p));
+    return treeFiles;
+  }
+  function getTreeActions(tree: Tree): string[] {
+    return tree.actions.map((a) =>
+      a.kind === "r"
+        ? `tree$ index: '0'; kind: ${a.kind}; fromPath: ${a.path} -> ${a.to}`
+        : `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
+    );
+  }
+
+  return (tree: Tree, schematicContext: SchematicContext) => {
+    const liveFsTree = new HostCreateTree(
+      // const liveFsTree = new HostCreateTree(
+      new virtualFs.ScopedHost(
+        new NodeJsSyncHost(),
+        schematicUtils.getHostRoot(schematicContext).original as Path,
+      )
+    );
+
+    const debuggable: Record<string, any> = {
+      cwd: getHostRoot(schematicContext).original,
+      treeContents: getFsContents(tree),
+      fsContents: getFsContents(liveFsTree),
+      actions: getTreeActions(tree),
+    };
+
+    const withGitRule = wrapServiceAsRule({
+      serviceOptions: {
+        serviceName: "git",
+        cb: async ({ service }) => {
+          const repo = service.getRepository(false);
+          if (repo) {
+            // console.log(`service.get :>> `, service.getWorkingDestinationPath())
+            // console.log(`repo.config :>> `, repo)
+
+            debuggable.status = await repo.status();
+            debuggable.branches = await repo.branch();
+            debuggable.localBranches = await repo.branchLocal();
+            debuggable.logs = await repo.log();
+          }
+
+          console.log(`debugRule: :>> `, debuggable);
+
+          return tree;
+        },
+        ...options,
+      },
+      schematicContext,
+    });
+
+    return withGitRule;
+  };
 }

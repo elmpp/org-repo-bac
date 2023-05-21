@@ -1,11 +1,3 @@
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
 import { strings } from "@angular-devkit/core";
 import {
   apply,
@@ -19,7 +11,6 @@ import {
 } from "@angular-devkit/schematics";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
 import { assertIsOk, schematicUtils } from "@business-as-code/core";
-import { schematicTestUtils } from "@business-as-code/tests-core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
@@ -100,7 +91,7 @@ export default function (options: Schema): Rule {
       //   },
       //   schematicContext,
       // }),
-      schematicTestUtils.debugRule({context: options._bacContext,
+      schematicUtils.debugRule({context: options._bacContext,
         initialiseOptions: {
           workingPath: '.',
         },}),

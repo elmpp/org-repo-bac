@@ -10,7 +10,6 @@ import {
   url
 } from "@angular-devkit/schematics";
 import { constants, schematicUtils } from "@business-as-code/core";
-import { schematicTestUtils } from "@business-as-code/tests-core";
 import path from "path";
 import { Schema } from "./schema";
 
@@ -230,7 +229,7 @@ export default function (options: Schema): Rule {
             },
           },
         ),
-        schematicTestUtils.debugRule({
+        schematicUtils.debugRule({
           context: options._bacContext,
           initialiseOptions: {
             workingPath

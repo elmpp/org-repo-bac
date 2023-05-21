@@ -9,7 +9,6 @@ import {
   url
 } from "@angular-devkit/schematics";
 import { constants, schematicUtils } from "@business-as-code/core";
-import { schematicTestUtils } from "@business-as-code/tests-core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
@@ -59,7 +58,7 @@ export default function (options: Schema): Rule {
         schematicUtils.remove("./packages", tree, schematicContext); // should be allowed to delete this folder even though was created before/during an external wrap
         return tree;
       },
-      schematicTestUtils.debugRule({
+      schematicUtils.debugRule({
           context: options._bacContext,
           initialiseOptions: {
             workingPath: '.',

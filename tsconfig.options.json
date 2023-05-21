@@ -2,6 +2,7 @@
 {
   "extends": "tsconfig-moon/tsconfig.json", // https://tinyurl.com/2kea2goc
   "compilerOptions": {
+    "allowJs": true, // we have .js files in, e.g., packages/plugin-core-essentials/src/schematics/workspace-configure/config-default.js that should go into dist
     // "composite": false, // required when running build with project references - https://tinyurl.com/2l7s253w
     "composite": true, // required when running build with project references - https://tinyurl.com/2l7s253w
     "declaration": true,
@@ -91,7 +92,7 @@
       // "module": "NodeNext",
       "module": "CommonJS",
       // "target": "ESNext",
-      "allowJs": true, // to compile .js execa
+      // "allowJs": true, // to compile .js execa
     }
   },
 }

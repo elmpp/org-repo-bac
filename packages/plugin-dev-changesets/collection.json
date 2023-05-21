@@ -4,7 +4,7 @@
       "factory": "./src/schematics/changeset-generate/factory",
       "schema": "./src/schematics/changeset-generate/schema.json",
       "description": "Create a changeset file"
-    },
+    }
     // "workspace-configure": {
     //   "factory": "./src/schematics/workspace-configure/factory",
     //   "schema": "./src/schematics/workspace-configure/schema.json",
