@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/cli",
-  "version": "0.0.0-bollards-20230521070624",
+  "version": "0.0.0-bollards-20230521084442",
   "description": "Tool package @business-as-code/cli",
   "main": "src/index.ts",
   "files": [
@@ -42,6 +42,7 @@
   "devDependencies": {
     "@business-as-code/plugin-core-tests": "workspace:*",
     "@business-as-code/plugin-dev-changesets": "workspace:*",
+    "@business-as-code/plugin-dev-essentials": "workspace:*",
     "@types/node": "18.14.2",
     "typescript": "5.0.2"
   },

@@ -1,31 +1,32 @@
 {
-  "name": "@business-as-code/plugin-core-essentials",
-  "library": "lib",
+  "name": "@business-as-code/plugin-dev-essentials",
   "version": "0.0.0-bollards-20230521084442",
-  "description": "Core Plugin package @business-as-code/plugin-core-essentials",
+  "description": "Dev plugin package @business-as-code/plugin-dev-essentials",
+  "private": true,
   "main": "src/index.ts",
+  "bin": {
+    "bac-prepack": "src/bin/prepack.sh",
+    "bac-postpack": "src/bin/postpack.sh"
+  },
   "files": [
-    "LICENSE",
-    "README.md",
     "dist",
+    "package.json",
     "collection.json"
   ],
   "types": "src/index.ts",
   "scripts": {
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack",
+    "postpack": "cpy 'src/bin/*' '!src/bin/*.ts' dist/bin",
     "//prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/src\\//.\\/dist\\//g' collection.json",
     "//postpack": "jq '.oclif.commands=\"./src/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/dist\\//.\\/src\\//g' collection.json"
   },
   "publishConfig": {
     "main": "dist/index.js",
-    "typings": "dist/index.d.ts"
+    "typings": "dist/index.d.ts",
+    "bin": {
+      "bac-prepack": "dist/bin/prepack.sh",
+      "bac-postpack": "dist/bin/postpack.sh"
+    }
   },
-  "keywords": [
-    "generator",
-    "typescript",
-    "oclif"
-  ],
   "peerDependencies": {
     "@angular-devkit/core": "*",
     "@angular-devkit/schematics": "*"
@@ -35,23 +36,15 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:*",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230521084442",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
     "@business-as-code/tests-core": "workspace:*",
-    "@business-as-code/plugin-dev-essentials": "workspace:*",
-    "@types/node": "^18.15.3"
+    "@types/node": "^18.15.3",
+    "cpy-cli": "^4.2.0"
   },
   "oclif": {
-    "commands": "./src/commands",
-    "topics": {
-      "initialise": {
-        "description": "Initialising of content"
-      },
-      "run": {
-        "description": "Running of commands"
-      }
-    }
+    "commands": "./src/commands"
   }
 }

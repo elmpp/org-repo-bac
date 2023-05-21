@@ -31,6 +31,9 @@
       "path": "packages/plugin-dev-changesets"
     },
     {
+      "path": "packages/plugin-dev-essentials"
+    },
+    {
       "path": "packages/tests/pkg-tests-core"
     },
     {

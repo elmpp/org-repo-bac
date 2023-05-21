@@ -4,6 +4,7 @@ import "@business-as-code/plugin-core-git";
 // if (process.env.NODE_ENV === 'development') {
   //   import "@business-as-code/plugin-core-tests";
   //   import "@business-as-code/plugin-dev-changesets";
+  //   import "@business-as-code/plugin-dev-essentials";
 // }
 
 // all plugins must be imported here

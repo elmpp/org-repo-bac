@@ -28,7 +28,7 @@ Oclif commands
 
 ## Build commands
 
- - p moon run root:publishDev (moon fast build with local publish)
+ - p moon run @business-as-code/plugin-dev-essentials:changesetSnapshotPublishLocal # local snapshot build
 
 ## Tasks
 

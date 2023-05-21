@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/error",
   "library": "lib",
-  "version": "0.0.0-bollards-20230521070624",
+  "version": "0.0.0-bollards-20230521084442",
   "description": "Library package @business-as-code/error",
   "main": "src/index.ts",
   "files": [

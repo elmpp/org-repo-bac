@@ -20,6 +20,9 @@
       "path": "../plugin-dev-changesets"
     },
     {
+      "path": "../plugin-dev-essentials"
+    },
+    {
       "path": "../tests/pkg-tests-core"
     },
     {
@@ -60,6 +63,12 @@
       ],
       "@business-as-code/plugin-dev-changesets/*": [
         "../plugin-dev-changesets/src/*"
+      ],
+      "@business-as-code/plugin-dev-essentials": [
+        "../plugin-dev-essentials/src/index.ts"
+      ],
+      "@business-as-code/plugin-dev-essentials/*": [
+        "../plugin-dev-essentials/src/*"
       ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"
