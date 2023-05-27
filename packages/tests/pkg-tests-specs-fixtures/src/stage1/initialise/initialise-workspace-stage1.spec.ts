@@ -1,4 +1,4 @@
-import { addr } from "@business-as-code/address";
+import { addr, AddressPathAbsolute, AddressPathAbsoluteString } from "@business-as-code/address";
 import { expectIsFail, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 
@@ -44,8 +44,8 @@ describe("initialise workspace", () => {
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
       const exitCode = await testContext.command(
         [
+          "initialise",
           "workspace",
-          "init",
           "--name",
           "my-new-workspace",
           "--workspacePath",
@@ -75,23 +75,23 @@ describe("initialise workspace", () => {
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
 
       const configPath = addr.pathUtils.join(
-        testContext.testEnvVars.fixturesPath,
-        addr.parsePath("mocks/input1.json")
-      );
+        addr.parsePath(__dirname),
+        addr.parsePath("mocks/config-empty-typescript.ts")
+      ) as AddressPathAbsolute;
 
-// console.log(`configPath :>> `, configPath)
+console.log(`configPath :>> `, configPath)
 
       const res = await testContext.command(
         [
+          "initialise",
           "workspace",
-          "init",
           "--name",
           "my-new-workspace",
           "--workspacePath",
           testContext.testEnvVars.workspacePath.original,
           "--configPath",
           configPath.original,
-          "--registry",
+          "--cliRegistry",
           'http://localhost:4873',
         ],
         { logLevel: "debug" }
@@ -122,7 +122,7 @@ describe("initialise workspace", () => {
       // console.log(`expectFs :>> `, expectFs)
 
       res.res.expectUtil.createText(expectFs.readText("./.npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
-      res.res.expectUtil.createText(expectFs.readText("./BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic workspace-configure
+      res.res.expectUtil.createText(expectFs.readText("./BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic synchronise-workspace
       expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
       res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
 

@@ -21,29 +21,29 @@ export default function (options: Schema): Rule {
 
   return (_tree, schematicContext) => {
 
-    const getConfigPath = (
-      runtimeConfigRelOrAbsoluteNative?: string
-    ): AddressPathAbsolute => {
-      let configPath: AddressPathAbsolute | AddressPathRelative =
-        addr.parsePath(
-          runtimeConfigRelOrAbsoluteNative ??
-            path.resolve(__dirname, "./config-default.js")
-        );
-      if (assertIsAddressPathRelative(configPath)) {
-        configPath = addr.pathUtils.resolve(
-          addr.parsePath(process.cwd()),
-          configPath
-        ) as AddressPathAbsolute;
-      }
+    // const getConfigPath = (
+    //   runtimeConfigRelOrAbsoluteNative?: string
+    // ): AddressPathAbsolute => {
+    //   let configPath: AddressPathAbsolute | AddressPathRelative =
+    //     addr.parsePath(
+    //       runtimeConfigRelOrAbsoluteNative ??
+    //         path.resolve(__dirname, "./config-default.js")
+    //     );
+    //   if (assertIsAddressPathRelative(configPath)) {
+    //     configPath = addr.pathUtils.resolve(
+    //       addr.parsePath(process.cwd()),
+    //       configPath
+    //     ) as AddressPathAbsolute;
+    //   }
 
-      if (!xfs.existsSync(configPath.address)) {
-        throw new BacError(
-          MessageName.OCLIF_ERROR,
-          `Config path at '${configPath.original}' does not exist, supplied as '${runtimeConfigRelOrAbsoluteNative}'`
-        );
-      }
-      return configPath;
-    };
+    //   if (!xfs.existsSync(configPath.address)) {
+    //     throw new BacError(
+    //       MessageName.OCLIF_ERROR,
+    //       `Config path at '${configPath.original}' does not exist, supplied as '${runtimeConfigRelOrAbsoluteNative}'`
+    //     );
+    //   }
+    //   return configPath;
+    // };
 
     const templateSource = apply(url("./files"), [
       // partitionApplyMerge(

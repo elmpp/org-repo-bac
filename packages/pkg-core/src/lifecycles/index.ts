@@ -1,9 +1,9 @@
 import { Context } from "../__types__";
-import { InitialiseLifecycle } from "./initialise-lifecycle";
+import { InitialiseWorkspaceLifecycle } from "./initialise-workspace-lifecycle";
 import { RunLifecycle } from "./run-lifecycle";
 
 export const setupLifecycles = (options: {context: Context}) => ({
-  initialise: new InitialiseLifecycle(options),
+  initialise: new InitialiseWorkspaceLifecycle(options),
   run: new RunLifecycle(options),
 });
 

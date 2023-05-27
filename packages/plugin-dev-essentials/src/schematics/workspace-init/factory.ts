@@ -127,12 +127,12 @@ export default function (options: Schema): Rule {
       // ),
       // wrapTaskAsRule(new NodePackageInstallTask({})),
       // wrapTaskAsRule(
-      //   new RunSchematicTask("workspace-configure", {
+      //   new RunSchematicTask("synchronise-workspace", {
       //     ...options,
       //   })
       // ),
       /** run schematic from same collection */
-      schematic("workspace-configure", {
+      schematic("synchronise-workspace", {
         ...options,
       }),
     ]);

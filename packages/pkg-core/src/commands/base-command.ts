@@ -9,18 +9,19 @@ import {
   assertIsAddressPathRelative
 } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
-import {
-  Command,
-  Config,
-  Errors,
-  Flags,
-  Interfaces,
-  Performance,
-  ux
-} from "@oclif/core";
+// import {
+//   oclif.Command,
+//   Config,
+//   Errors,
+//   oclif.Flags,
+//   oclif.Interfaces,
+//   Performance,
+//   ux
+// } from "@oclif/core";
+import * as oclif from '@oclif/core'
 import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-import ModuleLoader from "@oclif/core/lib/module-loader";
+// import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
 import os from 'os';
 import { fileURLToPath } from "url";
@@ -30,7 +31,7 @@ import * as coreHooks from '../hooks';
 import { setupLifecycles } from "../lifecycles";
 import { BacService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
-import { findUp } from "../utils/fs-utils";
+import { findUp, loadModule } from "../utils/fs-utils";
 import {
   assertIsOk,
   Context,
@@ -42,19 +43,19 @@ import {
   ServicesStatic
 } from "../__types__";
 
-// export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
+// export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
 // >
-export type FlagsInfer<T extends typeof Command> = Interfaces.InferredFlags<
+export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
   T["baseFlags"] & T["flags"]
 >;
-// export type FlagsInfer<T extends typeof Command> = NullishToOptional<Interfaces.InferredFlags<
+// export type FlagsInfer<T extends typeof oclif.Command> = NullishToOptional<oclif.Interfaces.InferredFlags<
 //   T["baseFlags"] & T["flags"]
 // >>
-// export type FlagsInfer<T> = T extends {flags: unknown} ? Interfaces.InferredFlags<
+// export type FlagsInfer<T> = T extends {flags: unknown} ? oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
 // > : never;
-export type ArgsInfer<T extends typeof Command> = Interfaces.InferredArgs<
+export type ArgsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredArgs<
   T["args"]
 >;
 
@@ -68,26 +69,26 @@ export type BaseParseOutput = {
   };
 };
 
-export abstract class BaseCommand<T extends typeof Command> extends Command {
+export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.Command {
   // add the --json flag
   static override enableJsonFlag = true;
 
   // define flags that can be inherited by any command that extends BaseCommand
   static override baseFlags = {
-    logLevel: Flags.custom<LogLevel>({
+    logLevel: oclif.Flags.custom<LogLevel>({
       summary: "Specify level for logging.",
       options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
       helpGroup: "GLOBAL",
       default: "info",
       required: true,
     })(),
-    // workspacePath: Flags.string({
+    // workspacePath: oclif.Flags.string({
     //   description: "Explicit option to set workspacePath",
     //   // helpGroup: "GLOBAL",
     //   required: false,
     // }),
 
-    // "options": Flags.custom<Record<string, unknown>>({
+    // "options": oclif.Flags.custom<Record<string, unknown>>({
     //   summary: "Additional ",
     //   // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
     //   helpGroup: "GLOBAL",
@@ -97,14 +98,14 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   // @ts-ignore - set in initialise and used optionally in .log()
   protected logger: logging.Logger;
-  protected static oclifConfig: Interfaces.Config;
+  protected static oclifConfig: oclif.Interfaces.Config;
 
   // protected flags!: any;
   // protected args!: any;
   protected flags!: FlagsInfer<T>;
   protected args!: ArgsInfer<T>;
 
-  constructor(argv: string[], config: Config) {
+  constructor(argv: string[], config: oclif.Config) {
     super(argv, config)
     this.id = this.ctor.id
     // try {
@@ -119,10 +120,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     }
   }
 
-  static override async run<T extends Command>(
-    this: new (argv: string[], config: Config) => T,
+  static override async run<T extends oclif.Command>(
+    this: new (argv: string[], config: oclif.Config) => T,
     argv?: string[] | undefined,
-    opts?: Interfaces.LoadOptions
+    opts?: oclif.Interfaces.LoadOptions
   ): Promise<ReturnType<T["run"]>> {
     if (!argv) argv = process.argv.slice(2);
 
@@ -131,7 +132,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       opts = fileURLToPath(opts);
     }
 
-    const config = await Config.load(
+    const config = await oclif.Config.load(
       opts || require.main?.filename || __dirname
     );
     const cmd = new this(argv, config);
@@ -152,7 +153,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   /** Our custom initialise hook. Do not use 'init' which is an oclif base method */
   async initialise(options: {
-    config: Config;
+    config: oclif.Config;
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }) {
     this.logger = this.createLogger(options);
@@ -175,7 +176,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   override warn(input: string | Error) {
     if (!this.jsonEnabled()) {
       this.logger.warn(BacError.fromError(input).toString());
-      Errors.warn(input);
+      oclif.Errors.warn(input);
     }
     return input;
   }
@@ -254,7 +255,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected createLogger({
     parseOutput,
   }: {
-    config: Config;
+    config: oclif.Config;
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }): logging.Logger {
     const logger = createConsoleLogger(
@@ -282,24 +283,26 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     debug,
   }: {
     pluginPath: AddressPathAbsolute;
-    plugin: Interfaces.Plugin;
+    plugin: oclif.Interfaces.Plugin;
     debug?: boolean;
   }): Promise<Plugin> => {
     try {
       // const p = path.join(plugin.pjson.oclif.commands, ...id.split(':'))
-      const { isESM, module, filePath } = await ModuleLoader.loadWithData(
-        plugin,
-        pluginPath.original
-      );
-      debug &&
-        this.debug(
-          isESM
-            ? "LoadServicesForPlugin: (import)"
-            : "LoadServicesForPlugin: (require)",
-          filePath
-        );
+      // const { isESM, module, filePath } = await ModuleLoader.loadWithData(
+      //   plugin,
+      //   pluginPath.original
+      // );
+      // debug &&
+      //   this.debug(
+      //     isESM
+      //       ? "LoadServicesForPlugin: (import)"
+      //       : "LoadServicesForPlugin: (require)",
+      //     filePath
+      //   );
 
       // console.log(`plugin.type :>> `, plugin.type)
+
+      const { isESM, module, filePath } = await loadModule(plugin)
 
       if (!module.plugin && plugin.type === 'user' && plugin.name !== '@business-as-code/cli') {
         // this.error(`Plugin package does not have a named export 'plugin'. Package: '${plugin.name}', plugin type: '${plugin.type}', package path: '${pluginPath.original}'`)
@@ -315,11 +318,11 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     plugin,
     parseOutput,
   }: {
-    plugin: Interfaces.Plugin;
+    plugin: oclif.Interfaces.Plugin;
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput;
   }): Promise<NonNullable<Plugin["initialise"]>> {
-    const marker = Performance.mark(
+    const marker = oclif.Performance.mark(
       `plugin.loadInitialiserForPlugin#${plugin.name}`,
       { plugin: plugin.name }
     );
@@ -347,9 +350,9 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected async loadServicesForPlugin({
     plugin,
   }: {
-    plugin: Interfaces.Plugin;
+    plugin: oclif.Interfaces.Plugin;
   }): Promise<Partial<ServicesStatic>> {
-    const marker = Performance.mark(
+    const marker = oclif.Performance.mark(
       `plugin.loadServicesForPlugin#${plugin.name}`,
       { plugin: plugin.name }
     );
@@ -390,7 +393,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     plugins,
     workspacePath,
   }: {
-    plugins: Interfaces.Plugin[];
+    plugins: oclif.Interfaces.Plugin[];
     logger: Context["logger"];
     workspacePath: AddressPathAbsolute,
   }): Promise<Context["serviceFactory"]> {
@@ -460,15 +463,15 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     return factory;
   }
 
-  // static async runDirect<T extends typeof Command>(
-    static async runDirect<T extends typeof Command>(
+  // static async runDirect<T extends typeof oclif.Command>(
+    static async runDirect<T extends typeof oclif.Command>(
       this: new (...args: any[]) => T,
       // this: new (config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>) => T,
       // argv?: string[] | undefined,
-      opts: Interfaces.LoadOptions,
+      opts: oclif.Interfaces.LoadOptions,
       parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
     ): Promise<Result<unknown, { error: Error }>> {
-      const config = await Config.load(
+      const config = await oclif.Config.load(
         opts || require.main?.filename || __dirname
       );
       const cmd = new this([] as any[], config);
@@ -652,7 +655,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     } else {
       // if (!err.message) throw err;
       try {
-        ux.action.stop(colors.red("!"));
+        oclif.ux.action.stop(colors.red("!"));
         // Note this should be the only place where caught errors are to be output!!!
       } catch {}
 
@@ -679,7 +682,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   // called after run and catch regardless of whether or not the command errored
   protected override async finally(_: Error | undefined): Promise<any> {
     try {
-      const config = Errors.config;
+      const config = oclif.Errors.config;
       if (config.errorLogger) {
         await config.errorLogger.flush();
       }

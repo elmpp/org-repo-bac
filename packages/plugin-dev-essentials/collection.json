@@ -5,9 +5,9 @@
       "schema": "./src/schematics/changeset-generate/schema.json",
       "description": "Create a changeset file"
     }
-    // "workspace-configure": {
-    //   "factory": "./src/schematics/workspace-configure/factory",
-    //   "schema": "./src/schematics/workspace-configure/schema.json",
+    // "synchronise-workspace": {
+    //   "factory": "./src/schematics/synchronise-workspace/factory",
+    //   "schema": "./src/schematics/synchronise-workspace/schema.json",
     //   "description": "Applies configuration to a workspace"
     // },
     // "blank": {

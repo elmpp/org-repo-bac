@@ -54,29 +54,31 @@ export default function (options: Schema): Rule {
 
     return chain([
       mergeWith(baseTemplateSource),
-      schematicUtils.branchMerge(
-        schematicUtils.wrapServiceAsRule({
-          serviceOptions: {
-            serviceName: "git",
-            cb: async ({ service }) => {
-              // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
-              await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
-            },
-            initialiseOptions: {
-              workingPath: '.',
-            },
-            context: options._bacContext,
-          },
-          schematicContext,
-        }),
-        {
-          context: options._bacContext,
-          initialiseOptions: {
-            workingPath: '.',
-          },
-        },
-        MergeStrategy.Overwrite,
-      ),
+
+      // schematicUtils.branchMerge(
+      //   schematicUtils.wrapServiceAsRule({
+      //     serviceOptions: {
+      //       serviceName: "git",
+      //       cb: async ({ service }) => {
+      //         // await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+      //         await service.clone(`https://github.com/elmpp/bac-tester.git`, {});
+      //       },
+      //       initialiseOptions: {
+      //         workingPath: '.',
+      //       },
+      //       context: options._bacContext,
+      //     },
+      //     schematicContext,
+      //   }),
+      //   {
+      //     context: options._bacContext,
+      //     initialiseOptions: {
+      //       workingPath: '.',
+      //     },
+      //   },
+      //   MergeStrategy.Overwrite,
+      // ),
+
       // schematicUtils.wrapServiceAsRule({
       //   serviceOptions: {
       //     serviceName: "git",
@@ -127,12 +129,12 @@ export default function (options: Schema): Rule {
       // ),
       // wrapTaskAsRule(new NodePackageInstallTask({})),
       // wrapTaskAsRule(
-      //   new RunSchematicTask("workspace-configure", {
+      //   new RunSchematicTask("synchronise-workspace", {
       //     ...options,
       //   })
       // ),
       /** run schematic from same collection */
-      schematic("workspace-configure", {
+      schematic("synchronise-workspace", {
         ...options,
       }),
     ]);

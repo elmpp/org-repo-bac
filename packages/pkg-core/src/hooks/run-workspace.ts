@@ -21,7 +21,7 @@ export const runWorkspace: NonNullable<Plugin['initialise']> = (initialiseOption
     // const schematicsService = await context.serviceFactory('schematics', {context, destinationPath, workingPath})
 
     // const res = await schematicsService.runSchematic({
-    //   address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
+    //   address: `@business-as-code/plugin-core-essentials#namespace=initialise-workspace`,
     //   context,
     //   options: {
     //     ...context.cliOptions.flags,

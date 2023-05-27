@@ -1,4 +1,4 @@
-import { Config, configSchema } from "../config";
+import { Config, configSchema } from "../config/config";
 
 // const configStaticSourceOk = {
 //   projectSource: [{
@@ -62,7 +62,7 @@ describe("config", () => {
           location: `localhost:9000`,
           protocol: "git",
           active: true,
-          detectProject: {
+          getProject: {
             stage: {
               language: "javascript",
               // name: "lib1",
@@ -86,7 +86,7 @@ describe("config", () => {
           // @ts-expect-error:
           protocol: "NOTVALIDPROTOCOL",
           active: true,
-          detectProject: {
+          getProject: {
             language: "javascript",
             name: "lib1",
             type: "library",

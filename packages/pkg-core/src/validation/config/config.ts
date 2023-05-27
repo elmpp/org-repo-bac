@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { projectSourceConfigSchema } from "./project-source";
+import { configProjectSourceConfigSchema } from "./config-project-source";
 
 /**
  entire workspace is driven by this configuration format. Highly optional
@@ -7,7 +7,7 @@ import { projectSourceConfigSchema } from "./project-source";
 export const configSchema = z.object({
 
   /** define projects for the workspace */
-  projectSource: z.array(projectSourceConfigSchema).nonempty(),
+  projectSource: z.array(configProjectSourceConfigSchema).nonempty(),
 })
 
 export type Config = z.infer<typeof configSchema>

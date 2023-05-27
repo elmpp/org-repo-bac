@@ -1,13 +1,13 @@
 {
   "schematics": {
-    "workspace-init": {
-      "factory": "./src/schematics/workspace-init/factory",
-      "schema": "./src/schematics/workspace-init/schema.json",
+    "initialise-workspace": {
+      "factory": "./src/schematics/initialise-workspace/factory",
+      "schema": "./src/schematics/initialise-workspace/schema.json",
       "description": "Create an empty workspace"
     },
-    "workspace-configure": {
-      "factory": "./src/schematics/workspace-configure/factory",
-      "schema": "./src/schematics/workspace-configure/schema.json",
+    "synchronise-workspace": {
+      "factory": "./src/schematics/synchronise-workspace/factory",
+      "schema": "./src/schematics/synchronise-workspace/schema.json",
       "description": "Applies configuration to a workspace"
     },
     // "blank": {

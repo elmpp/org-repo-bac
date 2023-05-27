@@ -132,7 +132,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath, workingPath: '.'})
 
     // const res = await schematicsService.runSchematic({
-    //   address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
+    //   address: `@business-as-code/plugin-core-essentials#namespace=initialise-workspace`,
     //   context,
     //   options: {
     //     ...context.cliOptions.flags,

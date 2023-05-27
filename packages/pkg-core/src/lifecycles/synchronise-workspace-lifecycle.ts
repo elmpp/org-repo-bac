@@ -1,6 +1,7 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+import { Config } from "../validation";
 import { assertIsResult, Context, Result } from "../__types__";
 import { InferHookParams, InferHookReturn } from "./__types__";
 
@@ -12,6 +13,7 @@ export class InitialiseLifecycle {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
+        config?: Config;
       }>([
       "options",
     ]),
@@ -20,6 +22,7 @@ export class InitialiseLifecycle {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
+        config?: Config;
       },
       Result<
         {
@@ -34,6 +37,7 @@ export class InitialiseLifecycle {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
+        config?: Config;
       }>([
       "options",
     ]),

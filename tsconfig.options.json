@@ -2,7 +2,7 @@
 {
   "extends": "tsconfig-moon/tsconfig.json", // https://tinyurl.com/2kea2goc
   "compilerOptions": {
-    "allowJs": true, // we have .js files in, e.g., packages/plugin-core-essentials/src/schematics/workspace-configure/config-default.js that should go into dist
+    "allowJs": true, // we have .js files in, e.g., packages/plugin-core-essentials/src/schematics/synchronise-workspace/config-default.js that should go into dist
     // "composite": false, // required when running build with project references - https://tinyurl.com/2l7s253w
     "composite": true, // required when running build with project references - https://tinyurl.com/2l7s253w
     "declaration": true,

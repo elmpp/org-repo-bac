@@ -84,8 +84,8 @@ describe("test-env-smoke-test-stage0", () => {
 
       expectFs.exists('.npmrc')
       res.res.expectUtil.createText(expectFs.readText(".npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
-      res.res.expectUtil.createText(expectFs.readText("BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic workspace-configure
-      expect(expectFs.readJson("package.json")).toHaveProperty('dependencies.@business-as-code/cli', 'bollards') // coming from second schematic workspace-configure
+      res.res.expectUtil.createText(expectFs.readText("BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic synchronise-workspace
+      expect(expectFs.readJson("package.json")).toHaveProperty('dependencies.@business-as-code/cli', 'bollards') // coming from second schematic synchronise-workspace
       expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
       res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
 

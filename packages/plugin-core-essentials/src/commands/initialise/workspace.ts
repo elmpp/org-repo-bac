@@ -1,18 +1,31 @@
+import path from "path";
 import {
   addr,
+  AddressPathAbsolute,
+  AddressPathRelative,
   assertIsAddressPath,
   assertIsAddressPathAbsolute,
   assertIsAddressPathRelative,
 } from "@business-as-code/address";
 import {
+  fsUtils,
   BaseCommand,
   ContextCommand,
   Flags,
   Interfaces as _Interfaces,
+  Config,
+  configSchema,
 } from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
+import {
+  BacError,
+  BacErrorWrapper,
+  MessageName,
+} from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
 
-export class InitialiseWorkspace extends BaseCommand<typeof InitialiseWorkspace> {
+export class InitialiseWorkspace extends BaseCommand<
+  typeof InitialiseWorkspace
+> {
   static override description = "Creates an empty workspace";
 
   static override examples = [
@@ -64,6 +77,66 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
   };
 
+  protected async getConfig(
+    context: ContextCommand<typeof InitialiseWorkspace>
+  ): Promise<Config> {
+    const getConfigPath = (
+      runtimeConfigRelOrAbsoluteNative: string | AddressPathAbsolute | AddressPathRelative
+    ): AddressPathAbsolute => {
+      let configPath: AddressPathAbsolute | AddressPathRelative =
+        typeof runtimeConfigRelOrAbsoluteNative === "string"
+          ? addr.parsePath(runtimeConfigRelOrAbsoluteNative)
+          : runtimeConfigRelOrAbsoluteNative;
+      //   addr.parsePath(
+      //     runtimeConfigRelOrAbsoluteNative ??
+      //       path.resolve(__dirname, "./config-default.js")
+      //   );
+      // if (typeof configPath === 'string') {
+      //   configPath = addr.parsePath(configPath)
+      // }
+      if (assertIsAddressPathRelative(configPath)) {
+        configPath = addr.pathUtils.resolve(
+          addr.parsePath(process.cwd()),
+          configPath
+        ) as AddressPathAbsolute;
+      }
+
+      if (!xfs.existsSync(configPath.address)) {
+        throw new BacError(
+          MessageName.OCLIF_ERROR,
+          `Config path at '${configPath.original}' does not exist, supplied as '${runtimeConfigRelOrAbsoluteNative}'`
+        );
+      }
+      return configPath;
+    };
+
+    const inputConfigPathWithDefault =
+      context.cliOptions.flags.configPath ??
+      addr.parsePath(path.resolve(__dirname, "./config-default.js"));
+    const configPath = getConfigPath(inputConfigPathWithDefault);
+    const { module } = await fsUtils.loadModule(configPath.address);
+
+    if (!module.config) {
+      throw new BacError(
+        MessageName.CONFIGURATION_CONTENT_ERROR,
+        `Configuration file found but does not contain expected content. Path: '${configPath.original}'`
+      );
+    }
+    const configRaw = module.config;
+
+    const config = configSchema.safeParse(configRaw);
+
+    if (!config.success) {
+      throw new BacErrorWrapper(
+        MessageName.CONFIGURATION_INVALID_ERROR,
+        `Configuration file found but has validation errors. ${config.error.message}. Path: '${configPath.original}'`,
+        config.error
+      );
+    }
+
+    return config.data;
+  }
+
   async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
 
@@ -87,10 +160,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
 
+    const config = await this.getConfig(context);
+
     const res = await context.lifecycles.initialise.initialiseWorkspace({
       context,
       workspacePath,
       workingPath: ".",
+      config,
     });
     return res;
 
@@ -110,7 +186,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // const schematicsService = await context.serviceFactory('schematics', {context, destinationPath: context.workspacePath, workingPath: '.'})
 
     // const res = await schematicsService.runSchematic({
-    //   address: `@business-as-code/plugin-core-essentials#namespace=workspace-init`,
+    //   address: `@business-as-code/plugin-core-essentials#namespace=initialise-workspace`,
     //   context,
     //   options: {
     //     ...context.cliOptions.flags,
