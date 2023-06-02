@@ -3,15 +3,6 @@ import {
   apply, chain, mergeWith, Rule, template,
   url
 } from "@angular-devkit/schematics";
-import {
-  addr,
-  AddressPathAbsolute,
-  AddressPathRelative,
-  assertIsAddressPathRelative
-} from "@business-as-code/address";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
-import path from "path";
 import { Schema } from "./schema";
 
 
@@ -50,7 +41,7 @@ export default function (options: Schema): Rule {
         // (p) => !/\/src\/.*?\/bare\//.test(p),
         template({
           ...options,
-          configPath: getConfigPath(),
+          // configPath: getConfigPath(),
           // coreVersion,
           // schematicsVersion,
           dot: ".",

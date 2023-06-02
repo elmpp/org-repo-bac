@@ -52,8 +52,14 @@ declare global {
     interface Services {
       schematics: {
         insType: SchematicsService;
-        clzType: typeof SchematicsService;
+        staticType: typeof SchematicsService;
       };
+    }
+    interface Lifecycles {
+      // schematics: {
+      //   insType: SchematicsService;
+      //   staticType: typeof SchematicsService;
+      // };
     }
   }
   // export interface BacServices {
@@ -97,7 +103,7 @@ type Options = ServiceInitialiseCommonOptions & {
 // const sinkTreeStack: Set<any> = new Set()
 
 export class SchematicsService {
-  static title = "schematics";
+  static title = "schematics" as const
   options: Required<Options>;
   runCache = {
     nothingDone: true,

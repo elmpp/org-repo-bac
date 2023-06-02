@@ -1,9 +1,7 @@
 import { strings } from "@angular-devkit/core";
 import {
   apply,
-  chain,
-  MergeStrategy,
-  mergeWith,
+  chain, mergeWith,
   Rule,
   schematic,
   template,

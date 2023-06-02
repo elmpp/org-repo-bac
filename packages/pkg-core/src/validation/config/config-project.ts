@@ -1,8 +1,6 @@
 import { z } from "zod";
-import {
-  originProviderTypeSchema, teamProviderTypeSchema
-} from "./common";
-import { projectSchema as moonProjectSchema } from './moon/by-state-files/project';
+import { Simplify } from "../../__types__";
+// import { projectSchema as moonProjectSchema } from '../moon/by-state-files/project';
 
 /**
  defines the non-common attributes of a Project that must be detected during Source import
@@ -18,39 +16,46 @@ import { projectSchema as moonProjectSchema } from './moon/by-state-files/projec
 // });
 
 /** let's not keep moon task/config info */
-const baseMoonProjectSchema = moonProjectSchema.pick({
-  alias: true,
-	// config: true,
-	dependencies: true,
-	// fileGroups: true,
-  id: true,
-	// inheritedConfig: true,
-	language: true,
-  root: true,
-  source: true,
-	// tasks: true,
-	type: true,
-})
+// const baseMoonProjectSchema = moonProjectSchema.pick({
+//   alias: true,
+// 	// config: true,
+// 	dependencies: true,
+// 	// fileGroups: true,
+//   id: true,
+// 	// inheritedConfig: true,
+// 	language: true,
+//   root: true,
+//   source: true,
+// 	// tasks: true,
+// 	type: true,
+// })
 
-const projectOriginSchema = z.object({
-  provider: originProviderTypeSchema,
-  /** the provider can store a hash to prevent reimport */
-  lastHashTime: z.string().datetime(),
-  lastHash: z.string(),
-}).catchall(z.unknown())
+// const configProjectOriginSchema = z.object({
+//   provider: originProviderTypeSchema,
 
-const teamSchema = z.object({
-  provider: teamProviderTypeSchema,
-  name: z.string(),
-  email: z.string().email(),
-  description: z.string().optional(),
-})
+//   // /** the provider can store a hash to prevent reimport */
+//   // lastHashTime: z.string().datetime(),
+//   // lastHash: z.string(),
+// }).catchall(z.unknown())
 
-export const projectSchema = z.object({
-  stage: baseMoonProjectSchema, // we're calling the /repo area 'stage'
-  origin: projectOriginSchema,
-  teams: z.record(z.string(), teamSchema),
+// export const configProjectSchema = z.object({
+//   stage: baseMoonProjectSchema, // we're calling the /repo area 'stage'
+//   origin: configProjectOriginSchema,
+//   teams: z.record(z.string(), configTeamSchema),
+// })
+
+
+
+const commonProjectSchema = z.object({
+  // blah: z.number()
+  active: z.boolean().optional(),
 })
+// type BFE = z.infer<typeof commonProjectSchema>
+// export const configProjectConfigSchema = providerReturnSchemaBuilder('initialiseWorkspace', commonProjectSchema)
+export const configProjectConfigSchema = commonProjectSchema
+export type ConfigProjectConfig = Simplify<z.infer<typeof configProjectConfigSchema>>
+
+
 
 // type BaseProject = z.infer<typeof baseProjectSchema>
 

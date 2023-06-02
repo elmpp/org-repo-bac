@@ -1,12 +1,12 @@
 import { SchematicContext, TaskExecutor } from '@angular-devkit/schematics';
 import { assertUtils } from '../../../utils';
-import { Services } from '../../../__types__';
+import { ServiceMap } from '../../../__types__';
 import {
   ServiceExecTaskFactoryOptions,
   ServiceExecTaskOptions
 } from './options';
 
-export function serviceExecExecutor<SName extends keyof Services>(
+export function serviceExecExecutor<SName extends keyof ServiceMap>(
   _?: ServiceExecTaskFactoryOptions,
 ): TaskExecutor<ServiceExecTaskOptions<SName>> {
 

@@ -11,7 +11,7 @@ declare global {
     interface Services {
       moon: {
         insType: MoonService;
-        clzType: typeof MoonService;
+        staticType: typeof MoonService;
       };
     }
   }
@@ -35,7 +35,7 @@ type Query = string // maybe later allow programmatic construction
  Light wrapper for processes involving a Moon instance
  */
 export class MoonService {
-  static title = "moon";
+  static title = "moon" as const
   options: Required<Options>;
 
   static async initialise(options: Options) {

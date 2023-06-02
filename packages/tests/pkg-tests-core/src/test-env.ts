@@ -11,8 +11,8 @@ import {
   Result,
   // ServiceOptions,
   schematicUtils,
-  Services,
-  ServicesStatic
+  ServiceMap,
+  ServiceStaticMap
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -34,7 +34,7 @@ import { XfsCacheManager } from "./xfs-cache-manager";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
-type ServiceOptionsTestLite<SName extends keyof ServicesStatic> = Omit<
+type ServiceOptionsTestLite<SName extends keyof ServiceStaticMap> = Omit<
   schematicUtils.ServiceOptions<SName>,
   "initialiseOptions" | "context"
 > & {
@@ -158,7 +158,7 @@ export type TestContext = {
   /**
    Allows a service task to be run directly
    */
-  runServiceCb: <SName extends keyof Services>(
+  runServiceCb: <SName extends keyof ServiceMap>(
     options: {
       serviceOptions: ServiceOptionsTestLite<SName>;
       /** optional Source path for the Rule. Defaults to an empty() Source */
@@ -842,7 +842,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 originPath?: string;
                 tree?: Tree;
                 cb: (options: any) => Promise<void>;
-                serviceName: keyof Services;
+                serviceName: keyof ServiceMap;
                 initialiseOptions: any;
               };
             },
@@ -851,7 +851,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 originPath?: string;
                 tree?: Tree;
                 cb: (options: any) => Promise<void>;
-                serviceName: keyof Services;
+                serviceName: keyof ServiceMap;
                 initialiseOptions: any;
               };
             },

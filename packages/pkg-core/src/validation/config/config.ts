@@ -7,7 +7,7 @@ import { configProjectSourceConfigSchema } from "./config-project-source";
 export const configSchema = z.object({
 
   /** define projects for the workspace */
-  projectSource: z.array(configProjectSourceConfigSchema).nonempty(),
+  projectSource: z.array(configProjectSourceConfigSchema),
 })
 
 export type Config = z.infer<typeof configSchema>

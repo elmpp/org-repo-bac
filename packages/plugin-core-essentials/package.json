@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/plugin-core-essentials",
   "library": "lib",
-  "version": "0.0.0-bollards-20230521161933",
+  "version": "0.0.0-bollards-20230602074801",
   "description": "Core Plugin package @business-as-code/plugin-core-essentials",
   "main": "src/index.ts",
   "files": [

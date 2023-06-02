@@ -1,5 +1,12 @@
 # @business-as-code/fslib
 
+## 0.0.0-bollards-20230602074801
+
+### Patch Changes
+
+- new message
+- new message
+
 ## 0.0.0-bollards-20230521161933
 
 ### Patch Changes

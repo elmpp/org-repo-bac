@@ -1,5 +1,17 @@
 # @business-as-code/cli
 
+## 0.0.0-bollards-20230602074801
+
+### Patch Changes
+
+- new message
+- new message
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230602074801
+  - @business-as-code/plugin-core-essentials@0.0.0-bollards-20230602074801
+  - @business-as-code/plugin-core-git@0.0.0-bollards-20230602074801
+
 ## 0.0.0-bollards-20230521161933
 
 ### Patch Changes

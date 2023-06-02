@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-dev-essentials",
-  "version": "0.0.0-bollards-20230521161933",
+  "version": "0.0.0-bollards-20230602074801",
   "description": "Dev plugin package @business-as-code/plugin-dev-essentials",
   "main": "src/index.ts",
   "bin": {
@@ -33,7 +33,7 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230521161933",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230602074801",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {

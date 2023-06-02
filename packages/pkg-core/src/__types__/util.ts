@@ -1,3 +1,4 @@
+import { z } from "zod"
 
 // Type-fest - https://tinyurl.com/ybucjwqz
 export type Simplify<T> = {[KeyType in keyof T]: T[KeyType]}
@@ -17,3 +18,5 @@ export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? UnwrapPromise<U>
 export type SetOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>
 
 export type NullishToOptional<T extends object> = Partial<IncludeMatchingProperties<T, undefined>> & ExcludeMatchingProperties<T, undefined>
+
+export const zodCif = <Z extends z.ZodTypeAny, T extends z.infer<Z>>(schema: Z) => (args: T) => {return schema}

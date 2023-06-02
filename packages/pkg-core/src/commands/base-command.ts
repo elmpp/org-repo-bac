@@ -6,7 +6,7 @@ import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative
+  assertIsAddressPathRelative,
 } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
 // import {
@@ -18,17 +18,20 @@ import { BacError, MessageName } from "@business-as-code/error";
 //   Performance,
 //   ux
 // } from "@oclif/core";
-import * as oclif from '@oclif/core'
+import * as oclif from "@oclif/core";
 import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 // import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
-import os from 'os';
+import os from "os";
 import { fileURLToPath } from "url";
-import util from 'util';
+import util from "util";
 import { constants } from "../constants";
-import * as coreHooks from '../hooks';
-import { setupLifecycles } from "../lifecycles";
+import {
+  ConfigureWorkspaceLifecycleBase,
+  InitialiseWorkspaceLifecycleBase,
+} from "../interfaces";
+import { ConfigureProjectLifecycleBase } from "../interfaces/configure-project-lifecycle-base";
 import { BacService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
 import { findUp, loadModule } from "../utils/fs-utils";
@@ -39,25 +42,24 @@ import {
   LogLevel,
   Plugin,
   Result,
-  ServiceInitialiseLiteOptions, Services,
-  ServicesStatic
+  ServiceInitialiseLiteOptions,
+  ServiceMap,
+  ServiceStaticMap,
 } from "../__types__";
 
 // export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
 // >
-export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
-  T["baseFlags"] & T["flags"]
->;
+export type FlagsInfer<T extends typeof oclif.Command> =
+  oclif.Interfaces.InferredFlags<T["baseFlags"] & T["flags"]>;
 // export type FlagsInfer<T extends typeof oclif.Command> = NullishToOptional<oclif.Interfaces.InferredFlags<
 //   T["baseFlags"] & T["flags"]
 // >>
 // export type FlagsInfer<T> = T extends {flags: unknown} ? oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
 // > : never;
-export type ArgsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredArgs<
-  T["args"]
->;
+export type ArgsInfer<T extends typeof oclif.Command> =
+  oclif.Interfaces.InferredArgs<T["args"]>;
 
 const colors = ansiColors.create();
 
@@ -69,7 +71,9 @@ export type BaseParseOutput = {
   };
 };
 
-export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.Command {
+export abstract class BaseCommand<
+  T extends typeof oclif.Command
+> extends oclif.Command {
   // add the --json flag
   static override enableJsonFlag = true;
 
@@ -106,8 +110,8 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
   protected args!: ArgsInfer<T>;
 
   constructor(argv: string[], config: oclif.Config) {
-    super(argv, config)
-    this.id = this.ctor.id
+    super(argv, config);
+    this.id = this.ctor.id;
     // try {
     //   this.debug = require('debug')(this.id ? `${this.config.bin}:${this.id}` : this.config.bin)
     // } catch {
@@ -116,8 +120,8 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
 
     /** oclif expects .debug to have debug's util.format api - https://tinyurl.com/2j67ajot */
     this.debug = (...args: any[]) => {
-      return this.log(util.format(...args))
-    }
+      return this.log(util.format(...args));
+    };
   }
 
   static override async run<T extends oclif.Command>(
@@ -302,9 +306,13 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
 
       // console.log(`plugin.type :>> `, plugin.type)
 
-      const { isESM, module, filePath } = await loadModule(plugin)
+      const { module } = await loadModule(plugin);
 
-      if (!module.plugin && plugin.type === 'user' && plugin.name !== '@business-as-code/cli') {
+      if (
+        !module.plugin &&
+        plugin.type === "user" &&
+        plugin.name !== "@business-as-code/cli"
+      ) {
         // this.error(`Plugin package does not have a named export 'plugin'. Package: '${plugin.name}', plugin type: '${plugin.type}', package path: '${pluginPath.original}'`)
         // return {}
       }
@@ -314,44 +322,94 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
     }
   };
 
-  protected async loadInitialiserForPlugin({
+  protected async initialisePlugins({
+    context,
+  }: {
+    context: ContextCommand<T>;
+  }) {
+    await Promise.all(
+      context.oclifConfig.plugins.map(async (plugin) =>
+        this.loadLifecycleImplementationsForPlugin({ plugin, context })
+      )
+    );
+  }
+
+  protected async loadLifecycleImplementationsForPlugin({
     plugin,
-    parseOutput,
+    context,
   }: {
     plugin: oclif.Interfaces.Plugin;
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-      BaseParseOutput;
-  }): Promise<NonNullable<Plugin["initialise"]>> {
+    context: ContextCommand<T>;
+  }) {
     const marker = oclif.Performance.mark(
       `plugin.loadInitialiserForPlugin#${plugin.name}`,
       { plugin: plugin.name }
     );
 
-    const noop = (...args: any[]) => {};
     const initialiseFunc = await this.loadPluginExport({
       pluginPath: addr.parseAsType(plugin.root, "portablePathPosixAbsolute"),
       plugin,
       debug: true,
     }).then((mod) => {
       // console.log(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
-      if (!mod.initialise) {
-        this.debug(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
-        return noop
+      if (!(mod.lifecycles ?? []).length) {
+        this.debug(
+          `plugin.loadLifecycleImplementationsForPlugin#${plugin.name} does not define any lifecycles`
+        );
+        return;
       }
-      return mod.initialise
 
-    }
-    );
+      // // load lifecycle into tapable
+      // return mod.initialise
+
+      for (const lifecycleImplementation of mod.lifecycles!) {
+        lifecycleImplementation.initialise({
+          context,
+        });
+      }
+    });
 
     marker?.stop();
     return initialiseFunc;
   }
+  // protected async loadInitialiserForPlugin({
+  //   plugin,
+  //   parseOutput,
+  // }: {
+  //   plugin: oclif.Interfaces.Plugin;
+  //   parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+  //     BaseParseOutput;
+  // }): Promise<NonNullable<Plugin["initialise"]>> {
+  //   const marker = oclif.Performance.mark(
+  //     `plugin.loadInitialiserForPlugin#${plugin.name}`,
+  //     { plugin: plugin.name }
+  //   );
+
+  //   const noop = (...args: any[]) => {};
+  //   const initialiseFunc = await this.loadPluginExport({
+  //     pluginPath: addr.parseAsType(plugin.root, "portablePathPosixAbsolute"),
+  //     plugin,
+  //     debug: true,
+  //   }).then((mod) => {
+  //     // console.log(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
+  //     if (!mod.initialise) {
+  //       this.debug(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
+  //       return noop
+  //     }
+  //     return mod.initialise
+
+  //   }
+  //   );
+
+  //   marker?.stop();
+  //   return initialiseFunc;
+  // }
 
   protected async loadServicesForPlugin({
     plugin,
   }: {
     plugin: oclif.Interfaces.Plugin;
-  }): Promise<Partial<ServicesStatic>> {
+  }): Promise<Partial<ServiceStaticMap>> {
     const marker = oclif.Performance.mark(
       `plugin.loadServicesForPlugin#${plugin.name}`,
       { plugin: plugin.name }
@@ -363,14 +421,16 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
         plugin,
         debug: true,
       }).then((pluginMod) =>
-        pluginMod.services && Array.isArray(pluginMod.services) ? pluginMod.services : []
+        pluginMod.services && Array.isArray(pluginMod.services)
+          ? pluginMod.services
+          : []
       )
     ).reduce(
       (acc, staticService) => ({
         ...acc,
         [staticService.title]: staticService,
       }),
-      {} as Partial<ServicesStatic>
+      {} as Partial<ServiceStaticMap>
     );
 
     marker?.stop();
@@ -395,7 +455,7 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
   }: {
     plugins: oclif.Interfaces.Plugin[];
     logger: Context["logger"];
-    workspacePath: AddressPathAbsolute,
+    workspacePath: AddressPathAbsolute;
   }): Promise<Context["serviceFactory"]> {
     const coreServices = {
       bac: BacService,
@@ -416,15 +476,15 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
         ...acc,
         ...staticPluginServices,
       };
-    }, Promise.resolve(coreServices))) as ServicesStatic;
+    }, Promise.resolve(coreServices))) as ServiceStaticMap;
 
     // console.log(`res :>> `, res)
 
-    const factory = async <SName extends keyof Services>(
+    const factory = async <SName extends keyof ServiceMap>(
       serviceName: SName,
       initialiseOptionsLite: ServiceInitialiseLiteOptions<SName>
       // initialiseOptions: ServiceOptions<SName>
-    ): Promise<Services[SName]> => {
+    ): Promise<ServiceMap[SName]> => {
       const staticService = staticServices[serviceName];
       // console.log(`staticServices :>> `, staticServices)
       // console.log(`staticService, serviceName :>> `, staticService, serviceName)
@@ -441,7 +501,7 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
           ...initialiseOptionsLite,
           workspacePath,
         } // more weird static class stuff
-      )) as Services[SName];
+      )) as ServiceMap[SName];
 
       if (!serviceIns) {
         this.debug(
@@ -459,37 +519,37 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
     };
     factory["availableServices"] = Object.keys(
       staticServices
-    ) as (keyof ServicesStatic)[];
+    ) as (keyof ServiceStaticMap)[];
     return factory;
   }
 
   // static async runDirect<T extends typeof oclif.Command>(
-    static async runDirect<T extends typeof oclif.Command>(
-      this: new (...args: any[]) => T,
-      // this: new (config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>) => T,
-      // argv?: string[] | undefined,
-      opts: oclif.Interfaces.LoadOptions,
-      parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
-    ): Promise<Result<unknown, { error: Error }>> {
-      const config = await oclif.Config.load(
-        opts || require.main?.filename || __dirname
-      );
-      const cmd = new this([] as any[], config);
-      if (!cmd.id) {
-        const id = cmd.constructor.name.toLowerCase();
-        cmd.id = id;
-        // @ts-ignore
-        cmd.ctor.id = id;
-      }
+  static async runDirect<T extends typeof oclif.Command>(
+    this: new (...args: any[]) => T,
+    // this: new (config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>) => T,
+    // argv?: string[] | undefined,
+    opts: oclif.Interfaces.LoadOptions,
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
+  ): Promise<Result<unknown, { error: Error }>> {
+    const config = await oclif.Config.load(
+      opts || require.main?.filename || __dirname
+    );
+    const cmd = new this([] as any[], config);
+    if (!cmd.id) {
+      const id = cmd.constructor.name.toLowerCase();
+      cmd.id = id;
       // @ts-ignore
-      cmd.ctor.oclifConfig = config;
-
-      // await (cmd as T & { initialise: () => Promise<void> }).initialise();
-
-      // @ts-ignore
-      const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);
-      return directRes;
+      cmd.ctor.id = id;
     }
+    // @ts-ignore
+    cmd.ctor.oclifConfig = config;
+
+    // await (cmd as T & { initialise: () => Promise<void> }).initialise();
+
+    // @ts-ignore
+    const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);
+    return directRes;
+  }
 
   async run(): Promise<void> {
     const parseOutput = (await this.parse({
@@ -513,7 +573,7 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
 
     await this.initialise({ parseOutput, config: this.config });
     const context = await this.setupContext({ parseOutput });
-    await this.initialisePlugins({ context, parseOutput });
+    await this.initialisePlugins({ context });
 
     const res = await this.execute(context);
 
@@ -534,7 +594,7 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
   ): Promise<Result<unknown, any>> {
     await this.initialise({ parseOutput, config: this.config });
     const context = await this.setupContext({ parseOutput });
-    await this.initialisePlugins({ context, parseOutput });
+    await this.initialisePlugins({ context });
 
     const res = await this.execute(context);
     return res;
@@ -559,7 +619,9 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
     //   this.log(msg);
     // };
 
-    const workspacePath = await this.getWorkspacePath(parseOutput.flags["workspacePath"])
+    const workspacePath = await this.getWorkspacePath(
+      parseOutput.flags["workspacePath"]
+    );
 
     const serviceFactory = await this.loadServiceFactory({
       plugins: oclifConfig.plugins,
@@ -572,76 +634,96 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
       cliOptions: parseOutput,
       logger: this.logger,
       serviceFactory,
-      workspacePath: await this.getWorkspacePath(parseOutput.flags["workspacePath"]),
+      workspacePath: await this.getWorkspacePath(
+        parseOutput.flags["workspacePath"]
+      ),
     };
 
     const contextCommand: ContextCommand<T> = {
       ...context,
-      lifecycles: setupLifecycles({context}),
+      // lifecycles: setupLifecycles({context}),
+      lifecycles: {
+        initialiseWorkspace: new InitialiseWorkspaceLifecycleBase<any>(),
+        configureWorkspace: new ConfigureWorkspaceLifecycleBase<any>(),
+        configureProject: new ConfigureProjectLifecycleBase<any>(),
+      },
     };
     return contextCommand;
   }
 
-  protected async initialisePlugins({
-    parseOutput,
-    context,
-  }: {
-    context: ContextCommand<T>;
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-      BaseParseOutput;
-  }) {
-    const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
+  // protected async initialisePlugins({
+  //   parseOutput,
+  //   context,
+  // }: {
+  //   context: ContextCommand<T>;
+  //   parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
+  //     BaseParseOutput;
+  // }) {
+  //   const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
 
-    // strategy: loop through all registered services and initialise blindly.
-    // don't need to worry about multiple subscriptions etc due to tapable
-    // being compiled - https://tinyurl.com/2jlzp5vr
+  //   // strategy: loop through all registered services and initialise blindly.
+  //   // don't need to worry about multiple subscriptions etc due to tapable
+  //   // being compiled - https://tinyurl.com/2jlzp5vr
 
-    // hookmap - https://tinyurl.com/2mqyusrc
-    // inspired by webpack's api - https://webpack.js.org/contribute/writing-a-plugin/
-    // const createLifecycles = () => {
-    //   return lifecycles;
-    // };
+  //   // hookmap - https://tinyurl.com/2mqyusrc
+  //   // inspired by webpack's api - https://webpack.js.org/contribute/writing-a-plugin/
+  //   // const createLifecycles = () => {
+  //   //   return lifecycles;
+  //   // };
 
-    await Promise.all(
-      oclifConfig.plugins.map(async (plugin) => {
-        const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
-          parseOutput,
-          plugin,
-        });
-        return pluginInitialiserFunc({ context });
-      }).concat(Object.values(coreHooks).map(async coreHook => {
-        return coreHook({ context });
-      }))
-    ).catch(err => {
-      throw err
-      console.log(`err :>> `, err)
-    })
+  //   // await Promise.all(
+  //   //   oclifConfig.plugins.map(async (plugin) => {
+  //   //     const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
+  //   //       parseOutput,
+  //   //       plugin,
+  //   //     });
+  //   //     return pluginInitialiserFunc({ context });
+  //   //   }).concat(Object.values(coreHooks).map(async coreHook => {
+  //   //     return coreHook({ context });
+  //   //   }))
+  //   // ).catch(err => {
+  //   //   throw err
+  //   //   console.log(`err :>> `, err)
+  //   // })
+  //   // await Promise.all(
+  //   //   oclifConfig.plugins.map(async (plugin) => {
+  //   //     const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
+  //   //       parseOutput,
+  //   //       plugin,
+  //   //     });
+  //   //     return pluginInitialiserFunc({ context });
+  //   //   }).concat(Object.values(coreHooks).map(async coreHook => {
+  //   //     return coreHook({ context });
+  //   //   }))
+  //   // ).catch(err => {
+  //   //   throw err
+  //   //   console.log(`err :>> `, err)
+  //   // })
 
-    // (await oclifConfig.plugins.forEach(async (accum, plugin) => {
-    //   const acc = await accum;
-    //   // const staticPluginServices = await this.loadServicesForPlugin({
-    //   //   plugin,
-    //   // });
-    //   // if (!staticPluginServices) {
-    //   //   return acc;
-    //   // }
+  //   // (await oclifConfig.plugins.forEach(async (accum, plugin) => {
+  //   //   const acc = await accum;
+  //   //   // const staticPluginServices = await this.loadServicesForPlugin({
+  //   //   //   plugin,
+  //   //   // });
+  //   //   // if (!staticPluginServices) {
+  //   //   //   return acc;
+  //   //   // }
 
-    //   const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
-    //     parseOutput,
-    //     plugin,
-    //   })
+  //   //   const pluginInitialiserFunc = await this.loadInitialiserForPlugin({
+  //   //     parseOutput,
+  //   //     plugin,
+  //   //   })
 
-    //   return {
-    //     ...acc,
-    //     ...staticPluginServices,
-    //   };
-    // }, Promise.resolve(coreServices))) as ServicesStatic;
-  }
+  //   //   return {
+  //   //     ...acc,
+  //   //     ...staticPluginServices,
+  //   //   };
+  //   // }, Promise.resolve(coreServices))) as ServicesStatic;
+  // }
 
   abstract execute(
     context: ContextCommand<T>
   ): Promise<Result<unknown, { error: BacError<MessageName, any> }>>;
-
 
   /** oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L332 */
   protected override async catch(
@@ -662,7 +744,7 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
       process.stderr.write(`${os.EOL.repeat(2)}
         ${colors.red(BacError.getMessageForError(err))}
         ${os.EOL.repeat(2)}
-      `)
+      `);
       // console.log(`:>> BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`, this.jsonEnabled(), BacError.getMessageForError(err));
 
       throw err; // we DO want to rethrow here after writing to stderr
@@ -696,10 +778,13 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
   ): Promise<AddressPathAbsolute> {
     if (!pathRelOrAbsoluteNative) {
       // when not supplied we derive it from the current install
-      const workspacePathByDotfile = await findUp(addr.parsePath(__dirname) as AddressPathAbsolute, constants.RC_FILENAME)
+      const workspacePathByDotfile = await findUp(
+        addr.parsePath(__dirname) as AddressPathAbsolute,
+        constants.RC_FILENAME
+      );
 
       if (workspacePathByDotfile) {
-        return workspacePathByDotfile
+        return workspacePathByDotfile;
       }
 
       throw new BacError(
@@ -719,5 +804,5 @@ export abstract class BaseCommand<T extends typeof oclif.Command> extends oclif.
     }
 
     return pathAddress;
-  };
+  }
 }

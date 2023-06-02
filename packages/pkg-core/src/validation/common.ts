@@ -5,12 +5,21 @@ import { addr, AddressType } from "@business-as-code/address";
 // } from "@moonrepo/types";
 
 import { z } from "zod";
+// import { Lifecycles } from "../lifecycles";
 
 /** the origin providers. Will be only core plugins so we know their handles upfront */
+// export const originProviderTypeSchema = z.union([
+//   z.literal("git"),
+//   z.literal("github"),
+// ]);
+// const createProviderSchema = <T extends keyof Lifecycles>() => {
+
+// }
 export const originProviderTypeSchema = z.union([
   z.literal("git"),
   z.literal("github"),
 ]);
+
 
 export const teamProviderTypeSchema = z.union([
   z.literal("codeowners"),

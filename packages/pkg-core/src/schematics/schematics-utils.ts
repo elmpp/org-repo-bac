@@ -18,17 +18,17 @@ import { schematicUtils } from ".";
 import {
   Context,
   ServiceInitialiseOptions,
-  Services,
-  ServicesStatic,
+  ServiceMap,
+  ServiceStaticMap,
 } from "../__types__";
 import { SchematicsResettableHostTree } from "./schematics-resettable-host-tree";
 import { ServiceExecTask } from "./tasks";
 
 // import { Options as Options } from "./tasks/service-exec/options";
 
-export interface ServiceOptions<SName extends keyof ServicesStatic> {
+export interface ServiceOptions<SName extends keyof ServiceStaticMap> {
   cb: (options: {
-    service: Services[SName];
+    service: ServiceMap[SName];
     serviceName: SName;
   }) => Promise<any>;
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
@@ -39,7 +39,7 @@ export interface ServiceOptions<SName extends keyof ServicesStatic> {
   // workingPath: AddressPathRelative
   context: Context;
 }
-export type ServiceOptionsLite<SName extends keyof ServicesStatic> = Omit<
+export type ServiceOptionsLite<SName extends keyof ServiceStaticMap> = Omit<
   ServiceOptions<SName>,
   "initialiseOptions"
 > & {
@@ -67,7 +67,7 @@ export const getHostRoot = (
   ) as AddressPathAbsolute;
 };
 
-function wrapServiceCbAsRule<SName extends keyof Services>({
+function wrapServiceCbAsRule<SName extends keyof ServiceMap>({
   serviceOptions,
 }: {
   serviceOptions: ServiceOptions<SName>;
@@ -84,7 +84,7 @@ function wrapServiceCbAsRule<SName extends keyof Services>({
   };
 }
 
-export const wrapServiceAsRule = <SName extends keyof Services>({
+export const wrapServiceAsRule = <SName extends keyof ServiceMap>({
   serviceOptions,
   schematicContext,
 }: {
@@ -116,7 +116,7 @@ export const wrapServiceAsRule = <SName extends keyof Services>({
   return wrapServiceCbAsRule({ serviceOptions: options });
 };
 
-export const wrapServiceAsTask = <SName extends keyof Services>({
+export const wrapServiceAsTask = <SName extends keyof ServiceMap>({
   serviceOptions,
   schematicContext,
 }: {

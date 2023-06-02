@@ -8,7 +8,7 @@ declare global {
     interface Services {
       bac: {
         insType: BacService;
-        clzType: typeof BacService;
+        staticType: typeof BacService;
       };
     }
   }
@@ -31,7 +31,7 @@ type DoExecOptionsLite = Omit<
  Provides programmatic way to interact with a Bac instance
  */
 export class BacService {
-  static title = "bac";
+  static title = "bac" as const
   options: Required<Options>;
 
   static async initialise(options: Options) {

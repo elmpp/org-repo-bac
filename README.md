@@ -10,7 +10,8 @@
  - p multi ls # list all workspaces + deps // list all projects, using pnpm
  - p moon project-graph
 
- - run verdaccio: p moon run pkg-tests-verdaccio:verdaccioKillBackground; p moon run pkg-tests-verdaccio:verdaccioRunBackground
+ <!-- - run verdaccio: p moon run root:verdaccioKillBackground; p moon run root:verdaccioRunBackground -->
+ - run verdaccio: p moon run @business-as-code/plugin-dev-essentials:verdaccioRunBackground
 
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
 
@@ -28,7 +29,7 @@ Oclif commands
 
 ## Build commands
 
- - p moon run @business-as-code/plugin-dev-essentials:changesetSnapshotPublishLocal # local snapshot build
+ - p moon run @business-as-code/plugin-dev-essentials:changesetSnapshotPublishLocal # local snapshot build -> when it doesn't build -> p moon
 
 ## Tasks
 

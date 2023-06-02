@@ -34,6 +34,7 @@ const baseMoonProjectSchema = moonProjectSchema.pick({
 
 const projectOriginSchema = z.object({
   provider: originProviderTypeSchema,
+
   /** the provider can store a hash to prevent reimport */
   lastHashTime: z.string().datetime(),
   lastHash: z.string(),

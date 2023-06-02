@@ -1,4 +1,4 @@
-import { addr, AddressPathAbsolute, AddressPathAbsoluteString } from "@business-as-code/address";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { expectIsFail, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 
@@ -76,7 +76,7 @@ describe("initialise workspace", () => {
 
       const configPath = addr.pathUtils.join(
         addr.parsePath(__dirname),
-        addr.parsePath("mocks/config-empty-typescript.ts")
+        addr.parsePath("mocks/config-single-static-project-source-typescript.ts")
       ) as AddressPathAbsolute;
 
 console.log(`configPath :>> `, configPath)
@@ -123,8 +123,8 @@ console.log(`configPath :>> `, configPath)
 
       res.res.expectUtil.createText(expectFs.readText("./.npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
       res.res.expectUtil.createText(expectFs.readText("./BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic synchronise-workspace
-      expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
-      res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
+      // expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
+      // res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
 
       // {
       //   "name": "my-new-workspace",

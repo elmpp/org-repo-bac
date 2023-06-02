@@ -11,7 +11,7 @@ declare global {
     interface Services {
       git: {
         insType: GitService;
-        clzType: typeof GitService;
+        staticType: typeof GitService;
       };
     }
   }
@@ -36,7 +36,7 @@ type Options = ServiceInitialiseCommonOptions & {
  SimpleGit Examples Folder - https://github.com/nodegit/nodegit/tree/master/examples
  */
 export class GitService {
-  static title = "git";
+  static title = "git" as const
 
   public CheckRepoActions = CheckRepoActionsImport
   // options: Options;

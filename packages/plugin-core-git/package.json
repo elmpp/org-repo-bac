@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-core-git",
-  "version": "0.0.0-bollards-20230521161933",
+  "version": "0.0.0-bollards-20230602074801",
   "description": "Core plugin package @business-as-code/plugin-core-git",
   "main": "src/index.ts",
   "files": [
@@ -26,8 +26,8 @@
     "@angular-devkit/schematics": "^15.2.4",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230521161933",
-    "@business-as-code/fslib": "workspace:0.0.0-bollards-20230521161933",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230602074801",
+    "@business-as-code/fslib": "workspace:0.0.0-bollards-20230602074801",
     "simple-git": "^3.17.0"
   },
   "devDependencies": {

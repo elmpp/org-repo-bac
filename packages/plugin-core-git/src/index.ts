@@ -13,7 +13,10 @@ import { GitService } from './services/git-service'
 
 export const plugin = {
   services: [GitService],
-  initialise: ({context}) => {
+  lifecycles: [
+    // InitialiseWorkspaceLifecycle,
+  ],
+  // initialise: ({context}) => {
 
-  },
+  // },
 } satisfies Plugin

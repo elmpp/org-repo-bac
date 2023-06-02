@@ -1,2 +1,1 @@
-
-export {configSchema, type Config} from './config/config'
+export * from './config'

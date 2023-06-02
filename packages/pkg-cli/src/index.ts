@@ -45,7 +45,7 @@ declare global {
 //         cliService: {
 //           // plugin: "@business-as-code/plugin-core-essentials";
 //           insType: typeof CliService;
-//           clzType: CliService;
+//           staticType: CliService;
 //         };
 //       };
 //     };

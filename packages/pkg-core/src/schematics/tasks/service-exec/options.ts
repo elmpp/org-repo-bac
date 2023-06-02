@@ -1,5 +1,5 @@
 import {
-  Services
+  ServiceMap
 } from "../../../__types__";
 import { ServiceOptions } from "../../schematics-utils";
 
@@ -24,7 +24,7 @@ export type ServiceExecTaskFactoryOptions = never // Service Tasks aren't "prime
 //   context: Context;
 // }
 
-export type ServiceExecTaskOptions<SName extends keyof Services> =
+export type ServiceExecTaskOptions<SName extends keyof ServiceMap> =
   ServiceOptions<SName>;
 // export interface ServiceExecTaskOptions {
 //   // workingDirectory: string;

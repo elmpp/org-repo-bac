@@ -3,6 +3,7 @@ import * as Interfaces from "@oclif/core/lib/interfaces/parser"; // need to impo
 
 export * from "./commands";
 export { constants } from "./constants";
+export * from "./interfaces";
 export * from "./schematics";
 export * from "./services";
 export * from "./utils";

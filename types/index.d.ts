@@ -27,5 +27,17 @@ declare global {
   namespace Bac {
     interface Services {
     }
+    interface Lifecycles {
+    }
+    // interface ConfigProjectSource {
+
+    // }
+    // interface Projects {
+
+    // }
+    // interface InitialiseWorkspaceHook {
+    // }
+    // interface InitialiseProjectHook {
+    // }
   }
 }

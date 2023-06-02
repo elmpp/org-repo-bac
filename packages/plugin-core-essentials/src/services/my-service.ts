@@ -5,7 +5,7 @@
 //         myService: {
 //           // plugin: "@business-as-code/plugin-core-essentials";
 //           insType: typeof MyService;
-//           clzType: MyService;
+//           staticType: MyService;
 //         };
 //       };
 //     };
@@ -21,7 +21,7 @@ declare global {
     interface Services {
       myService: {
         insType: MyService;
-        clzType: typeof MyService;
+        staticType: typeof MyService;
       };
     }
   }
@@ -33,7 +33,7 @@ declare global {
 // type Options = { context: Context; destinationPath: AddressPathAbsolute, workingDirectory: AddressPathRelative };
 
 export class MyService {
-  static title = "myService";
+  static title = "myService" as const
   static async initialise(options: ServiceInitialiseCommonOptions) {
     return new MyService(options);
   }

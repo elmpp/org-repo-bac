@@ -123,6 +123,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
     const configRaw = module.config;
+    console.log(`configRaw :>> `, require('util').inspect(configRaw, {showHidden: false, depth: undefined, colors: true}))
 
     const config = configSchema.safeParse(configRaw);
 
@@ -162,7 +163,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     const config = await this.getConfig(context);
 
-    const res = await context.lifecycles.initialise.initialiseWorkspace({
+    const res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace({
       context,
       workspacePath,
       workingPath: ".",

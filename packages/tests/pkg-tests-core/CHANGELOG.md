@@ -1,5 +1,18 @@
 # @business-as-code/tests-core
 
+## 0.0.0-bollards-20230602074801
+
+### Patch Changes
+
+- new message
+- new message
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230602074801
+  - @business-as-code/core@0.0.0-bollards-20230602074801
+  - @business-as-code/error@0.0.0-bollards-20230602074801
+  - @business-as-code/fslib@0.0.0-bollards-20230602074801
+
 ## 0.0.0-bollards-20230521161933
 
 ### Patch Changes
