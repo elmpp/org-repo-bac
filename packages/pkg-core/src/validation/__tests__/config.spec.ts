@@ -62,6 +62,7 @@ describe("config", () => {
           provider: "git",
           options: {
             // b: 'b',
+            address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9'
           }
         },
       ],

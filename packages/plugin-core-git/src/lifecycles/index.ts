@@ -1,4 +1,6 @@
-import { ConfigureWorkspaceLifecycle } from "./configure-workspace-lifecycle";
+import { ConfigureWorkspaceGitLifecycle } from "./configure-workspace-git-lifecycle";
+// import { ConfigureWorkspaceGitCallbackLifecycle } from "./configure-workspace-git-callback-lifecycle";
+
 // import { InitialiseWorkspaceLifecycle } from "./initialise-workspace-lifecycle";
 
 declare global {
@@ -6,15 +8,22 @@ declare global {
     interface Lifecycles {
       git: {
         configureWorkspace: {
-          insType: ConfigureWorkspaceLifecycle;
-          staticType: typeof ConfigureWorkspaceLifecycle;
+          insType: ConfigureWorkspaceGitLifecycle;
+          staticType: typeof ConfigureWorkspaceGitLifecycle;
         };
       };
+      // gitCallback: {
+      //   configureWorkspace: {
+      //     insType: ConfigureWorkspaceGitCallbackLifecycle;
+      //     staticType: typeof ConfigureWorkspaceGitCallbackLifecycle;
+      //   };
+      // };
     }
   }
 }
 
 export {
-  ConfigureWorkspaceLifecycle,
+  ConfigureWorkspaceGitLifecycle,
+  // ConfigureWorkspaceGitCallbackLifecycle,
   // InitialiseWorkspaceLifecycle,
 };

@@ -1,7 +1,7 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { Config } from "prettier";
 import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+import { Config } from "../validation";
 import { assertIsResult, Context, ContextCommand, LifecycleStaticInterface, Result } from "../__types__";
 import { InferHookParams, InferHookReturn } from "./__types__";
 
@@ -24,7 +24,8 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
-        config?: Config;
+        // config: Config;
+        options: Record<string, never>
       }>([
       "options",
     ]),
@@ -34,7 +35,8 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
-        config?: Config;
+        // config: Config;
+        options: Record<string, never>
       },
       Result<
         {
@@ -50,7 +52,7 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
     //     context: Context;
     //     workspacePath: AddressPathAbsolute;
     //     workingPath: string;
-    //     config?: Config;
+    //     config: Config;
     //   },
     //   Result<
     //     {
@@ -65,7 +67,8 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
-        config?: Config;
+        // config: Config;
+        options: Record<string, never>
       }>([
       "options",
     ]),
@@ -91,7 +94,9 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
 
   async executeConfigureWorkspace(options: InferHookParams<typeof ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace>): Promise<InferHookReturn<typeof ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace>> {
     await  ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.promise(options)
+
     const res = await  ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.promise(options);
+    console.log(`res :>> `, res)
     assertIsResult(res)
     await  ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.promise(options)
     return res
@@ -101,20 +106,29 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
-    config?: Config;
-  }) => Promise<unknown>) | void {}
+    config: Config;
+    options: any
+  }) => Promise<unknown>) | undefined {
+    return
+  }
 
   protected configureWorkspace(): ((options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
-    config?: Config;
-  }) => Promise<unknown>) | void {}
+    config: Config;
+    options: any
+  }) => Promise<unknown>) | undefined {
+    return
+  }
 
   protected afterConfigureWorkspace(): ((options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
-    config?: Config;
-  }) => Promise<unknown>) | void {}
+    config: Config;
+    options: any
+  }) => Promise<unknown>) | undefined {
+    return
+  }
 }

@@ -94,8 +94,9 @@ tasks:
       # - ':lint' # run it in all
     # inputs:
     #   - '@globs(sources)'
-    command: 'tsc --build --clean'
-    platform: 'node'
+    # command: 'tsc --build --clean'
+    command: 'find . -type d -name dist | grep -v node_modules | xargs rm -rf'
+    platform: 'system'
     options:
       runFromWorkspaceRoot: true
     # local: true
@@ -130,11 +131,11 @@ tasks:
   # returnFail:
   #   command: "bash -c '$(exit 1)'"
   #   platform: 'system'
-  # doUnpublish:
-  #   command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/ || true' # https://tinyurl.com/2okqdgo7
-  #   platform: system
-  #   options:
-  #     runFromWorkspaceRoot: true
+  doUnpublish:
+    command: 'pnpm unpublish -u foo -r --no-git-checks --force --registry http://localhost:4873/ || true' # https://tinyurl.com/2okqdgo7
+    platform: system
+    options:
+      runFromWorkspaceRoot: true
   # unpublishDev:
   #   deps:
   #     # - ~:returnFail
@@ -154,35 +155,35 @@ tasks:
   #   #   - ../
   #   # runFromWorkspaceRoot: true
   #   # platform: 'system'
-  # publishDev:
-  #   deps:
-  #     # - ~:returnFail
-  #     - ~:build
-  #     # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
-  #     # - '@business-as-code/tests-verdaccio:verdaccioLogin'
-  #     - ~:doUnpublish
-  #     # - ~:unpublishDev
-  #   # local: true
-  #   options:
-  #     runDepsInParallel: false
-  #     outputStyle: 'stream'
-  #     runFromWorkspaceRoot: true
-  #     # persistent: true
-  #     # outputStyle: 'buffer'
+  publishDev:
+    deps:
+      # - ~:returnFail
+      - ~:build
+      # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+      # - '@business-as-code/tests-verdaccio:verdaccioLogin'
+      - ~:doUnpublish
+      # - ~:unpublishDev
+    # local: true
+    options:
+      runDepsInParallel: false
+      outputStyle: 'stream'
+      runFromWorkspaceRoot: true
+      # persistent: true
+      # outputStyle: 'buffer'
 
-  #   # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-  #   command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
-  #   # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
-  #   # inputs:
-  #   #   - ../
-  #   # runFromWorkspaceRoot: true
-  #   # platform: 'system'
-  # publish:
-  #   deps:
-  #     - ~:build
-  #   command: 'pnpm publish -r --force' # https://tinyurl.com/2okqdgo7
-  #   options:
-  #     runFromWorkspaceRoot: true
+    # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
+    command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # inputs:
+    #   - ../
+    # runFromWorkspaceRoot: true
+    # platform: 'system'
+  publish:
+    deps:
+      - ~:build
+    command: 'pnpm publish -r --force' # https://tinyurl.com/2okqdgo7
+    options:
+      runFromWorkspaceRoot: true
     # platform: 'system'
   # sends artifacts to the local verdaccio
 

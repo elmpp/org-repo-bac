@@ -17,6 +17,7 @@
   "devDependencies": {
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
+    "@business-as-code/fslib": "workspace:*",
     "@business-as-code/tests-core": "workspace:*",
     "@oclif/core": "2.6.4",
     "@oclif/test": "^2.3.9",

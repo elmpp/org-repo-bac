@@ -1,4 +1,3 @@
-import { addr } from "@business-as-code/address";
 import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 
@@ -6,16 +5,16 @@ import { createPersistentTestEnv } from "@business-as-code/tests-core";
 describe("test-env-smoke-test-stage0", () => {
   jest.setTimeout(30000);
 
-  it.only("creates a skeleton workspace with absolute configPath", async () => {
+  it("creates a skeleton workspace using local published cli. Default configPath", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       // testContext.mockStdStart()
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
 
-      const configPath = addr.pathUtils.join(
-        testContext.testEnvVars.fixturesPath,
-        addr.parsePath("mocks/input1.json")
-      );
+      // const configPath = addr.pathUtils.join(
+      //   testContext.testEnvVars.fixturesPath,
+      //   addr.parsePath("mocks/input1.json")
+      // );
 
 // console.log(`configPath :>> `, configPath)
 
@@ -27,8 +26,8 @@ describe("test-env-smoke-test-stage0", () => {
           "my-new-workspace",
           "--workspacePath",
           testContext.testEnvVars.workspacePath.original,
-          "--configPath",
-          configPath.original,
+          // "--configPath",
+          // configPath.original,
           "--cliVersion",
           'bollards', // the localcli dist tag
           "--cliRegistry",
@@ -57,6 +56,8 @@ describe("test-env-smoke-test-stage0", () => {
       const expectFs = res.res.expectUtil.createFs()
       // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
 
+      const expectConfig = res.res.expectUtil.createConfig();
+
       expectStdout.lineContainsString({match: new RegExp(`@business-as-code/cli/.*-bollards-.*`), occurrences: 1}) // local snapshot used
 
       // console.log(`res :>> `, res)
@@ -82,12 +83,28 @@ describe("test-env-smoke-test-stage0", () => {
       //   { logLevel: "debug" }
       // );
 
-      expectFs.exists('.npmrc')
-      res.res.expectUtil.createText(expectFs.readText(".npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
-      res.res.expectUtil.createText(expectFs.readText("BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic synchronise-workspace
-      expect(expectFs.readJson("package.json")).toHaveProperty('dependencies.@business-as-code/cli', 'bollards') // coming from second schematic synchronise-workspace
-      expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
-      res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
+      // expectFs.exists('.npmrc')
+      // res.res.expectUtil.createText(expectFs.readText(".npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
+      // res.res.expectUtil.createText(expectFs.readText("BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic synchronise-workspace
+      // expect(expectFs.readJson("package.json")).toHaveProperty('dependencies.@business-as-code/cli', 'bollards') // coming from second schematic synchronise-workspace
+      // // expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
+      // res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
+
+      expectConfig.isValid();
+
+      res.res.expectUtil
+        .createText(expectFs.readText("./.npmrc"))
+        .lineContainsString({ match: `@business-as-code:`, occurrences: 1 }); // local npm registry set up
+      res.res.expectUtil
+        .createText(expectFs.readText("./BOLLOCKS.md"))
+        .lineContainsString({ match: `PANTS`, occurrences: 1 }); // coming from second schematic synchronise-workspace
+      res.res.expectUtil
+        .createText(expectFs.readText("./package.json"))
+        .lineContainsString({
+          match: `"name": "my-new-workspace"`,
+          occurrences: 1,
+        })
+        .lineContainsString({ match: `"private": true`, occurrences: 1 });
 
       // {
       //   "name": "my-new-workspace",

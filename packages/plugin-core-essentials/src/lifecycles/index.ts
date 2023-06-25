@@ -1,4 +1,4 @@
-import { ConfigureWorkspaceLifecycle } from "./configure-workspace-lifecycle";
+// import { ConfigureWorkspaceLifecycle } from "./configure-workspace-lifecycle";
 import { InitialiseWorkspaceLifecycle } from "./initialise-workspace-lifecycle";
 
 /** we must define them in one place due to augmentation limitations */
@@ -7,11 +7,11 @@ declare global {
     interface Lifecycles {
       core: {
         // ['@business-as-code/plugin-core-essentials']: {
-        configureWorkspace: {
-          // type: 'a'
-          insType: ConfigureWorkspaceLifecycle;
-          staticType: typeof ConfigureWorkspaceLifecycle;
-        };
+        // configureWorkspace: {
+        //   // type: 'a'
+        //   insType: ConfigureWorkspaceLifecycle;
+        //   staticType: typeof ConfigureWorkspaceLifecycle;
+        // };
         initialiseWorkspace: {
           // type: 'b'
           insType: InitialiseWorkspaceLifecycle;
@@ -22,4 +22,5 @@ declare global {
   }
 }
 
-export { ConfigureWorkspaceLifecycle, InitialiseWorkspaceLifecycle };
+export { InitialiseWorkspaceLifecycle };
+// export { ConfigureWorkspaceLifecycle, InitialiseWorkspaceLifecycle };

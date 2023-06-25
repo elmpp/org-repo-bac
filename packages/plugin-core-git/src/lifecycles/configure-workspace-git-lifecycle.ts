@@ -1,10 +1,9 @@
 
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { AddressPathAbsolute, AddressUrlGitString } from "@business-as-code/address";
 import {
-  Context,
-  ConfigureWorkspaceLifecycleBase,
+  Config,
+  ConfigureWorkspaceLifecycleBase, Context
 } from "@business-as-code/core";
-import { Config } from "prettier";
 
 // declare global {
 //   namespace Bac {
@@ -19,7 +18,7 @@ import { Config } from "prettier";
 //   }
 // }
 
-export class ConfigureWorkspaceLifecycle extends ConfigureWorkspaceLifecycleBase<typeof ConfigureWorkspaceLifecycle> {
+export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleBase<typeof ConfigureWorkspaceGitLifecycle> {
 
   static title = 'git' as const
 
@@ -29,12 +28,20 @@ export class ConfigureWorkspaceLifecycle extends ConfigureWorkspaceLifecycleBase
         workspacePath: AddressPathAbsolute;
         workingPath: string;
         config?: Config | undefined;
+        options: {
+          address: AddressUrlGitString, // standard git lifecycle has no callback semantics
+        }
       }) => Promise<{
-        b: "b",
+        address: AddressUrlGitString
       }>) {
-    return async ({ context }) => {
+    return async ({ context, config, options }) => {
+
+      // possibly do stuff - validate / actual import?
+
+      // if (options.)
+
       return {
-        b: "b",
+        address: options.address,
       };
     };
   }

@@ -1,4 +1,3 @@
-import path from "path";
 import {
   addr,
   AddressPathAbsolute,
@@ -55,6 +54,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     cliRegistry: Flags.string({
       description: "Specify a package manager registry to load the Bac cli",
       required: false,
+      default: "https://registry.npmjs.org",
       // default: "http://localhost:4873",
     }),
   };
@@ -79,7 +79,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   protected async getConfig(
     context: ContextCommand<typeof InitialiseWorkspace>
-  ): Promise<Config> {
+  ): Promise<{config: Config, path: AddressPathAbsolute}> {
     const getConfigPath = (
       runtimeConfigRelOrAbsoluteNative: string | AddressPathAbsolute | AddressPathRelative
     ): AddressPathAbsolute => {
@@ -94,6 +94,16 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       // if (typeof configPath === 'string') {
       //   configPath = addr.parsePath(configPath)
       // }
+// console.log(`configPath :>> `, configPath)
+//       const cliCheckoutPath = addr.packageUtils.resolve({
+//         address: addr.parsePackage(
+//           `@business-as-code/cli`
+//         ),
+//         projectCwd: testContext.testEnvVars.checkoutPath,
+//         strict: true,
+//       })
+
+
       if (assertIsAddressPathRelative(configPath)) {
         configPath = addr.pathUtils.resolve(
           addr.parsePath(process.cwd()),
@@ -104,15 +114,31 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       if (!xfs.existsSync(configPath.address)) {
         throw new BacError(
           MessageName.OCLIF_ERROR,
-          `Config path at '${configPath.original}' does not exist, supplied as '${runtimeConfigRelOrAbsoluteNative}'`
+          `Config path at '${configPath.original}' does not exist, supplied as '${require('util').inspect(runtimeConfigRelOrAbsoluteNative, {showHidden: false, depth: undefined, colors: true})}`
         );
       }
       return configPath;
     };
 
+    // const cliCheckoutPath = addr.packageUtils.resolve({
+    //   address: addr.parsePackage(
+    //     `@business-as-code/cli`
+    //   ),
+    //   projectCwd: context.testEnvVars.checkoutPath, // when finding default config, we want relative to the currently running instance (including checkout)
+    //   strict: true,
+    // })
+
+    const skeletonConfigPath = addr.packageUtils.resolve({
+      address: addr.parsePackage(
+        `@business-as-code/core/src/etc/config/skeleton.js`
+      ),
+      projectCwd: addr.parsePath(context.oclifConfig.root) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
+      strict: true,
+    });
+
     const inputConfigPathWithDefault =
       context.cliOptions.flags.configPath ??
-      addr.parsePath(path.resolve(__dirname, "./config-default.js"));
+      skeletonConfigPath;
     const configPath = getConfigPath(inputConfigPathWithDefault);
     const { module } = await fsUtils.loadModule(configPath.address);
 
@@ -123,7 +149,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
     const configRaw = module.config;
-    console.log(`configRaw :>> `, require('util').inspect(configRaw, {showHidden: false, depth: undefined, colors: true}))
 
     const config = configSchema.safeParse(configRaw);
 
@@ -135,7 +160,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
 
-    return config.data;
+    return {
+      config: config.data,
+      path: configPath,
+    }
   }
 
   async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
@@ -161,13 +189,18 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
 
-    const config = await this.getConfig(context);
+    const {config, path: configPath} = await this.getConfig(context);
 
     const res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace({
       context,
       workspacePath,
       workingPath: ".",
+      name: context.cliOptions.flags.name,
       config,
+      configPath: configPath.original,
+      cliVersion: context.cliOptions.flags.cliVersion,
+      cliRegistry: context.cliOptions.flags.cliRegistry,
+      options: {}, // <!-- typed as any atm ¯\_(ツ)_/¯
     });
     return res;
 

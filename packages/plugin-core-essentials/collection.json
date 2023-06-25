@@ -1,18 +1,18 @@
 {
   "schematics": {
     "initialise-workspace": {
-      "factory": "./src/schematics/initialise-workspace/factory",
-      "schema": "./src/schematics/initialise-workspace/schema.json",
+      "factory": "./dist/schematics/initialise-workspace/factory",
+      "schema": "./dist/schematics/initialise-workspace/schema.json",
       "description": "Create an empty workspace"
     },
     "synchronise-workspace": {
-      "factory": "./src/schematics/synchronise-workspace/factory",
-      "schema": "./src/schematics/synchronise-workspace/schema.json",
+      "factory": "./dist/schematics/synchronise-workspace/factory",
+      "schema": "./dist/schematics/synchronise-workspace/schema.json",
       "description": "Applies configuration to a workspace"
     },
     // "blank": {
-    //   "factory": ./src/schematics/blank/factory",
-    //   "schema": ./src/schematics/blank/schema.json",
+    //   "factory": ./dist/schematics/blank/factory",
+    //   "schema": ./dist/schematics/blank/schema.json",
     //   "description": "Create an empty schematic project or add a blank schematic to the current project."
     // },
     // "my-schematic": {

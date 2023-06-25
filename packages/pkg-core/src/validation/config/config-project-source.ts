@@ -136,7 +136,7 @@ const commonProjectSourceSchema = z.object({
   active: z.boolean().optional(),
 })
 // type BFE = z.infer<typeof commonProjectSourceSchema>
-export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('initialiseWorkspace', commonProjectSourceSchema)
+export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace', commonProjectSourceSchema)
 // export const configProjectSourceConfigSchema = commonProjectSourceSchema
 export type ConfigProjectSourceConfig = Simplify<z.infer<typeof configProjectSourceConfigSchema>>
 

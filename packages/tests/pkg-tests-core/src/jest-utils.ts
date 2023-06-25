@@ -1,5 +1,3 @@
-
-
 // export type PackageStatus = {
 //   name: AddressPackage
 //   creationDate: Date
@@ -14,36 +12,38 @@
 //   // splittable?: PackageUpstreamPushStatus
 // }
 
-import { Tree } from "@angular-devkit/schematics"
-import { addr, AddressPathAbsolute } from "@business-as-code/address"
-import { Outputs, stringUtils } from "@business-as-code/core"
-import { assertIsError } from "@business-as-code/error"
-import { xfs } from "@business-as-code/fslib"
-import os from 'os'
-import { TestEnvVars } from "./test-env"
-import { virtualFs } from "@angular-devkit/core"
-import { NodeJsSyncHost } from "@angular-devkit/core/node"
+import { virtualFs } from "@angular-devkit/core";
+import { NodeJsSyncHost } from "@angular-devkit/core/node";
+import { Tree } from "@angular-devkit/schematics";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { configSchema, constants, Outputs, stringUtils } from "@business-as-code/core";
+import { assertIsError } from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
+import os from "os";
+import { TestEnvVars } from "./test-env";
+import assert from "assert";
 // @ts-ignore
-import expectMatchers from 'expect/build/matchers'
-import fs from 'fs'
-import path from 'path'
-import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree"
+import expectMatchers from "expect/build/matchers";
+import fs from "fs";
+import path from "path";
+import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
 
 // const REGEX_STRIP_ANSI_ESCAPE_CODES = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
 
-export const escapeForRegexp = (str: string) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') // https://tinyurl.com/2ey6wbqk
+export const escapeForRegexp = (str: string) =>
+  str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"); // https://tinyurl.com/2ey6wbqk
 
 type Options = {
-   outputs: Outputs
+  outputs: Outputs;
   //  mntExec: MntExecService
-   /** Guaranteed to be the path to ultimate destination content. You should not be asserting on content outside of here as this may be subject to different cache mechanisms possibly */
+  /** Guaranteed to be the path to ultimate destination content. You should not be asserting on content outside of here as this may be subject to different cache mechanisms possibly */
   //  destinationPath: AddressPathAbsolute
-   // /** The base path where this testing is happening. Will be same as TEST_CACHE_PATH */
-   // enclosingPath: AddressPathAbsolute
+  // /** The base path where this testing is happening. Will be same as TEST_CACHE_PATH */
+  // enclosingPath: AddressPathAbsolute
   //  context: Context
-   testEnvVars: TestEnvVars
-   tree: Tree
-   exitCode: number
+  testEnvVars: TestEnvVars;
+  tree: Tree;
+  exitCode: number;
 
   //  /** as returned from setupFunction */
   //  projectCwd: AddressPathAbsolute
@@ -51,50 +51,60 @@ type Options = {
   //  // projectDefinition: ProjectDefinition
   //  // /** Calling this will roll back to post-scaffold - ideal for secondary mntExec within implement phase */
   //  // reset: () => Promise<void>
-}
+};
 
 export function createAssertFail(err: string | Error) {
-  return Object.assign(assertIsError(err) ? err : new Error(err), {matcherResult: () => err, pass: false})
+  return Object.assign(assertIsError(err) ? err : new Error(err), {
+    matcherResult: () => err,
+    pass: false,
+  });
 }
 /** node assert does not break execution path */
 export function assertFail(logicTest: any, err: string | Error) {
   if (!!!logicTest) {
-    throw createAssertFail(err)
+    throw createAssertFail(err);
   }
 }
 /** Jest 27+ includes jest-circus as a test runner which does not have fail() - https://tinyurl.com/2hu8zcpo */
 export function fail(err: string | Error) {
-  throw createAssertFail(err)
+  throw createAssertFail(err);
 }
 
 // type RunPropsAnchored = RunFunctionProps & {scaffoldPath: PortablePath}
 export class ExpectUtil {
-  options: Options
+  options: Options;
 
   constructor(options: Options) {
     // this.options = {...runProps, scaffoldPath: normalizePath(ppath.join(runProps.projectScaffoldPath, scaffoldPath))}
-    this.options = options
+    this.options = options;
 
     // expect(options.testEnvVars.checkoutMntCwd.original).toMatch(new RegExp('/mnt-pkg-cli/src/bin$'))
-    expect(options.testEnvVars.workspacePath.originalNormalized).not.toMatch(new RegExp('/content$')) // ensure envs does not pass the cache subdir through
+    expect(options.testEnvVars.workspacePath.originalNormalized).not.toMatch(
+      new RegExp("/content$")
+    ); // ensure envs does not pass the cache subdir through
     expect(
       options.testEnvVars.workspacePath.originalNormalized.match(
-        new RegExp('packages/tests/packages/tests-fixtures/test-env/tests/[^]+/')
+        new RegExp(
+          "packages/tests/packages/tests-fixtures/test-env/tests/[^]+/"
+        )
       )
-    ) // i.e. not the cache path
+    ); // i.e. not the cache path
   }
 
   createStdout(): ExpectText {
-    return new ExpectText(this.options.outputs.stdout, this.options)
+    return new ExpectText(this.options.outputs.stdout, this.options);
   }
   createStderr(): ExpectText {
-    return new ExpectText(this.options.outputs.stderr, this.options)
+    return new ExpectText(this.options.outputs.stderr, this.options);
   }
   createText(text: string): ExpectText {
-    return new ExpectText(text, this.options)
+    return new ExpectText(text, this.options);
   }
   createFs(): ExpectFs & Tree {
-    return ExpectFs.fromTree(this.options, this.options.tree)
+    return ExpectFs.fromTree(this.options, this.options.tree);
+  }
+  createConfig(): ExpectConfig {
+    return new ExpectConfig(this.createFs(), this.options);
   }
   // createBootstrap(): ExpectBootstrap {
   //   return new ExpectBootstrap(this.options)
@@ -104,34 +114,78 @@ export class ExpectUtil {
   // }
 }
 
+/** assertions on the workspace config */
+class ExpectConfig {
+  options: Options;
+  expectFs: ExpectFs;
+  /** @internal - do not use!! */
+  _tmpResolvablePath: AddressPathAbsolute
+
+  constructor(expectFs: ExpectFs, options: Options) {
+    this.options = options;
+    this.expectFs = expectFs;
+    this._tmpResolvablePath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath(`../etc/resolvable-tmp/${constants.RC_FILENAME}`))
+  }
+
+  protected async importConfig() {
+
+    const sourcePath = addr.pathUtils.join(this.options.testEnvVars.workspacePath, addr.parsePath(constants.RC_FILENAME))
+    xfs.copyFileSync(sourcePath.address, this._tmpResolvablePath.address)
+
+    const configModule = require(`../etc/resolvable-tmp/${constants.RC_FILENAME}`)
+
+    // // console.log(`configModule :>> `, configModule)
+
+    assert(configModule.config)
+    return configModule.config
+
+    // return fsUtils.loadConfig(this._tmpResolvablePath)
+  }
+
+  async isValid(): Promise<ExpectConfig> {
+
+    const config = await this.importConfig()
+    configSchema.parse(config)
+    return this;
+  }
+
+  get expectText() {
+    const fileEntry = this.expectFs.get(constants.RC_FILENAME)
+    assert(fileEntry)
+    return new ExpectText(fileEntry.content.toString(), this.options);
+  }
+}
+
 /** small wrapper around the tree */
 class ExpectFs extends HostCreateLazyTree {
-// class ExpectFs extends HostTree {
-  options: Options
+  // class ExpectFs extends HostTree {
+  options: Options;
 
   // constructor(options: Options, protected override _backend: virtualFs.ReadonlyHost<{}> = new virtualFs.Empty()) {
   constructor(options: Options) {
-    console.log(`options.testEnvVars.workspacePath :>> `, options.testEnvVars.workspacePath)
     const _backend = new virtualFs.ScopedHost(
       new NodeJsSyncHost(),
-      options.testEnvVars.workspacePath.original as any,
-    )
-    super(_backend)
-    this.options = options
+      options.testEnvVars.workspacePath.original as any
+    );
+    super(_backend);
+    this.options = options;
   }
 
   static fromTree(options: Options, tree: Tree): ExpectFs {
     // return new ExpectFs(tree._backend, options)
-    const nextIns = new ExpectFs(options)
-    nextIns.merge(tree) // may not actually be required here - driven purely from fs?
-    return nextIns
+    const nextIns = new ExpectFs(options);
+    nextIns.merge(tree); // may not actually be required here - driven purely from fs?
+    return nextIns;
   }
 
   existsSync(filePath: string): boolean {
-    const filePathAbs = path.join(this.options.testEnvVars.workspacePath.original, filePath)
+    const filePathAbs = path.join(
+      this.options.testEnvVars.workspacePath.original,
+      filePath
+    );
     // console.log(`:>> DDDDDDDDDDDDDDDDDDDD`, filePath, filePathAbs, fs.existsSync(filePath));
     // console.log(`this.options.tree :>> `, this.options.tree)
-    return this.options.tree.exists(filePath) || fs.existsSync(filePathAbs)
+    return this.options.tree.exists(filePath) || fs.existsSync(filePathAbs);
   }
 
   // debug() {
@@ -142,24 +196,26 @@ class ExpectFs extends HostCreateLazyTree {
 }
 
 class ExpectText {
-  options: Options
-  outputRaw: string
-  outputLines: string[]
-  outputLinesStripped: string[]
-  debugFolderPath: AddressPathAbsolute
+  options: Options;
+  outputRaw: string;
+  outputLines: string[];
+  outputLinesStripped: string[];
+  debugFolderPath: AddressPathAbsolute;
 
   constructor(output: string, options: Options) {
-    this.options = options
-    this.outputRaw = output
-    this.outputLines = output.trimRight().split(os.EOL)
-    this.outputLinesStripped = stringUtils.stripAnsi(output.trimRight()).split(os.EOL)
+    this.options = options;
+    this.outputRaw = output;
+    this.outputLines = output.trimRight().split(os.EOL);
+    this.outputLinesStripped = stringUtils
+      .stripAnsi(output.trimRight())
+      .split(os.EOL);
     this.debugFolderPath = addr.parsePPath(
       xfs.mktempSync()
       // xfs.mktempSync({
       //   persist: true,
       //   foldername: 'expect_out',
       // })
-    ) as AddressPathAbsolute
+    ) as AddressPathAbsolute;
   }
 
   // /** saves state to a temp file for better and more concise debugging */
@@ -177,10 +233,17 @@ class ExpectText {
       `${Math.ceil(Math.random() * 0x100000000)
         .toString(16)
         .padStart(8, `0`)}`
-    )
-    const filePath = addr.pathUtils.join(this.debugFolderPath, filename) as AddressPathAbsolute
-    xfs.writeFileSync(filePath.address, content, {encoding: 'utf8'})
-    return filePath
+    );
+    const filePath = addr.pathUtils.join(
+      this.debugFolderPath,
+      filename
+    ) as AddressPathAbsolute;
+    xfs.writeFileSync(filePath.address, content, { encoding: "utf8" });
+    return filePath;
+  }
+
+  equals(text: string) {
+    expect(text).toEqual(this.outputRaw)
   }
 
   /**
@@ -194,29 +257,31 @@ class ExpectText {
     messageNameMatch,
     occurrences = 0,
     stripAnsi = true,
-    // formattingMatch,
-  }: {
-    match: string | RegExp
-    messageNameMatch?: number
-    occurrences: number
-    stripAnsi?: boolean
+  }: // formattingMatch,
+  {
+    match: string | RegExp;
+    messageNameMatch?: number;
+    occurrences: number;
+    stripAnsi?: boolean;
     // formattingMatch?: {nodeProcessIdx: number; virtualProcessIdx: number; pkg?: {relativeCwd: string}}
   }): ExpectText {
     // const escapedSearchStr = escapeForRegexp(match)
 
     const getRegExpForMatch = (match: string | RegExp): RegExp => {
-      if (typeof match === 'object') return match
-      return new RegExp(escapeForRegexp(match), 'i')
-    }
-    const escapedMessageRegex = new RegExp(`MNT[0]+${messageNameMatch}`)
-    const matchMatcher = getRegExpForMatch(match)
+      if (typeof match === "object") return match;
+      return new RegExp(escapeForRegexp(match), "i");
+    };
+    const escapedMessageRegex = new RegExp(`MNT[0]+${messageNameMatch}`);
+    const matchMatcher = getRegExpForMatch(match);
 
-    const [found, missed] = this.getOutputLines(stripAnsi).reduce<[string[], string[]]>(
+    const [found, missed] = this.getOutputLines(stripAnsi).reduce<
+      [string[], string[]]
+    >(
       (acc, l) => {
         // console.log(`l,  :>> `, l, escapedMessageRegex)
-        let matchRes = l.match(matchMatcher)
+        let matchRes = l.match(matchMatcher);
         if (messageNameMatch) {
-          matchRes = matchRes && l.match(escapedMessageRegex)
+          matchRes = matchRes && l.match(escapedMessageRegex);
         }
         // if (formattingMatch) {
         //   const formatDelimiter = '\u2800'
@@ -231,11 +296,11 @@ class ExpectText {
         // }
 
         if (matchRes) {
-          acc[0].push(l)
+          acc[0].push(l);
         } else {
-          acc[1].push(l)
+          acc[1].push(l);
         }
-        return acc
+        return acc;
 
         // return matchRes
 
@@ -244,17 +309,19 @@ class ExpectText {
         // : l.match(getRegExpForMatch(match))
       },
       [[], []]
-    )
+    );
 
-    let failMessage: string
+    let failMessage: string;
 
     if (occurrences === Infinity) {
       if (found.length !== this.getOutputLines(stripAnsi).length) {
         failMessage = `expectOut#lineContainsString: Expected '${
           this.getOutputLines(stripAnsi).length
-        }' (supplied=Infinity) occurrences of '${match}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${
+        }' (supplied=Infinity) occurrences of '${match}'. MessageNameMatch: '${
+          messageNameMatch ?? "-"
+        }'. MatchMatcher: '${matchMatcher}'. Matched '${
           found.length
-        }'. Missed '${missed.length}'`
+        }'. Missed '${missed.length}'`;
         // expect(true).toEqual(true) // keep assertions number consistent
       } else {
         // console.log(`found :>> `, found)
@@ -264,7 +331,7 @@ class ExpectText {
         // )
         // failMessage = `expectOut#lineContainsString: Expected '${this.outputLines.length}' (supplied=Infinity) occurrences of '${match}'. FormattingMatch: '${[formattingMatch?.nodeProcessIdx ?? '-', formattingMatch?.virtualProcessIdx ?? '-', formattingMatch?.pkg ?? '-']}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${found.length}'. Missed '${missed.length}' Content : '${this.outputRaw}'`
       }
-      return this
+      return this;
     }
     if (occurrences === -1) {
       if (found.length === 0) {
@@ -273,13 +340,15 @@ class ExpectText {
         // throw createAssertFail(
         //   `expectOut#lineContainsString: Expected a non-zero (supplied=-1) occurrences of '${match}'. FormattingMatch: '${[formattingMatch?.nodeProcessIdx ?? '-', formattingMatch?.virtualProcessIdx ?? '-', formattingMatch?.pkg ?? '-']}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${found.length}'. Missed '${missed.length}' Content : '${this.outputRaw}'`
         // )
-        failMessage = `expectOut#lineContainsString: Expected a non-zero (supplied=-1) occurrences of '${match}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${
+        failMessage = `expectOut#lineContainsString: Expected a non-zero (supplied=-1) occurrences of '${match}'. MessageNameMatch: '${
+          messageNameMatch ?? "-"
+        }'. MatchMatcher: '${matchMatcher}'. Matched '${
           found.length
-        }'. Missed '${missed.length}'.`
+        }'. Missed '${missed.length}'.`;
       } else {
         // expect(true).toEqual(true) // keep assertions number consistent
       }
-      return this
+      return this;
     }
 
     if (occurrences !== found.length) {
@@ -291,9 +360,11 @@ class ExpectText {
       // throw createAssertFail(
       //   `expectOut#lineContainsString: Expected '${occurrences}' occurrences of '${match}'. FormattingMatch: '${[formattingMatch?.nodeProcessIdx ?? '-', formattingMatch?.virtualProcessIdx ?? '-', formattingMatch?.pkg ?? '-']}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${found.length}'. Missed '${missed.length}' Content : '${this.outputRaw}'`
       // )
-      failMessage = `expectOut#lineContainsString: Expected '${occurrences}' occurrences of '${match}'. MessageNameMatch: '${messageNameMatch ?? '-'}'. MatchMatcher: '${matchMatcher}'. Matched '${
-        found.length
-      }'. Missed '${missed.length}'.`
+      failMessage = `expectOut#lineContainsString: Expected '${occurrences}' occurrences of '${match}'. MessageNameMatch: '${
+        messageNameMatch ?? "-"
+      }'. MatchMatcher: '${matchMatcher}'. Matched '${found.length}'. Missed '${
+        missed.length
+      }'.`;
     } else {
       // expect(true).toEqual(true) // keep assertions number consistent
       // if (occurrences !== undefined) {
@@ -312,15 +383,19 @@ class ExpectText {
     // console.log(`this.outputLines.slice(0, -10) :>> `, this.outputLines.slice(0, -10))
 
     if (failMessage!) {
-      const debugPath = this.persistToTmp(this.getOutputLines(stripAnsi).join(os.EOL))
-      throw createAssertFail(`${failMessage}. DestinationPath: '${this.options.testEnvVars.workspacePath.original}'. Content: '(${debugPath.original})'`)
+      const debugPath = this.persistToTmp(
+        this.getOutputLines(stripAnsi).join(os.EOL)
+      );
+      throw createAssertFail(
+        `${failMessage}. DestinationPath: '${this.options.testEnvVars.workspacePath.original}'. Content: '(${debugPath.original})'`
+      );
     }
-    expect(true).toEqual(true) // keep assertions number consistent
-    return this
+    expect(true).toEqual(true); // keep assertions number consistent
+    return this;
   }
 
   protected getOutputLines(stripAnsi?: boolean): string[] {
-    return stripAnsi ? this.outputLinesStripped : this.outputLines
+    return stripAnsi ? this.outputLinesStripped : this.outputLines;
   }
 
   // /**
@@ -431,45 +506,54 @@ class ExpectText {
 }
 
 type JestSyncExpectationResult = {
-  pass: boolean
-  message: () => string
-}
+  pass: boolean;
+  message: () => string;
+};
+(globalThis as any)?.expect &&
+  expect.extend({
+    arrayContainingObjectProperty<P extends string | string[]>(
+      received: any[],
+      propertyPath: P,
+      value: any | any[]
+    ): JestSyncExpectationResult {
+      if (!Array.isArray(value)) value = [];
 
-;(globalThis as any)?.expect && expect.extend({
-  arrayContainingObjectProperty<P extends string | string[]>(
-    received: any[],
-    propertyPath: P,
-    value: any | any[]
-  ): JestSyncExpectationResult {
-    if (!Array.isArray(value)) value = []
+      const doMatchForValue = (value: any) => {
+        return received.some((aReceived) => {
+          const match = expectMatchers.toHaveProperty(
+            aReceived,
+            propertyPath,
+            value
+          ) as JestSyncExpectationResult;
+          return match.pass;
+        });
+      };
 
-    const doMatchForValue = (value: any) => {
-      return received.some((aReceived) => {
-        const match = expectMatchers.toHaveProperty(aReceived, propertyPath, value) as JestSyncExpectationResult
-        return match.pass
-      })
-    }
+      for (const aValue of value) {
+        if (!doMatchForValue(aValue))
+          return {
+            pass: false,
+            message: () =>
+              `Array does not contain object with property: '${propertyPath}' and value: '${aValue}'`,
+          };
+      }
 
-    for (const aValue of value) {
-      if (!doMatchForValue(aValue))
-        return {
-          pass: false,
-          message: () => `Array does not contain object with property: '${propertyPath}' and value: '${aValue}'`,
-        }
-    }
-
-    return {
-      pass: true,
-      message: () => `Array matches for all values with property '${propertyPath}'`,
-    }
-  },
-})
+      return {
+        pass: true,
+        message: () =>
+          `Array matches for all values with property '${propertyPath}'`,
+      };
+    },
+  });
 
 declare global {
   namespace jest {
     // @ts-ignore
     interface Matchers<R> {
-      arrayContainingObjectProperty<P extends string | string[]>(propertyPath: P, value: any): R
+      arrayContainingObjectProperty<P extends string | string[]>(
+        propertyPath: P,
+        value: any
+      ): R;
     }
   }
 }

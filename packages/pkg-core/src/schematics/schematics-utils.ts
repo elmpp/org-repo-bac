@@ -21,6 +21,7 @@ import {
   ServiceMap,
   ServiceStaticMap,
 } from "../__types__";
+import fs from 'fs'
 import { SchematicsResettableHostTree } from "./schematics-resettable-host-tree";
 import { ServiceExecTask } from "./tasks";
 
@@ -749,9 +750,14 @@ export function copy(
 
     // fromPath is a file
     tree.rename(fromPath, toPath);
+  } else if (path.isAbsolute(from) && fs.existsSync(from)) {
+    schematicContext.logger.debug(
+      `schematicUtils::copy: file ${fromPath} being copied from outside the tree. fromPath: '${fromPath}' toPath: '${toPath}'`
+    );
+    tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
   } else {
     schematicContext.logger.debug(
-      `schematicUtils::copy: file ${fromPath} being individually copied. fromPath: '${fromPath}' toPath: '${toPath}'`
+      `schematicUtils::copy: directory ${fromPath} being individually copied. fromPath: '${fromPath}' toPath: '${toPath}'`
     );
 
     const dirEntry = tree.getDir(fromPath);
@@ -778,7 +784,7 @@ export function copy(
     });
 
     schematicContext.logger.debug(
-      `schematicUtils::copy: file ${fromPath} being individually copied COMPLETE. fromPath: '${fromPath}' toPath: '${toPath}'`
+      `schematicUtils::copy: directory ${fromPath} being individually copied COMPLETE. fromPath: '${fromPath}' toPath: '${toPath}'`
     );
   }
 

@@ -12,6 +12,8 @@ declare global {
   namespace Bac {
     interface Services {
     }
+    interface Lifecycles {
+    }
   }
 }
 

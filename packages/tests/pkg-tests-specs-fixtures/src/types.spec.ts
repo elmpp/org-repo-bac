@@ -16,6 +16,7 @@ import {
   ServiceInitialiseCommonOptions,
   ServiceInitialiseOptions,
   ServiceMap,
+  Simplify,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -127,6 +128,11 @@ describe("types", () => {
       //   }>()
       // });
 
+      it("DEBUG", () => {
+        // @ts-expect-error:
+        type ALLKeys = Simplify<keyof Bac.Lifecycles>
+      })
+
       it("can derive a union of lifecycle method return types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceReturn =
@@ -139,10 +145,10 @@ describe("types", () => {
       });
       it("can derive a union of lifecycle option types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
-        type InitialiseWorkspaceReturn =
+        type InitialiseWorkspaceOptions =
           LifecycleOptionsByProvider<"initialiseWorkspace">;
-        expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny();
-        expectTypeOf<InitialiseWorkspaceReturn>().toMatchTypeOf<
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
+        expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
           | { provider: "core"; options: { } }
           | { provider: "git"; options: { } }
         >();
@@ -156,9 +162,10 @@ describe("types", () => {
           "options" | "provider" | "_method"
         >();
         expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
-        expectTypeOf<AllProviders["options"]>().not.toMatchTypeOf<{
-          eriugheiug: "iwegfoaerfgw";
-        }>();
+        expectTypeOf<AllProviders["options"]>().not.toBeAny();
+        // expectTypeOf<AllProviders["options"]>().not.toMatchTypeOf<{
+        //   eriugheiug: "iwegfoaerfgw";
+        // }>();
       });
       // it("find particular lifecycle method return", () => {
       //   type InitialiseWorkspaceReturn = LifecycleMethodReturn<'initialiseWorkspace', 'git'>

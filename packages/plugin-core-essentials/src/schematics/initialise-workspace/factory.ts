@@ -8,7 +8,7 @@ import {
   url
 } from "@angular-devkit/schematics";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
-import { expectIsOk, schematicUtils } from "@business-as-code/core";
+import { constants, expectIsOk, schematicUtils } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
@@ -91,10 +91,27 @@ export default function (options: Schema): Rule {
       //   },
       //   schematicContext,
       // }),
+
+      (
+        tree, schematicContext
+      ) => {
+        console.log(`options.configPath, constants.RC_FILENAME :>> `, options.configPath, constants.RC_FILENAME)
+        schematicUtils.copy(
+          options.configPath,
+          constants.RC_FILENAME,
+          tree,
+          schematicContext,
+        )
+        return tree
+      },
+      // mergeWith(apply(url(options.configPath), [
+      //   move(constants.RC_FILENAME),
+      // ])),
       schematicUtils.debugRule({context: options._bacContext,
         initialiseOptions: {
           workingPath: '.',
         },}),
+
       // wrapTaskAsRule(
       //   // new RepositoryInitializerTask(".", {
       //   //   email: constants.DEFAULT_COMMITTER_EMAIL,

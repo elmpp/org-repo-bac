@@ -1,6 +1,7 @@
 # verdaccio docs - https://tinyurl.com/2q9w56nt
 
-storage: /tmp/bac-tests/verdaccio
+storage: /Users/matt/dev/tmp/bac-tests/verdaccio
+# storage: /tmp/bac-tests/verdaccio
 # storage: ../../../.moon/cache/verdaccio
 
 # # verdaccio-memory

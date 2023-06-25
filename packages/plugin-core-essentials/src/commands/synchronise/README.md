@@ -1,0 +1,1 @@
+ - performs the configure+synchronise lifecycles which potentially pick up changes to config/upstream stuff

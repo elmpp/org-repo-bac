@@ -29,5 +29,5 @@
       "description": "Ubiquitous bac context"
     }
   },
-  "required": ["name", "cliVersion", "registry", "_bacContext"]
+  "required": ["name", "configPath", "cliVersion", "_bacContext"]
 }

@@ -1,5 +1,6 @@
 import {AddressHandler} from '../__types__'
 import {URL} from 'url'
+import { arrayIntersection } from '../tools/string-utils'
 
 declare module '../__types__' {
   interface AddressType {
@@ -9,28 +10,44 @@ declare module '../__types__' {
     githubRepoUrl: [{
       url: URL,
       org: string,
-      owner: string
+      user: string
+      params: URLSearchParams
+      paramsSorted: URLSearchParams
+      // head?: string
+      // tag?: string
+      // commit?: string
     }, 'url', string]
   }
 }
 
-const GITHUB_REPO_REGEX = /.*github.com(?:\/|:).*(?:\.git|\/tarball)[#?]?.*/
-const GITHUB_REPO_NORMALIZED_REGEX = /.*github.com\/([^/]+)\/(.*)\.git[#?]?.*/
-
+const GITHUB_REPO_REGEX = /.*github.com(?:\/|:).*(?:\.git|\/tarball)?(?:#([^#]+))?$/
+const GITHUB_REPO_NORMALIZED_REGEX = /.*github.com\/([^/]+)\/(.*)\.git(?:#([^#]+))?$/
 
 export const handler: AddressHandler<'githubRepoUrl'> = {
   name: 'githubRepoUrl',
   group: 'url',
   parse({address}) {
 
+    // console.log(`address, address.match(GITHUB_REPO_REGEX) :>> `, address, address.match(GITHUB_REPO_REGEX))
     if (!address.match(GITHUB_REPO_REGEX)) return
 
     // if (!address.match(GITHUB_REPO_REGEX)) return
     const handled = handleGithubRepoUrl(address)
 
-    const ghMatches = handled.match(GITHUB_REPO_NORMALIZED_REGEX)
+    const matches = handled.match(GITHUB_REPO_NORMALIZED_REGEX)
+    // console.log(`handled :>> `, handled)
+    // console.log(`matches :>> `, matches)
+    if (!matches) return
 
-    if (!ghMatches) return
+    const [, user, org, hashParamString] = matches
+
+    const params = new URLSearchParams(hashParamString ?? '')
+    const paramIntersection = arrayIntersection(Object.keys(params), ['head', 'tag', 'commit'])
+    if (paramIntersection.unmatched.length) {
+      throw new Error(`Address: unknown params has been supplied when url with 'github-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`)
+    }
+    const paramsSorted = (() => {const params = new URLSearchParams(hashParamString); params.sort(); return params})()
+
 
     const url = new URL(handled)
 
@@ -40,9 +57,11 @@ export const handler: AddressHandler<'githubRepoUrl'> = {
       address: handled,
       addressNormalized: handled,
       parts: {
-        org: ghMatches[2],
-        owner: ghMatches[1],
+        org,
+        user,
         url,
+        params,
+        paramsSorted,
       },
       type: 'githubRepoUrl',
     }

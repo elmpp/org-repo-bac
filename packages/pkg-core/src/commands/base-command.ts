@@ -789,7 +789,7 @@ export abstract class BaseCommand<
 
       throw new BacError(
         MessageName.WORKSPACE_CWD_UNRESOLVABLE,
-        `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?`
+        `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?. Command supplied: '${this}'`
       );
     }
     let pathAddress: AddressPathAbsolute | AddressPathRelative = addr.parsePath(

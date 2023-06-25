@@ -51,7 +51,8 @@ export const createAddressPackage = (addressIns: Address, parseParams: Initialis
     }
 
     if ((address as AddressDescriptor<'paramIdentPackage'>).parts.descriptor.subpath && includeSubpath) {
-      resolved = addressIns.parsePath(`${resolved!.original}/${(address as AddressDescriptor<'paramIdentPackage'>).parts.descriptor.subpath}`) as AddressPathAbsolute
+      // resolved = addressIns.parsePath(`${resolved!.original}/${(address as AddressDescriptor<'paramIdentPackage'>).parts.descriptor.subpath}`) as AddressPathAbsolute
+      resolved = resolved
     }
 
     if (resolved) {

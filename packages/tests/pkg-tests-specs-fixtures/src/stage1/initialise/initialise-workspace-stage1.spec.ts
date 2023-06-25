@@ -1,10 +1,11 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { addr } from "@business-as-code/address";
 import { expectIsFail, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { xfs } from "@business-as-code/fslib"
 
 /** simply ensures the testEnv core util is operating properly */
 describe("initialise workspace", () => {
-  jest.setTimeout(15000);
+  jest.setTimeout(25000);
 
   // it ('blah', async () => {
   //   expect(true).toBeTruthy()
@@ -20,29 +21,19 @@ describe("initialise workspace", () => {
   // })
 
   // })
-  it("creates a skeleton workspace without configPath", async () => {
+  it.only("creates a skeleton workspace without configPath using skeleton config", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
-      // const {envVars} = testContext
+      // const configPath = addr.pathUtils.join(
+      //   addr.parsePath(__dirname),
+      //   addr.parsePath(
+      //     "mocks/config-single-static-project-source-javascript.js"
+      //   )
+      // ) as AddressPathAbsolute;
 
-      // console.log(`envVars :>> `, envVars)
+      // console.log(`configPath :>> `, configPath)
 
-      // expect(envVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
-      // expect(envVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
-      // expect(envVars.workspacePath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
-
-      // console.log(`envVars :>> `, envVars)
-
-      // const {} = testContext
-
-      // let outputs: Outputs = {
-      //   stdout: '',
-      //   stderr: '',
-      // }
-
-      // testContext.mockStdStart()
-      // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
-      const exitCode = await testContext.command(
+      const res = await testContext.command(
         [
           "initialise",
           "workspace",
@@ -50,36 +41,89 @@ describe("initialise workspace", () => {
           "my-new-workspace",
           "--workspacePath",
           testContext.testEnvVars.workspacePath.original,
+          "--cliRegistry",
+          "http://localhost:4873",
         ],
         { logLevel: "debug" }
       );
-      expect(exitCode).toEqual(0);
-      // console.log(`exitCode :>> `, exitCode)
 
-      // await testContext.command(['something', 'else'])
-      // const outputs = testContext.mockStdEnd()
+      expectIsOk(res);
 
-      // expect(outputs).not.toMatch('')
+      // const expectStdout = res.res.expectUtil.createStdout()
+      // const expectStderr = res.res.expectUtil.createStderr()
+      const expectFs = res.res.expectUtil.createFs();
+      const expectConfig = res.res.expectUtil.createConfig();
 
-      // console.log(`outputs :>> `, outputs)
+      console.log(`testContext.testEnvVars.checkoutPath :>> `, testContext.testEnvVars.checkoutPath)
 
-      // return {
-      //   outputs,
-      // }
+      const cliCheckoutPath = addr.packageUtils.resolve({
+        address: addr.parsePackage(
+          `@business-as-code/cli`
+        ),
+        projectCwd: testContext.testEnvVars.checkoutPath,
+        strict: true,
+      })
+
+      const skeletonConfigPath = addr.packageUtils.resolve({
+        address: addr.parsePackage(
+          `@business-as-code/core/src/etc/config/skeleton.js`
+        ),
+        projectCwd: cliCheckoutPath,
+        strict: true,
+      });
+
+      // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
+      // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})
+
+      // console.log(`res :>> `, res)
+      // console.log(`expectFs :>> `, expectFs)
+
+      await expectConfig.isValid();
+      expectConfig.expectText.equals(xfs.readFileSync(skeletonConfigPath.address, 'utf8'))
+
+      res.res.expectUtil
+        .createText(expectFs.readText("./.npmrc"))
+        .lineContainsString({ match: `@business-as-code:`, occurrences: 1 }); // local npm registry set up
+      res.res.expectUtil
+        .createText(expectFs.readText("./BOLLOCKS.md"))
+        .lineContainsString({ match: `PANTS`, occurrences: 1 }); // coming from second schematic synchronise-workspace
+      res.res.expectUtil
+        .createText(expectFs.readText("./package.json"))
+        .lineContainsString({
+          match: `"name": "my-new-workspace"`,
+          occurrences: 1,
+        })
+        .lineContainsString({ match: `"private": true`, occurrences: 1 });
     });
   });
-  it.only("creates a skeleton workspace with absolute configPath", async () => {
+  it("creates a skeleton workspace with absolute configPath", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       // testContext.mockStdStart()
       // const exitCode = await testContext.command(['workspace', 'init', testContext.envVars.workspacePath.original])
 
-      const configPath = addr.pathUtils.join(
-        addr.parsePath(__dirname),
-        addr.parsePath("mocks/config-single-static-project-source-typescript.ts")
-      ) as AddressPathAbsolute;
+      // const configPath = addr.pathUtils.join(
+      //   addr.parsePath(__dirname),
+      //   addr.parsePath(
+      //     "mocks/config-single-static-project-source-javascript.js"
+      //   )
+      // ) as AddressPathAbsolute;
 
-console.log(`configPath :>> `, configPath)
+      const cliCheckoutPath = addr.packageUtils.resolve({
+        address: addr.parsePackage(`@business-as-code/cli`),
+        projectCwd: testContext.testEnvVars.checkoutPath,
+        strict: true,
+      });
+
+      const configPath = addr.packageUtils.resolve({
+        address: addr.parsePackage(
+          `@business-as-code/core/src/etc/config/skeleton.js`
+        ),
+        projectCwd: cliCheckoutPath,
+        strict: true,
+      });
+
+      // console.log(`configPath :>> `, configPath)
 
       const res = await testContext.command(
         [
@@ -92,7 +136,7 @@ console.log(`configPath :>> `, configPath)
           "--configPath",
           configPath.original,
           "--cliRegistry",
-          'http://localhost:4873',
+          "http://localhost:4873",
         ],
         { logLevel: "debug" }
       );
@@ -114,15 +158,22 @@ console.log(`configPath :>> `, configPath)
 
       // const expectStdout = res.res.expectUtil.createStdout()
       // const expectStderr = res.res.expectUtil.createStderr()
-      const expectFs = res.res.expectUtil.createFs()
+      const expectFs = res.res.expectUtil.createFs();
+      const expectConfig = res.res.expectUtil.createConfig();
       // expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
       // expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 0})
 
       // console.log(`res :>> `, res)
       // console.log(`expectFs :>> `, expectFs)
 
-      res.res.expectUtil.createText(expectFs.readText("./.npmrc")).lineContainsString({match: `@business-as-code:`, occurrences: 1}) // local npm registry set up
-      res.res.expectUtil.createText(expectFs.readText("./BOLLOCKS.md")).lineContainsString({match: `PANTS`, occurrences: 1}) // coming from second schematic synchronise-workspace
+      expectConfig.isValid();
+
+      res.res.expectUtil
+        .createText(expectFs.readText("./.npmrc"))
+        .lineContainsString({ match: `@business-as-code:`, occurrences: 1 }); // local npm registry set up
+      res.res.expectUtil
+        .createText(expectFs.readText("./BOLLOCKS.md"))
+        .lineContainsString({ match: `PANTS`, occurrences: 1 }); // coming from second schematic synchronise-workspace
       // expect(expectFs.existsSync('./bac-tester.txt')).toBeTruthy() // unique file; sourced from bac-tester GH repo
       // res.res.expectUtil.createText(expectFs.readText("./README.md")).lineContainsString({match: `this is a tester repository for bac yo`, occurrences: 1}) // pulled down from GH repo and overwrites previous README.md
 
@@ -146,12 +197,15 @@ console.log(`configPath :>> `, configPath)
       //     "@types/node": "^14.15.0"
       //   }
       // }
-      res.res.expectUtil.createText(expectFs.readText("./package.json"))
-        .lineContainsString({match: `"name": "my-new-workspace"`, occurrences: 1})
-        .lineContainsString({match: `"private": true`, occurrences: 1})
+      res.res.expectUtil
+        .createText(expectFs.readText("./package.json"))
+        .lineContainsString({
+          match: `"name": "my-new-workspace"`,
+          occurrences: 1,
+        })
+        .lineContainsString({ match: `"private": true`, occurrences: 1 });
 
       // expect(expectFs.readText("./README.md")).toEqual("PANTS");
-
 
       // console.log(`testContext.testEnvVars.workspacePath.original :>> `, testContext.testEnvVars.workspacePath.original)
 
@@ -172,10 +226,16 @@ console.log(`configPath :>> `, configPath)
 
         expectIsFail(res);
 
-        const expectStdout = res.res.expectUtil.createStdout()
-        const expectStderr = res.res.expectUtil.createStderr()
-        expectStderr.lineContainsString({match: 'command does-not-exist not found', occurrences: 1})
-        expectStdout.lineContainsString({match: 'command does-not-exist not found', occurrences: 0})
+        const expectStdout = res.res.expectUtil.createStdout();
+        const expectStderr = res.res.expectUtil.createStderr();
+        expectStderr.lineContainsString({
+          match: "command does-not-exist not found",
+          occurrences: 1,
+        });
+        expectStdout.lineContainsString({
+          match: "command does-not-exist not found",
+          occurrences: 0,
+        });
 
         // expect(res.res.outputs.stderr).toMatch(`command does-not-exist not found`);
       });
@@ -183,7 +243,6 @@ console.log(`configPath :>> `, configPath)
     it("incorrect command flags", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-
         const res = await testContext.command(
           [
             "workspace",
@@ -196,15 +255,19 @@ console.log(`configPath :>> `, configPath)
           { logLevel: "debug" }
         );
 
-
         expectIsFail(res);
 
-        const expectStdout = res.res.expectUtil.createStdout()
-        const expectStderr = res.res.expectUtil.createStderr()
-        expectStderr.lineContainsString({match: 'Error: Nonexistent flag: --blah', occurrences: 1})
-        expectStdout.lineContainsString({match: 'Error: Nonexistent flag: --blah', occurrences: 1}) // oclif diverts to stdout?
-
-      })
+        const expectStdout = res.res.expectUtil.createStdout();
+        const expectStderr = res.res.expectUtil.createStderr();
+        expectStderr.lineContainsString({
+          match: "Error: Nonexistent flag: --blah",
+          occurrences: 1,
+        });
+        expectStdout.lineContainsString({
+          match: "Error: Nonexistent flag: --blah",
+          occurrences: 1,
+        }); // oclif diverts to stdout?
+      });
 
       // const persistentTestEnv = await createPersistentTestEnv({});
       // await persistentTestEnv.test({}, async (testContext) => {
@@ -224,7 +287,6 @@ console.log(`configPath :>> `, configPath)
     it("incorrect command args", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-
         const res = await testContext.command(
           [
             "workspace",
@@ -236,28 +298,38 @@ console.log(`configPath :>> `, configPath)
           { logLevel: "debug" }
         );
 
-
         expectIsFail(res);
-        const expectStdout = res.res.expectUtil.createStdout()
-        const expectStderr = res.res.expectUtil.createStderr()
-        expectStderr.lineContainsString({match: `Error: command workspace:init:nonExistentArg not found`, occurrences: 1})
-        expectStdout.lineContainsString({match: `Error: command workspace:init:nonExistentArg not found`, occurrences: 0})
+        const expectStdout = res.res.expectUtil.createStdout();
+        const expectStderr = res.res.expectUtil.createStderr();
+        expectStderr.lineContainsString({
+          match: `Error: command workspace:init:nonExistentArg not found`,
+          occurrences: 1,
+        });
+        expectStdout.lineContainsString({
+          match: `Error: command workspace:init:nonExistentArg not found`,
+          occurrences: 0,
+        });
       });
     });
     it("--workspacePath is required", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-
         const res = await testContext.command(
           ["workspace", "init", "--name", "something"],
           { logLevel: "debug" }
         );
 
         expectIsFail(res);
-        const expectStdout = res.res.expectUtil.createStdout()
-        const expectStderr = res.res.expectUtil.createStderr()
-        expectStderr.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1})
-        expectStdout.lineContainsString({match: `Missing required flag workspacePath`, occurrences: 1}) // oclif diverts to stdout
+        const expectStdout = res.res.expectUtil.createStdout();
+        const expectStderr = res.res.expectUtil.createStderr();
+        expectStderr.lineContainsString({
+          match: `Missing required flag workspacePath`,
+          occurrences: 1,
+        });
+        expectStdout.lineContainsString({
+          match: `Missing required flag workspacePath`,
+          occurrences: 1,
+        }); // oclif diverts to stdout
       });
     });
   });

@@ -48,6 +48,7 @@ import { Simplify } from "../../__types__";
 
 const commonProjectSchema = z.object({
   // blah: z.number()
+
   active: z.boolean().optional(),
 })
 // type BFE = z.infer<typeof commonProjectSchema>

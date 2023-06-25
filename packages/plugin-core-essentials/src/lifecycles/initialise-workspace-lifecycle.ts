@@ -36,10 +36,18 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
+    options: {
+      a: 'a'
+    };
+    // options: Record<string, never>;
+    // let's stack the options here as workspace-initialise will not be opened up to providers
+    name: string,
     config: Config;
-    // options: Record<never, any>;
+    configPath: string;
+    cliVersion: string;
+    cliRegistry: string;
   }) => ReturnType<ServiceMap["schematics"]["runSchematic"]> {
-    return async ({ context, workspacePath, workingPath }) => {
+    return async ({ context, workspacePath, workingPath, name, config, configPath, cliVersion, cliRegistry }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
         const workspacePathParent = addr.pathUtils.dirname(workspacePath);
         if (!(await xfs.existsPromise(workspacePathParent.address))) {
@@ -56,16 +64,22 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
         workingPath,
       });
 
+      console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
+      console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)
+
       const res = await schematicsService.runSchematic({
         address: `@business-as-code/plugin-core-essentials#namespace=initialise-workspace`,
         context,
         options: {
-          ...context.cliOptions.flags,
+          name,
+          configPath,
+          cliVersion,
+          cliRegistry,
+
+          // ...context.cliOptions.flags,
           // name: context.cliOptions.flags.name,
           // // workspacePath: context.cliOptions.flags.workspacePath,
           // configPath: context.cliOptions.flags.configPath,
-
-          // name: 'cunt',
           // author: 'boloerguie',
         },
         // destinationPath: workspacePath,

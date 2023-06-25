@@ -8,7 +8,7 @@ sed -i '' 's/.\/src\//.\/dist\//g' collection.json
 # echo "copying schematic files. cwd: '${CURRENT_DIR}'. cmd: copyfiles --all "${CURRENT_DIR}/src/schematics/*" "${CURRENT_DIR}/dist/schematics""
 # echo "copying schematic files. cwd: '${CURRENT_DIR}'. cmd: 'cpy 'src/schematics/*' '!src/schematics/*.ts' dist/schematics --cwd=${CURRENT_DIR}'"
 
-mkdir "dist/schematics" || true
+mkdir -p "dist/schematics" || true
 # cp -R "src/schematics/." "dist/schematics" # copy-files, cpy etc etc all don't copy a simple directory. Fucking shambles
 rsync -avh "src/schematics/" "dist/schematics/" # copy-files, cpy etc etc all don't copy a simple directory. Fucking shambles
 

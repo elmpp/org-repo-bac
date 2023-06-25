@@ -37,6 +37,7 @@ export const handler: AddressHandler<'scaffoldIdentPackage'> = {
   group: 'package',
   parse({address}) {
 
+    // console.log(`address, address.match(PACKAGE_REGEX) :>> `, address, address.match(PACKAGE_REGEX))
     const matches = address.match(PACKAGE_REGEX)
     if (!matches) return
 

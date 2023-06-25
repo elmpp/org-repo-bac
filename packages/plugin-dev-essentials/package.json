@@ -14,7 +14,7 @@
   ],
   "types": "src/index.ts",
   "scripts": {
-    "prepack": "rsync -avh \"src/bin/\" \"dist/bin/\""
+    "prepack": "mkdir dist; rsync -avh \"src/bin/\" \"dist/bin/\""
   },
   "publishConfig": {
     "main": "dist/index.js",
