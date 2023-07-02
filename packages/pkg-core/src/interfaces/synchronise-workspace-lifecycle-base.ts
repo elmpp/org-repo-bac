@@ -1,7 +1,7 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { Config } from "prettier";
 import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+import { Config } from "../validation";
 import { assertIsResult, Context, ContextCommand, LifecycleStaticInterface, Result } from "../__types__";
 import { InferHookParams, InferHookReturn } from "./__types__";
 
@@ -18,6 +18,7 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
+        options: unknown;
         config?: Config;
       }>([
       "options",
@@ -27,6 +28,7 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
+        options: unknown;
         config?: Config;
       },
       Result<
@@ -42,6 +44,7 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
+        options: unknown;
         config?: Config;
       }>([
       "options",
@@ -78,6 +81,7 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
+    options: any;
     config?: Config;
   }) => Promise<unknown>) | void {}
 
@@ -85,6 +89,7 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
+    options: any;
     config?: Config;
   }) => Promise<unknown>) | void {}
 
@@ -92,6 +97,7 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
     context: Context;
     workspacePath: AddressPathAbsolute;
     workingPath: string;
+    options: any;
     config?: Config;
   }) => Promise<unknown>) | void {}
 }

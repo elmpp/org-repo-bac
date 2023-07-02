@@ -1,4 +1,4 @@
-import { Hook } from "tapable";
+import { AsyncHook, Hook } from "tapable";
 
 export type InferHookParams<T extends Hook<any, any, any>> = T extends Hook<
   infer T,
@@ -7,7 +7,7 @@ export type InferHookParams<T extends Hook<any, any, any>> = T extends Hook<
 >
   ? T
   : never;
-export type InferHookReturn<T extends Hook<any, any, any>> = T extends Hook<
+export type InferHookReturn<T extends Hook<any, any, any>> = T extends AsyncHook<
   infer T,
   infer R,
   infer AdditionalOptions

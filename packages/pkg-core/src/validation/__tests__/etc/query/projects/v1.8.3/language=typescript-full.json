@@ -1,0 +1,2121 @@
+{
+  "projects": [
+    {
+      "alias": "@business-as-code/address",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/**/*",
+            "!packages/pkg-address/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/src/**/*",
+            "!packages/pkg-address/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-address",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-address",
+      "source": "packages/pkg-address",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/cli",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "application",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "plugin-core-git": {
+          "id": "plugin-core-git",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-git"
+        },
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "plugin-dev-tests": {
+          "id": "plugin-dev-tests",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-tests"
+        },
+        "plugin-core-essentials": {
+          "id": "plugin-core-essentials",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-essentials"
+        },
+        "plugin-dev-essentials": {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        "plugin-dev-changesets": {
+          "id": "plugin-dev-changesets",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-changesets"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-cli/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-cli/**/*",
+            "!packages/pkg-cli/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-cli/src/**/*",
+            "!packages/pkg-cli/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-cli",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-cli",
+      "source": "packages/pkg-cli",
+      "tasks": {},
+      "type": "application"
+    },
+    {
+      "alias": "@business-as-code/core",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-core/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-core/**/*",
+            "!packages/pkg-core/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-core/src/**/*",
+            "!packages/pkg-core/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-core",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-core",
+      "source": "packages/pkg-core",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/error",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {},
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-error/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-error/**/*",
+            "!packages/pkg-error/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-error/src/**/*",
+            "!packages/pkg-error/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-error",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-error",
+      "source": "packages/pkg-error",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/fslib",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {},
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-fslib/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-fslib/**/*",
+            "!packages/pkg-fslib/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-fslib/src/**/*",
+            "!packages/pkg-fslib/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-fslib",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-fslib",
+      "source": "packages/pkg-fslib",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/tests-core",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/tests/pkg-tests-core/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/tests/pkg-tests-core/**/*",
+            "!packages/tests/pkg-tests-core/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/tests/pkg-tests-core/src/**/*",
+            "!packages/tests/pkg-tests-core/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-tests-core",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/pkg-tests-core",
+      "source": "packages/tests/pkg-tests-core",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-essentials",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        "plugin-dev-essentials": {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        "pkg-tests-core": {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-essentials/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-essentials/**/*",
+            "!packages/plugin-core-essentials/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-essentials/src/**/*",
+            "!packages/plugin-core-essentials/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-essentials",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-essentials",
+      "source": "packages/plugin-core-essentials",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-git",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        "plugin-dev-essentials": {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        "pkg-tests-core": {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-git/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-git/**/*",
+            "!packages/plugin-core-git/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-git/src/**/*",
+            "!packages/plugin-core-git/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-git",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-git",
+      "source": "packages/plugin-core-git",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-dev-changesets",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        "plugin-dev-essentials": {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        "pkg-tests-core": {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-changesets/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-changesets/**/*",
+            "!packages/plugin-dev-changesets/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-changesets/src/**/*",
+            "!packages/plugin-dev-changesets/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-dev-changesets",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-dev-changesets",
+      "source": "packages/plugin-dev-changesets",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-dev-essentials",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {
+          "changesetAddSnapshotChangeset": {
+            "command": "pnpm dev:runCli changesets snapshot --registry http://localhost:4873 --workspacePath $workspaceRoot",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "changesetInit": {
+            "command": "changeset init",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "changesetSnapshotPublish": {
+            "command": "changeset publish --no-git-tag --tag bollards",
+            "args": null,
+            "deps": [
+              "~:changesetSnapshotVersion"
+            ],
+            "env": {},
+            "globalInputs": [],
+            "inputs": [
+              "@globs(publishable)"
+            ],
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "changesetSnapshotPublishLocal": {
+            "command": "changeset publish --no-git-tag -u foo --tag bollards",
+            "args": null,
+            "deps": [
+              "root:build",
+              "~:changesetSnapshotVersion",
+              "~:verdaccioEnsureRunning",
+              "~:verdaccioLogin"
+            ],
+            "env": {
+              "npm_config_registry": "http://localhost:4873",
+              "npm_config_user": "foo"
+            },
+            "globalInputs": [],
+            "inputs": [
+              "@globs(publishable)"
+            ],
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": false,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "changesetSnapshotVersion": {
+            "command": "changeset version --snapshot bollards",
+            "args": null,
+            "deps": [
+              "~:changesetInit",
+              "~:changesetAddSnapshotChangeset",
+              "~:changesetStatus"
+            ],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": false,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "changesetStatus": {
+            "command": "changeset status",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "publish": {
+            "command": "pnpm publish --",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": [
+              "@globs(sources)"
+            ],
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": false,
+              "runInCI": null,
+              "runFromWorkspaceRoot": true,
+              "shell": null
+            },
+            "platform": "node",
+            "type": null
+          },
+          "verdaccioEnsureRunning": {
+            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:ensureRunning",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": null,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "verdaccioLogin": {
+            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:login",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": false,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": "buffer-only-failure",
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": null,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "verdaccioRunBackground": {
+            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:runBackground",
+            "args": null,
+            "deps": [
+              "~:verdaccioStopBackground"
+            ],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": true,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": null,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          },
+          "verdaccioStopBackground": {
+            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:stopBackground",
+            "args": null,
+            "deps": [],
+            "env": {},
+            "globalInputs": [],
+            "inputs": null,
+            "local": true,
+            "outputs": null,
+            "options": {
+              "affectedFiles": null,
+              "cache": null,
+              "envFile": null,
+              "mergeArgs": null,
+              "mergeDeps": null,
+              "mergeEnv": null,
+              "mergeInputs": null,
+              "mergeOutputs": null,
+              "outputStyle": null,
+              "persistent": null,
+              "retryCount": null,
+              "runDepsInParallel": null,
+              "runInCI": null,
+              "runFromWorkspaceRoot": null,
+              "shell": null
+            },
+            "platform": "unknown",
+            "type": null
+          }
+        },
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        "pkg-tests-core": {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-essentials/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-essentials/**/*",
+            "!packages/plugin-dev-essentials/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-essentials/src/**/*",
+            "!packages/plugin-dev-essentials/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-dev-essentials",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-dev-essentials",
+      "source": "packages/plugin-dev-essentials",
+      "tasks": {
+        "changesetAddSnapshotChangeset": {
+          "args": [
+            "dev:runCli",
+            "changesets",
+            "snapshot",
+            "--registry",
+            "http://localhost:4873",
+            "--workspacePath",
+            "/Users/matt/dev/org-repo-moonrepo"
+          ],
+          "command": "pnpm",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "changesetAddSnapshotChangeset",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:changesetAddSnapshotChangeset",
+          "type": "test"
+        },
+        "changesetInit": {
+          "args": [
+            "init"
+          ],
+          "command": "changeset",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "changesetInit",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:changesetInit",
+          "type": "test"
+        },
+        "changesetSnapshotPublish": {
+          "args": [
+            "publish",
+            "--no-git-tag",
+            "--tag",
+            "bollards"
+          ],
+          "command": "changeset",
+          "deps": [
+            "plugin-dev-essentials:changesetSnapshotVersion"
+          ],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotPublish",
+          "inputs": [
+            "@globs(publishable)"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            "!packages/plugin-dev-essentials/src/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:changesetSnapshotPublish",
+          "type": "test"
+        },
+        "changesetSnapshotPublishLocal": {
+          "args": [
+            "publish",
+            "--no-git-tag",
+            "-u",
+            "foo",
+            "--tag",
+            "bollards"
+          ],
+          "command": "changeset",
+          "deps": [
+            "root:build",
+            "plugin-dev-essentials:changesetSnapshotVersion",
+            "plugin-dev-essentials:verdaccioEnsureRunning",
+            "plugin-dev-essentials:verdaccioLogin"
+          ],
+          "env": {
+            "npm_config_registry": "http://localhost:4873",
+            "npm_config_user": "foo"
+          },
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotPublishLocal",
+          "inputs": [
+            "@globs(publishable)"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            "!packages/plugin-dev-essentials/src/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": false,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:changesetSnapshotPublishLocal",
+          "type": "test"
+        },
+        "changesetSnapshotVersion": {
+          "args": [
+            "version",
+            "--snapshot",
+            "bollards"
+          ],
+          "command": "changeset",
+          "deps": [
+            "plugin-dev-essentials:changesetInit",
+            "plugin-dev-essentials:changesetAddSnapshotChangeset",
+            "plugin-dev-essentials:changesetStatus"
+          ],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "changesetSnapshotVersion",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": false,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:changesetSnapshotVersion",
+          "type": "test"
+        },
+        "changesetStatus": {
+          "args": [
+            "status"
+          ],
+          "command": "changeset",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "changesetStatus",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:changesetStatus",
+          "type": "test"
+        },
+        "publish": {
+          "args": [
+            "publish",
+            "--"
+          ],
+          "command": "pnpm",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "publish",
+          "inputs": [
+            "@globs(sources)"
+          ],
+          "inputGlobs": [
+            "!packages/plugin-dev-essentials/src/**/*.spec.[tj]s",
+            ".moon/*.yml",
+            "packages/plugin-dev-essentials/src/**/*"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": false,
+            "runInCi": true,
+            "runFromWorkspaceRoot": true,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:publish",
+          "type": "test"
+        },
+        "verdaccioEnsureRunning": {
+          "args": [
+            "run",
+            "--filter",
+            "@business-as-code/tests-verdaccio",
+            "verdaccio:ensureRunning"
+          ],
+          "command": "pnpm",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "verdaccioEnsureRunning",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": null,
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:verdaccioEnsureRunning",
+          "type": "test"
+        },
+        "verdaccioLogin": {
+          "args": [
+            "run",
+            "--filter",
+            "@business-as-code/tests-verdaccio",
+            "verdaccio:login"
+          ],
+          "command": "pnpm",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "verdaccioLogin",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": true,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": "buffer-only-failure",
+            "persistent": false,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": true,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:verdaccioLogin",
+          "type": "test"
+        },
+        "verdaccioRunBackground": {
+          "args": [
+            "run",
+            "--filter",
+            "@business-as-code/tests-verdaccio",
+            "verdaccio:runBackground"
+          ],
+          "command": "pnpm",
+          "deps": [
+            "plugin-dev-essentials:verdaccioStopBackground"
+          ],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "verdaccioRunBackground",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": false,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": "stream",
+            "persistent": true,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": false,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:verdaccioRunBackground",
+          "type": "run"
+        },
+        "verdaccioStopBackground": {
+          "args": [
+            "run",
+            "--filter",
+            "@business-as-code/tests-verdaccio",
+            "verdaccio:stopBackground"
+          ],
+          "command": "pnpm",
+          "deps": [],
+          "env": {},
+          "flags": [],
+          "globalInputs": [
+            "/.moon/*.yml"
+          ],
+          "id": "verdaccioStopBackground",
+          "inputs": [
+            "**/*"
+          ],
+          "inputGlobs": [
+            "packages/plugin-dev-essentials/**/*",
+            ".moon/*.yml"
+          ],
+          "inputPaths": [],
+          "inputVars": [],
+          "options": {
+            "affectedFiles": null,
+            "cache": false,
+            "envFile": null,
+            "mergeArgs": "append",
+            "mergeDeps": "append",
+            "mergeEnv": "append",
+            "mergeInputs": "append",
+            "mergeOutputs": "append",
+            "outputStyle": "stream",
+            "persistent": true,
+            "retryCount": 0,
+            "runDepsInParallel": true,
+            "runInCi": false,
+            "runFromWorkspaceRoot": false,
+            "shell": true
+          },
+          "outputs": [],
+          "outputGlobs": [],
+          "outputPaths": [],
+          "platform": "node",
+          "target": "plugin-dev-essentials:verdaccioStopBackground",
+          "type": "run"
+        }
+      },
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-dev-tests",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": {
+        "pkg-core": {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        "pkg-fslib": {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        "pkg-error": {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        "pkg-address": {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        "plugin-dev-essentials": {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        "pkg-tests-core": {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      },
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/tests/plugin-dev-tests/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/tests/plugin-dev-tests/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/tests/plugin-dev-tests/src/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-dev-tests",
+      "inheritedConfig": {
+        "schema": "https://moonrepo.dev/schemas/tasks.json",
+        "extends": null,
+        "fileGroups": {
+          "configs": [
+            "*.{js,json}"
+          ],
+          "publishable": [
+            "**/*",
+            "!src/**/*"
+          ],
+          "sources": [
+            "src/**/*",
+            "!src/**/*.spec.[tj]s"
+          ]
+        },
+        "implicitDeps": [],
+        "implicitInputs": [],
+        "tasks": {}
+      },
+      "language": "typescript",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/plugin-dev-tests",
+      "source": "packages/tests/plugin-dev-tests",
+      "tasks": {},
+      "type": "library"
+    }
+  ],
+  "options": {
+    "alias": null,
+    "affected": false,
+    "id": null,
+    "json": true,
+    "language": null,
+    "query": "projectType=library || projectType=application",
+    "source": null,
+    "tags": null,
+    "tasks": null,
+    "type_of": null
+  }
+}

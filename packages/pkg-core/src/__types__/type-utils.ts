@@ -1,3 +1,5 @@
+import { UnwrapPromise } from "./util";
+
 export function assertIsOk<R, E extends Error | {error: Error}>(
   res: Result<R, E>
 ): res is Extract<Result<R, E>, { success: true }> {
@@ -60,6 +62,8 @@ type Fail<Err extends Error | {error: Error}> = {
   res: Err;
 };
 export type Result<Res, Err extends Error | {error: Error}> = Ok<Res> | Fail<Err>;
+export type ResultPromiseAugment<Res extends Promise<Result<any, any>>, Add extends Record<string, unknown>> = Promise<ResultAugment<UnwrapPromise<Res>, Add>>
+export type ResultAugment<Res extends Result<any, any>, Add extends Record<string, unknown>> = Res extends Result<infer XOk, infer XFail> ? Res extends {success: true} ? Ok<XOk & Add> : Fail<XFail> : never
 export const ok = <T>(res: T): Ok<T> => {
   return {
     success: true,

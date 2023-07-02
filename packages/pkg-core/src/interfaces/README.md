@@ -1,0 +1,1 @@
+!! All lifecycles must be added to the `LifecycleMap` type inside `packages/pkg-core/src/__types__/lifecycles.ts`

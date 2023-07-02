@@ -1,5 +1,6 @@
 // import { ConfigureWorkspaceLifecycle } from "./configure-workspace-lifecycle";
 import { InitialiseWorkspaceLifecycle } from "./initialise-workspace-lifecycle";
+import { RunWorkspaceLifecycle } from "./run-workspace-lifecycle";
 
 /** we must define them in one place due to augmentation limitations */
 declare global {
@@ -17,10 +18,15 @@ declare global {
           insType: InitialiseWorkspaceLifecycle;
           staticType: typeof InitialiseWorkspaceLifecycle;
         };
+        runWorkspace: {
+          // type: 'b'
+          insType: RunWorkspaceLifecycle;
+          staticType: typeof RunWorkspaceLifecycle;
+        };
       };
     }
   }
 }
 
-export { InitialiseWorkspaceLifecycle };
+export { InitialiseWorkspaceLifecycle, RunWorkspaceLifecycle };
 // export { ConfigureWorkspaceLifecycle, InitialiseWorkspaceLifecycle };

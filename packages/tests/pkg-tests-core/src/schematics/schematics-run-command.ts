@@ -74,8 +74,9 @@ export class SchematicsRunCommand extends BaseCommand<
     // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    console.error(`context.cliOptions.flags :>> `, context.cliOptions.flags)
+    // console.error(`context.cliOptions.flags :>> `, context.cliOptions.flags)
     // console.log(`(context.cliOptions.flags as any).initialiseOptions :>> `, (context.cliOptions.flags as any).payload.initialiseOptions)
+
     const schematicsService = await context.serviceFactory("schematics", {
       context,
       // workspacePath: context.workspacePath,

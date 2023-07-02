@@ -5,7 +5,7 @@ import {
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 
-/** Discord question asked - https://discord.com/channels/974160221452763146/975906732511486012/1107224607477473320 */
+/** Discord question asked about running arbitrary commands (would be needed to execute the `changesets publish` part of this workflow) - https://discord.com/channels/974160221452763146/975906732511486012/1107224607477473320 */
 export class ChangesetsSnapshot extends BaseCommand<typeof ChangesetsSnapshot> {
   static override description = "Creates an empty workspace";
 

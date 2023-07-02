@@ -740,7 +740,8 @@ export abstract class BaseCommand<
         oclif.ux.action.stop(colors.red("!"));
         // Note this should be the only place where caught errors are to be output!!!
       } catch {}
-
+// return
+// throw err
       process.stderr.write(`${os.EOL.repeat(2)}
         ${colors.red(BacError.getMessageForError(err))}
         ${os.EOL.repeat(2)}

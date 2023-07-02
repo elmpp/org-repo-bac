@@ -153,7 +153,7 @@ export async function doExec({
   // };
 
   const optionsAsCommand = (cmd: string, options: ExecaOptions): string => {
-    const blacklist = [] as string[];
+    const blacklist = ['XPC_SERVICE_NAME'] as string[];
     const envs = Object.entries(options.env ?? {})
       .filter(([key, val]) => !blacklist.includes(key))
       .map(([key, val]) => `${key}='${val}'`)
@@ -173,7 +173,7 @@ export async function doExec({
   try {
     // Execa docs for 5.1.1 - https://tinyurl.com/2qefunlh
     const execaResultPromise = execa(cmd, execaOptions)
-    execaResultPromise.stdout!.pipe(process.stdout);
+    // execaResultPromise.stdout!.pipe(process.stdout); // tie this into our debug somehow
     const execaResult = await execaResultPromise
     const successPayload = {
       execa: execaResult,

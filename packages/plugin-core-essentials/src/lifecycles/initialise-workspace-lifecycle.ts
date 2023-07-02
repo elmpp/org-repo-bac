@@ -39,7 +39,7 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
     options: {
       a: 'a'
     };
-    // options: Record<string, never>;
+    // options: unknown;
     // let's stack the options here as workspace-initialise will not be opened up to providers
     name: string,
     config: Config;
@@ -64,8 +64,8 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
         workingPath,
       });
 
-      console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
-      console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)
+      // console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
+      // console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)
 
       const res = await schematicsService.runSchematic({
         address: `@business-as-code/plugin-core-essentials#namespace=initialise-workspace`,

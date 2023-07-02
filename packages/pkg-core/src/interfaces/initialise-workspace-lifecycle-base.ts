@@ -25,7 +25,7 @@ export class InitialiseWorkspaceLifecycleBase<
       context: Context;
       workspacePath: AddressPathAbsolute;
       workingPath: string;
-      options: Record<string, never>;
+      options: unknown;
       // let's stack the options here as workspace-initialise will not be opened up to providers
       config: Config;
       configPath: string;
@@ -37,7 +37,7 @@ export class InitialiseWorkspaceLifecycleBase<
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
-        options: Record<string, never>;
+        options: unknown;
         // let's stack the options here as workspace-initialise will not be opened up to providers
         name: string;
         config: Config;
@@ -59,7 +59,7 @@ export class InitialiseWorkspaceLifecycleBase<
       context: Context;
       workspacePath: AddressPathAbsolute;
       workingPath: string;
-      options: Record<string, never>;
+      options: unknown;
       // let's stack the options here as workspace-initialise will not be opened up to providers
       config: Config;
       configPath: string;

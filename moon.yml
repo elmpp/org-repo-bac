@@ -95,7 +95,7 @@ tasks:
     # inputs:
     #   - '@globs(sources)'
     # command: 'tsc --build --clean'
-    command: 'find . -type d -name dist | grep -v node_modules | xargs rm -rf'
+    command: 'find . -type d -name dist | grep -v node_modules | xargs rm -rf; find . -type f -name tsconfig.tsbuildinfo | grep -v node_modules | xargs rm'
     platform: 'system'
     options:
       runFromWorkspaceRoot: true
@@ -104,7 +104,7 @@ tasks:
       # persistent: true # disables moon caching etc
   build:
     deps:
-      - '~:buildClean'
+      # - '~:buildClean'
       # - ':lint' # run it in all
     # inputs:
     #   - '@globs(sources)'
@@ -161,7 +161,7 @@ tasks:
       - ~:build
       # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
       # - '@business-as-code/tests-verdaccio:verdaccioLogin'
-      - ~:doUnpublish
+      # - ~:doUnpublish
       # - ~:unpublishDev
     # local: true
     options:
@@ -172,7 +172,31 @@ tasks:
       # outputStyle: 'buffer'
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-    command: 'pnpm publish -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    command: 'pnpm publish -r --no-git-checks --force --tag bollards --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    # inputs:
+    #   - ../
+    # runFromWorkspaceRoot: true
+    # platform: 'system'
+  publishDevClean:
+    deps:
+      # - ~:returnFail
+      - ~:buildClean
+      - ~:build
+      # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
+      # - '@business-as-code/tests-verdaccio:verdaccioLogin'
+      # - ~:doUnpublish
+      # - ~:unpublishDev
+    # local: true
+    options:
+      runDepsInParallel: false
+      outputStyle: 'stream'
+      runFromWorkspaceRoot: true
+      # persistent: true
+      # outputStyle: 'buffer'
+
+    # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
+    command: 'pnpm publish -r --no-git-checks --force --tag bollards --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # inputs:
     #   - ../

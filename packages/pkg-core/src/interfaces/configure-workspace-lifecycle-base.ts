@@ -107,7 +107,7 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
     workspacePath: AddressPathAbsolute;
     workingPath: string;
     config: Config;
-    options: any
+    options: any;
   }) => Promise<unknown>) | undefined {
     return
   }
@@ -117,7 +117,7 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
     workspacePath: AddressPathAbsolute;
     workingPath: string;
     config: Config;
-    options: any
+    options: any;
   }) => Promise<unknown>) | undefined {
     return
   }
@@ -127,7 +127,7 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
     workspacePath: AddressPathAbsolute;
     workingPath: string;
     config: Config;
-    options: any
+    options: any;
   }) => Promise<unknown>) | undefined {
     return
   }

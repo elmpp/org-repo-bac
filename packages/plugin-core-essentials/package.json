@@ -42,7 +42,7 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./dist/commands",
+    "commands": "./src/commands",
     "topics": {
       "initialise": {
         "description": "Initialising of content"

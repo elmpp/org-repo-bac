@@ -130,9 +130,10 @@ export const projectConfigSchema = z.object({
 }).strict()
 
 export const inheritedTasksConfigSchema = z.object({
-  extends: z.string().optional(),
+  extends: z.string().nullable().optional(),
   fileGroups: z.record(z.array(z.string())).optional(),
   implicitDeps: z.array(z.string()).optional(),
   implicitInputs: z.array(z.string()).optional(),
 	tasks: z.record(z.string(), taskConfigSchema).optional(),
+  schema: z.string(),
 }).strict()

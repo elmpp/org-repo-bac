@@ -9,6 +9,4 @@ export {
   // // re-exports
   // type PortablePath,
 }
-
-
 export * from '@yarnpkg/fslib'

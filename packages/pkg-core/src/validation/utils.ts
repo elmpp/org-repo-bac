@@ -1,7 +1,7 @@
 import { z } from "zod"
-import { LifecycleImplementedMethods, LifecycleOptionsByProvider, LifecycleReturnsByProvider } from "../__types__"
+import { LifecycleImplementedMethods, LifecycleOptionsByMethod, LifecycleReturnsByProvider } from "../__types__"
 
-export const providerOptionsSchemaBuilder = <LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods, PType = LifecycleOptionsByProvider<LMethod>, S extends z.ZodObject<any, any, any> = z.ZodObject<any, any, any>>(_lifecycleMethod: LMethod, extendableSchema: S) => {
+export const providerOptionsSchemaBuilder = <LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods, PType = LifecycleOptionsByMethod<LMethod>, S extends z.ZodObject<any, any, any> = z.ZodObject<any, any, any>>(_lifecycleMethod: LMethod, extendableSchema: S) => {
   return extendableSchema.extend(
       {
         provider: z.string(),

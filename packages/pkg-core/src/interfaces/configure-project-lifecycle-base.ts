@@ -18,6 +18,7 @@ export class ConfigureProjectLifecycleBase<T extends LifecycleStaticInterface> {
         context: Context;
         projectPath: AddressPathAbsolute;
         workingPath: string;
+        options: unknown;
         config?: Config;
       }>([
       "options",
@@ -28,6 +29,7 @@ export class ConfigureProjectLifecycleBase<T extends LifecycleStaticInterface> {
         context: Context;
         projectPath: AddressPathAbsolute;
         workingPath: string;
+        options: unknown;
         config?: Config;
       },
       Result<
@@ -43,6 +45,7 @@ export class ConfigureProjectLifecycleBase<T extends LifecycleStaticInterface> {
         context: Context;
         projectPath: AddressPathAbsolute;
         workingPath: string;
+        options: unknown;
         config?: Config;
       }>([
       "options",
@@ -79,6 +82,7 @@ export class ConfigureProjectLifecycleBase<T extends LifecycleStaticInterface> {
     context: Context;
     projectPath: AddressPathAbsolute;
     workingPath: string;
+    options: any;
     config?: Config;
   }) => Promise<unknown>) | void {}
 
@@ -86,6 +90,7 @@ export class ConfigureProjectLifecycleBase<T extends LifecycleStaticInterface> {
     context: Context;
     projectPath: AddressPathAbsolute;
     workingPath: string;
+    options: any;
     config?: Config;
   }) => Promise<unknown>) | void {}
 
@@ -93,6 +98,7 @@ export class ConfigureProjectLifecycleBase<T extends LifecycleStaticInterface> {
     context: Context;
     projectPath: AddressPathAbsolute;
     workingPath: string;
+    options: any;
     config?: Config;
   }) => Promise<unknown>) | void {}
 }

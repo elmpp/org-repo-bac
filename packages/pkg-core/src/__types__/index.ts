@@ -7,7 +7,7 @@ import {
   BaseParseOutput,
   FlagsInfer,
 } from "../commands/base-command";
-import { ConfigureWorkspaceLifecycleBase, InitialiseWorkspaceLifecycleBase } from "../interfaces";
+import { ConfigureWorkspaceLifecycleBase, InitialiseWorkspaceLifecycleBase, RunProjectLifecycleBase, RunWorkspaceLifecycleBase, SynchroniseWorkspaceLifecycleBase } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/configure-project-lifecycle-base";
 // import { Lifecycles } from "../lifecycles";
 import { LifecycleStaticInterface } from "./lifecycles";
@@ -19,6 +19,7 @@ import {
 } from "./services";
 
 export * from "./type-utils";
+export * from "./moon";
 export * from "./util";
 
 export * from './services'
@@ -55,6 +56,9 @@ export type ContextCommand<T extends typeof Command> = {
     initialiseWorkspace: InitialiseWorkspaceLifecycleBase<any>,
     configureWorkspace: ConfigureWorkspaceLifecycleBase<any>,
     configureProject: ConfigureProjectLifecycleBase<any>,
+    synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>,
+    runWorkspace: RunWorkspaceLifecycleBase<any>,
+    runProject: RunProjectLifecycleBase<any>,
   };
 };
 

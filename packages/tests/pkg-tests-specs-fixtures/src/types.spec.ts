@@ -3,7 +3,8 @@ import {
   ContextCommand,
   Flags,
   LifecycleImplementedMethods,
-  LifecycleOptionsByProvider,
+  LifecycleOptionsByMethod,
+  LifecycleOptionsByMethodAndProvider,
   LifecycleReturnsByProvider,
   // LifecycleMap,
   // LifecycleMethodOptions,
@@ -23,6 +24,7 @@ import {
   BaseCommand,
   FlagsInfer,
 } from "@business-as-code/core/commands/base-command";
+import { InferHookReturn } from "@business-as-code/core/interfaces/__types__";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import { expectTypeOf } from "expect-type";
 
@@ -131,6 +133,8 @@ describe("types", () => {
       it("DEBUG", () => {
         // @ts-expect-error:
         type ALLKeys = Simplify<keyof Bac.Lifecycles>
+        // @ts-expect-error:
+        type ALLImplemented = LifecycleImplementedMethods
       })
 
       it("can derive a union of lifecycle method return types with provider key", () => {
@@ -146,15 +150,15 @@ describe("types", () => {
       it("can derive a union of lifecycle option types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByProvider<"initialiseWorkspace">;
+          LifecycleOptionsByMethod<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
-          | { provider: "core"; options: { } }
-          | { provider: "git"; options: { } }
+          | { provider: "core"; options: { options: any } }
+          | { provider: "git"; options: { options: any } }
         >();
 
         type AllProviders =
-          LifecycleOptionsByProvider<LifecycleImplementedMethods>;
+          LifecycleOptionsByMethod<LifecycleImplementedMethods>;
         type NonImplementers = Extract<AllProviders, { options: never }>;
         expectTypeOf<NonImplementers>().toBeNever();
 
@@ -166,6 +170,19 @@ describe("types", () => {
         // expectTypeOf<AllProviders["options"]>().not.toMatchTypeOf<{
         //   eriugheiug: "iwegfoaerfgw";
         // }>();
+      });
+      it("find particular lifecycle method return", () => {
+        // type InitialiseWorkspaceInitialiseMethodMap =
+        type InitialiseWorkspaceCoreOptions =
+          LifecycleOptionsByMethodAndProvider<"initialiseWorkspace", 'core'>;
+        expectTypeOf<InitialiseWorkspaceCoreOptions>().not.toBeAny();
+        expectTypeOf<InitialiseWorkspaceCoreOptions>().toMatchTypeOf<
+          {options: any}
+        >();
+        expectTypeOf<InitialiseWorkspaceCoreOptions>().not.toMatchTypeOf<
+          | { provider: "core"; options: { options: any } }
+          | { provider: "git"; options: { options: any } }
+        >();
       });
       // it("find particular lifecycle method return", () => {
       //   type InitialiseWorkspaceReturn = LifecycleMethodReturn<'initialiseWorkspace', 'git'>

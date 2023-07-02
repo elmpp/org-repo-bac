@@ -3,7 +3,7 @@ import { Plugin } from '@business-as-code/core'
 // import { initialiseWorkspace } from './hooks/initialise-workspace'
 import {MyService, YourService} from './services'
 // import {InitialiseWorkspaceLifecycle, ConfigureWorkspaceLifecycle} from './lifecycles'
-import {InitialiseWorkspaceLifecycle} from './lifecycles'
+import {InitialiseWorkspaceLifecycle, RunWorkspaceLifecycle} from './lifecycles'
 
 export const plugin = {
   services: [
@@ -12,6 +12,7 @@ export const plugin = {
   ],
   lifecycles: [
     InitialiseWorkspaceLifecycle,
+    RunWorkspaceLifecycle,
     // ConfigureWorkspaceLifecycle,
   ],
   // initialise: (initialiseOptions) => {
