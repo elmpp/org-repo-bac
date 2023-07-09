@@ -1,16 +1,11 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { AddressPathAbsolute } from "@business-as-code/address";
 import {
-  assertIsOk,
-  Config,
   Context,
+  DoExecOptions,
+  execUtils,
   MoonCommand,
-  MoonPlatform,
-  MoonQuery,
   RunWorkspaceLifecycleBase,
-  ServiceMap,
 } from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
 
 // declare global {
 //   namespace Bac {
@@ -27,12 +22,12 @@ import { xfs } from "@business-as-code/fslib";
 // }
 
 /**
- uses Moon to run commands against projects. Relies on its arbitrary command appending - https://tinyurl.com/24459t9e
+ Runs commands via a node process
  */
-export class RunWorkspaceLifecycle extends RunWorkspaceLifecycleBase<
-  typeof RunWorkspaceLifecycle
+export class RunWorkspaceNodeLifecycle extends RunWorkspaceLifecycleBase<
+  typeof RunWorkspaceNodeLifecycle
 > {
-  static title = "core" as const;
+  static override title = "node" as const;
 
   // override get ctor(): typeof RunWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -41,19 +36,15 @@ export class RunWorkspaceLifecycle extends RunWorkspaceLifecycleBase<
   override runWorkspace(): (options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
-    workingPath: string;
     options: {
-      query?: MoonQuery;
-      platform: MoonPlatform;
       command: MoonCommand;
-      runFromWorkspaceRoot?: boolean
+      execOptions: Omit<DoExecOptions, "context" | "cwd">;
     };
-  }) => ReturnType<ServiceMap["moon"]["run"]> {
+  }) => ReturnType<typeof execUtils.doExec> {
     return async ({
       context,
       workspacePath,
-      workingPath,
-      options: { query, platform, command },
+      options: { command, execOptions },
     }) => {
       // if (!(await xfs.existsPromise(workspacePath.address))) {
       //   const workspacePathParent = addr.pathUtils.dirname(workspacePath);
@@ -66,19 +57,30 @@ export class RunWorkspaceLifecycle extends RunWorkspaceLifecycleBase<
       //   await xfs.mkdirpPromise(workspacePath.address);
       // }
 
-      const moonService = await context.serviceFactory("moon", {
-        context,
-        workingPath,
+      // const moonService = await context.serviceFactory("moon", {
+      //   context,
+      //   workingPath,
+      // });
+
+      return execUtils.doExec({
+        command,
+        options: {
+          ...execOptions,
+          cwd: workspacePath, // use runProject#node if needing workingPath
+          context,
+        },
       });
 
-      const res = await moonService.run({
-        cmd: command,
-        options: {
+      // we depend on there being an existing moon task for each platform which we can then append our command to
 
-        }
-      })
+      // const res = await moonService.runTask({
+      //   command: command,
+      //   // options: {
 
-      return res
+      //   // }
+      // })
+
+      // return res
 
       // console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
       // console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)

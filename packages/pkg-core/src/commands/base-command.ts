@@ -30,10 +30,14 @@ import { constants } from "../constants";
 import {
   ConfigureWorkspaceLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
+  RunProjectLifecycleBase,
+  RunWorkspaceLifecycleBase,
+  SynchroniseWorkspaceLifecycleBase,
 } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/configure-project-lifecycle-base";
-import { BacService, MoonService } from "../services";
+import { BacService, ExecService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
+import { objectUtils } from "../utils";
 import { findUp, loadModule } from "../utils/fs-utils";
 import {
   assertIsOk,
@@ -45,6 +49,7 @@ import {
   ServiceInitialiseLiteOptions,
   ServiceMap,
   ServiceStaticMap,
+  ValueOf,
 } from "../__types__";
 
 // export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
@@ -362,6 +367,14 @@ export abstract class BaseCommand<
       // // load lifecycle into tapable
       // return mod.initialise
 
+      this.debug(
+        `plugin.loadLifecycleImplementationsForPlugin#${
+          plugin.name
+        } defines lifecycles: '${mod.lifecycles
+          ?.map((l) => `${l.lifecycleTitle}: ${l.title}`)
+          .join(", ")}'`
+      );
+
       for (const lifecycleImplementation of mod.lifecycles!) {
         lifecycleImplementation.initialise({
           context,
@@ -428,9 +441,9 @@ export abstract class BaseCommand<
     ).reduce(
       (acc, staticService) => ({
         ...acc,
-        [staticService.title]: staticService,
+        [staticService.as ?? staticService.title]: [staticService],
       }),
-      {} as Partial<ServiceStaticMap>
+      {}
     );
 
     marker?.stop();
@@ -458,9 +471,10 @@ export abstract class BaseCommand<
     workspacePath: AddressPathAbsolute;
   }): Promise<Context["serviceFactory"]> {
     const coreServices = {
-      bac: BacService,
-      moon: MoonService,
-      schematics: SchematicsService,
+      bac: [BacService],
+      exec: [ExecService],
+      moon: [MoonService],
+      schematics: [SchematicsService],
     };
 
     const staticServices = (await plugins.reduce(async (accum, plugin) => {
@@ -472,11 +486,17 @@ export abstract class BaseCommand<
         return acc;
       }
 
-      return {
-        ...acc,
-        ...staticPluginServices,
-      };
-    }, Promise.resolve(coreServices))) as ServiceStaticMap;
+      // return Object.assign({}, acc, staticPluginServices);
+      return objectUtils.deepMerge(
+        acc,
+        staticPluginServices
+      ) as ServiceStaticMap;
+
+      // return {
+      //   ...acc,
+      //   ...staticPluginServices,
+      // };
+    }, Promise.resolve(coreServices) as unknown as Promise<ServiceStaticMap>)) as ServiceStaticMap;
 
     // console.log(`res :>> `, res)
 
@@ -484,11 +504,12 @@ export abstract class BaseCommand<
       serviceName: SName,
       initialiseOptionsLite: ServiceInitialiseLiteOptions<SName>
       // initialiseOptions: ServiceOptions<SName>
-    ): Promise<ServiceMap[SName]> => {
-      const staticService = staticServices[serviceName];
+    ): Promise<ServiceMap[SName][number]> => {
+      const staticServiceArr = staticServices[serviceName];
       // console.log(`staticServices :>> `, staticServices)
       // console.log(`staticService, serviceName :>> `, staticService, serviceName)
-      if (!staticService) {
+      if (!staticServiceArr) {
+        console.log(`staticServices :>> `, staticServices);
         this.error(
           `Attempting initialisation of unknown service '${serviceName}'. Loaded services: '${Object.keys(
             staticServices
@@ -496,26 +517,49 @@ export abstract class BaseCommand<
         );
       }
 
-      const serviceIns = (await staticService.initialise(
-        {
-          ...initialiseOptionsLite,
-          workspacePath,
-        } // more weird static class stuff
-      )) as ServiceMap[SName];
+      const initialiseService = async (
+        staticService: ValueOf<ServiceStaticMap>[number]
+      ) => {
+        const serviceIns = (await staticService.initialise(
+          {
+            ...initialiseOptionsLite,
+            workspacePath,
+          } // more weird static class stuff
+        )) as ServiceMap[SName][number];
 
-      if (!serviceIns) {
+        if (!serviceIns) {
+          this.debug(
+            `loadServiceFactory: service '${staticService.title}' does not instantiate`
+          );
+          return;
+        }
         this.debug(
-          `loadServiceFactory: service '${staticService.title}' does not instantiate`
+          `loadServiceFactory: service '${staticService.title}' instantiated`
         );
+        return serviceIns;
+      };
+
+      console.log(`staticServiceArr :>> `, staticServiceArr);
+
+      const res = (
+        await Promise.all(
+          staticServiceArr.map(async (s) => initialiseService(s))
+        )
+      ).filter(Boolean);
+
+      if (res.length > 1) {
+        throw new Error(
+          `loadServiceFactory: Multiple services self-reported as initialised`
+        );
+      }
+      if (res.length === 0) {
         throw new BacError(
           MessageName.SERVICE_NOT_FOUND,
           `Service '${serviceName}' not found. Ensure you have installed relevant plugins`
         );
       }
-      this.debug(
-        `loadServiceFactory: service '${staticService.title}' instantiated`
-      );
-      return serviceIns;
+      console.log(`res :>> `, res);
+      return res[0]!;
     };
     factory["availableServices"] = Object.keys(
       staticServices
@@ -637,6 +681,7 @@ export abstract class BaseCommand<
       workspacePath: await this.getWorkspacePath(
         parseOutput.flags["workspacePath"]
       ),
+      toJSON: () => "__complex__",
     };
 
     const contextCommand: ContextCommand<T> = {
@@ -646,6 +691,9 @@ export abstract class BaseCommand<
         initialiseWorkspace: new InitialiseWorkspaceLifecycleBase<any>(),
         configureWorkspace: new ConfigureWorkspaceLifecycleBase<any>(),
         configureProject: new ConfigureProjectLifecycleBase<any>(),
+        synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
+        runWorkspace: new RunWorkspaceLifecycleBase<any>(),
+        runProject: new RunProjectLifecycleBase<any>(),
       },
     };
     return contextCommand;
@@ -740,8 +788,8 @@ export abstract class BaseCommand<
         oclif.ux.action.stop(colors.red("!"));
         // Note this should be the only place where caught errors are to be output!!!
       } catch {}
-// return
-// throw err
+      // return
+      // throw err
       process.stderr.write(`${os.EOL.repeat(2)}
         ${colors.red(BacError.getMessageForError(err))}
         ${os.EOL.repeat(2)}

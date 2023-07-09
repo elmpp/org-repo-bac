@@ -33,15 +33,27 @@ describe('moon-query-projects', () => {
         expect(moonQueryProjects.parse(projectGraphJson)).toBeTruthy()
       })
     })
+    describe('1.8.3', () => {
+      it('validates a single-project moon projectGraph.json file', async () => {
+        const projectGraphJson = await xfs.readJsonPromise(addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('./etc/query/projects/v1.8.3/language=typescript.json')).address)
+        // console.log(`projectGraphJson :>> `, projectGraphJson)
+        expect(moonQueryProjects.parse(projectGraphJson)).toBeTruthy()
+      })
+      it('validates a full moon projectGraph.json file', async () => {
+        const projectGraphJson = await xfs.readJsonPromise(addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('./etc/query/projects/v1.8.3/language=typescript-full.json')).address)
+        // console.log(`projectGraphJson :>> `, projectGraphJson)
+        expect(moonQueryProjects.parse(projectGraphJson)).toBeTruthy()
+      })
+    })
   })
-  describe('1.8.3', () => {
+  describe('1.9.3', () => {
     it('validates a single-project moon projectGraph.json file', async () => {
-      const projectGraphJson = await xfs.readJsonPromise(addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('./etc/query/projects/v1.8.3/language=typescript.json')).address)
+      const projectGraphJson = await xfs.readJsonPromise(addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('./etc/query/projects/v1.9.3/language=typescript.json')).address)
       // console.log(`projectGraphJson :>> `, projectGraphJson)
       expect(moonQueryProjects.parse(projectGraphJson)).toBeTruthy()
     })
     it('validates a full moon projectGraph.json file', async () => {
-      const projectGraphJson = await xfs.readJsonPromise(addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('./etc/query/projects/v1.8.3/language=typescript-full.json')).address)
+      const projectGraphJson = await xfs.readJsonPromise(addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('./etc/query/projects/v1.9.3/language=typescript-full.json')).address)
       // console.log(`projectGraphJson :>> `, projectGraphJson)
       expect(moonQueryProjects.parse(projectGraphJson)).toBeTruthy()
     })

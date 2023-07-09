@@ -32,6 +32,8 @@
     "@business-as-code/core": "workspace:*",
     "@business-as-code/plugin-core-essentials": "workspace:*",
     "@business-as-code/plugin-core-git": "workspace:*",
+    "@business-as-code/plugin-core-package-manager-pnpm": "workspace:*",
+    "@business-as-code/plugin-core-package-manager-yarn": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
     "@oclif/core": "2.6.4",
@@ -56,7 +58,9 @@
     "plugins": [
       "@oclif/plugin-help",
       "@business-as-code/plugin-core-essentials",
-      "@business-as-code/plugin-core-git"
+      "@business-as-code/plugin-core-git",
+      "@business-as-code/plugin-core-package-manager-pnpm",
+      "@business-as-code/plugin-core-package-manager-yarn"
     ],
     "devPlugins": [
       "@business-as-code/plugin-dev-tests",

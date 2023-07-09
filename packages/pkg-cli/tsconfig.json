@@ -17,6 +17,9 @@
       "path": "../plugin-core-git"
     },
     {
+      "path": "../plugin-core-package-manager-pnpm"
+    },
+    {
       "path": "../plugin-dev-changesets"
     },
     {
@@ -52,11 +55,11 @@
       "@business-as-code/plugin-core-git/*": [
         "../plugin-core-git/src/*"
       ],
-      "@business-as-code/plugin-dev-tests": [
-        "../tests/plugin-dev-tests/src/index.ts"
+      "@business-as-code/plugin-core-package-manager-pnpm": [
+        "../plugin-core-package-manager-pnpm/src/index.ts"
       ],
-      "@business-as-code/plugin-dev-tests/*": [
-        "../tests/plugin-dev-tests/src/*"
+      "@business-as-code/plugin-core-package-manager-pnpm/*": [
+        "../plugin-core-package-manager-pnpm/src/*"
       ],
       "@business-as-code/plugin-dev-changesets": [
         "../plugin-dev-changesets/src/index.ts"
@@ -69,6 +72,12 @@
       ],
       "@business-as-code/plugin-dev-essentials/*": [
         "../plugin-dev-essentials/src/*"
+      ],
+      "@business-as-code/plugin-dev-tests": [
+        "../tests/plugin-dev-tests/src/index.ts"
+      ],
+      "@business-as-code/plugin-dev-tests/*": [
+        "../tests/plugin-dev-tests/src/*"
       ],
       "@business-as-code/tests-core": [
         "../tests/pkg-tests-core/src/index.ts"

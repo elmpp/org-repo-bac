@@ -1,7 +1,7 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
-import { doExec, DoExecOptions } from "../utils/exec-utils";
+import { doExec, DoExecOptions, DoExecOptionsLite as DoExecOptionsLiteOrig } from "../utils/exec-utils";
 import { objectMapAndFilter } from "../utils/object-utils";
 import {
   MoonQueryProjects,
@@ -30,10 +30,7 @@ type Options = ServiceInitialiseCommonOptions & {
   // /** path to root of instance */
   // workspacePath: AddressPathAbsolute;
 };
-type DoExecOptionsLite = Omit<
-  Parameters<typeof doExec>[0]["options"],
-  "context" | "cwd"
-> & {
+type DoExecOptionsLite = DoExecOptionsLiteOrig & {
   json?: boolean;
 };
 
@@ -54,6 +51,13 @@ export class MoonService {
     this.options = options;
   }
 
+  get ctor(): typeof MoonService {
+    return this.constructor as unknown as typeof MoonService;
+  }
+  get title(): (typeof MoonService)['title'] {
+    return (this.constructor as any).title as unknown as (typeof MoonService)['title']
+  }
+
   protected async initialise(options: Options) {
     try {
       await this.getVersion();
@@ -66,10 +70,10 @@ export class MoonService {
   }
 
   async getVersion(): Promise<string> {
-    const res = await this.run({ cmd: "--version" });
+    const res = await this.run({ command: "--version" });
     expectIsOk(res);
     return res.res.outputs.stdout.replace(/moon[\s]*/i, "");
-    // const res = this.run({cmd: '--version'})
+    // const res = this.run({command: '--version'})
   }
 
   async findProjects(options?: {
@@ -77,62 +81,84 @@ export class MoonService {
     affected?: boolean;
   }): Promise<MoonQueryProjects> {
     const res = await this.run({
-      cmd: `query projects${options?.query ? ` '${options.query}'` : ""}${
+      command: `query projects${options?.query ? ` '${options.query}'` : ""}${
         options?.affected ? " --affected" : ""
       }`,
       options: { json: true },
     });
     // console.log(`res :>> `, res.res)
 
-    //     expectIsOk(res)
+    expectIsOk(res)
 
     // const resJson =
-
-    return moonQueryProjects.parse(res);
+// console.log(`res :>> `, res)
+    return moonQueryProjects.parse(res.res.parsed);
 
     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
 
     // console.log(`projects :>> `, projects)
   }
 
-  async run(options: {
-    cmd: string;
+  async runTask(options: {
+    command: string;
+    options: DoExecOptionsLite & { json: true };
+  }): ResultPromiseAugment<ReturnType<typeof doExec>, { parsed: any }>;
+  async runTask(options: {
+    command: string;
+    options?: DoExecOptionsLite;
+  }): ReturnType<typeof doExec>;
+  async runTask(options: {
+    command: string;
+    options: DoExecOptionsLite;
+  }): ReturnType<typeof doExec>;
+  async runTask(options: {
+    command: string;
+    options?: DoExecOptionsLite;
+  }): Promise<any> {
+    return this.run({
+      ...options,
+      command: `run ${options.command}`
+    })
+  }
+
+  protected async run(options: {
+    command: string;
     options: DoExecOptionsLite & { json: true };
   }): ResultPromiseAugment<ReturnType<typeof doExec>, { parsed: any }>;
   // protected async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { json?: boolean };
   // }): ReturnType<typeof doExec>;
   // protected async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { json: true, throwOnFail?: false };
   // }): Promise<any>;
   // protected async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { json?: boolean, throwOnFail?: false };
   // }): ReturnType<typeof doExec>;
   // protected async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { throwOnFail: true };
   // }): ReturnType<typeof doExecThrow>;
   // protected async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { throwOnFail?: false };
   // }): ReturnType<typeof doExec>;
-  async run(options: {
-    cmd: string;
+  protected async run(options: {
+    command: string;
     options?: DoExecOptionsLite;
   }): ReturnType<typeof doExec>;
-  async run(options: {
-    cmd: string;
+  protected async run(options: {
+    command: string;
     options: DoExecOptionsLite;
   }): ReturnType<typeof doExec>;
-  async run(options: {
-    cmd: string;
+  protected async run(options: {
+    command: string;
     options?: DoExecOptionsLite;
   }): Promise<any> {
     const args = {
-      cmd: `pnpm moon ${options.cmd}${options.options?.json ? " --json" : ""}`,
+      command: `pnpm moon ${options.command}${options.options?.json ? " --json" : ""}`,
       options: {
         shell: true,
         ...(options.options ?? {}),
@@ -170,7 +196,6 @@ export class MoonService {
         },
       };
     }
-
     return res;
     // return res.res.outputs.stdout
   }

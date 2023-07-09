@@ -31,13 +31,16 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // let workspacePath = await this.getWorkspacePath()
 
-
-    const res = await context.lifecycles.configureWorkspace.executeConfigureWorkspace({
-      context,
-      workspacePath: context.workspacePath,
-      workingPath: ".",
-      options: {}, // <!-- typed as any atm ¯\_(ツ)_/¯
-    });
+    // @ts-expect-error: there is no implementation of the synchroniseWorkspace yet
+    const res = await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace({options: [{
+      provider: '',
+      options: {
+        context,
+        workspacePath: context.workspacePath,
+        workingPath: ".",
+        options: {}, // <!-- typed as any atm ¯\_(ツ)_/¯
+      }
+    }]});
     return res;
   }
 }

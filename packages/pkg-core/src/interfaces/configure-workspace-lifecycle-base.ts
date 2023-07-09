@@ -1,52 +1,67 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+// import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+import { AsyncHook } from "../hooks";
 import { Config } from "../validation";
-import { assertIsResult, Context, ContextCommand, LifecycleStaticInterface, Result } from "../__types__";
-import { InferHookParams, InferHookReturn } from "./__types__";
-
+import {
+  assertIsResult,
+  Context,
+  ContextCommand,
+  LifecycleOptionsByMethodKeyedByProvider,
+  LifecycleReturnsByMethod,
+  LifecycleStaticInterface,
+  Result,
+} from "../__types__";
 
 /**
  the configure-workspace lifecycle acts upon a workspace's user configuration. It is responsible for
  processing the input user configuration into its final form (aka lock file). The lock file is what
  ultimately enables the synchronising of upstream content
  */
-export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface> {
-
-  static lifecycleTitle = 'configureWorkspace' as const
+export class ConfigureWorkspaceLifecycleBase<
+  T extends LifecycleStaticInterface = typeof ConfigureWorkspaceLifecycleBase<any>
+> {
+  static lifecycleTitle = "configureWorkspace" as const;
+  static title = "";
 
   get ctor(): T {
     return this.constructor as unknown as T;
   }
+  get title() {
+    return this.ctor.as ?? this.ctor.title;
+  }
 
   static hooks = {
-    beforeConfigureWorkspace: new AsyncSeriesHook<{
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        // config: Config;
-        options: Record<string, never>
-      }>([
-      "options",
-    ]),
-    /** configure workspace should coordinate configures at the project level */
-    configureWorkspace: new AsyncSeriesBailHook<
+    beforeConfigureWorkspace: new AsyncHook<
       {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
         // config: Config;
-        options: Record<string, never>
+        options: Record<string, never>;
+      },
+      void,
+      "configureWorkspace"
+    >(["options"], "configureWorkspace", "beforeConfigureWorkspace"),
+    /** configure workspace should coordinate configures at the project level */
+    configureWorkspace: new AsyncHook<
+      {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        // config: Config;
+        options: Record<string, never>;
       },
       Result<
         {
           destinationPath: AddressPathAbsolute;
         },
         {
-          error: BacError,
+          error: BacError;
         }
-      >
-    >(["options"]),
+      >,
+      "configureWorkspace"
+    >(["options"], "configureWorkspace", "configureWorkspace"),
     // configureWorkspace: new AsyncSeriesBailHook<
     //   {
     //     context: Context;
@@ -63,72 +78,111 @@ export class ConfigureWorkspaceLifecycleBase<T extends LifecycleStaticInterface>
     //     }
     //   >
     // >(["options"]),
-    afterConfigureWorkspace: new AsyncSeriesHook<{
+    afterConfigureWorkspace: new AsyncHook<
+      {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
         // config: Config;
-        options: Record<string, never>
-      }>([
-      "options",
-    ]),
+        options: Record<string, never>;
+      },
+      void,
+      "configureWorkspace"
+    >(["options"], "configureWorkspace", "afterConfigureWorkspace"),
   };
 
   /** @internal */
-  static initialise<T extends ConfigureWorkspaceLifecycleBase<any>>(this: { new(): T }, options:  { context: ContextCommand<any> }) {
+  static initialise<T extends ConfigureWorkspaceLifecycleBase>(
+    this: { new (): T },
+    options: { context: ContextCommand<any> }
+  ) {
+    const { context } = options;
     const ins = new this();
-    const beforeConfigureWorkspaceHook = ins.beforeConfigureWorkspace()
-    const configureWorkspaceHook = ins.configureWorkspace()
-    const afterConfigureWorkspaceHook = ins.afterConfigureWorkspace()
+    const beforeConfigureWorkspaceHook = ins.beforeConfigureWorkspace();
+    const configureWorkspaceHook = ins.configureWorkspace();
+    const afterConfigureWorkspaceHook = ins.afterConfigureWorkspace();
 
     if (beforeConfigureWorkspaceHook) {
-      ins.ctor.hooks.beforeConfigureWorkspace.tapPromise(ins.ctor.title, beforeConfigureWorkspaceHook)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.beforeConfigureWorkspace`
+      );
+      ins.ctor.hooks.beforeConfigureWorkspace.tapAsync(
+        ins.title,
+        beforeConfigureWorkspaceHook
+      );
     }
     if (configureWorkspaceHook) {
-      ins.ctor.hooks.configureWorkspace.tapPromise(ins.ctor.title, configureWorkspaceHook)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.configureWorkspace`
+      );
+      ins.ctor.hooks.configureWorkspace.tapAsync(
+        ins.title,
+        configureWorkspaceHook
+      );
     }
     if (afterConfigureWorkspaceHook) {
-      ins.ctor.hooks.afterConfigureWorkspace.tapPromise(ins.ctor.title, afterConfigureWorkspaceHook)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.afterConfigureWorkspace`
+      );
+      ins.ctor.hooks.afterConfigureWorkspace.tapAsync(
+        ins.title,
+        afterConfigureWorkspaceHook
+      );
     }
   }
 
-  async executeConfigureWorkspace(options: InferHookParams<typeof ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace>): Promise<InferHookReturn<typeof ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace>> {
-    await  ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.promise(options)
+  async executeConfigureWorkspace(
+    options: LifecycleOptionsByMethodKeyedByProvider<"configureWorkspace">[]
+  ): Promise<LifecycleReturnsByMethod<"configureWorkspace">> {
+    await ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.callLifecycleBailAsync(
+      { options }
+    );
 
-    const res = await  ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.promise(options);
-    console.log(`res :>> `, res)
-    assertIsResult(res)
-    await  ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.promise(options)
-    return res
+    const res =
+      await ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.callLifecycleBailAsync(
+        { options, strict: true }
+      );
+    console.log(`res :>> `, res);
+    assertIsResult(res);
+    await ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.callLifecycleBailAsync(
+      { options }
+    );
+    return res;
   }
 
-  protected beforeConfigureWorkspace(): ((options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    workingPath: string;
-    config: Config;
-    options: any;
-  }) => Promise<unknown>) | undefined {
-    return
+  protected beforeConfigureWorkspace():
+    | ((options: {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        config: Config;
+        options: any;
+      }) => Promise<unknown>)
+    | undefined {
+    return;
   }
 
-  protected configureWorkspace(): ((options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    workingPath: string;
-    config: Config;
-    options: any;
-  }) => Promise<unknown>) | undefined {
-    return
+  protected configureWorkspace():
+    | ((options: {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        config: Config;
+        options: any;
+      }) => Promise<unknown>)
+    | undefined {
+    return;
   }
 
-  protected afterConfigureWorkspace(): ((options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    workingPath: string;
-    config: Config;
-    options: any;
-  }) => Promise<unknown>) | undefined {
-    return
+  protected afterConfigureWorkspace():
+    | ((options: {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        config: Config;
+        options: any;
+      }) => Promise<unknown>)
+    | undefined {
+    return;
   }
 }

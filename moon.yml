@@ -48,6 +48,20 @@ fileGroups:
 # and the value is an object of task parameters.
 tasks:
 
+  changeset:
+    command: 'changeset'
+    # command: 'pnpm jest --passWithNoTests @in(0)'
+    # inputs:
+    #   # - 'packages/tests/pkg-tests-specs-fixtures/**/*.ts'
+    #   # - '/tests/pkg-tests-specs-fixtures/**/*'
+    #   # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
+    #   # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
+    #   - '@globs(testFixtures)'
+    platform: 'node'
+    options:
+      runFromWorkspaceRoot: true
+
+
   # lint:
   #   command: 'eslint'
   #   inputs:

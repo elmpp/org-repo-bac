@@ -1,6 +1,8 @@
 import "@business-as-code/core";
 import "@business-as-code/plugin-core-essentials";
 import "@business-as-code/plugin-core-git";
+import "@business-as-code/plugin-core-package-manager-pnpm";
+import "@business-as-code/plugin-core-package-manager-yarn";
 import "@business-as-code/plugin-dev-changesets";
 
 // if (process.env.NODE_ENV === 'development') {

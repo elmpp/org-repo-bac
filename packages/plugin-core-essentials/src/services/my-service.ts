@@ -40,6 +40,13 @@ export class MyService {
 
   constructor(protected options: ServiceInitialiseCommonOptions) {}
 
+  get ctor(): typeof MyService {
+    return this.constructor as unknown as typeof MyService;
+  }
+  get title(): (typeof MyService)['title'] {
+    return (this.constructor as any).title as unknown as (typeof MyService)['title']
+  }
+
   static staticFunc1() {}
   async func1({someRandomProps, workingPath = addr.pathUtils.dot}: { someRandomProps: string, workingPath?: AddressPathRelative }) {
     const execute = (args: string[], ignoreErrorStream?: boolean) => {

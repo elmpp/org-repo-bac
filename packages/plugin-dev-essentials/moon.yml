@@ -95,7 +95,8 @@ tasks:
     #   persistent: true # disables moon caching etc
     # platform: 'node'
   verdaccioLogin:
-    command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:login'
+    command: 'npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"'
+    # command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:login'
     # local: true
     options:
       outputStyle: 'buffer-only-failure'

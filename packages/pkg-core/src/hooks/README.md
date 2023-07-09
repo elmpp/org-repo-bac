@@ -1,0 +1,2 @@
+Originally was using the library tapable - https://tinyurl.com/2dzb777b
+Moved to this reduced implementation due to needing ability to wrap options in {provider: string} format. Strato-runner - https://tinyurl.com/29x8b8nf

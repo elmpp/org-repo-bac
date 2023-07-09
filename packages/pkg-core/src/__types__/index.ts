@@ -41,7 +41,7 @@ export type ContextCommand<T extends typeof Command> = {
     serviceName: SName,
     options: ServiceInitialiseLiteOptions<SName>
     // options: ServiceInitialiseCommonOptions
-  ) => Promise<ServiceMap[SName]>) & { availableServices: (keyof ServiceMap)[] };
+  ) => Promise<ServiceMap[SName][number]>) & { availableServices: (keyof ServiceMap)[] };
   logger: logging.Logger;
   // logger: (msg: string, level?: LogLevel) => void;
   /** @internal */
@@ -60,6 +60,7 @@ export type ContextCommand<T extends typeof Command> = {
     runWorkspace: RunWorkspaceLifecycleBase<any>,
     runProject: RunProjectLifecycleBase<any>,
   };
+  toJSON: () => string
 };
 
 /** ball of values made available to "userspace" methods */
@@ -71,7 +72,7 @@ export type Context = {
   serviceFactory: (<SName extends keyof ServiceStaticMap>(
     serviceName: SName,
     options: ServiceInitialiseLiteOptions<SName>
-  ) => Promise<ServiceMap[SName]>) & { availableServices: (keyof ServiceMap)[] };
+  ) => Promise<ServiceMap[SName][number]>) & { availableServices: (keyof ServiceMap)[] };
   logger: logging.Logger;
   /** @internal */
   oclifConfig: Interfaces.Config;
@@ -80,6 +81,7 @@ export type Context = {
    Note that this will differ from values in services etc
    */
   workspacePath: AddressPathAbsolute;
+  toJSON: () => string
 };
 
 export type Plugin = {

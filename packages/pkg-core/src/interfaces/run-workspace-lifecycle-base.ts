@@ -1,38 +1,81 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+import { AsyncHook } from "../hooks";
+// import { AsyncSeriesBailHook, AsyncSeriesHook, Hook } from "tapable";
 import {
   assertIsResult,
   Context,
   ContextCommand,
-  LifecycleOptionsByMethodAndProvider,
+  LifecycleOptionsByMethodKeyedByProvider,
+  LifecycleReturnsByMethod,
   LifecycleStaticInterface,
   Result,
 } from "../__types__";
-import { InferHookReturn } from "./__types__";
+// import { InferHookReturn } from "./__types__";
+
+// /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
+// function addProviderInterception<T extends AsyncSeriesBailHook<any, any, any>, PMethod extends LifecycleImplementedMethods, PProvider extends LifecycleProviders>(hook: T, providerMethod: PMethod, providerName: PProvider): Omit<T, 'promise'> & {promise: (options: LifecycleOptionsByMethod<"runWorkspace">) => Promise<LifecycleReturnsByProvider<PMethod>>} {
+//   hook.intercept({
+//     register: (tapInfo) => {
+//       return {
+//         ...tapInfo,
+//         fn: (...runtimeArgs: {provider: string, options?: {context?: Context}}[]) => {
+//           if (runtimeArgs.length > 1) {
+//             throw new Error(`All hooks are expected to use destructured option objects. '${JSON.stringify(runtimeArgs)}'`)
+//           }
+//           const options = runtimeArgs[0]
+//           if (!options.provider) {
+//             throw new Error(`All hooks are expected to use destructured option objects. '${JSON.stringify(options)}'`)
+//           }
+//           if (options.provider !== providerName) {
+//             options?.options?.context?.logger.debug(`Lifecycle method skipped: name: '${tapInfo.name}', provider: '${providerName}', hook provider: '${options.provider}'`)
+//             return
+//           }
+
+//           options?.options?.context?.logger.debug(`Lifecycle method matched: name: '${tapInfo.name}', provider: '${providerName}', hook provider: '${options.provider}'`)
+//           return tapInfo.fn(...runtimeArgs)
+//         }
+//       }
+//     }
+//   })
+//   return {
+//     ...hook,
+//     promise: async (options: LifecycleOptionsByMethod<"runWorkspace">) => hook.promise(options)
+//   }
+// }
 
 /**
  execute a command across many projects within a workspace. Will use moon via the arbitrary extra command feature - https://tinyurl.com/24459t9e
  */
-export class RunWorkspaceLifecycleBase<T extends LifecycleStaticInterface> {
+export class RunWorkspaceLifecycleBase<
+  T extends LifecycleStaticInterface = typeof RunWorkspaceLifecycleBase<any>
+> {
   static lifecycleTitle = "runWorkspace" as const;
+  static title = "";
 
   get ctor(): T {
     return this.constructor as unknown as T;
   }
+  get title() {
+    return this.ctor.as ?? this.ctor.title;
+  }
 
   static hooks = {
-    beforeRunWorkspace: new AsyncSeriesHook<{
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-      workingPath: string;
-      options: unknown;
-    }>(["options"]),
-    runWorkspace: new AsyncSeriesBailHook<
+    beforeRunWorkspace: new AsyncHook<
       {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
+        // workingPath: string;
+        options: unknown;
+      },
+      void,
+      "runWorkspace"
+    >(["options"], "runWorkspace", "beforeRunWorkspace"),
+    runWorkspace: new AsyncHook<
+      {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        // workingPath: string;
         options: unknown;
       },
       Result<
@@ -42,56 +85,131 @@ export class RunWorkspaceLifecycleBase<T extends LifecycleStaticInterface> {
         {
           error: BacError;
         }
-      >
-    >(["options"]),
-    afterRunWorkspace: new AsyncSeriesHook<{
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-      workingPath: string;
-      options: unknown;
-    }>(["options"]),
+      >,
+      "runWorkspace"
+    >(["options"], "runWorkspace", "runWorkspace"),
+    afterRunWorkspace: new AsyncHook<
+      {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        // workingPath: string;
+        options: unknown;
+      },
+      void,
+      "runWorkspace"
+    >(["options"], "runWorkspace", "afterRunWorkspace"),
+    // runWorkspace: new AsyncHook< THIS NEED TO BE ITS OWN CLASS SO INFERENCE WORKS OK
+    //   {
+    //     context: Context;
+    //     workspacePath: AddressPathAbsolute;
+    //     workingPath: string;
+    //     options: unknown;
+    //   },
+    //   Result<
+    //     {
+    //       destinationPath: AddressPathAbsolute;
+    //     },
+    //     {
+    //       error: BacError;
+    //     }
+    //   >
+    // >(["options"]), 'runWorkspace', 'core'),
+    // runWorkspace: addProviderInterception(new AsyncSeriesBailHook< THIS NEED TO BE ITS OWN CLASS SO INFERENCE WORKS OK
+    //   {
+    //     context: Context;
+    //     workspacePath: AddressPathAbsolute;
+    //     workingPath: string;
+    //     options: unknown;
+    //   },
+    //   Result<
+    //     {
+    //       destinationPath: AddressPathAbsolute;
+    //     },
+    //     {
+    //       error: BacError;
+    //     }
+    //   >
+    // >(["options"]), 'runWorkspace', 'core'),
+    // afterRunWorkspace: new AsyncSeriesHook<{
+    //   context: Context;
+    //   workspacePath: AddressPathAbsolute;
+    //   workingPath: string;
+    //   options: unknown;
+    // }>(["options"]),
   };
 
   /** @internal */
-  static initialise<T extends RunWorkspaceLifecycleBase<any>>(
+  static initialise<T extends RunWorkspaceLifecycleBase>(
     this: { new (): T },
     options: { context: ContextCommand<any> }
   ) {
+    const { context } = options;
     const ins = new this();
     const beforeRunWorkspaceHook = ins.beforeRunWorkspace();
     const runWorkspaceHook = ins.runWorkspace();
     const afterRunWorkspaceHook = ins.afterRunWorkspace();
 
     if (beforeRunWorkspaceHook) {
-      ins.ctor.hooks.beforeRunWorkspace.tapPromise(
-        ins.ctor.title,
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.beforeRunWorkspace`
+      );
+      ins.ctor.hooks.beforeRunWorkspace.tapAsync(
+        ins.title,
         beforeRunWorkspaceHook
       );
     }
     if (runWorkspaceHook) {
-      ins.ctor.hooks.runWorkspace.tapPromise(ins.ctor.title, runWorkspaceHook);
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.runWorkspace`
+      );
+      ins.ctor.hooks.runWorkspace.tapAsync(ins.title, runWorkspaceHook);
+      console.log(
+        `ins.ctor.hooks.runWorkspace.taps :>> `,
+        ins.ctor.hooks.runWorkspace.taps
+      );
     }
     if (afterRunWorkspaceHook) {
-      ins.ctor.hooks.afterRunWorkspace.tapPromise(
-        ins.ctor.title,
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.afterRunWorkspace`
+      );
+      ins.ctor.hooks.afterRunWorkspace.tapAsync(
+        ins.title,
         afterRunWorkspaceHook
       );
     }
+
+    // addProviderInterception(ins.ctor.hooks.beforeRunWorkspace, ins.ctor.title)
+    // addProviderInterception(ins.ctor.hooks.runWorkspace, ins.ctor.title)
+    // addProviderInterception(ins.ctor.hooks.afterRunWorkspace, ins.ctor.title)
   }
 
   // async executeRunWorkspace(options: InferHookParams<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>): Promise<InferHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>> {
   async executeRunWorkspace(
-    options: LifecycleOptionsByMethodAndProvider<"runWorkspace", "core">
+    options: LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">[]
+    // options: LifecycleOptionsByMethodAndProvider<"runWorkspace", "core">
   ): Promise<
-    InferHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
+    LifecycleReturnsByMethod<"runWorkspace">
+    // InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
   > {
-
-    await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.promise(options);
-    const res = await RunWorkspaceLifecycleBase.hooks.runWorkspace.promise(
-      options
+    await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.callLifecycleBailAsync(
+      {
+        options,
+      }
     );
+    // type DDDD = InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
+    const res =
+      await RunWorkspaceLifecycleBase.hooks.runWorkspace.callLifecycleBailAsync(
+        {
+          options,
+          strict: true,
+        }
+      );
     assertIsResult(res);
-    await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.promise(options);
+    await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.callLifecycleBailAsync(
+      {
+        options,
+      }
+    );
     return res;
   }
 
@@ -99,7 +217,6 @@ export class RunWorkspaceLifecycleBase<T extends LifecycleStaticInterface> {
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
         options: any;
       }) => Promise<unknown>)
     | void {}
@@ -108,7 +225,6 @@ export class RunWorkspaceLifecycleBase<T extends LifecycleStaticInterface> {
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
         options: any;
       }) => Promise<unknown>)
     | void {}

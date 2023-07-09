@@ -3,9 +3,12 @@ import {
   ContextCommand,
   Flags,
   LifecycleImplementedMethods,
-  LifecycleOptionsByMethod,
+  LifecycleOptionsByMethodKeyedByProvider,
+  LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleOptionsByMethodAndProvider,
-  LifecycleReturnsByProvider,
+  LifecycleProvidersForAsByMethod,
+  LifecycleReturnsByMethod,
+  LifecycleReturnsByMethodAndProvider,
   // LifecycleMap,
   // LifecycleMethodOptions,
   // LifecycleMethodReturn,
@@ -18,13 +21,13 @@ import {
   ServiceInitialiseOptions,
   ServiceMap,
   Simplify,
+  LifecycleMethods,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
   BaseCommand,
   FlagsInfer,
 } from "@business-as-code/core/commands/base-command";
-import { InferHookReturn } from "@business-as-code/core/interfaces/__types__";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import { expectTypeOf } from "expect-type";
 
@@ -34,21 +37,21 @@ describe("types", () => {
       it("integrity", () => {
         expectTypeOf<ServiceMap>().toMatchTypeOf<{
           // instance side
-          myService: {
+          myService: [{
             func1: Function;
-          };
-          yourService: {
+          }];
+          yourService: [{
             func1: Function;
-          };
-          schematics: {
+          }];
+          schematics: [{
             runSchematic: Function;
-          };
-          bac: {
+          }];
+          bac: [{
             run: Function;
-          };
-          git: {
+          }];
+          git: [{
             getRepository: Function;
-          };
+          }];
         }>();
         expectTypeOf<ServiceMap>().not.toMatchTypeOf<{
           // not the static side
@@ -62,6 +65,14 @@ describe("types", () => {
           };
         }>();
       });
+      it(`supports 'as' to group service types`, () => {
+        type PackageManager = ServiceMap['packageManager']
+        expectTypeOf<PackageManager>().toMatchTypeOf<[{
+            title: 'packageManagerPnpm',
+        } | {
+          title: 'packageManagerYarn',
+        }]>()
+      })
       it("service options", () => {
         type SchematicInitialiseOptions =
           ServiceInitialiseOptions<"schematics">;
@@ -140,17 +151,17 @@ describe("types", () => {
       it("can derive a union of lifecycle method return types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceReturn =
-          LifecycleReturnsByProvider<"initialiseWorkspace">;
+          LifecycleReturnsByMethod<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceReturn>().toMatchTypeOf<
-          | { provider: "core"; options: { } }
-          | { provider: "git"; options: { b: "b" } }
+          | { provider: "core"; res: { } }
+          | { provider: "git"; res: { b: "b" } }
         >();
       });
-      it("can derive a union of lifecycle option types with provider key", () => {
+      it("can derive a union of lifecycle option types with provider key 1", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByMethod<"initialiseWorkspace">;
+          LifecycleOptionsByMethodKeyedByProvider<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
           | { provider: "core"; options: { options: any } }
@@ -158,7 +169,7 @@ describe("types", () => {
         >();
 
         type AllProviders =
-          LifecycleOptionsByMethod<LifecycleImplementedMethods>;
+          LifecycleOptionsByMethodKeyedByProvider<LifecycleImplementedMethods>;
         type NonImplementers = Extract<AllProviders, { options: never }>;
         expectTypeOf<NonImplementers>().toBeNever();
 
@@ -171,6 +182,86 @@ describe("types", () => {
         //   eriugheiug: "iwegfoaerfgw";
         // }>();
       });
+      it("can derive a union of lifecycle option types with provider key 2", () => {
+        // type InitialiseWorkspaceInitialiseMethodMap =
+        type Options =
+          LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">;
+        expectTypeOf<Options>().not.toBeAny();
+
+        type MoonOptions = Extract<Options, {provider: 'moon'}>
+        type MoonOptionsOptions = Extract<Options, {provider: 'moon'}>['options']
+        type MoonOptionsOptionsOptions = Extract<Options, {provider: 'moon'}>['options']['options']
+        type NodeOptions = Extract<Options, {provider: 'node'}>
+        type NodeOptionsOptions = Extract<Options, {provider: 'node'}>['options']
+        type NodeOptionsOptionsOptions = Extract<Options, {provider: 'node'}>['options']['options']
+
+        expectTypeOf<MoonOptionsOptionsOptions>().toMatchTypeOf<{
+          query?: string
+        }>()
+
+        expectTypeOf<NodeOptionsOptionsOptions>().toMatchTypeOf<{
+          execOptions: any
+        }>()
+        expectTypeOf<NodeOptionsOptions>().not.toMatchTypeOf<{
+          workingPath: string // only on runProject
+        }>()
+
+        expectTypeOf<Options>().toMatchTypeOf<
+          | { provider: "moon"; options: { options: {query?: string} } } // options should be specific to provider
+          | { provider: "node"; options: { options: {execOptions: any} } } // options should be specific to provider
+          | { provider: "packageManager"; options: { options: any } }
+        >();
+      });
+      it(`accepts LifecycleAllMethods`, () => {
+        const anyLifecycleMethod: LifecycleMethods = 'configureProject'
+        type ReturnType = LifecycleReturnsByMethod<typeof anyLifecycleMethod>
+
+      })
+      it("can derive a union of lifecycle option types with provider key 3", () => {
+
+        type Options = LifecycleOptionsByMethodKeyedByProvider<LifecycleImplementedMethods> // used in the hooks; e.g. callLifecycleBailAsync
+        expectTypeOf<Options>().not.toBeAny();
+        type OptionsProviders = Options['provider']
+
+        expectTypeOf<OptionsProviders>().toMatchTypeOf<'packageManager'>
+        expectTypeOf<OptionsProviders>().not.toMatchTypeOf<'packageManagerPnpm'>
+      });
+      it("can derive a union of lifecycle option types in an array form", () => {
+
+        const aLifecycleMethodNotImplemented: LifecycleMethods = 'configureProject' // ensures we still have a non-implemented lifecycle (to test the AsyncHook)
+        expectTypeOf(aLifecycleMethodNotImplemented).not.toMatchTypeOf<LifecycleImplementedMethods>()
+
+        type Options1 = LifecycleOptionsByMethodKeyedByProviderArray<typeof aLifecycleMethodNotImplemented> // e.g. async AsyncHook#callLifecycleBailAsync
+        expectTypeOf<Options1>().not.toBeAny();
+        expectTypeOf<Options1>().toEqualTypeOf<never>();
+
+        const aLifecycleMethodImplemented: LifecycleMethods = 'initialiseWorkspace'
+        expectTypeOf(aLifecycleMethodImplemented).toMatchTypeOf<LifecycleImplementedMethods>()
+
+        type Options2 = LifecycleOptionsByMethodKeyedByProviderArray<typeof aLifecycleMethodImplemented> // e.g. async AsyncHook#callLifecycleBailAsync
+        expectTypeOf<Options2>().not.toBeAny();
+        expectTypeOf<Options2>().not.toEqualTypeOf<never>();
+      });
+      it(`supports 'as' to group lifecycle types`, () => {
+        type PackageManagerOptions = LifecycleOptionsByMethodAndProvider<'runWorkspace', 'packageManager'>
+        expectTypeOf<PackageManagerOptions>().toMatchTypeOf<{ // note how options are same for both grouped option types
+            options: {
+              command: string;
+              filter?: string;
+            }
+        }>()
+
+        type PackageManagerReturn = LifecycleReturnsByMethodAndProvider<'runWorkspace', 'packageManager'>
+        expectTypeOf<PackageManagerReturn>().toMatchTypeOf<{ // note how options are same for both grouped option types
+            provider: 'packageManager',
+            res: unknown,
+            _method?: 'runWorkspace' | undefined
+        }>()
+      })
+      it(`can find the provider names based on the 'as' property`, () => {
+        type PackageManagerProviders = LifecycleProvidersForAsByMethod<'packageManager'>
+        expectTypeOf<PackageManagerProviders>().toMatchTypeOf<'packageManagerPnpm' | 'packageManagerYarn'>()
+      })
       it("find particular lifecycle method return", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceCoreOptions =
@@ -183,6 +274,23 @@ describe("types", () => {
           | { provider: "core"; options: { options: any } }
           | { provider: "git"; options: { options: any } }
         >();
+      });
+      it(`find particular lifecycle method return for 'as' methods`, () => {
+        // type InitialiseWorkspaceInitialiseMethodMap =
+        type Options =
+          LifecycleOptionsByMethodAndProvider<"runWorkspace", 'packageManager'>;
+        expectTypeOf<Options>().not.toBeAny();
+        expectTypeOf<Options>().toMatchTypeOf<
+          {options: any}
+        >();
+        expectTypeOf<Options>().toMatchTypeOf<
+          {options: any}
+        >();
+
+        // expectTypeOf<InitialiseWorkspaceCoreOptions>().not.toMatchTypeOf<
+        //   | { provider: "core"; options: { options: any } }
+        //   | { provider: "git"; options: { options: any } }
+        // >();
       });
       // it("find particular lifecycle method return", () => {
       //   type InitialiseWorkspaceReturn = LifecycleMethodReturn<'initialiseWorkspace', 'git'>

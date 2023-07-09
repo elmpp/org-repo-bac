@@ -25,7 +25,7 @@ export const createAddressPackage = (addressIns: Address, parseParams: Initialis
     }
     const tryResolveFromCommonAncestor = (ident: string, projectCwd: string): AddressPathAbsolute | undefined => {
       try {
-        const cliPath = require.resolve('@monotonous/cli', {paths: [projectCwd]})
+        const cliPath = require.resolve('@business-as-code/cli', {paths: [projectCwd]})
         const resolved = require.resolve(ident, {paths: [cliPath]})
         return addressIns.parsePath(resolved) as AddressPathAbsolute
       } catch (err) {}

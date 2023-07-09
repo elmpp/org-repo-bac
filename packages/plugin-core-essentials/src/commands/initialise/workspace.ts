@@ -191,18 +191,22 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     const {config, path: configPath} = await this.getConfig(context);
 
-    const res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace({
-      context,
-      workspacePath,
-      workingPath: ".",
-      name: context.cliOptions.flags.name,
-      config,
-      configPath: configPath.original,
-      cliVersion: context.cliOptions.flags.cliVersion,
-      cliRegistry: context.cliOptions.flags.cliRegistry,
-      options: {}, // <!-- typed as any atm ¯\_(ツ)_/¯
-    });
-    return res;
+    const res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace([{
+      provider: 'core',
+      options: {
+        context,
+        workspacePath,
+        workingPath: ".",
+        name: context.cliOptions.flags.name,
+        config,
+        configPath: configPath.original,
+        cliVersion: context.cliOptions.flags.cliVersion,
+        cliRegistry: context.cliOptions.flags.cliRegistry,
+        options: {
+          a: 'a',
+        }, // <!-- typed as any atm ¯\_(ツ)_/¯
+    }}]);
+    return res.res; // we eschew the provider wrapping for our solitary initialWorkspace
 
     // if (!(await xfs.existsPromise(workspacePath.address))) {
     //   const workspacePathParent = addr.pathUtils.dirname(workspacePath);

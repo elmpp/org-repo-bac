@@ -5,8 +5,8 @@ import {
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 
-/** Discord question asked about running arbitrary commands (would be needed to execute the `changesets publish` part of this workflow) - https://discord.com/channels/974160221452763146/975906732511486012/1107224607477473320 */
-export class ChangesetsSnapshot extends BaseCommand<typeof ChangesetsSnapshot> {
+/** produces a changeset file. This is normally done as part of the PR process via its cli but we produce our own */
+export class ChangesetsCreate extends BaseCommand<typeof ChangesetsCreate> {
   static override description = "Creates an empty workspace";
 
   static override examples = [
@@ -20,10 +20,29 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   description: "Workspace name",
     //   required: true,
     // }),
-    // /** Moon scopes - https://tinyurl.com/2ek7rph4 . @todo - validate this better here */
-    // query: Flags.string({
-    //   description: "query to select projects",
-    //   required: false,
+    /** Moon scopes - https://tinyurl.com/2ek7rph4 . @todo - validate this better here */
+    query: Flags.string({
+      description: "Query to select snapshotted projects",
+      required: false,
+      default: "projectType=library || projectType=application",
+    }),
+    message: Flags.string({
+      description: "Message for the changeset",
+      required: true,
+    }),
+    bump: Flags.custom<"major" | "minor" | "patch">({
+      summary: "Specify level for bumping",
+      options: ["major", "minor", "patch"],
+      helpGroup: "GLOBAL",
+      default: "patch",
+      required: true,
+    })(),
+    // bump: Flags.custom({
+    //   parse: async (input: string, opts) => {
+    //     if (["major", "minor", "patch"].includes(input)) {
+    //       return input;
+    //     }
+    //   },
     // }),
 
     workspacePath: Flags.string({
@@ -39,11 +58,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   required: false,
     //   default: "*",
     // }),
-    registry: Flags.string({
-      description: "Specify a package manager registry to load the Bac cli",
-      required: false,
-      default: "http://localhost:4873",
-    }),
+
+    // registry: Flags.string({
+    //   description: "Specify a package manager registry to load the Bac cli",
+    //   required: false,
+    //   default: "http://localhost:4873",
+    // }),
   };
 
   static override args = {
@@ -53,46 +73,54 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
   };
 
-  async execute(context: ContextCommand<typeof ChangesetsSnapshot>) {
-    // console.log(`context.cliOptions :>> `, context.cliOptions)
+  async execute(context: ContextCommand<typeof ChangesetsCreate>) {
 
-    // let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
-    // let workspacePath = await this.getWorkspacePath();
+    const changesetService = await context.serviceFactory('changeset', {context, workingPath: '.'})
 
-    const moonService = await context.serviceFactory("moon", {
-      context,
-      workingPath: ".",
-    });
-    const schematicService = await context.serviceFactory("schematics", {
-      context,
-      workingPath: ".",
-      // workspacePath: context.workspacePath,
-    });
+    await changesetService.create({
+      query: context.cliOptions.flags.query,
+      message: context.cliOptions.flags.message,
+      bump: context.cliOptions.flags.bump,
+    })
 
-    // const snapshotProjects = await moonService.findProjects()
-    const snapshotProjects = await moonService.findProjects({
-      query: "projectType=library || projectType=application",
-    });
+    // // console.log(`context.cliOptions :>> `, context.cliOptions)
 
-    const schematicOptionsChanges: {
-      message: string;
-      changes: Record<string, "major" | "minor" | "patch">;
-    } = {
-      message: "new message",
-      changes: snapshotProjects.projects.reduce((acc, p) => {
-        acc[p.alias ?? p.id] = "patch";
-        return acc;
-      }, {} as Record<string, "major" | "minor" | "patch">),
-    };
+    // // let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
+    // // let workspacePath = await this.getWorkspacePath();
 
-    await schematicService.runSchematic({
-      address: `@business-as-code/plugin-dev-changesets#namespace=changeset-generate`,
-      context,
-      options: {
-        ...schematicOptionsChanges,
-        _bacContext: context,
-      },
-    });
+    // const moonService = await context.serviceFactory("moon", {
+    //   context,
+    //   workingPath: ".",
+    // });
+    // const schematicService = await context.serviceFactory("schematics", {
+    //   context,
+    //   workingPath: ".",
+    // });
+
+    // // const snapshotProjects = await moonService.findProjects()
+    // const snapshotProjects = await moonService.findProjects({
+    //   query: context.cliOptions.flags.query,
+    // });
+
+    // const schematicOptionsChanges: {
+    //   message: string;
+    //   changes: Record<string, "major" | "minor" | "patch">;
+    // } = {
+    //   message: context.cliOptions.flags.message,
+    //   changes: snapshotProjects.projects.reduce((acc, p) => {
+    //     acc[p.alias ?? p.id] = context.cliOptions.flags.bump!;
+    //     return acc;
+    //   }, {} as Record<string, "major" | "minor" | "patch">),
+    // };
+
+    // await schematicService.runSchematic({
+    //   address: `@business-as-code/plugin-dev-changesets#namespace=changeset-generate`,
+    //   context,
+    //   options: {
+    //     ...schematicOptionsChanges,
+    //     _bacContext: context,
+    //   },
+    // });
 
     // the strategy is just to create a changeset file for all the publishable projects (defined as type {library,application})
     // Changeset doesn't offer any generation options - https://github.com/changesets/changesets/issues/862

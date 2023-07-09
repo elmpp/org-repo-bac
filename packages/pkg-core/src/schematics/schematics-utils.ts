@@ -29,7 +29,7 @@ import { ServiceExecTask } from "./tasks";
 
 export interface ServiceOptions<SName extends keyof ServiceStaticMap> {
   cb: (options: {
-    service: ServiceMap[SName];
+    service: ServiceMap[SName][number];
     serviceName: SName;
   }) => Promise<any>;
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;

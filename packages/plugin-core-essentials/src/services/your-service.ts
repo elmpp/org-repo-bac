@@ -40,6 +40,13 @@ export class YourService {
     return new YourService(options)
   }
 
+  get ctor(): typeof YourService {
+    return this.constructor as unknown as typeof YourService;
+  }
+  get title(): (typeof YourService)['title'] {
+    return (this.constructor as any).title as unknown as (typeof YourService)['title']
+  }
+
   constructor(protected options: ServiceInitialiseCommonOptions) {
 
   }

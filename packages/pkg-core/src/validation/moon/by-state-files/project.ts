@@ -80,8 +80,8 @@ export const taskSchema = z.object({
 	// type: TaskType;
 
   // not in types at all
-  flags: z.array(z.string()),
-  globalInputs: z.array(z.string()),
+  flags: z.record(z.unknown()),
+  globalInputs: z.array(z.string()).optional(),
   platform: platformSchema,
   type: taskTypeSchema,
 }).strict()
@@ -102,8 +102,13 @@ export const projectSchema = z.object({
 	fileGroups: z.record(z.string(), fileGroupSchema),
 	// fileGroups: Record<string, FileGroup>;
   id: z.string(),
-	inheritedConfig: inheritedTasksConfigSchema,
+  inherited: z.object({
+    config: inheritedTasksConfigSchema,
+    layers: z.unknown(),
+    order: z.array(z.string()),
+  }),
 	language: projectLanguageSchema,
+  platform: platformSchema,
   root: z.string(),
   source: z.string(),
 	tasks: z.record(z.string(), taskSchema),

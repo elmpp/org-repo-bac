@@ -1,29 +1,44 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+// import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
+import { AsyncHook } from "../hooks";
 import { Config } from "../validation";
-import { assertIsResult, Context, ContextCommand, LifecycleStaticInterface, Result } from "../__types__";
-import { InferHookParams, InferHookReturn } from "./__types__";
+import {
+  assertIsResult,
+  Context,
+  ContextCommand,
+  LifecycleOptionsByMethodKeyedByProviderArray,
+  LifecycleReturnsByMethod,
+  LifecycleStaticInterface,
+  Result,
+} from "../__types__";
 
-export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterface> {
-
-  static lifecycleTitle = 'synchroniseWorkspace' as const
+export class SynchroniseWorkspaceLifecycleBase<
+  T extends LifecycleStaticInterface = typeof SynchroniseWorkspaceLifecycleBase<any>
+> {
+  static lifecycleTitle = "synchroniseWorkspace" as const;
+  static title = "";
 
   get ctor(): T {
     return this.constructor as unknown as T;
   }
+  get title() {
+    return this.ctor.as ?? this.ctor.title;
+  }
 
   static hooks = {
-    beforeSynchroniseWorkspace: new AsyncSeriesHook<{
+    beforeSynchroniseWorkspace: new AsyncHook<
+      {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
         options: unknown;
         config?: Config;
-      }>([
-      "options",
-    ]),
-    synchroniseWorkspace: new AsyncSeriesBailHook<
+      },
+      void,
+      "synchroniseWorkspace"
+    >(["options"], "synchroniseWorkspace", "beforeSynchroniseWorkspace"),
+    synchroniseWorkspace: new AsyncHook<
       {
         context: Context;
         workspacePath: AddressPathAbsolute;
@@ -36,68 +51,108 @@ export class SynchroniseWorkspaceLifecycleBase<T extends LifecycleStaticInterfac
           destinationPath: AddressPathAbsolute;
         },
         {
-          error: BacError,
+          error: BacError;
         }
-      >
-    >(["options"]),
-    afterSynchroniseWorkspace: new AsyncSeriesHook<{
+      >,
+      "synchroniseWorkspace"
+    >(["options"], "synchroniseWorkspace", "synchroniseWorkspace"),
+    afterSynchroniseWorkspace: new AsyncHook<
+      {
         context: Context;
         workspacePath: AddressPathAbsolute;
         workingPath: string;
         options: unknown;
         config?: Config;
-      }>([
-      "options",
-    ]),
+      },
+      void,
+      "synchroniseWorkspace"
+    >(["options"], "synchroniseWorkspace", "afterSynchroniseWorkspace"),
   };
 
   /** @internal */
-  static initialise<T extends SynchroniseWorkspaceLifecycleBase<any>>(this: { new(): T }, options:  { context: ContextCommand<any> }) {
+  static initialise<T extends SynchroniseWorkspaceLifecycleBase>(
+    this: { new (): T },
+    options: { context: ContextCommand<any> }
+  ) {
+    const { context } = options;
     const ins = new this();
-    const beforeSynchroniseWorkspaceHook = ins.beforeSynchroniseWorkspace()
-    const synchroniseWorkspaceHook = ins.synchroniseWorkspace()
-    const afterSynchroniseWorkspaceHook = ins.afterSynchroniseWorkspace()
+    const beforeSynchroniseWorkspaceHook = ins.beforeSynchroniseWorkspace();
+    const synchroniseWorkspaceHook = ins.synchroniseWorkspace();
+    const afterSynchroniseWorkspaceHook = ins.afterSynchroniseWorkspace();
 
     if (beforeSynchroniseWorkspaceHook) {
-      ins.ctor.hooks.beforeSynchroniseWorkspace.tapPromise(ins.ctor.title, beforeSynchroniseWorkspaceHook)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.beforeSynchroniseWorkspace`
+      );
+      ins.ctor.hooks.beforeSynchroniseWorkspace.tapAsync(
+        ins.title,
+        beforeSynchroniseWorkspaceHook
+      );
     }
     if (synchroniseWorkspaceHook) {
-      ins.ctor.hooks.synchroniseWorkspace.tapPromise(ins.ctor.title, synchroniseWorkspaceHook)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.synchroniseWorkspace`
+      );
+      ins.ctor.hooks.synchroniseWorkspace.tapAsync(
+        ins.title,
+        synchroniseWorkspaceHook
+      );
     }
     if (afterSynchroniseWorkspaceHook) {
-      ins.ctor.hooks.afterSynchroniseWorkspace.tapPromise(ins.ctor.title, afterSynchroniseWorkspaceHook)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.afterSynchroniseWorkspace`
+      );
+      ins.ctor.hooks.afterSynchroniseWorkspace.tapAsync(
+        ins.title,
+        afterSynchroniseWorkspaceHook
+      );
     }
   }
 
-  async executeSynchroniseWorkspace(options: InferHookParams<typeof SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace>): Promise<InferHookReturn<typeof SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace>> {
-    await  SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.promise(options)
-    const res = await  SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace.promise(options);
-    assertIsResult(res)
-    await  SynchroniseWorkspaceLifecycleBase.hooks.afterSynchroniseWorkspace.promise(options)
-    return res
+  async executeSynchroniseWorkspace(
+    options: LifecycleOptionsByMethodKeyedByProviderArray<"synchroniseWorkspace">
+  ): Promise<LifecycleReturnsByMethod<"synchroniseWorkspace">> {
+    await SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.callLifecycleBailAsync(
+      { options }
+    );
+    const res =
+      await SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace.callLifecycleBailAsync(
+        { options, strict: true }
+      );
+    assertIsResult(res);
+    await SynchroniseWorkspaceLifecycleBase.hooks.afterSynchroniseWorkspace.callLifecycleBailAsync(
+      { options }
+    );
+    return res;
   }
 
-  protected beforeSynchroniseWorkspace(): ((options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    workingPath: string;
-    options: any;
-    config?: Config;
-  }) => Promise<unknown>) | void {}
+  protected beforeSynchroniseWorkspace():
+    | ((options: {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        options: any;
+        config?: Config;
+      }) => Promise<unknown>)
+    | void {}
 
-  protected synchroniseWorkspace(): ((options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    workingPath: string;
-    options: any;
-    config?: Config;
-  }) => Promise<unknown>) | void {}
+  protected synchroniseWorkspace():
+    | ((options: {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        options: any;
+        config?: Config;
+      }) => Promise<unknown>)
+    | void {}
 
-  protected afterSynchroniseWorkspace(): ((options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    workingPath: string;
-    options: any;
-    config?: Config;
-  }) => Promise<unknown>) | void {}
+  protected afterSynchroniseWorkspace():
+    | ((options: {
+        context: Context;
+        workspacePath: AddressPathAbsolute;
+        workingPath: string;
+        options: any;
+        config?: Config;
+      }) => Promise<unknown>)
+    | void {}
 }

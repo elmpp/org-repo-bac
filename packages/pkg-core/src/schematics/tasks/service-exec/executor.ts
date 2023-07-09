@@ -10,7 +10,7 @@ export function serviceExecExecutor<SName extends keyof ServiceMap>(
   _?: ServiceExecTaskFactoryOptions,
 ): TaskExecutor<ServiceExecTaskOptions<SName>> {
 
-  return async (options: ServiceExecTaskOptions<SName> = {} as ServiceExecTaskOptions<SName>, schematicContext: SchematicContext) => {
+  return async (options: ServiceExecTaskOptions<SName> = {} as ServiceExecTaskOptions<SName>, _schematicContext: SchematicContext) => {
 
     // if (!options) {
     //   throw new Error(`How is this supposed to work then huh!!`)

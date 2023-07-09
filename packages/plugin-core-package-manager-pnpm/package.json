@@ -1,0 +1,42 @@
+{
+  "name": "@business-as-code/plugin-core-package-manager-pnpm",
+  "version": "0.0.0-bollards-20230602074801",
+  "description": "Core plugin package @business-as-code/plugin-core-package-manager-pnpm",
+  "main": "src/index.ts",
+  "files": [
+    "dist",
+    "package.json",
+    "collection.json"
+  ],
+  "types": "src/index.ts",
+  "scripts": {
+    "prepack": "bac-prepack",
+    "postpack": "bac-postpack"
+  },
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  },
+  "peerDependencies": {
+    "@angular-devkit/core": "*",
+    "@angular-devkit/schematics": "*"
+  },
+  "dependencies": {
+    "@angular-devkit/core": "^15.2.4",
+    "@angular-devkit/schematics": "^15.2.4",
+    "@business-as-code/address": "workspace:*",
+    "@business-as-code/core": "workspace:*",
+    "@business-as-code/error": "workspace:0.0.0-bollards-20230602074801",
+    "@business-as-code/fslib": "workspace:0.0.0-bollards-20230602074801",
+    "npm-cli-login": "^1.0.0"
+  },
+  "devDependencies": {
+    "@business-as-code/plugin-dev-essentials": "workspace:*",
+    "@business-as-code/tests-core": "workspace:*",
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.15.3"
+  },
+  "oclif": {
+    "commands": "./src/commands"
+  }
+}

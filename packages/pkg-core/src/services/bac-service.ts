@@ -1,6 +1,6 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { doExec } from "../utils/exec-utils";
+import { execUtils } from "../utils";
 import { ServiceInitialiseCommonOptions } from "../__types__";
 
 declare global {
@@ -19,11 +19,11 @@ type Options = ServiceInitialiseCommonOptions & {
   // workspacePath: AddressPathAbsolute;
 };
 type DoExecOptionsLite = Omit<
-  Parameters<typeof doExec>[0]["options"],
+  Parameters<typeof execUtils.doExec>[0]["options"],
   "context" | "cwd"
 >
 // type DoExecOptionsLite = Omit<
-//   Parameters<typeof doExec>[0]["options"],
+//   Parameters<typeof execUtils.doExec>[0]["options"],
 //   "context" | "cwd"
 // > & {throwOnFail?: boolean}
 
@@ -32,7 +32,15 @@ type DoExecOptionsLite = Omit<
  */
 export class BacService {
   static title = "bac" as const
+  // title = 'bac' as const
   options: Required<Options>;
+
+  get ctor(): typeof BacService {
+    return this.constructor as unknown as typeof BacService;
+  }
+  get title(): (typeof BacService)['title'] {
+    return (this.constructor as any).title as unknown as (typeof BacService)['title']
+  }
 
   static async initialise(options: Options) {
     const ins = new BacService(options);
@@ -47,27 +55,27 @@ export class BacService {
   protected async initialise(options: Options) {}
 
   // async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { throwOnFail: true };
-  // }): ReturnType<typeof doExecThrow>;
+  // }): ReturnType<typeof execUtils.doExecThrow>;
   // async run(options: {
-  //   cmd: string;
+  //   command: string;
   //   options: DoExecOptionsLite & { throwOnFail: false };
-  // }): ReturnType<typeof doExec>;
+  // }): ReturnType<typeof execUtils.doExec>;
   async run(options: {
-    cmd: string;
+    command: string;
     options?: DoExecOptionsLite;
-  }): ReturnType<typeof doExec>;
+  }): ReturnType<typeof execUtils.doExec>;
   async run(options: {
-    cmd: string;
+    command: string;
     options: DoExecOptionsLite;
-  }): ReturnType<typeof doExec>;
+  }): ReturnType<typeof execUtils.doExec>;
   async run(options: {
-    cmd: string;
+    command: string;
     options?: DoExecOptionsLite;
   }): Promise<any> {
     const args = {
-      cmd: `pnpm bac ${options.cmd}`,
+      command: `pnpm bac ${options.command}`,
       options: {
         shell: true,
         ...(options.options ?? {}),
@@ -82,6 +90,6 @@ export class BacService {
     // if (options.options?.throwOnFail) {
     //   return doExecThrow(args);
     // }
-    return doExec(args);
+    return execUtils.doExec(args);
   }
 }

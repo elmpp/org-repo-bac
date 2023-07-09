@@ -37,9 +37,17 @@ type Options = ServiceInitialiseCommonOptions & {
  */
 export class GitService {
   static title = "git" as const
+  // title = 'git' as const
 
   public CheckRepoActions = CheckRepoActionsImport
   // options: Options;
+
+  get ctor(): typeof GitService {
+    return this.constructor as unknown as typeof GitService
+  }
+  get title(): (typeof GitService)['title'] {
+    return (this.constructor as any).title as unknown as (typeof GitService)['title']
+  }
 
   /** whether the service has initialised on a local repo. Prerequisite for most operations. See  */
   protected repository: SimpleGit | undefined

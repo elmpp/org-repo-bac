@@ -26,7 +26,7 @@ import { xfs } from "@business-as-code/fslib";
 export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBase<
   typeof InitialiseWorkspaceLifecycle
 > {
-  static title = "core" as const;
+  static override title = "core" as const;
 
   // override get ctor(): typeof InitialiseWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -46,7 +46,7 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
     configPath: string;
     cliVersion: string;
     cliRegistry: string;
-  }) => ReturnType<ServiceMap["schematics"]["runSchematic"]> {
+  }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
     return async ({ context, workspacePath, workingPath, name, config, configPath, cliVersion, cliRegistry }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
         const workspacePathParent = addr.pathUtils.dirname(workspacePath);

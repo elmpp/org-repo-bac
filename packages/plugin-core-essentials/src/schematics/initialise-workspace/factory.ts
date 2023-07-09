@@ -40,7 +40,7 @@ export default function (options: Schema): Rule {
       serviceOptions: {
         serviceName: "bac",
         cb: async ({ service }) => {
-          expectIsOk(await service.run({cmd: 'help'}))
+          expectIsOk(await service.run({command: 'help'}))
         },
         initialiseOptions: {
           workingPath: '.',

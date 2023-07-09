@@ -1,8 +1,6 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Context, ContextCommand } from ".";
 import {
-  ExcludeMatchingProperties,
-  IncludeMatchingProperties,
   IsEmptyObject,
   SafeGet,
   Simplify,
@@ -53,6 +51,7 @@ export type LifecycleInitialiseCommonOptions = {
 export type LifecycleStaticInterface = {
   lifecycleTitle: string; // the lifecycle title; e.g. 'initialiseWorkspace'
   title: string; // the implementation title; e.g. 'core', 'github' etc
+  as?: string; // allows aliasing to another title, e.g. packageManagerPnpm -> packageManager
   /** the initialise method will be defined on the base and set up tapable with any implemented lifecycle methods; @internal*/
   initialise: (options: { context: ContextCommand<any> }) => void;
   /** the tapable hooks. @internal */
@@ -61,15 +60,15 @@ export type LifecycleStaticInterface = {
 
 /** gives a map of implementations for a particular method of a lifecycle */
 // export type LifecycleMethodMap<LName> = {
-//   [PName in keyof Bac.Lifecycles as Bac.Lifecycles[PName] extends unknown
-//     ? PName
+//   [LProvider in keyof Bac.Lifecycles as Bac.Lifecycles[LProvider] extends unknown
+//     ? LProvider
 //     : never]: {
-//     [AnLName in keyof Bac.Lifecycles[PName] as Extract<
-//       Bac.Lifecycles[PName][AnLName],
+//     [AnLName in keyof Bac.Lifecycles[LProvider] as Extract<
+//       Bac.Lifecycles[LProvider][AnLName],
 //       LName
 //     > extends never
 //       ? never
-//       : AnLName]: Bac.Lifecycles[PName][AnLName];
+//       : AnLName]: Bac.Lifecycles[LProvider][AnLName];
 //   };
 // };
 // export type LifecycleMethodMap<LName extends keyof Bac.Lifecycles> = {
@@ -101,15 +100,15 @@ export type LifecycleStaticInterface = {
 // type DDD5 = keyof UnionToIntersection<Bac.Lifecycles[keyof Bac.Lifecycles]>
 // type DDD = keyof ValueOf<Bac.Lifecycles>
 
-// type LifecycleInsType4<LMethod extends keyof _LifecycleMethodMap, PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = Pick<Bac.Lifecycles, PName>
-// type LifecycleInsType4<LMethod extends keyof _LifecycleMethodMap, PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = {
-//   [APName in keyof Pick<Bac.Lifecycles, PName>]: {
-//     beforeConfigureWorkspace: LifecycleInsType<'beforeConfigureWorkspace', APName>
-//     configureWorkspace: LifecycleInsType<'configureWorkspace', APName>
-//     afterConfigureWorkspace: LifecycleInsType<'afterConfigureWorkspace', APName>
-//     beforeInitialiseWorkspace: LifecycleInsType<'beforeInitialiseWorkspace', APName>
-//     initialiseWorkspace: LifecycleInsType<'initialiseWorkspace', APName>
-//     afterInitialiseWorkspace: LifecycleInsType<'afterInitialiseWorkspace', APName>
+// type LifecycleInsType4<LMethod extends keyof _LifecycleMethodMap, LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = Pick<Bac.Lifecycles, LProvider>
+// type LifecycleInsType4<LMethod extends keyof _LifecycleMethodMap, LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = {
+//   [ALProvider in keyof Pick<Bac.Lifecycles, LProvider>]: {
+//     beforeConfigureWorkspace: LifecycleInsType<'beforeConfigureWorkspace', ALProvider>
+//     configureWorkspace: LifecycleInsType<'configureWorkspace', ALProvider>
+//     afterConfigureWorkspace: LifecycleInsType<'afterConfigureWorkspace', ALProvider>
+//     beforeInitialiseWorkspace: LifecycleInsType<'beforeInitialiseWorkspace', ALProvider>
+//     initialiseWorkspace: LifecycleInsType<'initialiseWorkspace', ALProvider>
+//     afterInitialiseWorkspace: LifecycleInsType<'afterInitialiseWorkspace', ALProvider>
 //   }
 // }
 
@@ -122,144 +121,200 @@ export type LifecycleStaticInterface = {
 //     >["initialiseWorkspace"]["insType"]
 //   : never;
 
-// /** MUST be kept up to date with lifecycle base classes */
-type LifecycleMap<PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> =
-  ExcludeMatchingProperties<
-    {
-      initialiseWorkspace: UnionToIntersection<Bac.Lifecycles[PName]> extends {
-        initialiseWorkspace: any;
-      }
-        ? Omit<
-            Extract<
-              Bac.Lifecycles[PName],
-              { initialiseWorkspace: any }
-            >["initialiseWorkspace"]["insType"],
-            "ctor"
-          >
-        : never;
-      configureWorkspace: UnionToIntersection<Bac.Lifecycles[PName]> extends {
-        configureWorkspace: any;
-      }
-        ? Omit<
-            Extract<
-              Bac.Lifecycles[PName],
-              { configureWorkspace: any }
-            >["configureWorkspace"]["insType"],
-            "ctor"
-          >
-        : never;
-      configureProject: UnionToIntersection<Bac.Lifecycles[PName]> extends {
-        configureProject: any;
-      }
-        ? Omit<
-            Extract<
-              Bac.Lifecycles[PName],
-              { configureProject: any }
-            >["configureProject"]["insType"],
-            "ctor"
-          >
-        : never;
-      synchroniseWorkspace: UnionToIntersection<Bac.Lifecycles[PName]> extends {
-        synchroniseWorkspace: any;
-      }
-        ? Omit<
-            Extract<
-              Bac.Lifecycles[PName],
-              { synchroniseWorkspace: any }
-            >["synchroniseWorkspace"]["insType"],
-            "ctor"
-          >
-        : never;
-      runWorkspace: UnionToIntersection<Bac.Lifecycles[PName]> extends {
-        runWorkspace: any;
-      }
-        ? Omit<
-            Extract<
-              Bac.Lifecycles[PName],
-              { runWorkspace: any }
-            >["runWorkspace"]["insType"],
-            "ctor"
-          >
-        : never;
-      runProject: UnionToIntersection<Bac.Lifecycles[PName]> extends {
-        runProject: any;
-      }
-        ? Omit<
-            Extract<
-              Bac.Lifecycles[PName],
-              { runProject: any }
-            >["runProject"]["insType"],
-            "ctor"
-          >
-        : never;
-    },
-    never
-  >;
+// /** MUST be kept up to date with lifecycle base classes. Also need to add new lifecycles within BaseCommand#setupContext */
+type LifecycleMap<
+  LProvider extends keyof BacLifecyclesNormalised = keyof BacLifecyclesNormalised
+> =
+  // ExcludeMatchingProperties<
+  {
+    initialiseWorkspace: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      initialiseWorkspace: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { initialiseWorkspace: any }
+          >["initialiseWorkspace"]["insType"],
+          "initialiseWorkspace"
+        >
+      : never;
+    configureWorkspace: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      configureWorkspace: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { configureWorkspace: any }
+          >["configureWorkspace"]["insType"],
+          "configureWorkspace"
+        >
+      : never;
+    configureProject: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      configureProject: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { configureProject: any }
+          >["configureProject"]["insType"],
+          "configureProject"
+        >
+      : never;
+    synchroniseWorkspace: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      synchroniseWorkspace: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { synchroniseWorkspace: any }
+          >["synchroniseWorkspace"]["insType"],
+          "synchroniseWorkspace"
+        >
+      : never;
+    runWorkspace: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      runWorkspace: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { runWorkspace: any }
+          >["runWorkspace"]["insType"],
+          "runWorkspace"
+        >
+      : never;
+    runProject: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      runProject: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { runProject: any }
+          >["runProject"]["insType"],
+          "runProject"
+        >
+      : never;
+  };
+//   never
+// >;
 
 type LifecycleReturnsByProviderMap = {
   [ALMethod in _LifecycleAllMethods]: {
-    [APName in _LifecycleAllProviders]: {
-      provider: APName;
-      options: LifecycleMethodType<ALMethod, APName> extends never
+    [ALProvider in _LifecycleAllProviders]: {
+      provider: ALProvider;
+      res: LifecycleMethodType<ALMethod, ALProvider> extends never
         ? never
-        : LifecycleReturnType<LifecycleMethodType<ALMethod, APName>>;
+        : LifecycleReturnType<LifecycleMethodType<ALMethod, ALProvider>>;
       _method?: ALMethod;
     };
   };
 };
 type LifecycleOptionsByProviderMap = {
   [ALMethod in _LifecycleAllMethods]: {
-    [APName in _LifecycleAllProviders]: {
-      provider: APName;
+    [ALProvider in _LifecycleAllProviders]: {
+      provider: ALProvider;
       _method?: ALMethod;
-      options: LifecycleMethodType<ALMethod, APName> extends never
-      ? never
-      : LifecycleOptionsType<LifecycleMethodType<ALMethod, APName>>
-    }
+      options: LifecycleMethodType<ALMethod, ALProvider> extends never
+        ? never
+        : LifecycleOptionsType<LifecycleMethodType<ALMethod, ALProvider>>;
+    };
   };
 };
+
 // just the options.options
 // type LifecycleOptionsByProviderMap = {
 //   [ALMethod in _LifecycleAllMethods]: {
-//     [APName in _LifecycleAllProviders]: {
-//       provider: APName;
-//       options: LifecycleMethodType<ALMethod, APName> extends never
+//     [ALProvider in _LifecycleAllProviders]: {
+//       provider: ALProvider;
+//       options: LifecycleMethodType<ALMethod, ALProvider> extends never
 //         ? never
-//         : LifecycleOptionsType<LifecycleMethodType<ALMethod, APName>>;
+//         : LifecycleOptionsType<LifecycleMethodType<ALMethod, ALProvider>>;
 //       _method?: ALMethod;
 //     };
 //   };
 // };
 
-export type LifecycleReturnsByProvider<
-  LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods
+export type LifecycleReturnsByMethod<
+  LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
-  ValueOf<LifecycleReturnsByProviderMap[LMethod & _LifecycleAllMethods]>,
+  ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
   // ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
-  { options: never }
+  { res: never }
 >;
+export type LifecycleReturnsByMethodAndProvider<
+  LMethod extends LifecycleMethods = LifecycleMethods,
+  LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
+> = Extract<
+  Exclude<ValueOf<LifecycleReturnsByProviderMap[LMethod]>, { options: never }>,
+  { provider: LProvider }
+>;
+
 /** a union of method options that are keyed by provider. Suitable for calling Bail hook types - https://tinyurl.com/2deua67q */
-export type LifecycleOptionsByMethod<
-  LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods
+export type LifecycleOptionsByMethodKeyedByProvider<
+  LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
-  ValueOf<LifecycleOptionsByProviderMap[LMethod & _LifecycleAllMethods]>,
+  ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
   { options: never }
 >;
+export type LifecycleOptionsByMethodKeyedByProviderArray<
+  LMethod extends LifecycleMethods = LifecycleMethods
+> = Exclude<
+  ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
+  { options: never }
+> extends never
+  ? never
+  : Exclude<
+      ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
+      { options: never }
+    >[];
 /** a specific options object for a provider method. Suitable for lifecycles with a single provider */
 export type LifecycleOptionsByMethodAndProvider<
-  LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods,
+  LMethod extends LifecycleMethods = LifecycleMethods,
   LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
-> = SafeGet<Extract<Exclude<
-  ValueOf<LifecycleOptionsByProviderMap[LMethod & _LifecycleAllMethods]>,
-  { options: never }
->, {provider: LProvider}>, 'options'>;
+> = SafeGet<
+  Extract<
+    Exclude<
+      ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
+      { options: never }
+    >,
+    { provider: LProvider }
+  >,
+  "options"
+>;
 export type LifecycleMethods = _LifecycleAllMethods;
+export type LifecycleProviders = _LifecycleAllProviders;
 export type LifecycleImplementedMethods = NonNullable<
   Exclude<
     ValueOf<LifecycleOptionsByProviderMap[LifecycleMethods]>,
     { options: never }
   >["_method"]
 >;
+
+// type PPP = Simplify<Bac.Lifecycles>
+// export type LifecycleProvidersForAsByMethod<LMethod extends _LifecycleAllMethods, LProviderAs extends LifecycleProviders> = LifecycleReturnsByMethodAndProvider<LMethod, LProviderAs>
+// type LifecycleProvidersForAsByMethod<LMethod extends _LifecycleAllMethods, LProviderAs extends LifecycleProviders> = Extract<ValueOf<Bac.Lifecycles>, {as: LProviderAs}>
+export type LifecycleProvidersForAsByMethod<
+  LProviderAs extends LifecycleProviders
+> = keyof {
+  [LProvider in keyof Bac.Lifecycles as Bac.Lifecycles[LProvider] extends {
+    as: LProviderAs;
+  }
+    ? LProvider
+    : never]: unknown;
+};
+// type YAAA = Bac.Lifecycles['']
+// type DDDD = LifecycleProvidersForAsByMethod<'runWorkspace', 'packageManager'>
 // type BBB = ValueOf<LifecycleOptionsByProviderMap[LifecycleMethods]>
 
 // type NBNB = LifecycleReturnsByProviderMap["initialiseWorkspace"];
@@ -275,44 +330,80 @@ export type LifecycleImplementedMethods = NonNullable<
 // type HHH = LifecycleReturnsByProviderMap['initialiseWorkspace'][_LifecycleAllProviders]
 // type HHH2 = LifecycleOptionsByProviderMap['initialiseWorkspace'][_LifecycleAllProviders]
 
-type LifecycleReturnType<T extends () => (...args: any[]) => any> =
-  UnwrapPromise<ReturnType<ReturnType<T>>>;
-type LifecycleOptionsType<T extends () => (...args: any[]) => any> =
-  "options" extends keyof Parameters<ReturnType<T>>[0]
-    ? true extends IsEmptyObject<Parameters<ReturnType<T>>[0]["options"]>
-      ? Record<string, never>
-      : Parameters<ReturnType<T>>[0]
-      // : Parameters<ReturnType<T>>[0]["options"]
-    : Record<string, never>; // we use the convention of providers needing their tapable options through .options
+type LifecycleReturnType<
+  T extends () => ((...args: any[]) => any) | undefined
+> = UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>;
+type LifecycleOptionsType<
+  T extends () => ((...args: any[]) => any) | undefined
+> = "options" extends keyof Parameters<NonNullable<ReturnType<T>>>[0]
+  ? true extends IsEmptyObject<
+      Parameters<NonNullable<ReturnType<T>>>[0]["options"]
+    >
+    ? Record<string, never>
+    : Parameters<NonNullable<ReturnType<T>>>[0]
+  : // : Parameters<ReturnType<T>>[0]["options"]
+    Record<string, never>; // we use the convention of providers needing their tapable options through .options
+
+type BacLifecyclesNormalised = {
+  [LProvider in keyof Bac.Lifecycles as Bac.Lifecycles[LProvider] extends {
+    as: any;
+  }
+    ? Bac.Lifecycles[LProvider]["as"]
+    : LProvider]: Omit<
+    {
+      [LMethod in keyof Bac.Lifecycles[LProvider]]: Bac.Lifecycles[LProvider][LMethod];
+    },
+    "as"
+  >;
+};
+
+// type AAAA = BacLifecyclesNormalised['packageManager']
 
 type LifecycleMethodType<
   LMethod extends _LifecycleAllMethods,
-  PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
-> = LMethod extends keyof Bac.Lifecycles[PName]
-  ? "insType" extends keyof Bac.Lifecycles[PName][LMethod]
-    ? LMethod extends keyof Bac.Lifecycles[PName][LMethod]["insType"]
-      ? Bac.Lifecycles[PName][LMethod]["insType"][LMethod] extends () => (
-          ...args: any
-        ) => any
-        ? Bac.Lifecycles[PName][LMethod]["insType"][LMethod]
+  LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
+> = LMethod extends keyof BacLifecyclesNormalised[LProvider]
+  ? "insType" extends keyof BacLifecyclesNormalised[LProvider][LMethod]
+    ? LMethod extends keyof BacLifecyclesNormalised[LProvider][LMethod]["insType"]
+      ? BacLifecyclesNormalised[LProvider][LMethod]["insType"][LMethod] extends () =>
+          | ((...args: any) => any)
+          | undefined
+        ? BacLifecyclesNormalised[LProvider][LMethod]["insType"][LMethod]
         : never
       : never
     : never
   : never;
+
+// type NNN = LifecycleMethodType<'runWorkspace', 'packageManager'>
+// type UUU = NonNullable<BacLifecyclesNormalised['packageManager']['runWorkspace']['insType']['runWorkspace']>
+// type LifecycleMethodType<
+//   LMethod extends _LifecycleAllMethods,
+//   LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
+// > = LMethod extends keyof Bac.Lifecycles[LProvider]
+//   ? "insType" extends keyof Bac.Lifecycles[LProvider][LMethod]
+//     ? LMethod extends keyof Bac.Lifecycles[LProvider][LMethod]["insType"]
+//       ? Bac.Lifecycles[LProvider][LMethod]["insType"][LMethod] extends () => (
+//           ...args: any
+//         ) => any
+//         ? Bac.Lifecycles[LProvider][LMethod]["insType"][LMethod]
+//         : never
+//       : never
+//     : never
+//   : never;
 // type LifecycleInsType<
 //   LMethod extends _LifecycleAllMethods,
-//   PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
-// > = LMethod extends keyof Bac.Lifecycles[PName]
-//   ? "insType" extends keyof Bac.Lifecycles[PName][LMethod]
-//     ? Bac.Lifecycles[PName][LMethod]["insType"]
+//   LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
+// > = LMethod extends keyof Bac.Lifecycles[LProvider]
+//   ? "insType" extends keyof Bac.Lifecycles[LProvider][LMethod]
+//     ? Bac.Lifecycles[LProvider][LMethod]["insType"]
 //     : never
 //   : never;
 // type LifecycleStaticType<
 //   LMethod extends _LifecycleAllMethods,
-//   PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
-// > = LMethod extends keyof Bac.Lifecycles[PName]
-//   ? "staticType" extends keyof Bac.Lifecycles[PName][LMethod]
-//     ? Bac.Lifecycles[PName][LMethod]["staticType"]
+//   LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
+// > = LMethod extends keyof Bac.Lifecycles[LProvider]
+//   ? "staticType" extends keyof Bac.Lifecycles[LProvider][LMethod]
+//     ? Bac.Lifecycles[LProvider][LMethod]["staticType"]
 //     : never
 //   : never;
 // type VV = keyof InitialiseWorkspaceLifecycle;
@@ -320,13 +411,20 @@ type LifecycleMethodType<
 //   UnionToIntersection<ValueOf<LifecycleMap<keyof Bac.Lifecycles>>>
 // >;
 
-type _LifecycleAllMethods = keyof UnionToIntersection<
-  ValueOf<LifecycleMap<keyof Bac.Lifecycles>>
+type _LifecycleAllMethods = Simplify<
+  keyof LifecycleMap<keyof BacLifecyclesNormalised>
 >;
-type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
+type _LifecycleAllProviders = keyof {
+  [LMethod in keyof BacLifecyclesNormalised as BacLifecyclesNormalised[LMethod] extends {
+    as: any;
+  }
+    ? BacLifecyclesNormalised[LMethod]["as"]
+    : LMethod]: unknown;
+};
+// type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 
-// // type _LifecycleMethodMap<PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = UnionToIntersection<ValueOf<
-// //   LifecycleMap<PName>
+// // type _LifecycleMethodMap<LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = UnionToIntersection<ValueOf<
+// //   LifecycleMap<LProvider>
 // // >>;
 // // type _LifecycleProviderMap =
 // export type LifecycleMethodInsMap = {
@@ -368,18 +466,18 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 
 // // /** MUST be kept up to date with lifecycle base classes */
 // export type LifecycleMap<
-//   PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
+//   LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
 // > = {
 //   configureWorkspace: Omit<
 //     Extract<
-//       Bac.Lifecycles[PName],
+//       Bac.Lifecycles[LProvider],
 //       { configureWorkspace: any }
 //     >["configureWorkspace"]["insType"],
 //     "ctor"
 //   >;
 //   initialiseWorkspace: Omit<
 //     Extract<
-//       Bac.Lifecycles[PName],
+//       Bac.Lifecycles[LProvider],
 //       { initialiseWorkspace: any }
 //     >["initialiseWorkspace"]["insType"],
 //     "ctor"
@@ -388,25 +486,25 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 // // export type LifecycleOptionsByProvider<
 // //   LMethod extends keyof LifecycleMethodInsMap = keyof LifecycleMethodInsMap
 // // > = {
-// //   [PName in keyof Bac.Lifecycles]: {};
-// //   // configureWorkspace: Omit<Extract<Bac.Lifecycles[PName], {configureWorkspace: any}>['configureWorkspace']['insType'], 'ctor'>
-// //   // initialiseWorkspace: Omit<Extract<Bac.Lifecycles[PName], {initialiseWorkspace: any}>['initialiseWorkspace']['insType'], 'ctor'>
+// //   [LProvider in keyof Bac.Lifecycles]: {};
+// //   // configureWorkspace: Omit<Extract<Bac.Lifecycles[LProvider], {configureWorkspace: any}>['configureWorkspace']['insType'], 'ctor'>
+// //   // initialiseWorkspace: Omit<Extract<Bac.Lifecycles[LProvider], {initialiseWorkspace: any}>['initialiseWorkspace']['insType'], 'ctor'>
 // // };
 
-// // export type LifecycleMethodMap<PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = UnionToIntersection<ValueOf<
-// //   LifecycleMap<PName>
+// // export type LifecycleMethodMap<LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles> = UnionToIntersection<ValueOf<
+// //   LifecycleMap<LProvider>
 // // >>;
 
 // /** MUST be kept up to date with lifecycle base classes */
 // export type LifecycleStaticMap<
-//   PName extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
+//   LProvider extends keyof Bac.Lifecycles = keyof Bac.Lifecycles
 // > = {
 //   configureWorkspace: Extract<
-//     Bac.Lifecycles[PName],
+//     Bac.Lifecycles[LProvider],
 //     { configureWorkspace: any }
 //   >["configureWorkspace"]["staticType"];
 //   initialiseWorkspace: Extract<
-//     Bac.Lifecycles[PName],
+//     Bac.Lifecycles[LProvider],
 //     { initialiseWorkspace: any }
 //   >["initialiseWorkspace"]["staticType"];
 // };
@@ -423,55 +521,55 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 // // }>;
 
 // // type _LifecycleImplementations<LName extends keyof LifecycleMap> = {
-// //   [PName in keyof Bac.Lifecycles as Bac.Lifecycles[PName] extends unknown
-// //   ? PName
+// //   [LProvider in keyof Bac.Lifecycles as Bac.Lifecycles[LProvider] extends unknown
+// //   ? LProvider
 // //   : never]: {
-// //   [AnLName in keyof Bac.Lifecycles[PName] as AnLName extends LName
+// //   [AnLName in keyof Bac.Lifecycles[LProvider] as AnLName extends LName
 // //     ? AnLName
-// //     : never]: Bac.Lifecycles[PName][LName];
+// //     : never]: Bac.Lifecycles[LProvider][LName];
 // // };
 // // }
 
 // // type _LifecycleImplementations = {
-// //   [PName in keyof Bac.Lifecycles]: {
-// //     [LName in keyof Bac.Lifecycles[PName]]: Bac.Lifecycles[PName][LName] extends {insType: unknown} ? {
-// //         [LMethod in keyof Bac.Lifecycles[PName][LName]['insType'] as Bac.Lifecycles[PName][LName]['insType'][LMethod] extends () => (...args: any[]) => any ? LMethod : never]: Bac.Lifecycles[PName][LName]['insType'][LMethod]
+// //   [LProvider in keyof Bac.Lifecycles]: {
+// //     [LName in keyof Bac.Lifecycles[LProvider]]: Bac.Lifecycles[LProvider][LName] extends {insType: unknown} ? {
+// //         [LMethod in keyof Bac.Lifecycles[LProvider][LName]['insType'] as Bac.Lifecycles[LProvider][LName]['insType'][LMethod] extends () => (...args: any[]) => any ? LMethod : never]: Bac.Lifecycles[LProvider][LName]['insType'][LMethod]
 // //     } : never
 // //   }
 // // }
 // // type _LifecycleImplementations = {
-// //   [PName in keyof Bac.Lifecycles]: {
-// //     [LName in keyof Bac.Lifecycles[PName]]: Bac.Lifecycles[PName][LName] extends {insType: unknown} ? {
-// //         [LMethod in keyof Bac.Lifecycles[PName][LName]['insType']]: Bac.Lifecycles[PName][LName]['insType'][LMethod] extends (...args: any) => any ?
-// //         (...args: any) => void extends ReturnType<Bac.Lifecycles[PName][LName]['insType'][LMethod]> ? never : Bac.Lifecycles[PName][LName]['insType'][LMethod]
+// //   [LProvider in keyof Bac.Lifecycles]: {
+// //     [LName in keyof Bac.Lifecycles[LProvider]]: Bac.Lifecycles[LProvider][LName] extends {insType: unknown} ? {
+// //         [LMethod in keyof Bac.Lifecycles[LProvider][LName]['insType']]: Bac.Lifecycles[LProvider][LName]['insType'][LMethod] extends (...args: any) => any ?
+// //         (...args: any) => void extends ReturnType<Bac.Lifecycles[LProvider][LName]['insType'][LMethod]> ? never : Bac.Lifecycles[LProvider][LName]['insType'][LMethod]
 // //         : never
 // //       } : never
-// //         // [InsType in keyof Bac.Lifecycles[PName][LName] as Bac.Lifecycles[PName][LName] extends {insType: unknown} ? InsType : never]: {
-// //         //   [LMethod in keyof Bac.Lifecycles[PName][LName]['insType']]: {
+// //         // [InsType in keyof Bac.Lifecycles[LProvider][LName] as Bac.Lifecycles[LProvider][LName] extends {insType: unknown} ? InsType : never]: {
+// //         //   [LMethod in keyof Bac.Lifecycles[LProvider][LName]['insType']]: {
 
 // //         //   }
 // //         // }
-// //         // // [MName in keyof Bac.Lifecycles[PName][AnLName] as LMethod extends MName ? MName : never]: number
-// //         // [MName in keyof Bac.Lifecycles[PName][AnLName] as LMethod extends MName ? MName : never]: Bac.Lifecycles[PName][AnLName]
+// //         // // [MName in keyof Bac.Lifecycles[LProvider][AnLName] as LMethod extends MName ? MName : never]: number
+// //         // [MName in keyof Bac.Lifecycles[LProvider][AnLName] as LMethod extends MName ? MName : never]: Bac.Lifecycles[LProvider][AnLName]
 // //       };
 // //   }
 // // type _LifecycleImplementations = {
-// //   [PName in keyof Bac.Lifecycles]: {
-// //     [LName in keyof Bac.Lifecycles[PName]]: {
-// //         [LMethod in keyof Bac.Lifecycles[PName][LName]['insType']]
-// //         // [MName in keyof Bac.Lifecycles[PName][AnLName] as LMethod extends MName ? MName : never]: number
-// //         [MName in keyof Bac.Lifecycles[PName][AnLName] as LMethod extends MName ? MName : never]: Bac.Lifecycles[PName][AnLName]
+// //   [LProvider in keyof Bac.Lifecycles]: {
+// //     [LName in keyof Bac.Lifecycles[LProvider]]: {
+// //         [LMethod in keyof Bac.Lifecycles[LProvider][LName]['insType']]
+// //         // [MName in keyof Bac.Lifecycles[LProvider][AnLName] as LMethod extends MName ? MName : never]: number
+// //         [MName in keyof Bac.Lifecycles[LProvider][AnLName] as LMethod extends MName ? MName : never]: Bac.Lifecycles[LProvider][AnLName]
 // //       };
 // //   }
 // // }
 
 // type _LifecycleMethodImplementations<LMethod extends LifecycleMethods> = {
-//   [PName in keyof Bac.Lifecycles]: {
-//     [AnLName in keyof Bac.Lifecycles[PName]]: {
-//       // [MName in keyof Bac.Lifecycles[PName][AnLName] as LMethod extends MName ? MName : never]: number
-//       [MName in keyof Bac.Lifecycles[PName][AnLName] as LMethod extends MName
+//   [LProvider in keyof Bac.Lifecycles]: {
+//     [AnLName in keyof Bac.Lifecycles[LProvider]]: {
+//       // [MName in keyof Bac.Lifecycles[LProvider][AnLName] as LMethod extends MName ? MName : never]: number
+//       [MName in keyof Bac.Lifecycles[LProvider][AnLName] as LMethod extends MName
 //         ? MName
-//         : never]: Bac.Lifecycles[PName][AnLName];
+//         : never]: Bac.Lifecycles[LProvider][AnLName];
 //     };
 //   };
 // };
@@ -486,18 +584,18 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 
 // /** the .title property of all implementations of a lifecycle method */
 // export type LifecycleProviders<LMethod extends LifecycleMethods> = ValueOf<{
-//   [PName in keyof Bac.Lifecycles]: ValueOf<{
-//     [LName in keyof Bac.Lifecycles[PName]]: Bac.Lifecycles[PName][LName] extends {
+//   [LProvider in keyof Bac.Lifecycles]: ValueOf<{
+//     [LName in keyof Bac.Lifecycles[LProvider]]: Bac.Lifecycles[LProvider][LName] extends {
 //       insType: unknown;
 //     }
 //       ? ValueOf<{
-//           [AnLMethod in keyof Bac.Lifecycles[PName][LName]["insType"] as AnLMethod extends LMethod
-//             ? Bac.Lifecycles[PName][LName]["insType"][AnLMethod] extends () => (
+//           [AnLMethod in keyof Bac.Lifecycles[LProvider][LName]["insType"] as AnLMethod extends LMethod
+//             ? Bac.Lifecycles[LProvider][LName]["insType"][AnLMethod] extends () => (
 //                 ...args: any[]
 //               ) => any
 //               ? AnLMethod
 //               : never
-//             : never]: PName;
+//             : never]: LProvider;
 //         }>
 //       : never;
 //   }>;
@@ -505,8 +603,8 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 
 // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodInsMap> =
 //   UnwrapPromise<
-//     // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodMap, PName extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
-//     // export type LifecycleMethodReturn<LMethod extends LifecycleMethods, PName extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
+//     // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodMap, LProvider extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
+//     // export type LifecycleMethodReturn<LMethod extends LifecycleMethods, LProvider extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
 //     ReturnType<
 //       Exclude<
 //         ReturnType<
@@ -514,7 +612,7 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 //           // LifecycleMethodMap[LMethod]
 //           // ValueOf<Bac.Lifecycles>[LMethod]
 //           // ValueOf<LifecycleMap>[LMethod]
-//           // Bac.Lifecycles[PName][keyof LifecycleMap]["insType"][LMethod]
+//           // Bac.Lifecycles[LProvider][keyof LifecycleMap]["insType"][LMethod]
 //         >,
 //         void
 //       >
@@ -523,8 +621,8 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 // export type LifecycleMethodReturnWithProviderKey<
 //   LMethod extends keyof LifecycleMethodInsMap
 // > = UnwrapPromise<
-//   // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodMap, PName extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
-//   // export type LifecycleMethodReturn<LMethod extends LifecycleMethods, PName extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
+//   // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodMap, LProvider extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
+//   // export type LifecycleMethodReturn<LMethod extends LifecycleMethods, LProvider extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
 //   ReturnType<
 //     Exclude<
 //       ReturnType<
@@ -532,7 +630,7 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 //         // LifecycleMethodMap[LMethod]
 //         // ValueOf<Bac.Lifecycles>[LMethod]
 //         // ValueOf<LifecycleMap>[LMethod]
-//         // Bac.Lifecycles[PName][keyof LifecycleMap]["insType"][LMethod]
+//         // Bac.Lifecycles[LProvider][keyof LifecycleMap]["insType"][LMethod]
 //       >,
 //       void
 //     >
@@ -542,8 +640,8 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 // export type LifecycleMethodOptions<
 //   LMethod extends keyof LifecycleMethodInsMap
 // > = UnwrapPromise<
-//   // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodMap, PName extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
-//   // export type LifecycleMethodReturn<LMethod extends LifecycleMethods, PName extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
+//   // export type LifecycleMethodReturn<LMethod extends keyof LifecycleMethodMap, LProvider extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
+//   // export type LifecycleMethodReturn<LMethod extends LifecycleMethods, LProvider extends LifecycleProviders<LMethod> = LifecycleProviders<LMethod>> = UnwrapPromise<
 //   Parameters<
 //     Exclude<
 //       ReturnType<
@@ -551,7 +649,7 @@ type _LifecycleAllProviders = Simplify<keyof Bac.Lifecycles>;
 //         // LifecycleMethodMap[LMethod]
 //         // ValueOf<Bac.Lifecycles>[LMethod]
 //         // ValueOf<LifecycleMap>[LMethod]
-//         // Bac.Lifecycles[PName][keyof LifecycleMap]["insType"][LMethod]
+//         // Bac.Lifecycles[LProvider][keyof LifecycleMap]["insType"][LMethod]
 //       >,
 //       void
 //     >

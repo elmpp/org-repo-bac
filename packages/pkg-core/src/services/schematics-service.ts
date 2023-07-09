@@ -124,6 +124,13 @@ export class SchematicsService {
   // @ts-ignore - is assigned via initialise
   schematicsLogger: logging.Logger;
 
+  get ctor(): typeof SchematicsService {
+    return this.constructor as unknown as typeof SchematicsService
+  }
+  get title(): (typeof SchematicsService)['title'] {
+    return (this.constructor as any).title as unknown as (typeof SchematicsService)['title']
+  }
+
   // @ts-expect-error:
   private workflow: SchematicResettableNodeWorkflow;
 
@@ -590,7 +597,7 @@ export class SchematicsService {
       return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} --schematicOptions='${schematicOptionsJson}'`;
     };
     context.logger.debug(
-      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.workspacePath.original}'${this.options.context.cliOptions.flags["logLevel"] === 'debug' ? `, Full cmd: '${optionsAsCommand(schematicMapEntry)}'` : ''}`
+      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.workspacePath.original}'${this.options.context.cliOptions.flags["logLevel"] === 'debug' ? `, Full command: '${optionsAsCommand(schematicMapEntry)}'` : ''}`
     );
 
     /**

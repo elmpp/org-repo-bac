@@ -1,3 +1,5 @@
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { Context } from "../../__types__";
 import { Config, configSchema } from "../config/config";
 
 // const configStaticSourceOk = {
@@ -62,7 +64,13 @@ describe("config", () => {
           provider: "git",
           options: {
             // b: 'b',
-            address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9'
+            context: {} as Context,
+            workingPath: '.',
+            workspacePath: addr.parsePath('.') as AddressPathAbsolute,
+            options: {
+              address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9',
+            }
+            // address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9'
           }
         },
       ],

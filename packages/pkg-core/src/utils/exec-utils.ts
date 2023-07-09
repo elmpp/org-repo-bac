@@ -44,6 +44,10 @@ export interface DoExecOptions extends Omit<ExecaOptions, "cwd"> {
   /** @see createStreams#streamVerbosity */
   streamVerbosity?: number;
 }
+export type DoExecOptionsLite = Omit<
+  DoExecOptions,
+  "context" | "cwd"
+> & {cwd?: AddressPathAbsolute}
 
 // type ErrorSpawnSetup = BacError<
 //   MessageName.EXEC_SPAWN_ERROR,
@@ -63,13 +67,14 @@ type ExecError = BacError<
  Launches node process. Handles output capturing and gives a promise-based approach
  */
 export async function doExec({
-  cmd,
+  command,
   options,
 }: {
-  cmd: string;
+  command: string;
   options: DoExecOptions;
-}): Promise<Result<{ outputs: Outputs; execa: ExecaReturnValue }, ExecError>> {
+}): Promise<Result<{ outputs: Outputs; execa: ExecaReturnValue }, {error: ExecError}>> {
   // }): Promise<{success: boolean, outputs: Outputs}> {
+
   const {
     context,
     // cwd,
@@ -121,7 +126,7 @@ export async function doExec({
     // shell: true,
     extendEnv: true,
     ...spawnOptions,
-    cwd: spawnOptions.cwd.original,
+    ...(spawnOptions.cwd ? {cwd: spawnOptions.cwd.original} : {})  as {cwd: string},
     // env: {
     //   ...filterAndStringifyEnvs({
     //     // ...toEnvironmentSettings(context.configuration.initialSettings), // pass along anything that was in this process's explicit initialSetting
@@ -152,7 +157,7 @@ export async function doExec({
   //   stdio,
   // };
 
-  const optionsAsCommand = (cmd: string, options: ExecaOptions): string => {
+  const optionsAsCommand = (command: string, options: ExecaOptions): string => {
     const blacklist = ['XPC_SERVICE_NAME'] as string[];
     const envs = Object.entries(options.env ?? {})
       .filter(([key, val]) => !blacklist.includes(key))
@@ -160,19 +165,19 @@ export async function doExec({
       .join(` `);
     if (options.shell) {
     }
-    return `(cd ${options.cwd}; ${envs} ${cmd};)`;
+    return `(cd ${options.cwd}; ${envs} ${command};)`;
   };
 
   await options.context.logger.debug(
     // MessageName.UNNAMED,
-    `DoExec: Command: '${cmd}'. Cwd: '${
+    `DoExec: Command: '${command}'. Cwd: '${
       spawnOptions.cwd.original
-    }'. Full cmd: '${optionsAsCommand(cmd, execaOptions)}'`
+    }'. Full command: '${optionsAsCommand(command, execaOptions)}'`
   );
 
   try {
     // Execa docs for 5.1.1 - https://tinyurl.com/2qefunlh
-    const execaResultPromise = execa(cmd, execaOptions)
+    const execaResultPromise = execa(command, execaOptions)
     // execaResultPromise.stdout!.pipe(process.stdout); // tie this into our debug somehow
     const execaResult = await execaResultPromise
     const successPayload = {
@@ -222,12 +227,12 @@ export async function doExec({
     //   }
     // );
 
-    return fail(execError);
+    return fail({error: execError});
   }
 }
 
 export async function doExecThrow(options: {
-  cmd: string;
+  command: string;
   options: DoExecOptions;
 }): Promise<{ execa: ExecaReturnValue; outputs: Outputs }> {
   const res = await doExec(options);
@@ -238,4 +243,9 @@ export async function doExecThrow(options: {
 
   // throw new Error('bollards')
   throw res.res;
+}
+
+export {
+  type ExecaReturnValue,
+  type execa, // required for dreaded, "reference required ts error"
 }

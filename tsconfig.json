@@ -28,6 +28,9 @@
       "path": "packages/plugin-core-git"
     },
     {
+      "path": "packages/plugin-core-package-manager-pnpm"
+    },
+    {
       "path": "packages/plugin-dev-changesets"
     },
     {

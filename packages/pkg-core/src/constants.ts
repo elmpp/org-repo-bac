@@ -23,6 +23,7 @@ export const constants = {
   WORKROOT_IDENT: `root`,
   DEFAULT_COMMITTER: 'no reply <no-reply@bac.com>',
   RC_FILENAME: 'bac.js',
+  NPM_RC_FILENAME: '.npmrc'
   // DEFAULT_COMMITTER_NAME: 'no reply',
   // DEFAULT_COMMITTER_EMAIL: 'no-reply@bac.com',
   // WORKING_PACKAGE_IDENT: '@monotonous/mnt-working', // name of the gitignored /packages/mnt-working package that all projects will have added
