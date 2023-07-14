@@ -1,5 +1,5 @@
 // import { ConfigureWorkspaceLifecycle } from "./configure-workspace-lifecycle";
-import { InitialiseWorkspaceLifecycle } from "./initialise-workspace-lifecycle";
+import { InitialiseWorkspaceCoreLifecycle } from "./initialise-workspace-core-lifecycle";
 import { RunWorkspaceMoonLifecycle } from "./run-workspace-moon-lifecycle";
 import { RunWorkspaceNodeLifecycle } from "./run-workspace-node-lifecycle";
 import { RunProjectNodeLifecycle } from "./run-project-node-lifecycle";
@@ -10,8 +10,8 @@ declare global {
     interface Lifecycles {
       core: {
         initialiseWorkspace: {
-          insType: InitialiseWorkspaceLifecycle;
-          staticType: typeof InitialiseWorkspaceLifecycle;
+          insType: InitialiseWorkspaceCoreLifecycle;
+          staticType: typeof InitialiseWorkspaceCoreLifecycle;
         };
       };
       moon: {
@@ -35,7 +35,7 @@ declare global {
 }
 
 export {
-  InitialiseWorkspaceLifecycle,
+  InitialiseWorkspaceCoreLifecycle,
   RunWorkspaceMoonLifecycle,
   RunWorkspaceNodeLifecycle,
   RunProjectNodeLifecycle,

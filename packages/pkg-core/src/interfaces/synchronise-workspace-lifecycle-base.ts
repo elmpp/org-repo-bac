@@ -29,22 +29,16 @@ export class SynchroniseWorkspaceLifecycleBase<
   static hooks = {
     beforeSynchroniseWorkspace: new AsyncHook<
       {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-        config?: Config;
+        config?: Config,
+        // unknown;
       },
       void,
       "synchroniseWorkspace"
     >(["options"], "synchroniseWorkspace", "beforeSynchroniseWorkspace"),
     synchroniseWorkspace: new AsyncHook<
       {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-        config?: Config;
+        config?: Config,
+        // unknown;
       },
       Result<
         {
@@ -57,13 +51,10 @@ export class SynchroniseWorkspaceLifecycleBase<
       "synchroniseWorkspace"
     >(["options"], "synchroniseWorkspace", "synchroniseWorkspace"),
     afterSynchroniseWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-        config?: Config;
-      },
+    {
+      config?: Config,
+      // unknown;
+    },
       void,
       "synchroniseWorkspace"
     >(["options"], "synchroniseWorkspace", "afterSynchroniseWorkspace"),
@@ -130,7 +121,7 @@ export class SynchroniseWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
+        // workingPath: string;
         options: any;
         config?: Config;
       }) => Promise<unknown>)
@@ -140,7 +131,7 @@ export class SynchroniseWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
+        // workingPath: string;
         options: any;
         config?: Config;
       }) => Promise<unknown>)
@@ -150,7 +141,7 @@ export class SynchroniseWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
+        // workingPath: string;
         options: any;
         config?: Config;
       }) => Promise<unknown>)

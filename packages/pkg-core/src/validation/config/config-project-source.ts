@@ -135,6 +135,9 @@ const commonProjectSourceSchema = z.object({
   // blah: z.number()
   active: z.boolean().optional(),
 })
+
+// type DDD = z.infer<typeof commonProjectSourceSchema>
+// type BBBB = LifecycleOptionsByMethodKeyedByProvider<'configureWorkspace'>
 // type BFE = z.infer<typeof commonProjectSourceSchema>
 export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace', commonProjectSourceSchema)
 // export const configProjectSourceConfigSchema = commonProjectSourceSchema

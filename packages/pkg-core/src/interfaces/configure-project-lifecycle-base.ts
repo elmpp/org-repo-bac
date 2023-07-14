@@ -29,10 +29,6 @@ export class ConfigureProjectLifecycleBase<
   static hooks = {
     beforeConfigureProject: new AsyncHook<
       {
-        context: Context;
-        projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
         config?: Config;
       },
       void,
@@ -41,10 +37,6 @@ export class ConfigureProjectLifecycleBase<
     /** configure project should coordinate configures at the project level */
     configureProject: new AsyncHook<
       {
-        context: Context;
-        projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
         config?: Config;
       },
       Result<
@@ -59,10 +51,6 @@ export class ConfigureProjectLifecycleBase<
     >(["options"], "configureProject", "configureProject"),
     afterConfigureProject: new AsyncHook<
       {
-        context: Context;
-        projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
         config?: Config;
       },
       void,

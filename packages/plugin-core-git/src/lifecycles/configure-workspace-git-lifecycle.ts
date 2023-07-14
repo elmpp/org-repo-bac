@@ -26,7 +26,7 @@ export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleB
     ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
+        // workingPath: string;
         config?: Config | undefined;
         options: {
           address: AddressUrlGitString, // standard git lifecycle has no callback semantics

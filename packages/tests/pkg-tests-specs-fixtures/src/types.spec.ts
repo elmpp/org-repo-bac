@@ -1,3 +1,4 @@
+import { AddressPathAbsolute } from "@business-as-code/address";
 import {
   Context,
   ContextCommand,
@@ -22,6 +23,7 @@ import {
   ServiceMap,
   Simplify,
   LifecycleMethods,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommon,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -158,6 +160,37 @@ describe("types", () => {
           | { provider: "git"; res: { b: "b" } }
         >();
       });
+      it("can derive a union of lifecycle option types with provider key without common options (context+workspacePath)", () => {
+        // type InitialiseWorkspaceInitialiseMethodMap =
+        type InitialiseWorkspaceOptions =
+        LifecycleOptionsByMethodKeyedByProviderWithoutCommon<"initialiseWorkspace">;
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
+        expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
+          | { provider: "core"; options: any }
+        >();
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toMatchTypeOf<
+          | { provider: "core"; options: { options: any } }
+        >();
+
+        type AllProviders =
+          LifecycleOptionsByMethodKeyedByProvider<LifecycleImplementedMethods>;
+        type NonImplementers = Extract<AllProviders, { options: never }>;
+        expectTypeOf<NonImplementers>().toBeNever();
+
+        expectTypeOf<keyof AllProviders>().toEqualTypeOf<
+          "options" | "provider" | "_method"
+        >();
+        expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
+        expectTypeOf<AllProviders["options"]>().not.toBeAny();
+
+        expectTypeOf<AllProviders['options']>().toMatchTypeOf<{
+          context: any
+          workspacePath: AddressPathAbsolute
+        }>() // all provider methods have these 3 properties
+        expectTypeOf<AllProviders['options']>().not.toMatchTypeOf<{
+          workingPath: string
+        }>() // workingPath should be within options.options as specific
+      });
       it("can derive a union of lifecycle option types with provider key 1", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
@@ -178,9 +211,14 @@ describe("types", () => {
         >();
         expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
         expectTypeOf<AllProviders["options"]>().not.toBeAny();
-        // expectTypeOf<AllProviders["options"]>().not.toMatchTypeOf<{
-        //   eriugheiug: "iwegfoaerfgw";
-        // }>();
+
+        expectTypeOf<AllProviders['options']>().toMatchTypeOf<{
+          context: any
+          workspacePath: AddressPathAbsolute
+        }>() // all provider methods have these 3 properties
+        expectTypeOf<AllProviders['options']>().not.toMatchTypeOf<{
+          workingPath: string
+        }>() // workingPath should be within options.options as specific
       });
       it("can derive a union of lifecycle option types with provider key 2", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
@@ -188,11 +226,14 @@ describe("types", () => {
           LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">;
         expectTypeOf<Options>().not.toBeAny();
 
+        // @ts-expect-error: no unused locals
         type MoonOptions = Extract<Options, {provider: 'moon'}>
+        // @ts-expect-error: no unused locals
         type MoonOptionsOptions = Extract<Options, {provider: 'moon'}>['options']
         type MoonOptionsOptionsOptions = Extract<Options, {provider: 'moon'}>['options']['options']
+        // @ts-expect-error: no unused locals
         type NodeOptions = Extract<Options, {provider: 'node'}>
-        type NodeOptionsOptions = Extract<Options, {provider: 'node'}>['options']
+        // type NodeOptionsOptions = Extract<Options, {provider: 'node'}>['options']
         type NodeOptionsOptionsOptions = Extract<Options, {provider: 'node'}>['options']['options']
 
         expectTypeOf<MoonOptionsOptionsOptions>().toMatchTypeOf<{
@@ -202,9 +243,9 @@ describe("types", () => {
         expectTypeOf<NodeOptionsOptionsOptions>().toMatchTypeOf<{
           execOptions: any
         }>()
-        expectTypeOf<NodeOptionsOptions>().not.toMatchTypeOf<{
-          workingPath: string // only on runProject
-        }>()
+        // expectTypeOf<NodeOptionsOptions>().not.toMatchTypeOf<{
+        //   workingPath: string // only on runProject
+        // }>()
 
         expectTypeOf<Options>().toMatchTypeOf<
           | { provider: "moon"; options: { options: {query?: string} } } // options should be specific to provider
@@ -214,8 +255,8 @@ describe("types", () => {
       });
       it(`accepts LifecycleAllMethods`, () => {
         const anyLifecycleMethod: LifecycleMethods = 'configureProject'
+        // @ts-expect-error: no unused locals
         type ReturnType = LifecycleReturnsByMethod<typeof anyLifecycleMethod>
-
       })
       it("can derive a union of lifecycle option types with provider key 3", () => {
 
@@ -226,6 +267,20 @@ describe("types", () => {
         expectTypeOf<OptionsProviders>().toMatchTypeOf<'packageManager'>
         expectTypeOf<OptionsProviders>().not.toMatchTypeOf<'packageManagerPnpm'>
       });
+      // it("can derive a union of lifecycle option types with the complex common properties removed", () => {
+
+      //   type Options = _LifecycleOptionsByMethodMinusComplex<LifecycleOptionsByMethodKeyedByProvider<'initialiseWorkspace'>> // e.g. async AsyncHook#callLifecycleBailAsync
+      //   expectTypeOf<Options>().not.toBeAny();
+      //   expectTypeOf<Options>().not.toEqualTypeOf<never>();
+
+      //   type OptionsOptions = Options['options']
+
+      //   expectTypeOf<OptionsOptions>().not.toMatchTypeOf<{context: any}>() // has removed the options.context complex input format
+      //   expectTypeOf<OptionsOptions>().toMatchTypeOf<{
+      //     workingPath: string
+      //     options: unknown
+      //   }>() // leaves other options intact
+      // });
       it("can derive a union of lifecycle option types in an array form", () => {
 
         const aLifecycleMethodNotImplemented: LifecycleMethods = 'configureProject' // ensures we still have a non-implemented lifecycle (to test the AsyncHook)

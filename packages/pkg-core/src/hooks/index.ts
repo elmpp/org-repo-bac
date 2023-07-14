@@ -327,7 +327,7 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 // }
 
 /** Same as Hook but marks the Hook async from the start */
-export class AsyncHook<TArgs, R, LMethod extends LifecycleMethods> extends Hook<
+export class AsyncHook<TArgs extends Record<string, unknown>, R, LMethod extends LifecycleMethods> extends Hook<
   TArgs,
   R,
   LMethod

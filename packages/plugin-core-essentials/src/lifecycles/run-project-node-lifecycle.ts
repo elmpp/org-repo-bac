@@ -18,8 +18,10 @@ export class RunProjectNodeLifecycle extends RunProjectLifecycleBase<
   override runProject(): (options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
-    workingPath: string;
+    // workingPath: string;
     options: {
+      workingPath: string;
+      projectPath: string;
       command: MoonCommand;
       execOptions: Omit<DoExecOptions, "context" | "cwd">;
     };
@@ -27,8 +29,12 @@ export class RunProjectNodeLifecycle extends RunProjectLifecycleBase<
     return async ({
       context,
       workspacePath,
-      workingPath,
-      options: { command, execOptions },
+      // workingPath,
+      options: {
+        workingPath,
+        command,
+        execOptions
+      },
     }) => {
 
       // const packageManagerService = context.serviceFactory('packageManager', {context, workingPath})

@@ -16,6 +16,7 @@ export class RunWorkspacePackageManagerPnpmLifecycle extends RunWorkspaceLifecyc
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
+        // workingPath: string;
         options: {
           command: string;
           filter?: string;

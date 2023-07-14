@@ -26,28 +26,18 @@ export class InitialiseWorkspaceLifecycleBase<
 
   static hooks = {
     beforeInitialiseWorkspace: new AsyncHook<{
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-      workingPath: string;
-      options: unknown;
-      // let's stack the options here as workspace-initialise will not be opened up to providers
       config: Config;
       configPath: string;
       cliVersion: string;
       cliRegistry: string;
+
     }, void, 'initialiseWorkspace'>(["options"], 'initialiseWorkspace', 'beforeInitialiseWorkspace'),
     initialiseWorkspace: new AsyncHook<
       {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-        // let's stack the options here as workspace-initialise will not be opened up to providers
-        name: string;
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
+      config: Config;
+      configPath: string;
+      cliVersion: string;
+      cliRegistry: string;
       },
       // } & LifecycleOptionsByProvider<'initialiseWorkspace'>,
       Result<
@@ -61,11 +51,6 @@ export class InitialiseWorkspaceLifecycleBase<
       'initialiseWorkspace'
     >(["options"], 'initialiseWorkspace', 'initialiseWorkspace'),
     afterInitialiseWorkspace: new AsyncHook<{
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-      workingPath: string;
-      options: unknown;
-      // let's stack the options here as workspace-initialise will not be opened up to providers
       config: Config;
       configPath: string;
       cliVersion: string;
@@ -133,14 +118,15 @@ export class InitialiseWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: any;
-        // let's stack the options here as workspace-initialise will not be opened up to providers
-        name: string;
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
+        // workingPath: string;
+        // options: {
+        //   name: string;
+        //   config: Config;
+        //   configPath: string;
+        //   cliVersion: string;
+        //   cliRegistry: string;
+        // }
+        options: any
       }) => Promise<unknown>)
     | undefined {
     return;
@@ -150,14 +136,15 @@ export class InitialiseWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: any;
-        // let's stack the options here as workspace-initialise will not be opened up to providers
-        name: string;
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
+        // workingPath: string;
+        // options: {
+        //   name: string;
+        //   config: Config;
+        //   configPath: string;
+        //   cliVersion: string;
+        //   cliRegistry: string;
+        // }
+        options: any
       }) => Promise<unknown>)
     | undefined {
     return;
@@ -167,14 +154,15 @@ export class InitialiseWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: any;
-        // let's stack the options here as workspace-initialise will not be opened up to providers
-        name: string;
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
+        // workingPath: string;
+        options: any
+        // options: {
+        //   name: string;
+        //   config: Config;
+        //   configPath: string;
+        //   cliVersion: string;
+        //   cliRegistry: string;
+        // }
       }) => Promise<unknown>)
     | undefined {
     return;

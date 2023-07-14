@@ -23,8 +23,8 @@ import { xfs } from "@business-as-code/fslib";
 //   }
 // }
 
-export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBase<
-  typeof InitialiseWorkspaceLifecycle
+export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecycleBase<
+  typeof InitialiseWorkspaceCoreLifecycle
 > {
   static override title = "core" as const;
 
@@ -35,19 +35,17 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
   override initialiseWorkspace(): (options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
-    workingPath: string;
+    // workingPath: string;
     options: {
-      a: 'a'
-    };
-    // options: unknown;
-    // let's stack the options here as workspace-initialise will not be opened up to providers
-    name: string,
-    config: Config;
-    configPath: string;
-    cliVersion: string;
-    cliRegistry: string;
+      // a: 'a'
+      name: string;
+      config: Config;
+      configPath: string;
+      cliVersion: string;
+      cliRegistry: string;
+    }
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
-    return async ({ context, workspacePath, workingPath, name, config, configPath, cliVersion, cliRegistry }) => {
+    return async ({ context, workspacePath, options: {name, config, configPath, cliVersion, cliRegistry} }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
         const workspacePathParent = addr.pathUtils.dirname(workspacePath);
         if (!(await xfs.existsPromise(workspacePathParent.address))) {
@@ -61,7 +59,7 @@ export class InitialiseWorkspaceLifecycle extends InitialiseWorkspaceLifecycleBa
 
       const schematicsService = await context.serviceFactory("schematics", {
         context,
-        workingPath,
+        workingPath: '.',
       });
 
       // console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);

@@ -50,7 +50,11 @@ export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
       context,
       workspacePath,
       // workingPath,
-      options: { query, platform, command },
+      options: {
+        query,
+        platform,
+        command
+      },
     }) => {
       // if (!(await xfs.existsPromise(workspacePath.address))) {
       //   const workspacePathParent = addr.pathUtils.dirname(workspacePath);

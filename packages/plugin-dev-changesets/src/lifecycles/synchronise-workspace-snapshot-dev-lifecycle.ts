@@ -17,6 +17,7 @@ export class SynchroniseWorkspaceSnapshotDevLifecycle extends SynchroniseWorkspa
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
+        // workingPath: string;
         options: {
           query?: string;
           message: string;

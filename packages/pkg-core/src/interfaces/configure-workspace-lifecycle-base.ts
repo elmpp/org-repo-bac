@@ -2,7 +2,6 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
 import { AsyncHook } from "../hooks";
-import { Config } from "../validation";
 import {
   assertIsResult,
   Context,
@@ -10,7 +9,7 @@ import {
   LifecycleOptionsByMethodKeyedByProvider,
   LifecycleReturnsByMethod,
   LifecycleStaticInterface,
-  Result,
+  Result
 } from "../__types__";
 
 /**
@@ -22,7 +21,7 @@ export class ConfigureWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof ConfigureWorkspaceLifecycleBase<any>
 > {
   static lifecycleTitle = "configureWorkspace" as const;
-  static title = "";
+  static title = " ";
 
   get ctor(): T {
     return this.constructor as unknown as T;
@@ -33,25 +32,13 @@ export class ConfigureWorkspaceLifecycleBase<
 
   static hooks = {
     beforeConfigureWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        // config: Config;
-        options: Record<string, never>;
-      },
+      {},
       void,
       "configureWorkspace"
     >(["options"], "configureWorkspace", "beforeConfigureWorkspace"),
     /** configure workspace should coordinate configures at the project level */
     configureWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        // config: Config;
-        options: Record<string, never>;
-      },
+      {},
       Result<
         {
           destinationPath: AddressPathAbsolute;
@@ -79,13 +66,7 @@ export class ConfigureWorkspaceLifecycleBase<
     //   >
     // >(["options"]),
     afterConfigureWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        // config: Config;
-        options: Record<string, never>;
-      },
+      {},
       void,
       "configureWorkspace"
     >(["options"], "configureWorkspace", "afterConfigureWorkspace"),
@@ -154,8 +135,8 @@ export class ConfigureWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        config: Config;
+        // workingPath: string;
+        // config: Config;
         options: any;
       }) => Promise<unknown>)
     | undefined {
@@ -166,8 +147,8 @@ export class ConfigureWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        config: Config;
+        // workingPath: string;
+        // config: Config;
         options: any;
       }) => Promise<unknown>)
     | undefined {
@@ -178,8 +159,8 @@ export class ConfigureWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        config: Config;
+        // workingPath: string;
+        // config: Config;
         options: any;
       }) => Promise<unknown>)
     | undefined {

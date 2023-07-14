@@ -62,22 +62,12 @@ export class RunWorkspaceLifecycleBase<
 
   static hooks = {
     beforeRunWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        // workingPath: string;
-        options: unknown;
-      },
+      {},
       void,
       "runWorkspace"
     >(["options"], "runWorkspace", "beforeRunWorkspace"),
     runWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        // workingPath: string;
-        options: unknown;
-      },
+      {},
       Result<
         {
           destinationPath: AddressPathAbsolute;
@@ -89,12 +79,7 @@ export class RunWorkspaceLifecycleBase<
       "runWorkspace"
     >(["options"], "runWorkspace", "runWorkspace"),
     afterRunWorkspace: new AsyncHook<
-      {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        // workingPath: string;
-        options: unknown;
-      },
+      {},
       void,
       "runWorkspace"
     >(["options"], "runWorkspace", "afterRunWorkspace"),
@@ -217,6 +202,7 @@ export class RunWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
+        // workingPath: string;
         options: any;
       }) => Promise<unknown>)
     | void {}
@@ -225,6 +211,7 @@ export class RunWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
+        // workingPath: string;
         options: any;
       }) => Promise<unknown>)
     | void {}
@@ -233,7 +220,7 @@ export class RunWorkspaceLifecycleBase<
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        workingPath: string;
+        // workingPath: string;
         options: any;
       }) => Promise<unknown>)
     | void {}

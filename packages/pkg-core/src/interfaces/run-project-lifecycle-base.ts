@@ -60,22 +60,12 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
 
   static hooks = {
     beforeRunProject: new AsyncHook<
-      {
-        context: Context;
-        projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-      },
+      {},
       void,
       "runProject"
     >(["options"], "runProject", "beforeRunProject"),
     runProject: new AsyncHook<
-      {
-        context: Context;
-        projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-      },
+      {},
       Result<
         {
           destinationPath: AddressPathAbsolute;
@@ -87,12 +77,7 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
       "runProject"
     >(["options"], "runProject", "runProject"),
     afterRunProject: new AsyncHook<
-      {
-        context: Context;
-        projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: unknown;
-      },
+      {},
       void,
       "runProject"
     >(["options"], "runProject", "afterRunProject"),
@@ -199,7 +184,7 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        projectPath: AddressPathAbsolute;
+        // projectPath: AddressPathAbsolute;
         workingPath: string;
         options: any;
       }) => Promise<unknown>)
@@ -209,7 +194,7 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        projectPath: AddressPathAbsolute;
+        // projectPath: AddressPathAbsolute;
         workingPath: string;
         options: any;
       }) => Promise<unknown>)
@@ -219,7 +204,7 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
     | ((options: {
         context: Context;
         workspacePath: AddressPathAbsolute;
-        projectPath: AddressPathAbsolute;
+        // projectPath: AddressPathAbsolute;
         workingPath: string;
         options: any;
       }) => Promise<unknown>)

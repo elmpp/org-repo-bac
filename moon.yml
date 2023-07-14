@@ -126,6 +126,7 @@ tasks:
     platform: 'node'
     options:
       runFromWorkspaceRoot: true
+      affectedFiles: true
     # local: true
     # options:
       # persistent: true # disables moon caching etc

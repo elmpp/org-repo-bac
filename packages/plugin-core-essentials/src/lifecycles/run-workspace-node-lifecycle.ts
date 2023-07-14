@@ -36,6 +36,7 @@ export class RunWorkspaceNodeLifecycle extends RunWorkspaceLifecycleBase<
   override runWorkspace(): (options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
+    // workingPath: string;
     options: {
       command: MoonCommand;
       execOptions: Omit<DoExecOptions, "context" | "cwd">;
@@ -103,5 +104,6 @@ export class RunWorkspaceNodeLifecycle extends RunWorkspaceLifecycleBase<
     };
   }
 }
+
 
 // type DDD = Bac.Lifecycles['runWorkspace']['insType']['runWorkspace']

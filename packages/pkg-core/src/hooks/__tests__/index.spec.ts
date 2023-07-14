@@ -122,10 +122,12 @@ describe("Hook", () => {
     });
     it("can be inferred", async () => {
       type Options = {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
-        workingPath: string;
-        options: {a: 'a'};
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        // workingPath: string;
+        // options: {
+          a: 'a'
+        // };
       };
       type Return = Result<
         {

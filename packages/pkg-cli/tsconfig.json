@@ -20,6 +20,9 @@
       "path": "../plugin-core-package-manager-pnpm"
     },
     {
+      "path": "../plugin-core-package-manager-yarn"
+    },
+    {
       "path": "../plugin-dev-changesets"
     },
     {
@@ -60,6 +63,12 @@
       ],
       "@business-as-code/plugin-core-package-manager-pnpm/*": [
         "../plugin-core-package-manager-pnpm/src/*"
+      ],
+      "@business-as-code/plugin-core-package-manager-yarn": [
+        "../plugin-core-package-manager-yarn/src/index.ts"
+      ],
+      "@business-as-code/plugin-core-package-manager-yarn/*": [
+        "../plugin-core-package-manager-yarn/src/*"
       ],
       "@business-as-code/plugin-dev-changesets": [
         "../plugin-dev-changesets/src/index.ts"

@@ -4,7 +4,7 @@ import { Plugin } from "@business-as-code/core";
 import { MyService, YourService } from "./services";
 // import {InitialiseWorkspaceLifecycle, ConfigureWorkspaceLifecycle} from './lifecycles'
 import {
-  InitialiseWorkspaceLifecycle,
+  InitialiseWorkspaceCoreLifecycle,
   RunWorkspaceMoonLifecycle,
   RunWorkspaceNodeLifecycle,
   RunProjectNodeLifecycle,
@@ -13,7 +13,7 @@ import {
 export const plugin = {
   services: [YourService, MyService],
   lifecycles: [
-    InitialiseWorkspaceLifecycle,
+    InitialiseWorkspaceCoreLifecycle,
     RunWorkspaceMoonLifecycle,
     RunWorkspaceNodeLifecycle,
     RunProjectNodeLifecycle,

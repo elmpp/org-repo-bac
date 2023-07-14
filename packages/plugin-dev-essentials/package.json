@@ -33,7 +33,7 @@
     "@angular-devkit/schematics": "*",
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
-    "@business-as-code/error": "workspace:0.0.0-bollards-20230602074801",
+    "@business-as-code/error": "workspace:*",
     "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {

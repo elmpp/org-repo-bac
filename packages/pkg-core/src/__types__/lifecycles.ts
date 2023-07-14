@@ -231,6 +231,17 @@ type LifecycleOptionsByProviderMap = {
     };
   };
 };
+type LifecycleOptionsWithoutCommonByProviderMap = {
+  [ALMethod in _LifecycleAllMethods]: {
+    [ALProvider in _LifecycleAllProviders]: {
+      provider: ALProvider;
+      _method?: ALMethod;
+      options: LifecycleMethodType<ALMethod, ALProvider> extends never
+        ? never
+        : LifecycleOptionsType<LifecycleMethodType<ALMethod, ALProvider>>['options'];
+    };
+  };
+};
 
 // just the options.options
 // type LifecycleOptionsByProviderMap = {
@@ -244,6 +255,8 @@ type LifecycleOptionsByProviderMap = {
 //     };
 //   };
 // };
+
+// export type _LifecycleOptionsByMethodMinusComplex<T extends {provider: string, options: {context: Context}}> = Omit<T, 'options'> & {options: Omit<T['options'], 'context'>}
 
 export type LifecycleReturnsByMethod<
   LMethod extends LifecycleMethods = LifecycleMethods
@@ -267,6 +280,12 @@ export type LifecycleOptionsByMethodKeyedByProvider<
   ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
   { options: never }
 >;
+export type LifecycleOptionsByMethodKeyedByProviderWithoutCommon<
+  LMethod extends LifecycleMethods = LifecycleMethods
+> = Extract<Exclude<
+  ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
+  { options: never }
+>, {options: any}>;
 export type LifecycleOptionsByMethodKeyedByProviderArray<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
@@ -340,7 +359,7 @@ type LifecycleOptionsType<
       Parameters<NonNullable<ReturnType<T>>>[0]["options"]
     >
     ? Record<string, never>
-    : Parameters<NonNullable<ReturnType<T>>>[0]
+    : Parameters<NonNullable<ReturnType<T>>>[0] // note that we omit the complex common types
   : // : Parameters<ReturnType<T>>[0]["options"]
     Record<string, never>; // we use the convention of providers needing their tapable options through .options
 
