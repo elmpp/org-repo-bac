@@ -5,7 +5,10 @@
   "private": true,
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && jasmine src/**/*_spec.js"
+    "test": "npm run build && jasmine src/**/*_spec.js",
+    <% if (cliPath) { %>
+    "bac": "bac-test"
+    <% } %>
   },
   "keywords": [
     "schematics"
@@ -13,7 +16,7 @@
   "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@business-as-code/cli": "<%= cliVersion %>",
+    "@business-as-code/cli": "<%= cliPath ? `link:` + cliPath : cliVersion %>",
     "@moonrepo/cli": "*"
   },
   "devDependencies": {

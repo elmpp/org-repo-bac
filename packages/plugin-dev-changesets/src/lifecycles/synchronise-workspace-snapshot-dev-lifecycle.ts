@@ -7,6 +7,10 @@ import {
 
 /**
  Builds the dev workspace (i.e. this repo), creates a snapshot changeset and publishes to local repository
+
+ THIS WORKFLOW IS SUITABLE FOR RUNNING BEFORE RELEASE BUT NOT DURING DEVELOPMENT DUE TO
+ INABILITY TO KNOW WHICH FILES HAVE CHANGED WITH `moon touched-files --local` etc.
+ THEREFORE THIS SHOULD BE RAN IN A STAGE0 TESTS RUNNABLE ON RELEASE, NOT SNAPSHOT
  */
 export class SynchroniseWorkspaceSnapshotDevLifecycle extends SynchroniseWorkspaceLifecycleBase<
   typeof SynchroniseWorkspaceSnapshotDevLifecycle

@@ -1,18 +1,18 @@
 {
   "schematics": {
     "changeset-generate": {
-      "factory": "./src/schematics/changeset-generate/factory",
-      "schema": "./src/schematics/changeset-generate/schema.json",
+      "factory": "./dist/schematics/changeset-generate/factory",
+      "schema": "./dist/schematics/changeset-generate/schema.json",
       "description": "Create a changeset file"
     }
     // "synchronise-workspace": {
-    //   "factory": "./src/schematics/synchronise-workspace/factory",
-    //   "schema": "./src/schematics/synchronise-workspace/schema.json",
+    //   "factory": "./dist/schematics/synchronise-workspace/factory",
+    //   "schema": "./dist/schematics/synchronise-workspace/schema.json",
     //   "description": "Applies configuration to a workspace"
     // },
     // "blank": {
-    //   "factory": "./src/schematics/blank/factory",
-    //   "schema": "./src/schematics/blank/schema.json",
+    //   "factory": "./dist/schematics/blank/factory",
+    //   "schema": "./dist/schematics/blank/schema.json",
     //   "description": "Create an empty schematic project or add a blank schematic to the current project."
     // },
     // "my-schematic": {

@@ -115,6 +115,8 @@ type PersistentTestEnvVars = {
 
   /** path to the root of this repository instance */
   checkoutPath: AddressPathAbsolute;
+  /** path to the cli package root of this repository instance */
+  checkoutCliPath: AddressPathAbsolute;
   /** path to the pkg-test-specs-fixtures package root */
   fixturesPath: AddressPathAbsolute;
   // /** the mntCwd of this repository instance (mntPath = path to the mnt.ts folder). See main-cli options for mntCwd info */
@@ -272,6 +274,10 @@ const checkoutPath = addr.pathUtils.resolve(
   // addr.parsePPath('../../../mnt-pkg-cli/src/bin')
   addr.parsePPath("../../../..")
 ) as AddressPathAbsolute;
+const checkoutCliPath = addr.pathUtils.join(
+  checkoutPath,
+  addr.parsePath('packages/pkg-cli')
+) as AddressPathAbsolute;
 
 async function doCreatePersistentTestEnvs(
   createPersistentTestEnvVars: CreatePersistentTestEnvVars
@@ -368,6 +374,7 @@ async function doCreatePersistentTestEnvs(
     // savePath: createTestEnvVars.savePath?.({testsPath, cachePath, fixturesPath}),
 
     checkoutPath,
+    checkoutCliPath,
     // checkoutMntCwd,
     basePath,
     cachePath,

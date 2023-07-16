@@ -299,6 +299,7 @@ export class SchematicsResettableHostTree extends HostTree {
         case "o": {
           const { path, content } = action;
           if (this._willDelete(path) && !overwriteConflictAllowed) {
+            console.log(`:>> mergeConflictException overwriting::deleting`);
             throw new MergeConflictException(path);
           }
 
@@ -311,6 +312,7 @@ export class SchematicsResettableHostTree extends HostTree {
             }
 
             if (!overwriteConflictAllowed) {
+              console.log(`:>> mergeConflictException overwriting::overwriting`);
               throw new MergeConflictException(path);
             }
           }
@@ -327,6 +329,7 @@ export class SchematicsResettableHostTree extends HostTree {
         case "r": {
           const { path, to } = action;
           if (this._willDelete(path)) {
+            console.log(`:>> mergeConflictException renaming::deleting`);
             throw new MergeConflictException(path);
           }
 
@@ -338,6 +341,7 @@ export class SchematicsResettableHostTree extends HostTree {
             }
 
             // No override possible for renaming.
+            console.log(`:>> mergeConflictException renaming::renaming`);
             throw new MergeConflictException(path);
           }
           this.rename(path, to);
@@ -354,6 +358,7 @@ export class SchematicsResettableHostTree extends HostTree {
           }
 
           if (!this.exists(path) && !deleteConflictAllowed) {
+            console.log(`:>> mergeConflictException deleting::deleting`);
             throw new MergeConflictException(path);
           }
 

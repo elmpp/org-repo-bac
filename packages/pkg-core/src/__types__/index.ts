@@ -8,7 +8,7 @@ import {
   FlagsInfer,
 } from "../commands/base-command";
 import { ConfigureWorkspaceLifecycleBase, InitialiseWorkspaceLifecycleBase, RunProjectLifecycleBase, RunWorkspaceLifecycleBase, SynchroniseWorkspaceLifecycleBase } from "../interfaces";
-import { ConfigureProjectLifecycleBase } from "../interfaces/configure-project-lifecycle-base";
+import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 // import { Lifecycles } from "../lifecycles";
 import { LifecycleStaticInterface } from "./lifecycles";
 import {

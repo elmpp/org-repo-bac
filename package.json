@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "husky install;",
     "test": "moon run :test",
-    "dev:runCli": "TS_NODE_DEBUG=false ts-node --project ./tsconfig.json packages/pkg-cli/src/bin/dev.ts",
+    "dev:runCli": "TS_NODE_DEBUG=false ts-node --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "dev:runTask": "moon run --concurrency 1"
   },
   "keywords": [],

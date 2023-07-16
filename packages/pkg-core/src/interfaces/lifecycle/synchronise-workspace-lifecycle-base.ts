@@ -1,8 +1,8 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../hooks";
-import { Config } from "../validation";
+import { AsyncHook } from "../../hooks";
+import { Config } from "../../validation";
 import {
   assertIsResult,
   Context,
@@ -11,7 +11,7 @@ import {
   LifecycleReturnsByMethod,
   LifecycleStaticInterface,
   Result,
-} from "../__types__";
+} from "../../__types__";
 
 export class SynchroniseWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof SynchroniseWorkspaceLifecycleBase<any>

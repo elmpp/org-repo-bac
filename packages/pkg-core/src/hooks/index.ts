@@ -232,8 +232,14 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
         );
 
         try {
-          // eslint-disable-next-line no-await-in-loop
-          res = await fn(anOptions.options);
+          const fnRes = await fn(anOptions.options);
+          if (fnRes) {
+            // @ts-ignore
+            res = {
+              provider: nameOrProvider,
+              res: fnRes,
+            }
+          }
         } catch (error) {
           this._handleError(nameOrProvider, error as Error);
         }

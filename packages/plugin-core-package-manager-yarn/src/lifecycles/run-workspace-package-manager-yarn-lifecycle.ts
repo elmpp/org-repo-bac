@@ -24,7 +24,8 @@ export class RunWorkspacePackageManagerYarnLifecycle extends RunWorkspaceLifecyc
         };
       }) => ReturnType<typeof execUtils.doExec>)
     | undefined {
-    console.log(`:>> inside the yarn lifecycle`);
+    // console.log(`:>> inside the yarn lifecycle`);
+
     return;
 
     return async ({

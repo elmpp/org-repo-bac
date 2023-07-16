@@ -1,14 +1,13 @@
 import { strings } from "@angular-devkit/core";
 import {
-  apply,
-  chain, mergeWith,
+  apply, chain, forEach, MergeStrategy, mergeWith,
   Rule,
   schematic,
-  template,
-  url
+  TaskId,
+  template, url
 } from "@angular-devkit/schematics";
 import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
-import { constants, expectIsOk, schematicUtils } from "@business-as-code/core";
+import { constants, expectIsOk, formatUtils, schematicUtils } from "@business-as-code/core";
 import { Schema } from "./schema";
 
 export default function (options: Schema): Rule {
@@ -28,13 +27,55 @@ export default function (options: Schema): Rule {
         dot: ".",
         dasherize: strings.dasherize,
       }),
+      forEach(fileEntry => {
+        if (!fileEntry.path.match(/.*\.json$/)) {
+          return fileEntry
+        }
+        console.log(`fileEntry :>> `, fileEntry, fileEntry.path, fileEntry.path.match(/.*\.json$/))
+
+        return {
+          path: fileEntry.path,
+          content: Buffer.from(formatUtils.JSONNormalize(fileEntry.content.toString(), true))
+        }
+      })
+      // (tree: Tree) => {
+      //   // tree.create(options.path + '/hi', 'Hello world!');
+      //   tree.for
+      //   return tree;
+      // };
       // ),
       // move(destinationPath),
     ]);
 
-    const pmTaskHandle = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.',  quiet: false, hideOutput: false, packageManager: 'pnpm'}), []);
+    let nextTaskHandles: TaskId[] = []
+
+    if (options.cliPath) {
+      // cliPath is handled within the package.json.ejs but we want to swap its bin location, so that the checkoutCli bac-test binary is called
+
+
+
+      // nextTaskHandles.push(schematicContext.addTask(schematicUtils.wrapServiceAsTask({
+      //   serviceOptions: {
+      //     serviceName: "packageManager",
+      //     cb: async ({ service }) => {
+      //       // console.log(`optionseeeee :>> `, require('util').inspect(options, {showHidden: false, depth: undefined, colors: true}))
+      //       await service.link({path: options.cliPath!})
+      //     },
+      //     initialiseOptions: {
+      //       workingPath: '.',
+      //     },
+      //     context: options._bacContext,
+      //   },
+      //   schematicContext,
+      // }), nextTaskHandles));
+    }
+
+    nextTaskHandles.push(schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.',  quiet: false, hideOutput: false, packageManager: 'pnpm'}), nextTaskHandles));
     // const pmTaskHandle2 = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
     // const addDepTaskHandle = schematicContext.addTask(new NodePackageInstallTask({packageName: '@business-as-code/cli', workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
+
+
+
 
     schematicContext.addTask(schematicUtils.wrapServiceAsTask({
       serviceOptions: {
@@ -48,10 +89,10 @@ export default function (options: Schema): Rule {
         context: options._bacContext,
       },
       schematicContext,
-    }), [pmTaskHandle]);
+    }), nextTaskHandles);
 
     return chain([
-      mergeWith(baseTemplateSource),
+      mergeWith(baseTemplateSource, MergeStrategy.Overwrite),
 
       // schematicUtils.branchMerge(
       //   schematicUtils.wrapServiceAsRule({
@@ -95,7 +136,7 @@ export default function (options: Schema): Rule {
       (
         tree, schematicContext
       ) => {
-        console.log(`options.configPath, constants.RC_FILENAME :>> `, options.configPath, constants.RC_FILENAME)
+        // console.log(`options.configPath, constants.RC_FILENAME :>> `, options.configPath, constants.RC_FILENAME)
         schematicUtils.copy(
           options.configPath,
           constants.RC_FILENAME,
@@ -107,10 +148,11 @@ export default function (options: Schema): Rule {
       // mergeWith(apply(url(options.configPath), [
       //   move(constants.RC_FILENAME),
       // ])),
-      schematicUtils.debugRule({context: options._bacContext,
-        initialiseOptions: {
-          workingPath: '.',
-        },}),
+
+      // schematicUtils.debugRule({context: options._bacContext,
+      //   initialiseOptions: {
+      //     workingPath: '.',
+      //   },}),
 
       // wrapTaskAsRule(
       //   // new RepositoryInitializerTask(".", {

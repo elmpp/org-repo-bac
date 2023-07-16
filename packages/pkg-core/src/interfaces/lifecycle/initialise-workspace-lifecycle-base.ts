@@ -1,15 +1,15 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../hooks";
-import { Config } from "../validation";
+import { AsyncHook } from "../../hooks";
+import { Config } from "../../validation";
 import {
   assertIsResult,
   Context,
   ContextCommand, LifecycleOptionsByMethodKeyedByProvider, LifecycleReturnsByMethod,
   LifecycleStaticInterface,
   Result
-} from "../__types__";
+} from "../../__types__";
 
 export class InitialiseWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof InitialiseWorkspaceLifecycleBase<any>
@@ -30,6 +30,7 @@ export class InitialiseWorkspaceLifecycleBase<
       configPath: string;
       cliVersion: string;
       cliRegistry: string;
+      cliPath?: string;
 
     }, void, 'initialiseWorkspace'>(["options"], 'initialiseWorkspace', 'beforeInitialiseWorkspace'),
     initialiseWorkspace: new AsyncHook<
@@ -38,6 +39,7 @@ export class InitialiseWorkspaceLifecycleBase<
       configPath: string;
       cliVersion: string;
       cliRegistry: string;
+      cliPath?: string;
       },
       // } & LifecycleOptionsByProvider<'initialiseWorkspace'>,
       Result<
@@ -55,6 +57,7 @@ export class InitialiseWorkspaceLifecycleBase<
       configPath: string;
       cliVersion: string;
       cliRegistry: string;
+      cliPath?: string;
     }, void, 'initialiseWorkspace'>(["options"], 'initialiseWorkspace', 'afterInitialiseWorkspace'),
   };
 
@@ -106,7 +109,7 @@ export class InitialiseWorkspaceLifecycleBase<
         strict: true,
   });
 
-    assertIsResult(res);
+  assertIsResult(res.res); // wrapped in provider
 
     await InitialiseWorkspaceLifecycleBase.hooks.afterInitialiseWorkspace.callLifecycleBailAsync({
       options

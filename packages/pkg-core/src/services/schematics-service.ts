@@ -155,18 +155,25 @@ export class SchematicsService {
   ) {
     // console.log(`options :>> `, options)
 
-    /** we can skip the resolving of plugins after initial instance.
-     * Also, it is necessary when calling to .runSchematic for workflow.engine to be consistent
-     * */
-    if (prevInstance) {
-      this.workflow = prevInstance.workflow;
-      this.schematicsMap = prevInstance.schematicsMap;
-    } else {
-      const { workflow, schematicsMap } = await this.setupSchematics(options);
-      this.workflow = workflow;
-      this.schematicsMap = schematicsMap;
-      this.registerTasks({ workflow: this.workflow });
-    }
+//     /** we can skip the resolving of plugins after initial instance.
+//      * Also, it is necessary when calling to .runSchematic for workflow.engine to be consistent
+//      * */
+//     if (false && prevInstance) { // NOT WORKING when running tests in a row
+//       this.workflow = prevInstance.workflow;
+//       this.schematicsMap = prevInstance.schematicsMap;
+// console.log(`:>> schematics service being reused`);
+
+//     } else {
+//       const { workflow, schematicsMap } = await this.setupSchematics(options);
+//       this.workflow = workflow;
+//       this.schematicsMap = schematicsMap;
+//       this.registerTasks({ workflow: this.workflow });
+//     }
+
+    const { workflow, schematicsMap } = await this.setupSchematics(options);
+    this.workflow = workflow;
+    this.schematicsMap = schematicsMap;
+    this.registerTasks({ workflow: this.workflow });
 
     // console.log(`this.options schematics :>> `, this.options)
 
@@ -592,8 +599,10 @@ export class SchematicsService {
       // if (options.shell) {
       // }
       // return `(cd ${context.workspacePath.original}; p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} ${Object.values(objectMapAndFilter(schematicsOptions, (v, k) => `--${k}=${v}`))})`;
-      const schematicOptionsJson = JSON.stringify(Object.keys(options)) // sans _bacContext
-      // const schematicOptionsJson = JSON.stringify(options) // sans _bacContext
+      // const schematicOptionsJson = JSON.stringify(Object.keys(options)) // sans _bacContext
+      // const optionsAsFlags = Object.entries(options).map(([k, v]) => `--${k} ${v}`).join(' ')
+      const schematicOptionsJson = JSON.stringify(options) // sans _bacContext
+      // return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} ${optionsAsFlags}`;
       return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} --schematicOptions='${schematicOptionsJson}'`;
     };
     context.logger.debug(
@@ -1365,6 +1374,7 @@ console.log(`err :>> `, err)
       ...options,
       // logger,
     });
+
     const workflow = this.createWorkflow({
       schematicsCollectionMap: schematicsCollectionsMap,
       // logger,

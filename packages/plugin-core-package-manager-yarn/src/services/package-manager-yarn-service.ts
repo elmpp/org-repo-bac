@@ -1,13 +1,10 @@
 import {
-  constants,
-  DoExecOptionsLite,
-  execUtils,
-  LifecycleProvidersForAsByMethod,
+  BasePackageManagerService, LifecycleProvidersForAsByMethod,
   ServiceInitialiseCommonOptions,
+  execUtils as _execUtils,
 } from "@business-as-code/core";
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { xfs } from "@business-as-code/fslib";
 import { BacError as _BacError } from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
 
 declare global {
   namespace Bac {
@@ -27,9 +24,11 @@ type Options = ServiceInitialiseCommonOptions & {
   >;
 };
 
-export class PackageManagerYarnService {
+export class PackageManagerYarnService extends BasePackageManagerService<Options> {
   static title = "packageManagerYarn" as const;
   static as = "packageManager" as const;
+
+  cliName = 'yarn'
 
   // options: Options;
 
@@ -63,76 +62,10 @@ export class PackageManagerYarnService {
     return ins;
   }
 
-  constructor(protected options: Options) {
-    // this.options = options;
-  }
-
-  protected static getWorkingDestinationPath(
-    options: Options
-  ): AddressPathAbsolute {
-    return addr.pathUtils.join(
-      options.workspacePath,
-      addr.parsePath(options.workingPath ?? ".")
-    ) as AddressPathAbsolute;
-  }
-
-  protected getNpmRcFilePath(): AddressPathAbsolute {
-    return addr.pathUtils.join(
-      this.options.workspacePath,
-      addr.parsePath(constants.NPM_RC_FILENAME)
-    ) as AddressPathAbsolute;
-  }
-
-  async login() {
+  async link({path}: {path: string}) {
     return this.run({
-      command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"${
-        this.getNpmRcFilePath().original
-      }\"`,
-      // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`
-      options: {
-        // shell: false
-        cwd: addr.packageUtils.resolveRoot({
-          address: addr.parsePackage(
-            `@business-as-code/plugin-core-package-manager-pnpm`,
-          ),
-          projectCwd: addr.parsePath(__filename) as AddressPathAbsolute,
-          }),
-        // cwd: addr.pathUtils.resolve(addr.parsePath(__filename), addr.parsePath('../../../')),
-      },
+      command: `link ${path}`,
     });
   }
 
-  async run(options: {
-    command: string;
-    options?: DoExecOptionsLite;
-  }): ReturnType<typeof execUtils.doExec>;
-  async run(options: {
-    command: string;
-    options: DoExecOptionsLite;
-  }): ReturnType<typeof execUtils.doExec>;
-  async run(options: {
-    command: string;
-    options?: DoExecOptionsLite;
-  }): Promise<any> {
-    const args = {
-      command: `pnpm ${options.command}`,
-      options: {
-        shell: true,
-        ...(options.options ?? {}),
-        context: this.options.context,
-        cwd: addr.pathUtils.join(
-          this.options.workspacePath,
-          addr.parsePath(this.options.workingPath)
-        ) as AddressPathAbsolute,
-      },
-    };
-
-    // if (options.options?.throwOnFail) {
-    //   return doExecThrow(args);
-    // }
-    return execUtils.doExec(args);
-  }
-
-  static something() {}
-  async somethingelse() {}
 }

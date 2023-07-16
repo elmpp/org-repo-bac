@@ -1,6 +1,6 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { AsyncHook } from "../hooks";
+import { AsyncHook } from "../../hooks";
 // import { AsyncSeriesBailHook, AsyncSeriesHook, Hook } from "tapable";
 import {
   assertIsResult,
@@ -10,7 +10,7 @@ import {
   LifecycleReturnsByMethod,
   LifecycleStaticInterface,
   Result,
-} from "../__types__";
+} from "../../__types__";
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */

@@ -31,6 +31,8 @@ module.exports = {
     // '<rootDir>/packages/mnt-pkg-fslib-extra/fixtures',
     // '<rootDir>/packages/tests/packages/tests-fixtures',
     '<rootDir>/.moon',
+    'schematics/.*/files', // picks up the schematic package.json files otherwise
+    // '<rootDir>/packages/*/*/schematics',
   ],
 
   testEnvironment: 'node',

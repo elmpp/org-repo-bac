@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/cli",
-  "version": "0.0.0-bollards-20230602074801",
+  "version": "0.0.0-latest-20230716081621",
   "description": "Tool package @business-as-code/cli",
   "main": "src/index.ts",
   "files": [
@@ -26,7 +26,7 @@
   ],
   "bin": {
     "bac": "src/bin/run.ts",
-    "bac-test": "src/bin/dev.ts"
+    "bac-test": "src/bin/dev.js"
   },
   "dependencies": {
     "@business-as-code/core": "workspace:*",
@@ -65,6 +65,7 @@
     "devPlugins": [
       "@business-as-code/plugin-dev-tests",
       "@business-as-code/plugin-dev-changesets",
+      "@business-as-code/plugin-dev-essentials",
       "@oclif/plugin-plugins"
     ]
   }

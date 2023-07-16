@@ -1,33 +1,33 @@
 {
   "schematics": {
     "run-service-as-rule": {
-      "factory": "./src/schematics/run-service-as-rule/factory",
-      "schema": "./src/schematics/run-service-as-rule/schema.json",
+      "factory": "./dist/schematics/run-service-as-rule/factory",
+      "schema": "./dist/schematics/run-service-as-rule/schema.json",
       "description": "Allows running of an arbitrary service cb as a schematics rule"
     },
     "repositories-create": {
-      "factory": "./src/schematics/repositories-create/factory",
-      "schema": "./src/schematics/repositories-create/schema.json",
+      "factory": "./dist/schematics/repositories-create/factory",
+      "schema": "./dist/schematics/repositories-create/schema.json",
       "description": "Generates our git repositories"
     },
     "commit": {
-      "factory": "./src/schematics/commit/factory",
-      "schema": "./src/schematics/commit/schema.json",
+      "factory": "./dist/schematics/commit/factory",
+      "schema": "./dist/schematics/commit/schema.json",
       "description": "Make a commit through a separate schematic"
     },
     "init": {
-      "factory": "./src/schematics/init/factory",
-      "schema": "./src/schematics/init/schema.json",
+      "factory": "./dist/schematics/init/factory",
+      "schema": "./dist/schematics/init/schema.json",
       "description": "Make a init through a separate schematic"
     },
     "schematic-utils": {
-      "factory": "./src/schematics/schematic-utils/factory",
-      "schema": "./src/schematics/schematic-utils/schema.json",
+      "factory": "./dist/schematics/schematic-utils/factory",
+      "schema": "./dist/schematics/schematic-utils/schema.json",
       "description": "Tests our schematic bootstrapping and utils"
     },
     // "blank": {
-    //   "factory": "./src/schematics/blank/factory",
-    //   "schema": "./src/schematics/blank/schema.json",
+    //   "factory": "./dist/schematics/blank/factory",
+    //   "schema": "./dist/schematics/blank/schema.json",
     //   "description": "Create an empty schematic project or add a blank schematic to the current project."
     // },
     // "my-schematic": {

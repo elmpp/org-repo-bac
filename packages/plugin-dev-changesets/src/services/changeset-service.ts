@@ -88,6 +88,23 @@ export class ChangesetService {
     });
   }
 
+  async version({ tag, isSnapshot = false }: { tag?: string, isSnapshot?: boolean }) {
+    const { context } = this.options;
+    const packageManagerService = await context.serviceFactory(
+      "packageManager",
+      { context, workingPath: "." }
+    );
+    const command =
+      `changeset version ${isSnapshot ? ` --snapshot` : ""}${tag ? ` ${tag}` : ""}`;
+
+    const resPublish = await packageManagerService.run({
+      command,
+      options: {
+      },
+    });
+    return resPublish;
+  }
+
   async publish({ registry, tag }: { registry?: string; tag?: string }) {
     const { context } = this.options;
     const packageManagerService = await context.serviceFactory(

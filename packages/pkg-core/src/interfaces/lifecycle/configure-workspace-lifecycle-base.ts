@@ -1,7 +1,7 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../hooks";
+import { AsyncHook } from "../../hooks";
 import {
   assertIsResult,
   Context,
@@ -10,7 +10,7 @@ import {
   LifecycleReturnsByMethod,
   LifecycleStaticInterface,
   Result
-} from "../__types__";
+} from "../../__types__";
 
 /**
  the configure-workspace lifecycle acts upon a workspace's user configuration. It is responsible for
@@ -123,7 +123,8 @@ export class ConfigureWorkspaceLifecycleBase<
       await ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.callLifecycleBailAsync(
         { options, strict: true }
       );
-    console.log(`res :>> `, res);
+    // console.log(`res :>> `, res);
+
     assertIsResult(res);
     await ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.callLifecycleBailAsync(
       { options }

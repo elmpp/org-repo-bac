@@ -24,6 +24,10 @@
       "type": "string",
       "description": "Allows BaC to be built from a local registry if required",
     },
+    "cliPath": {
+      "type": "string",
+      "description": "Allows BaC to be linked from a local version via package manager link (dev use)",
+    },
     "_bacContext": {
       "type": "object",
       "description": "Ubiquitous bac context"

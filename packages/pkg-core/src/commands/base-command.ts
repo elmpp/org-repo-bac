@@ -34,7 +34,7 @@ import {
   RunWorkspaceLifecycleBase,
   SynchroniseWorkspaceLifecycleBase,
 } from "../interfaces";
-import { ConfigureProjectLifecycleBase } from "../interfaces/configure-project-lifecycle-base";
+import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 import { BacService, ExecService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
 import { objectUtils } from "../utils";
@@ -539,7 +539,7 @@ export abstract class BaseCommand<
         return serviceIns;
       };
 
-      console.log(`staticServiceArr :>> `, staticServiceArr);
+      // console.log(`staticServiceArr :>> `, staticServiceArr);
 
       const res = (
         await Promise.all(
@@ -558,7 +558,9 @@ export abstract class BaseCommand<
           `Service '${serviceName}' not found. Ensure you have installed relevant plugins`
         );
       }
-      console.log(`res :>> `, res);
+
+      // console.log(`res :>> `, res);
+
       return res[0]!;
     };
     factory["availableServices"] = Object.keys(
@@ -620,6 +622,8 @@ export abstract class BaseCommand<
     await this.initialisePlugins({ context });
 
     const res = await this.execute(context);
+
+    console.log(`res :>> `, res)
 
     if (!assertIsOk(res)) {
       const err = res.res.error;
@@ -838,7 +842,7 @@ export abstract class BaseCommand<
 
       throw new BacError(
         MessageName.WORKSPACE_CWD_UNRESOLVABLE,
-        `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?. Command supplied: '${this}'`
+        `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?.`
       );
     }
     let pathAddress: AddressPathAbsolute | AddressPathRelative = addr.parsePath(

@@ -1,5 +1,18 @@
 # @business-as-code/error
 
+## 0.0.0-latest-20230716081621
+
+### Patch Changes
+
+- this is a snapshot release
+- this is a snapshot release
+- this is a snapshot release
+- 972dca8: new message
+- this is a snapshot release
+- this is a snapshot release
+- 90b52aa: snapshot release
+- 90b52aa: new message
+
 ## 0.0.0-bollards-20230602074801
 
 ### Patch Changes

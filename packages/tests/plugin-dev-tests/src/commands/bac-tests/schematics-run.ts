@@ -151,6 +151,8 @@ export class BacTestsSchematicsRun extends BaseCommand<
       context,
       // workspacePath: context.workspacePath,
       workingPath: ".",
+      // force: true,
+      // dryRun: true,
     });
 
     const res = await schematicsService.runSchematic({

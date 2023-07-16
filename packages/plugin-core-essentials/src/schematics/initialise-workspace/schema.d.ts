@@ -4,5 +4,6 @@ export interface Schema {
   configPath: string,
   cliVersion: string
   cliRegistry: string
+  cliPath?: string
   _bacContext: import('@business-as-code/core').Context
 }

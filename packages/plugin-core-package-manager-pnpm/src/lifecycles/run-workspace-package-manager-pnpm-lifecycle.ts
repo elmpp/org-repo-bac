@@ -24,7 +24,8 @@ export class RunWorkspacePackageManagerPnpmLifecycle extends RunWorkspaceLifecyc
         };
       }) => ReturnType<typeof execUtils.doExec>)
     | undefined {
-    console.log(`:>> inside the pnpm lifecycle`);
+
+      // console.log(`:>> inside the pnpm lifecycle`);
 
     return async ({
       context,

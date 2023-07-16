@@ -35,6 +35,13 @@ Oclif commands
 
  - p moon run root:build -> not building: p tsc --build
 
+## Bookmarks
+
+  ### Angular
+
+   - template source code tests - https://github.com/angular/angular-cli/blob/main/packages/angular_devkit/schematics/src/rules/template_spec.ts#L140
+
+
 ## Tasks
 
 *General*

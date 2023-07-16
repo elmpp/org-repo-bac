@@ -1,5 +1,20 @@
 # @business-as-code/tests-verdaccio
 
+## 0.0.0-latest-20230716081621
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies [972dca8]
+- Updated dependencies
+- Updated dependencies
+- Updated dependencies [90b52aa]
+- Updated dependencies [90b52aa]
+  - @business-as-code/core@0.0.0-latest-20230716081621
+  - @business-as-code/fslib@0.0.0-latest-20230716081621
+
 ## 0.0.0-bollards-20230602074801
 
 ### Patch Changes

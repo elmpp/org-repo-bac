@@ -744,6 +744,7 @@ export function copy(
   }
 
   if (tree.exists(fromPath)) {
+
     schematicContext.logger.debug(
       `schematicUtils::copy: folder ${fromPath} being copied. fromPath: '${fromPath}' toPath: '${toPath}'`
     );
@@ -751,11 +752,24 @@ export function copy(
     // fromPath is a file
     tree.rename(fromPath, toPath);
   } else if (path.isAbsolute(from) && fs.existsSync(from)) {
+    // console.log(`:>> 222`);
     schematicContext.logger.debug(
       `schematicUtils::copy: file ${fromPath} being copied from outside the tree. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
-    tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
-  } else {
+      );
+      console.log(`schematicContext.strategy :>> `, schematicContext.strategy)
+      if (tree.exists(toPath)) {
+        tree.overwrite(to, fs.readFileSync(from, {encoding: 'utf8'}))
+      }
+      else {
+        tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
+      }
+      // if (schematicContext.strategy === MergeStrategy.Overwrite) {
+      // }
+      // else {
+      //   tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
+      // }
+    } else {
+    // console.log(`:>> 333`);
     schematicContext.logger.debug(
       `schematicUtils::copy: directory ${fromPath} being individually copied. fromPath: '${fromPath}' toPath: '${toPath}'`
     );

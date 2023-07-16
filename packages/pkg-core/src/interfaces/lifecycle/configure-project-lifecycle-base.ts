@@ -2,7 +2,7 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 import { Config } from "prettier";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../hooks";
+import { AsyncHook } from "../../hooks";
 import {
   assertIsResult,
   Context,
@@ -11,7 +11,7 @@ import {
   LifecycleReturnsByMethod,
   LifecycleStaticInterface,
   Result,
-} from "../__types__";
+} from "../../__types__";
 
 export class ConfigureProjectLifecycleBase<
   T extends LifecycleStaticInterface = typeof ConfigureProjectLifecycleBase<any>

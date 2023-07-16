@@ -57,6 +57,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       default: "https://registry.npmjs.org",
       // default: "http://localhost:4873",
     }),
+    cliPath: Flags.string({
+      description: "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
+      required: false,
+    }),
   };
 
   static override args = {
@@ -203,11 +207,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           configPath: configPath.original,
           cliVersion: context.cliOptions.flags.cliVersion,
           cliRegistry: context.cliOptions.flags.cliRegistry,
+          cliPath: context.cliOptions.flags.cliPath,
           // options: {
           //   a: 'a',
           // }, // <!-- typed as any atm ¯\_(ツ)_/¯
         }
     }}]);
+
     return res.res; // we eschew the provider wrapping for our solitary initialWorkspace
 
     // if (!(await xfs.existsPromise(workspacePath.address))) {
