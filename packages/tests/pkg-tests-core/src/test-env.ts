@@ -9,6 +9,7 @@ import {
 } from "@business-as-code/address";
 import {
   assertIsOk,
+  BaseCommand,
   consoleUtils,
   LogLevel,
   Outputs,
@@ -125,14 +126,14 @@ type PersistentTestEnvVars = {
   cacheRenewNamespace: boolean;
   cacheNamespaceFolder?: string;
 
-  stage: `stage{number}`;
+  stage: `stage${number}`;
 };
 type EphemeralTestEnvVars = {
   workspacePath: AddressPathAbsolute;
   // savePath?: AddressPathAbsolute
 
   // /** all tests will be bucketed into a stage[0-9] */
-  // stage: `stage{number}`;
+  // stage: `stage${number}`;
 
   /** test output goes into this folder */
   folderName: string;
@@ -294,12 +295,12 @@ async function doCreatePersistentTestEnvs(
   const getStageAndFolderName = (
     testName: string,
     testFileName: string
-  ): [folderName: string, stage: `stage{number}`] => {
+  ): [folderName: string, stage: `stage${number}`] => {
     const matches = testFileName.match(/^.*-(stage[0-9]+)\..*$/);
     if (!matches?.[1]) {
       throw new Error(`Test file must be suffixed with -stage[0-9].spec.ts`);
     }
-    return [testName, matches![1] as `stage{number}`];
+    return [testName, matches![1] as `stage${number}`];
   };
 
   const [_folderName, stage] = getStageAndFolderName(
@@ -397,12 +398,12 @@ async function doCreateEphemeralTestEnvVars(
   //   ? sanitise(createEphemeralTestEnvVars.processNamespace)
   //   : getCurrentTestNameSanitised();
 
-  // const getStageAndFolderName = (testName: string, testFileName: string): [folderName: string, stage: `stage{number}`] => {
+  // const getStageAndFolderName = (testName: string, testFileName: string): [folderName: string, stage: `stage${number}`] => {
   //   const matches = testFileName.match(/^.*-(stage[0-9]+)\..*$/)
   //   if (!matches?.[1]) {
   //     throw new Error(`Test file must be suffixed with -stage[0-9].spec.ts`)
   //   }
-  //   return [testName, matches![1] as `stage{number}`]
+  //   return [testName, matches![1] as `stage${number}`]
   // }
 
   // const [folderName, stage] = getStageAndFolderName(folderNameSanitised, getCurrentTestFilenameSanitised())
@@ -653,6 +654,16 @@ function createTree(workspacePath: string): Tree {
   return tree;
 }
 
+function validateTestEnv({testEnvVars}: {testEnvVars: TestEnvVars}) {
+
+  // we expect the cliSource to be present in the environment
+  if (!['cliRegistry', 'cliLinked'].includes(process.env.BAC_TEST_CLISOURCE ?? '')) {
+    throw new Error(`Tests must be ran with BAC_TEST_CLISOURCE. Possible values: ['cliRegistry', 'cliLinked']`)
+  }
+
+  // do some validation
+}
+
 async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
   return async (
     createEphemeralTestEnvVars: CreateEphemeralTestEnvVars,
@@ -677,6 +688,11 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
     );
     const testEnvVars = { ...ephemeralTestEnvVars, ...persistentTestEnvVars };
 
+    await validateTestEnv({testEnvVars})
+
+    // if the test has been wrapped in a describe block of 'cliRegistry|cliLinked' we'll just skip it based on the env var
+    // console.log(`testEnvVars :>> `, testEnvVars)
+
     function createTestContext(): TestContext {
       return {
         setActiveWorkspacePath: (workspacePath: AddressPathAbsolute) => {
@@ -690,14 +706,14 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // assumes copy from stage1 test
           const testStagePath =
             basePaths['stage1' as keyof typeof basePaths];
-          const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), sourcePathRel);
-          if (!xfs.existsPromise(sourcePath.address)) {
+          const sourcePathWithCliSource = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original} - ${process.env.BAC_TEST_CLISOURCE}`));
+          if (!xfs.existsPromise(sourcePathWithCliSource.address)) {
             throw new Error(
-              `testEnv#copy: attempting to copy nonexistent sourcePath: '${sourcePath.original}' -> '${destinationPath.original}'. Stage: 'stage1'. Have those stage's tests been ran?`
+              `testEnv#copy: attempting to copy nonexistent sourcePath: '${sourcePathWithCliSource.original}' -> '${destinationPath.original}'. Stage: 'stage1'. Have those stage's tests been ran?`
             );
           }
 
-          await xfs.copyPromise(destinationPath.address, sourcePath.address)
+          await xfs.copyPromise(destinationPath.address, sourcePathWithCliSource.address)
 
 // await xfs.removePromise(addr.pathUtils.join(destinationPath, addr.parsePath('node_modules')).address)
 
@@ -736,7 +752,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // console.log(`cliPath.original :>> `, cliPath.original)
 
           const checkoutCliPath = getActiveCliPath()
-          console.log(`checkoutCliPath :>> `, checkoutCliPath)
+          // console.log(`checkoutCliPath :>> `, checkoutCliPath)
 
           process.chdir(checkoutCliPath.original);
           const argsWithAdditional = [...args, "--logLevel", logLevel];
@@ -748,7 +764,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           //   process.cwd()
           // );
 
-          console.log(`cliPath :>> `, checkoutCliPath)
+          // console.log(`cliPath :>> `, checkoutCliPath)
 
           let exitCode = 0;
           let error = undefined;
@@ -769,12 +785,16 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             }) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((anError) => {
+              BaseCommand.handleError({err: anError, exitProcess: false}) // for parity with bin/{dev.ts,cmd.ts}
+
               /**
                DO NOT DO ANY ADDITIONAL PROCESS OUT LOGGING. MUST RELY ON ONLY THE REPORTING WITHIN .CATCH ETC ONLY WHEN TESTING - see BaseCommand#catch
                */
 
               exitCode = anError?.oclif?.exit ?? 1;
               error = anError;
+
+              // oclifCore.Errors.handle(anError) // for parity with bin/{dev.ts,cmd.ts}
             });
 
           const outputs = mockStdEnd();
@@ -784,7 +804,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             testEnvVars,
             outputs,
             tree: tree as Tree,
-            exitCode: 0,
+            exitCode,
           });
 
           if (exitCode === 0) {

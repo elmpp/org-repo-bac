@@ -11,7 +11,8 @@
  - p moon project-graph
 
  <!-- - run verdaccio: p moon run root:verdaccioKillBackground; p moon run root:verdaccioRunBackground -->
- - run verdaccio: p moon run @business-as-code/plugin-dev-essentials:verdaccioRunBackground
+ <!-- - run verdaccio: p moon run @business-as-code/plugin-dev-essentials:verdaccioRunBackground -->
+ - run verdaccio: pnpm run --filter @business-as-code/tests-verdaccio verdaccio:stopBackground && pnpm run --filter @business-as-code/tests-verdaccio verdaccio:runBackground
 
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
 
@@ -21,13 +22,16 @@
  - p moon query projects 'projectType=application || projectType=library' # snapshottable projects
 
  PUBLISHING SNAPSHOT LOCAL
-  - pnpm dev:runCli changesets create --workspacePath /Users/matt/dev/org-repo-moonrepo --bump patch --message 'snapshot release' --logLevel debug // <!-- CREATING THE SNAPSHOT CHANGESET FILES
-  - pnpm dev:runCli changesets publish --registry http://localhost:4873 --workspacePath /Users/matt/dev/org-repo-moonrepo --tag bollards --logLevel debug // <!-- PUBLISHING THE SNAPSHOTS
+  - p dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // 🌈
 
 Oclif commands
 
  - p dev:runCli plugins --core  // show all packages
  - p dev:runCli  // show all commands
+
+## Test commands
+
+ Run tests by stage - p dev:runCli test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
 
 ## Build commands
 

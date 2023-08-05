@@ -13,7 +13,7 @@ import execa, { ExecaError, ExecaReturnValue, Options as ExecaOptions } from "ex
 //   ExecaReturnValue,
 //   Options as ExecaOptions,
 // } from "execa";
-import { assertIsOk, Context, fail, ok, Outputs, Result } from "../__types__";
+import { assertIsOk, Context, fail, LogLevel, logLevelMatching, ok, Outputs, Result } from "../__types__";
 
 // export interface ExecOptions
 //   extends Omit<import("child_process").SpawnOptions, "stdio" | "env" | "cwd"> {
@@ -41,8 +41,8 @@ export interface DoExecOptions extends Omit<ExecaOptions, "cwd"> {
 
   cwd: AddressPathAbsolute; // this must be mandatory
   context: Context;
-  /** @see createStreams#streamVerbosity */
-  streamVerbosity?: number;
+  // matched against current process logLevel and will stream to stdout/stderr if matching
+  logLevel?: LogLevel;
 }
 export type DoExecOptionsLite = Omit<
   DoExecOptions,
@@ -79,7 +79,7 @@ export async function doExec({
     context,
     // cwd,
     // subProcessType,
-    streamVerbosity,
+    logLevel = 'debug',
     // raw,
     ...spawnOptions
   } = options;
@@ -178,7 +178,11 @@ export async function doExec({
   try {
     // Execa docs for 5.1.1 - https://tinyurl.com/2qefunlh
     const execaResultPromise = execa(command, execaOptions)
-    // execaResultPromise.stdout!.pipe(process.stdout); // tie this into our debug somehow
+  // console.log(`context.cliOptions.flags.logLevel, logLevel :>> `, context.cliOptions.flags.logLevel, logLevel)
+    if (logLevelMatching(logLevel, context.cliOptions.flags.logLevel)) {
+      execaResultPromise.stdout!.pipe(process.stdout);
+      execaResultPromise.stderr!.pipe(process.stderr);
+    }
     const execaResult = await execaResultPromise
     const successPayload = {
       execa: execaResult,

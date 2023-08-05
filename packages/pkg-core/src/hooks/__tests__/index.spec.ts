@@ -28,10 +28,11 @@ describe("Hook", () => {
       >(["options"], "runWorkspace", "beforeRunWorkspace");
 
       hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
-        return {
-          provider: "moon",
-          res: "blah",
-        };
+        // return {
+        //   provider: "moon",
+        //   res: "blah",
+        // };
+        return "blah"
       });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
@@ -59,7 +60,7 @@ describe("Hook", () => {
         },
       ]});
 
-      // console.log(`res :>> `, res);
+      console.log(`res :>> `, res);
 
       expect(res).toEqual({
         provider: "moon",
@@ -89,10 +90,7 @@ describe("Hook", () => {
       >(["options"], "runWorkspace", "beforeRunWorkspace");
 
       hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
-        return {
-          provider: "moon",
-          res: "blah",
-        };
+        return "blah"
       });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
@@ -118,7 +116,7 @@ describe("Hook", () => {
               },
             },
           },
-        ]})
+        ], strict: true})
       ).rejects.toThrowError();
     });
     it("can be inferred", async () => {

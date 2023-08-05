@@ -19,7 +19,8 @@ import { BacError, MessageName } from "@business-as-code/error";
 //   ux
 // } from "@oclif/core";
 import * as oclif from "@oclif/core";
-import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
+import { ExitError } from "@oclif/core/lib/errors";
+import { OclifError, PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 // import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
@@ -211,6 +212,8 @@ export abstract class BaseCommand<
     } & PrettyPrintableError = {}
   ) {
     this.logger.error(BacError.fromError(input).toString());
+    // console.log(`input :>> `, input)
+
     /** Oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L245 */
     return super.error(input, options as any);
     // return Errors.error(input, options as any);
@@ -597,6 +600,52 @@ export abstract class BaseCommand<
     return directRes;
   }
 
+  /**
+   catastrophic process error. Replaces - https://github.com/oclif/core/blob/ca88895bcfdca2d1c1ae5eda6e879ae6b1ac4122/src/errors/handle.ts#L10
+   */
+  static async handleError({err, exitProcess}: {err: Error & Partial<PrettyPrintableError> & Partial<OclifError>, exitProcess?: boolean}) {
+
+    const logger = process.stderr.write
+
+    try {
+      if (!err) err = new Error('no error?')
+      if (err.message === 'SIGINT') process.exit(1)
+
+      // const shouldPrint = !(err instanceof ExitError)
+      // const pretty = prettyPrint(err)
+      // const stack = clean(err.stack || '', {pretty: true})
+      const stack = err.stack || ''
+
+      // if (shouldPrint) {
+      //   logger(err.stack)
+      //   // console.error(pretty ? pretty : stack)
+      // }
+
+
+      const exitCode = err.oclif?.exit !== undefined && err.oclif?.exit !== false ? err.oclif?.exit : 1
+
+      if (logger && err.code !== 'EEXIT') {
+        if (stack) {
+          logger(stack)
+        }
+
+        // config.errorLogger.flush()
+        try {
+          return exitProcess && process.exit(exitCode)
+        }
+        catch(err2) {
+          logger(err2)
+        }
+      } else {
+        exitProcess && process.exit(exitCode)
+      }
+    } catch (error: any) {
+      // logger(err.stack)
+      // logger(error.stack)
+      exitProcess && process.exit(1)
+    }
+  }
+
   async run(): Promise<void> {
     const parseOutput = (await this.parse({
       flags: {
@@ -794,10 +843,16 @@ export abstract class BaseCommand<
       } catch {}
       // return
       // throw err
-      process.stderr.write(`${os.EOL.repeat(2)}
-        ${colors.red(BacError.getMessageForError(err))}
-        ${os.EOL.repeat(2)}
-      `);
+
+
+      // WE DO NOT WANT TO OUTPUT HERE - THIS IS DONE ONLY IN BASECOMMAND.HANDLEERROR()
+
+
+      // process.stderr.write(`${os.EOL.repeat(2)}
+      //   ${colors.red(BacError.getMessageForError(err))}
+      //   ${os.EOL.repeat(2)}
+      // `);
+
       // console.log(`:>> BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`, this.jsonEnabled(), BacError.getMessageForError(err));
 
       throw err; // we DO want to rethrow here after writing to stderr

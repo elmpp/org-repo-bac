@@ -36,6 +36,10 @@ import { expectTypeOf } from "expect-type";
 describe("types", () => {
   describe("main types", () => {
     describe("services", () => {
+      it("DEBUG", () => {
+        // @ts-ignore
+        type AllServices = keyof ServiceMap
+      })
       it("integrity", () => {
         expectTypeOf<ServiceMap>().toMatchTypeOf<{
           // instance side

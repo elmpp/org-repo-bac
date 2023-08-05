@@ -22,7 +22,7 @@ module.exports = {
     '\\.(deletable.*?)$',
     '\\.(pre-.*?)$',
     '\\.(post-.*?)$',
-    '\\.*.ignore.*$',
+    // '\\.*.ignore.*$',
     '\\/dist\\/*',
   ],
 
@@ -36,6 +36,8 @@ module.exports = {
   ],
 
   testEnvironment: 'node',
+
+  // testSequencer: './jest.sequencer.js',
 
   // setupFilesAfterEnv: [require.resolve(`./jest.setup.js`)],
   // globalSetup: require.resolve(`./jest.setup.js`), // https://tinyurl.com/2lrnm6kn

@@ -32,6 +32,11 @@ export type Outputs = {
 
 export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
 
+export const logLevelMatching = (logLevel: LogLevel, currentLogLevel: LogLevel): boolean => {
+  const logLevels: LogLevel[] = ["debug", "info", "warn", "error", "fatal"]
+  return logLevels.indexOf(logLevel) <= logLevels.indexOf(currentLogLevel)
+}
+
 /** ball of values made available to command methods. Includes oclif cliOptions */
 export type ContextCommand<T extends typeof Command> = {
   /** values coming out of oclif command phase */
