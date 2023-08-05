@@ -249,6 +249,13 @@ export async function doExecThrow(options: {
   throw res.res;
 }
 
+export function getExecRuntime(): 'ts-node' | 'ts-node-dev' | 'node' | undefined {
+  const lifecycleScript = process.env['npm_lifecycle_script'] || ''
+  if (!!lifecycleScript.match(/(\b)?ts-node-dev\b/)) return 'ts-node-dev'
+  if (!!lifecycleScript.match(/(\b)?ts-node\b/)) return 'ts-node'
+  if (!!lifecycleScript.match(/(\b)?node\b/)) return 'node'
+}
+
 export {
   type ExecaReturnValue,
   type execa, // required for dreaded, "reference required ts error"

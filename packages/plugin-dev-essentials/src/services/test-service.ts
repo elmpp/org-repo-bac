@@ -83,13 +83,16 @@ export class TestService {
       const stageXRes = await packageManagerService.run({
         command: `jest ${
           testFileMatch ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
-        } --config jest.config.js`,
+        } --config jest.config.js${
+          watch ? ` --watch` : ``
+        }`,
         options: {
           logLevel: "debug",
           env: {
             BAC_TEST_CLISOURCE: cliSource,
             FORCE_COLOR: 'true',
           },
+          stdin: 'inherit',
         },
       });
 

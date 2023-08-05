@@ -31,7 +31,9 @@ Oclif commands
 
 ## Test commands
 
- Run tests by stage - p dev:runCli test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
+ Run tests by stage
+   - p dev:runCli test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
+   - p dev:runCliWatch test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // WATCH MODE
 
 ## Build commands
 

@@ -4,6 +4,7 @@ import {
   Flags,
   Interfaces as _Interfaces,
   execUtils as _execUtils,
+  execUtils,
 } from "@business-as-code/core";
 
 export class Test extends BaseCommand<typeof Test> {
@@ -32,7 +33,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     watch: Flags.boolean({
       description: "Watch",
       required: false,
-      default: false,
     }),
     // testMatch: Flags.string({
     //   description: "Test it/describe name match",
@@ -56,12 +56,20 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     const testService = await context.serviceFactory('test', {context, workingPath: '.'})
 
+    let watch = context.cliOptions.flags.watch
+    if (undefined === watch) {
+      const execRuntime = execUtils.getExecRuntime()
+      if (execRuntime === 'ts-node-dev') {
+        watch = true
+      }
+    }
+
     return testService.test({
       stage: context.cliOptions.flags.stage as `stage${number}`,
       testFileMatch: context.cliOptions.flags.testFileMatch,
       // testMatch: context.cliOptions.flags.testMatch,
       cliSource: context.cliOptions.flags.cliSource!,
-      watch: context.cliOptions.flags.watch!,
+      watch,
     })
   }
 }
