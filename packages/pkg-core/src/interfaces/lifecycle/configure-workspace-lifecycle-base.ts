@@ -6,10 +6,11 @@ import {
   assertIsResult,
   Context,
   ContextCommand,
+  LifecycleMappedReturnByMethod,
   LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleReturnsByMethod,
+  LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleStaticInterface,
-  Result
+  Result,
 } from "../../__types__";
 
 /**
@@ -31,11 +32,11 @@ export class ConfigureWorkspaceLifecycleBase<
   }
 
   static hooks = {
-    beforeConfigureWorkspace: new AsyncHook<
-      {},
-      void,
-      "configureWorkspace"
-    >(["options"], "configureWorkspace", "beforeConfigureWorkspace"),
+    beforeConfigureWorkspace: new AsyncHook<{}, void, "configureWorkspace">(
+      ["options"],
+      "configureWorkspace",
+      "beforeConfigureWorkspace"
+    ),
     /** configure workspace should coordinate configures at the project level */
     configureWorkspace: new AsyncHook<
       {},
@@ -65,11 +66,11 @@ export class ConfigureWorkspaceLifecycleBase<
     //     }
     //   >
     // >(["options"]),
-    afterConfigureWorkspace: new AsyncHook<
-      {},
-      void,
-      "configureWorkspace"
-    >(["options"], "configureWorkspace", "afterConfigureWorkspace"),
+    afterConfigureWorkspace: new AsyncHook<{}, void, "configureWorkspace">(
+      ["options"],
+      "configureWorkspace",
+      "afterConfigureWorkspace"
+    ),
   };
 
   /** @internal */
@@ -113,20 +114,22 @@ export class ConfigureWorkspaceLifecycleBase<
   }
 
   async executeConfigureWorkspace(
-    options: LifecycleOptionsByMethodKeyedByProvider<"configureWorkspace">[]
-  ): Promise<LifecycleReturnsByMethod<"configureWorkspace">> {
-    await ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.callLifecycleBailAsync(
+    options: LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace">
+  ): Promise<LifecycleMappedReturnByMethod<"configureWorkspace">> {
+    await ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.mapAsync(
       { options }
     );
 
     const res =
-      await ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.callLifecycleBailAsync(
-        { options, strict: true }
-      );
+      await ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.mapAsync({
+        options,
+        strict: true,
+      });
     // console.log(`res :>> `, res);
 
-    assertIsResult(res);
-    await ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.callLifecycleBailAsync(
+    // assertIsResult(res.res); // wrapped in provider
+
+    await ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.mapAsync(
       { options }
     );
     return res;

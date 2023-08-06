@@ -18,6 +18,7 @@ import {
 //   }
 // }
 
+/** simple configure lifecycle. Atm, just passes along a git descriptor. Will provide callback semantics later */
 export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleBase<typeof ConfigureWorkspaceGitLifecycle> {
 
   static override title = 'git' as const
@@ -27,21 +28,22 @@ export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleB
         context: Context;
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
-        config?: Config | undefined;
+        // config?: Config | undefined; // why optional
         options: {
           address: AddressUrlGitString, // standard git lifecycle has no callback semantics
+          // callback?: (tree, otherBollocks) => {} // unpack and allow clients to pick out their own projects
         }
       }) => Promise<{
         address: AddressUrlGitString
       }>) {
-    return async ({ context, config, options }) => {
+    return async ({ context, options: {address} }) => {
 
       // possibly do stuff - validate / actual import?
 
       // if (options.)
 
       return {
-        address: options.address,
+        address,
       };
     };
   }

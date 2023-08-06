@@ -7,7 +7,7 @@ import {
   Context,
   ContextCommand,
   LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleReturnsByMethod,
+  LifecycleSingularReturnByMethod,
   LifecycleStaticInterface,
   Result,
 } from "../../__types__";
@@ -173,24 +173,24 @@ export class RunWorkspaceLifecycleBase<
     options: LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">[]
     // options: LifecycleOptionsByMethodAndProvider<"runWorkspace", "core">
   ): Promise<
-    LifecycleReturnsByMethod<"runWorkspace">
+    LifecycleSingularReturnByMethod<"runWorkspace">
     // InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
   > {
-    await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.callLifecycleBailAsync(
+    await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.callBailAsync(
       {
         options,
       }
     );
     // type DDDD = InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
     const res =
-      await RunWorkspaceLifecycleBase.hooks.runWorkspace.callLifecycleBailAsync(
+      await RunWorkspaceLifecycleBase.hooks.runWorkspace.callBailAsync(
         {
           options,
           strict: true,
         }
       );
     assertIsResult(res);
-    await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.callLifecycleBailAsync(
+    await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.callBailAsync(
       {
         options,
       }

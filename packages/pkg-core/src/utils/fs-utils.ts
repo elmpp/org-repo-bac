@@ -3,7 +3,7 @@ import { xfs } from "@business-as-code/fslib";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as oclif from "@oclif/core";
 import { Config } from "../validation";
-import { BacError, MessageName } from "@business-as-code/error";
+import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
 import { constants } from "../constants";
 
 // import fs from 'fs/promises'
@@ -73,7 +73,13 @@ export async function loadModule(pathOrPluginOrConfig: string | oclif.Interfaces
 
 }
 
-/** loads a config file via require. Require is resolved relative to this present module */
+export const tmpResolvablePath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath(`../etc/${constants.RC_FILENAME}`))
+
+/**
+ * loads a config file via require. Has fallback behaviour whereby it's copied into the present checkout.
+ * This is necessary when other workspace instances are being cliLinked back to this checkout and require()ing
+ * their configs isn't possible
+ */
 export function loadConfig(workspacePath: AddressPathAbsolute): Config {
   // let configModule: any
   // if (typeof configPath === 'string') {
@@ -86,13 +92,42 @@ export function loadConfig(workspacePath: AddressPathAbsolute): Config {
 
   // assert(configModule.config)
 
+  const importConfig = (configPath: AddressPathAbsolute) => {
+
+    // const sourcePath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME))
+    xfs.copyFileSync(configPath.address, tmpResolvablePath.address)
+
+    const configModule = require(`../etc/${constants.RC_FILENAME}`)
+    return configModule
+    // // console.log(`configModule :>> `, configModule)
+
+    // assert(configModule.config)
+    // return configModule.config
+
+    // return fsUtils.loadConfig(this._tmpResolvablePath)
+  }
+
   const configPath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME)) as AddressPathAbsolute
 
   const relativePath = addr.pathUtils.relative({destAddress: configPath, srcAddress: addr.parsePath(__filename) as AddressPathAbsolute})
-  const configModule = require(relativePath.original)
-
-  if (!configModule.config) {
-    throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config export not found in existent file '${configPath}'`)
+  try {
+    const configModule = require(relativePath.original)
+    // const configModule = require.resolve('constants.RC_FILENAME', {paths: [workspacePath.original]})
+    if (!configModule.config) {
+      throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not found in existent file '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`)
+    }
+    return configModule.config
   }
-  return configModule.config
+  catch {}
+
+  try {
+    const configModule = importConfig(configPath)
+    if (!configModule.config) {
+      throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config imported from '${configPath.original} but config export not found inside'. Workspace path supplied: '${workspacePath.original}'`)
+    }
+    return configModule.config
+  }
+  catch (err) {
+    throw new BacErrorWrapper(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not importable()able at '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`, err as Error)
+  }
 }

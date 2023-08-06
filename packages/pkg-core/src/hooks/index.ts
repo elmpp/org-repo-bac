@@ -3,9 +3,10 @@
 // import debug from 'debug'
 
 import {
+  LifecycleMappedReturnByMethod,
   LifecycleMethods,
   LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleReturnsByMethod,
+  LifecycleSingularReturnByMethod,
 } from "../__types__";
 
 // const dbg = debug('tapable')
@@ -184,22 +185,21 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 
   /**
    * calls taps according to the args.provider and accepts an array of args which will be cycled over
-   * @param {...any} args - the arguments each tap will be called with
-   * @returns {Promise} the Promise for completion
+   * completes when a provider returns a result
    * @throws as soon as a tap throws
    */
-  async callLifecycleBailAsync({
+  async callBailAsync({
     options,
     strict = false,
   }: {
     options: LifecycleOptionsByMethodKeyedByProviderArray<LMethod>;
     strict?: boolean;
-  }) {
+  }): Promise<LifecycleSingularReturnByMethod<LMethod>> {
     this._testArgs(options, false);
 
     // dbg('%s.callAsync%o', this.name, args)
 
-    let res: LifecycleReturnsByMethod<LMethod>;
+    let res: LifecycleSingularReturnByMethod<LMethod>;
 
     console.log(`options :>> `, options);
     console.log(`options :>> `, options);
@@ -209,7 +209,7 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
     for (anOptions of options) {
       if (!anOptions.provider) {
         throw new Error(
-          `hooks#callLifecycleBailAsync accepts only {provider: string}[]. '${JSON.stringify(
+          `hooks#callBailAsync accepts only {provider: string}[]. '${JSON.stringify(
             options
           )}'`
         );
@@ -218,13 +218,13 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
       for (const { nameOrProvider, fn } of this.taps) {
         if (anOptions.provider !== nameOrProvider) {
           anOptions?.options?.context?.logger.debug(
-            `Lifecycle method skipped: provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
+            `Lifecycle method skipped. Hook type: 'callBailAsync', provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
           );
           continue;
         }
 
         anOptions?.options?.context?.logger.debug(
-          `Lifecycle method being triggered: provider: '${
+          `Lifecycle method being triggered: Hook type: 'callBailAsync', provider: '${
             anOptions.provider
           }', hook provider: '${nameOrProvider}, options: '${JSON.stringify(
             anOptions.options
@@ -238,7 +238,7 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
             res = {
               provider: nameOrProvider,
               res: fnRes,
-            }
+            };
           }
         } catch (error) {
           this._handleError(nameOrProvider, error as Error);
@@ -248,12 +248,88 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 
     if (!res! && strict) {
       throw new Error(
-        `hooks#callLifecycleBailAsync: no provider returned expected result for hook '${
+        `hooks#callBailAsync: no provider returned expected result for hook '${
           this._name
         }'. '${JSON.stringify(options)}'`
       );
     }
     return res!;
+  }
+
+  /**
+   * await all taps in parallel
+   * @throws as soon as a tap throws
+   */
+  async mapAsync({
+    options,
+    strict = false,
+  }: {
+    options: LifecycleOptionsByMethodKeyedByProviderArray<LMethod>;
+    strict?: boolean;
+  }): Promise<LifecycleMappedReturnByMethod<LMethod>> {
+    this._testArgs(options, false);
+
+    // dbg('%s.callAsync%o', this.name, args)
+
+    let resMapped = [] as LifecycleMappedReturnByMethod<LMethod>;
+
+    console.log(`options :>> `, options);
+    console.log(`options :>> `, options);
+    console.log(`this.taps :>> `, this.taps);
+
+    let anOptions: any;
+
+    for (anOptions of options) {
+      let res: LifecycleSingularReturnByMethod<LMethod>;
+
+      if (!anOptions.provider) {
+        throw new Error(
+          `hooks#callBailAsync accepts only {provider: string}[]. '${JSON.stringify(
+            options
+          )}'`
+        );
+      }
+      for (const { nameOrProvider, fn } of this.taps) {
+        if (anOptions.provider !== nameOrProvider) {
+          anOptions?.options?.context?.logger.debug(
+            `Lifecycle method skipped. Hook type: 'mapAsync', provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
+          );
+          continue;
+        }
+
+        anOptions?.options?.context?.logger.debug(
+          `Lifecycle method being triggered: Hook type: 'mapAsync', provider: '${
+            anOptions.provider
+          }', hook provider: '${nameOrProvider}, options: '${JSON.stringify(
+            anOptions.options
+          )}''`
+        );
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          res = await fn(anOptions.options);
+          if (res) {
+            // @ts-ignore
+            resMapped.push({
+              provider: nameOrProvider,
+              res,
+            });
+            break;
+          }
+        } catch (error) {
+          this._handleError(nameOrProvider, error as Error);
+        }
+      }
+      if (!resMapped! && strict) {
+        throw new Error(
+          `hooks#mapAsync: no provider returned expected result for hook '${
+            this._name
+          }'. '${JSON.stringify(options)}'`
+        );
+      }
+      // resMapped.push(undefined)
+    }
+
+    return resMapped!;
   }
   // /**
   //  * await all taps in added order
@@ -333,11 +409,11 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 // }
 
 /** Same as Hook but marks the Hook async from the start */
-export class AsyncHook<TArgs extends Record<string, unknown>, R, LMethod extends LifecycleMethods> extends Hook<
-  TArgs,
+export class AsyncHook<
+  TArgs extends Record<string, unknown>,
   R,
-  LMethod
-> {
+  LMethod extends LifecycleMethods
+> extends Hook<TArgs, R, LMethod> {
   // export class AsyncHook<TArgs, R, LMethod extends LifecycleImplementedMethods> extends Hook<TArgs, R, LMethod> {
   // export class AsyncHook<TArgs, R, LMethod extends LifecycleImplementedMethods> extends Hook<TArgs, R, LMethod> {
   constructor(args: string[] = [], method: LMethod, name: string) {

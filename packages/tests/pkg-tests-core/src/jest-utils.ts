@@ -16,7 +16,7 @@ import { virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { configSchema, constants, Outputs, stringUtils } from "@business-as-code/core";
+import { configSchema, constants, fsUtils, Outputs, stringUtils } from "@business-as-code/core";
 import { assertIsError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import os from "os";
@@ -124,27 +124,27 @@ class ExpectConfig {
   constructor(expectFs: ExpectFs, options: Options) {
     this.options = options;
     this.expectFs = expectFs;
-    this._tmpResolvablePath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath(`../etc/resolvable-tmp/${constants.RC_FILENAME}`))
+    this._tmpResolvablePath = fsUtils.tmpResolvablePath
   }
 
-  protected async importConfig() {
+  // protected async importConfig() {
 
-    const sourcePath = addr.pathUtils.join(this.options.testEnvVars.workspacePath, addr.parsePath(constants.RC_FILENAME))
-    xfs.copyFileSync(sourcePath.address, this._tmpResolvablePath.address)
+  //   const sourcePath = addr.pathUtils.join(this.options.testEnvVars.workspacePath, addr.parsePath(constants.RC_FILENAME))
+  //   xfs.copyFileSync(sourcePath.address, this._tmpResolvablePath.address)
 
-    const configModule = require(`../etc/resolvable-tmp/${constants.RC_FILENAME}`)
+  //   const configModule = require(`../etc/resolvable-tmp/${constants.RC_FILENAME}`)
 
-    // // console.log(`configModule :>> `, configModule)
+  //   // // console.log(`configModule :>> `, configModule)
 
-    assert(configModule.config)
-    return configModule.config
+  //   assert(configModule.config)
+  //   return configModule.config
 
-    // return fsUtils.loadConfig(this._tmpResolvablePath)
-  }
+  //   // return fsUtils.loadConfig(this._tmpResolvablePath)
+  // }
 
   async isValid(): Promise<ExpectConfig> {
 
-    const config = await this.importConfig()
+    const config = fsUtils.loadConfig(this.options.testEnvVars.workspacePath)
     configSchema.parse(config)
     return this;
   }

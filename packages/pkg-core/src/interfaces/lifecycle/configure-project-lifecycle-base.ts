@@ -8,7 +8,7 @@ import {
   Context,
   ContextCommand,
   LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleReturnsByMethod,
+  LifecycleSingularReturnByMethod,
   LifecycleStaticInterface,
   Result,
 } from "../../__types__";
@@ -97,21 +97,21 @@ export class ConfigureProjectLifecycleBase<
 
   async executeConfigureProject(
     options: LifecycleOptionsByMethodKeyedByProviderArray<"configureProject">
-  ): Promise<LifecycleReturnsByMethod<"configureProject">> {
-    await ConfigureProjectLifecycleBase.hooks.beforeConfigureProject.callLifecycleBailAsync(
+  ): Promise<LifecycleSingularReturnByMethod<"configureProject">> {
+    await ConfigureProjectLifecycleBase.hooks.beforeConfigureProject.callBailAsync(
       {
         options,
       }
     );
     const res =
-      await ConfigureProjectLifecycleBase.hooks.configureProject.callLifecycleBailAsync(
+      await ConfigureProjectLifecycleBase.hooks.configureProject.callBailAsync(
         {
           options,
           strict: true,
         }
       );
     assertIsResult(res);
-    await ConfigureProjectLifecycleBase.hooks.afterConfigureProject.callLifecycleBailAsync(
+    await ConfigureProjectLifecycleBase.hooks.afterConfigureProject.callBailAsync(
       {
         options,
       }

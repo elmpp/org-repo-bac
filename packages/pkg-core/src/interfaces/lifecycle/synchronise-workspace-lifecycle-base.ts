@@ -8,7 +8,7 @@ import {
   Context,
   ContextCommand,
   LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleReturnsByMethod,
+  LifecycleSingularReturnByMethod,
   LifecycleStaticInterface,
   Result,
 } from "../../__types__";
@@ -106,16 +106,16 @@ export class SynchroniseWorkspaceLifecycleBase<
 
   async executeSynchroniseWorkspace(
     options: LifecycleOptionsByMethodKeyedByProviderArray<"synchroniseWorkspace">
-  ): Promise<LifecycleReturnsByMethod<"synchroniseWorkspace">> {
-    await SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.callLifecycleBailAsync(
+  ): Promise<LifecycleSingularReturnByMethod<"synchroniseWorkspace">> {
+    await SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.callBailAsync(
       { options }
     );
     const res =
-      await SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace.callLifecycleBailAsync(
+      await SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace.callBailAsync(
         { options, strict: true }
       );
     assertIsResult(res);
-    await SynchroniseWorkspaceLifecycleBase.hooks.afterSynchroniseWorkspace.callLifecycleBailAsync(
+    await SynchroniseWorkspaceLifecycleBase.hooks.afterSynchroniseWorkspace.callBailAsync(
       { options }
     );
     return res;

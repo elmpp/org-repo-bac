@@ -1,7 +1,7 @@
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 import { expectTypeOf } from "expect-type";
-import { Context, LifecycleReturnsByMethod, Result } from "../../__types__";
+import { Context, LifecycleSingularReturnByMethod, Result } from "../../__types__";
 import { AsyncHook } from "../index";
 import { InferAsyncHookOptions, InferAsyncHookReturn } from "../__types__";
 
@@ -43,7 +43,7 @@ describe("Hook", () => {
       // hook.tap("test5", () => {}, { after: "unknown" });
       // expect(hook.taps[hook.taps.length - 1].name).toBe("test5");
 
-      const res = await hook.callLifecycleBailAsync({
+      const res = await hook.callBailAsync({
         options: [
         {
           provider: "moon",
@@ -67,7 +67,7 @@ describe("Hook", () => {
         res: "blah",
       });
       expectTypeOf(res).toEqualTypeOf<
-        LifecycleReturnsByMethod<"runWorkspace">
+        LifecycleSingularReturnByMethod<"runWorkspace">
       >();
     });
     it("throws when options do not match tap providers", async () => {
@@ -102,7 +102,7 @@ describe("Hook", () => {
       // expect(hook.taps[hook.taps.length - 1].name).toBe("test5");
 
       await expect(
-        hook.callLifecycleBailAsync({options: [
+        hook.callBailAsync({options: [
           {
             // @ts-expect-error:
             provider: "notMoon",

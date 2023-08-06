@@ -258,14 +258,23 @@ type LifecycleOptionsWithoutCommonByProviderMap = {
 
 // export type _LifecycleOptionsByMethodMinusComplex<T extends {provider: string, options: {context: Context}}> = Omit<T, 'options'> & {options: Omit<T['options'], 'context'>}
 
-export type LifecycleReturnsByMethod<
+/** Full mapped result. Returned from hook.map (when all options are called) */
+export type LifecycleMappedReturnByMethod<
+LMethod extends LifecycleMethods = LifecycleMethods
+> = Array<Exclude<
+ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
+// ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
+{ res: never }
+>>;
+/** a singular result. Returned from hook.callBail (when first positive provider shortcircuits the other options) */
+export type LifecycleSingularReturnByMethod<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
   ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
   // ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
   { res: never }
 >;
-export type LifecycleReturnsByMethodAndProvider<
+export type LifecycleSingularReturnByMethodAndProvider<
   LMethod extends LifecycleMethods = LifecycleMethods,
   LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
 > = Extract<

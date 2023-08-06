@@ -7,7 +7,7 @@ import {
   Context,
   ContextCommand,
   LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleReturnsByMethod,
+  LifecycleSingularReturnByMethod,
   LifecycleStaticInterface,
   Result,
 } from "../../__types__";
@@ -161,20 +161,20 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
     options: LifecycleOptionsByMethodKeyedByProvider<"runProject">[]
     // options: LifecycleOptionsByMethodAndProvider<"runProject", "core">
   ): Promise<
-    LifecycleReturnsByMethod<"runProject">
+    LifecycleSingularReturnByMethod<"runProject">
     // InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
   > {
-    await RunProjectLifecycleBase.hooks.beforeRunProject.callLifecycleBailAsync({
+    await RunProjectLifecycleBase.hooks.beforeRunProject.callBailAsync({
       options
     });
     // type DDDD = InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
     const res =
-      await RunProjectLifecycleBase.hooks.runProject.callLifecycleBailAsync({
+      await RunProjectLifecycleBase.hooks.runProject.callBailAsync({
         options,
         strict: true,
   });
     assertIsResult(res);
-    await RunProjectLifecycleBase.hooks.afterRunProject.callLifecycleBailAsync({
+    await RunProjectLifecycleBase.hooks.afterRunProject.callBailAsync({
       options
     });
     return res;

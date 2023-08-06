@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { LifecycleImplementedMethods, LifecycleOptionsByMethodKeyedByProviderWithoutCommon, LifecycleReturnsByMethod } from "../__types__"
+import { LifecycleImplementedMethods, LifecycleOptionsByMethodKeyedByProviderWithoutCommon, LifecycleSingularReturnByMethod } from "../__types__"
 
 export const providerOptionsSchemaBuilder = <LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods, PType = LifecycleOptionsByMethodKeyedByProviderWithoutCommon<LMethod>, S extends z.ZodObject<any, any, any> = z.ZodObject<any, any, any>>(_lifecycleMethod: LMethod, extendableSchema: S) => {
   return extendableSchema.extend(
@@ -27,7 +27,7 @@ export const providerOptionsSchemaBuilder = <LMethod extends LifecycleImplemente
   // ]) as unknown as z.ZodType<PType & z.infer<typeof extendableSchema>, z.ZodTypeDef>
 }
 
-export const providerReturnSchemaBuilder = <LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods, PType = LifecycleReturnsByMethod<LMethod>, S extends z.ZodObject<any, any, any> = z.ZodObject<any, any, any>>(_lifecycleMethod: LMethod, extendableSchema: S) => {
+export const providerReturnSchemaBuilder = <LMethod extends LifecycleImplementedMethods = LifecycleImplementedMethods, PType = LifecycleSingularReturnByMethod<LMethod>, S extends z.ZodObject<any, any, any> = z.ZodObject<any, any, any>>(_lifecycleMethod: LMethod, extendableSchema: S) => {
   return z.union([
     extendableSchema.extend(
       {

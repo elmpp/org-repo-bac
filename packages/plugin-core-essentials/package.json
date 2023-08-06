@@ -47,6 +47,9 @@
       "initialise": {
         "description": "Initialising of content"
       },
+      "configure": {
+        "description": "Configuring of content"
+      },
       "run": {
         "description": "Running of commands"
       }

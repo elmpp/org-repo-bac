@@ -8,8 +8,8 @@ import {
   LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleOptionsByMethodAndProvider,
   LifecycleProvidersForAsByMethod,
-  LifecycleReturnsByMethod,
-  LifecycleReturnsByMethodAndProvider,
+  LifecycleSingularReturnByMethod,
+  LifecycleSingularReturnByMethodAndProvider,
   // LifecycleMap,
   // LifecycleMethodOptions,
   // LifecycleMethodReturn,
@@ -157,7 +157,7 @@ describe("types", () => {
       it("can derive a union of lifecycle method return types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceReturn =
-          LifecycleReturnsByMethod<"initialiseWorkspace">;
+          LifecycleSingularReturnByMethod<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceReturn>().toMatchTypeOf<
           | { provider: "core"; res: { } }
@@ -260,7 +260,7 @@ describe("types", () => {
       it(`accepts LifecycleAllMethods`, () => {
         const anyLifecycleMethod: LifecycleMethods = 'configureProject'
         // @ts-expect-error: no unused locals
-        type ReturnType = LifecycleReturnsByMethod<typeof anyLifecycleMethod>
+        type ReturnType = LifecycleSingularReturnByMethod<typeof anyLifecycleMethod>
       })
       it("can derive a union of lifecycle option types with provider key 3", () => {
 
@@ -310,7 +310,7 @@ describe("types", () => {
             }
         }>()
 
-        type PackageManagerReturn = LifecycleReturnsByMethodAndProvider<'runWorkspace', 'packageManager'>
+        type PackageManagerReturn = LifecycleSingularReturnByMethodAndProvider<'runWorkspace', 'packageManager'>
         expectTypeOf<PackageManagerReturn>().toMatchTypeOf<{ // note how options are same for both grouped option types
             provider: 'packageManager',
             res: unknown,

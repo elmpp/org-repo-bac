@@ -6,16 +6,18 @@ import { Config } from "../../validation";
 import {
   assertIsResult,
   Context,
-  ContextCommand, LifecycleOptionsByMethodKeyedByProvider, LifecycleReturnsByMethod,
+  ContextCommand,
+  LifecycleOptionsByMethodKeyedByProvider,
+  LifecycleSingularReturnByMethod,
   LifecycleStaticInterface,
-  Result
+  Result,
 } from "../../__types__";
 
 export class InitialiseWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof InitialiseWorkspaceLifecycleBase<any>
 > {
   static lifecycleTitle = "initialiseWorkspace" as const;
-  static title = ''
+  static title = "";
 
   get ctor(): T {
     return this.constructor as unknown as T;
@@ -25,21 +27,24 @@ export class InitialiseWorkspaceLifecycleBase<
   }
 
   static hooks = {
-    beforeInitialiseWorkspace: new AsyncHook<{
-      config: Config;
-      configPath: string;
-      cliVersion: string;
-      cliRegistry: string;
-      cliPath?: string;
-
-    }, void, 'initialiseWorkspace'>(["options"], 'initialiseWorkspace', 'beforeInitialiseWorkspace'),
+    beforeInitialiseWorkspace: new AsyncHook<
+      {
+        config: Config;
+        configPath: string;
+        cliVersion: string;
+        cliRegistry: string;
+        cliPath?: string;
+      },
+      void,
+      "initialiseWorkspace"
+    >(["options"], "initialiseWorkspace", "beforeInitialiseWorkspace"),
     initialiseWorkspace: new AsyncHook<
       {
-      config: Config;
-      configPath: string;
-      cliVersion: string;
-      cliRegistry: string;
-      cliPath?: string;
+        config: Config;
+        configPath: string;
+        cliVersion: string;
+        cliRegistry: string;
+        cliPath?: string;
       },
       // } & LifecycleOptionsByProvider<'initialiseWorkspace'>,
       Result<
@@ -50,15 +55,19 @@ export class InitialiseWorkspaceLifecycleBase<
           error: BacError;
         }
       >,
-      'initialiseWorkspace'
-    >(["options"], 'initialiseWorkspace', 'initialiseWorkspace'),
-    afterInitialiseWorkspace: new AsyncHook<{
-      config: Config;
-      configPath: string;
-      cliVersion: string;
-      cliRegistry: string;
-      cliPath?: string;
-    }, void, 'initialiseWorkspace'>(["options"], 'initialiseWorkspace', 'afterInitialiseWorkspace'),
+      "initialiseWorkspace"
+    >(["options"], "initialiseWorkspace", "initialiseWorkspace"),
+    afterInitialiseWorkspace: new AsyncHook<
+      {
+        config: Config;
+        configPath: string;
+        cliVersion: string;
+        cliRegistry: string;
+        cliPath?: string;
+      },
+      void,
+      "initialiseWorkspace"
+    >(["options"], "initialiseWorkspace", "afterInitialiseWorkspace"),
   };
 
   /** @internal */
@@ -66,28 +75,34 @@ export class InitialiseWorkspaceLifecycleBase<
     this: { new (): T },
     options: { context: ContextCommand<any> }
   ) {
-    const {context} = options
+    const { context } = options;
     const ins = new this();
     const beforeInitialiseWorkspaceHook = ins.beforeInitialiseWorkspace();
     const initialiseWorkspaceHook = ins.initialiseWorkspace();
     const afterInitialiseWorkspaceHook = ins.afterInitialiseWorkspace();
 
     if (beforeInitialiseWorkspaceHook) {
-      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.beforeInitialiseWorkspace`)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.beforeInitialiseWorkspace`
+      );
       ins.ctor.hooks.beforeInitialiseWorkspace.tapAsync(
         ins.title,
         beforeInitialiseWorkspaceHook
-        );
-      }
-      if (initialiseWorkspaceHook) {
-      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.initialiseWorkspace`)
+      );
+    }
+    if (initialiseWorkspaceHook) {
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.initialiseWorkspace`
+      );
       ins.ctor.hooks.initialiseWorkspace.tapAsync(
         ins.title,
         initialiseWorkspaceHook
-        );
-      }
-      if (afterInitialiseWorkspaceHook) {
-      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.afterInitialiseWorkspace`)
+      );
+    }
+    if (afterInitialiseWorkspaceHook) {
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.afterInitialiseWorkspace`
+      );
       ins.ctor.hooks.afterInitialiseWorkspace.tapAsync(
         ins.title,
         afterInitialiseWorkspaceHook
@@ -97,23 +112,27 @@ export class InitialiseWorkspaceLifecycleBase<
 
   async executeInitialiseWorkspace(
     options: LifecycleOptionsByMethodKeyedByProvider<"initialiseWorkspace">[]
-  ): Promise<
-  LifecycleReturnsByMethod<"initialiseWorkspace">
-  > {
-    await InitialiseWorkspaceLifecycleBase.hooks.beforeInitialiseWorkspace.callLifecycleBailAsync({
-      options
-    });
-    const res =
-      await InitialiseWorkspaceLifecycleBase.hooks.initialiseWorkspace.callLifecycleBailAsync({
+  ): Promise<LifecycleSingularReturnByMethod<"initialiseWorkspace">> {
+    await InitialiseWorkspaceLifecycleBase.hooks.beforeInitialiseWorkspace.callBailAsync(
+      {
         options,
-        strict: true,
-  });
+      }
+    );
+    const res =
+      await InitialiseWorkspaceLifecycleBase.hooks.initialiseWorkspace.callBailAsync(
+        {
+          options,
+          strict: true,
+        }
+      );
 
-  assertIsResult(res.res); // wrapped in provider
+    assertIsResult(res.res); // wrapped in provider
 
-    await InitialiseWorkspaceLifecycleBase.hooks.afterInitialiseWorkspace.callLifecycleBailAsync({
-      options
-    });
+    await InitialiseWorkspaceLifecycleBase.hooks.afterInitialiseWorkspace.callBailAsync(
+      {
+        options,
+      }
+    );
     return res;
   }
 
@@ -129,7 +148,7 @@ export class InitialiseWorkspaceLifecycleBase<
         //   cliVersion: string;
         //   cliRegistry: string;
         // }
-        options: any
+        options: any;
       }) => Promise<unknown>)
     | undefined {
     return;
@@ -147,7 +166,7 @@ export class InitialiseWorkspaceLifecycleBase<
         //   cliVersion: string;
         //   cliRegistry: string;
         // }
-        options: any
+        options: any;
       }) => Promise<unknown>)
     | undefined {
     return;
@@ -158,7 +177,7 @@ export class InitialiseWorkspaceLifecycleBase<
         context: Context;
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
-        options: any
+        options: any;
         // options: {
         //   name: string;
         //   config: Config;
