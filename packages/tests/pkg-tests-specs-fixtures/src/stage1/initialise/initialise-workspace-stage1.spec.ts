@@ -25,13 +25,12 @@ describe("initialise workspace", () => {
       stage0Content,
       testContext.testEnvVars.workspacePath
     );
+    expectIsOk(resCopy);
 
-    let expectConfig = resCopy.res.expectUtil.createConfig();
 
     await (async function expectWorkspaceHasConfig() {
-      expectIsOk(resCopy);
 
-      await expectConfig.isValid();
+      let expectConfig = resCopy.res.expectUtil.createConfig();
 
       const cliCheckoutPath = addr.packageUtils.resolve({
         address: addr.parsePackage(`@business-as-code/cli`),
@@ -51,6 +50,15 @@ describe("initialise workspace", () => {
         xfs.readFileSync(configPath.address, "utf8")
       ); // the stage0 data is good
     })();
+
+    await (async function expectManifestIsOk() {
+
+      const expectFs = resCopy.res.expectUtil.createFs()
+
+      expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'])
+    })();
+
+
   }
 
   describe("creates a skeleton workspace without configPath using skeleton config", () => {
@@ -59,11 +67,6 @@ describe("initialise workspace", () => {
 
       await persistentTestEnv.test({}, async (testContext) => {
         testContext.setActiveWorkspacePath(
-          testContext.testEnvVars.workspacePath
-        );
-
-        console.log(
-          `testContext.testEnvVars.workspacePath :>> `,
           testContext.testEnvVars.workspacePath
         );
 

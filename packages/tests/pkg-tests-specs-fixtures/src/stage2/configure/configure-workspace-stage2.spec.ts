@@ -17,17 +17,17 @@ describe("configure workspace", () => {
 
       let expectConfig = resCopy.res.expectUtil.createConfig();
 
-      // const res = await testContext.command(
-      //   [
-      //     "configure",
-      //     "workspace",
-      //     "--workspacePath",
-      //     testContext.testEnvVars.workspacePath.original,
-      //   ],
-      //   { logLevel: "debug" }
-      // );
+      const res = await testContext.command(
+        [
+          "configure",
+          "workspace",
+          "--workspacePath",
+          testContext.testEnvVars.workspacePath.original,
+        ],
+        { logLevel: "debug" }
+      );
 
-      // expectIsOk(res)
+      expectIsOk(res)
     });
   });
 });

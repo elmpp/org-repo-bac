@@ -61,4 +61,6 @@ declare global {
 
 // class CliService {}
 
-export {};
+// export {};
+
+export type { Config } from "@business-as-code/core";

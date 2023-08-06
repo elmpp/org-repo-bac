@@ -21,9 +21,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Workspace name",
       required: false,
     }),
-    stage: Flags.custom<"stage1" | "stage2" | "stage3">({
+    stage: Flags.custom<"stage0" | "stage1" | "stage2" | "stage3">({
       summary: "Test Stage",
-      options: ["stage1", "stage2", "stage3"],
+      options: ["stage0", "stage1", "stage2", "stage3"],
       required: true,
     })(),
     testFileMatch: Flags.string({

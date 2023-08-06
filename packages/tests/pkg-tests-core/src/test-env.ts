@@ -571,6 +571,7 @@ async function setupFolders(
       testEnvVars.testsPath,
       addr.parsePPath(testsFolderName)
     );
+
     await xfs.removePromise(testPath.address);
     await xfs.mkdirpPromise(testPath.address);
   };
@@ -750,7 +751,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           destinationPath: AddressPathAbsolute
         ) => {
           // assumes copy from stage1 test
-          const testStagePath = basePaths["stage1" as keyof typeof basePaths];
+          const testStagePath = basePaths["stage0" as keyof typeof basePaths];
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original}`));
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original} - ${process.env.BAC_TEST_CLISOURCE}`));
           const sourcePath = addr.pathUtils.join(
@@ -807,7 +808,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // console.log(`checkoutCliPath :>> `, checkoutCliPath)
 
           process.chdir(checkoutCliPath.original);
-          const argsWithAdditional = [...args, "--logLevel", logLevel];
+          const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
           // console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,

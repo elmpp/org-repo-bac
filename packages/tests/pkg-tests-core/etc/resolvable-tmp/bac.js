@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @typedef {import('../../index').Config} Config
+ * @typedef {import('@business-as-code/cli').Config} Config
  * @type {Config}
  */
 const config = {

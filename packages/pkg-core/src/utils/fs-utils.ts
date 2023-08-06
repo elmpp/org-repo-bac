@@ -89,7 +89,6 @@ export function loadConfig(workspacePath: AddressPathAbsolute): Config {
   const configPath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME)) as AddressPathAbsolute
 
   const relativePath = addr.pathUtils.relative({destAddress: configPath, srcAddress: addr.parsePath(__filename) as AddressPathAbsolute})
-  console.log(`relativePath, addr.parsePath(__filename), configPath :>> `, relativePath, addr.parsePath(__filename), configPath)
   const configModule = require(relativePath.original)
 
   if (!configModule.config) {

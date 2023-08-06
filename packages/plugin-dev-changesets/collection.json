@@ -1,24 +1,9 @@
 {
   "schematics": {
     "changeset-generate": {
-      "factory": "./dist/schematics/changeset-generate/factory",
-      "schema": "./dist/schematics/changeset-generate/schema.json",
+      "factory": "./src/schematics/changeset-generate/factory",
+      "schema": "./src/schematics/changeset-generate/schema.json",
       "description": "Create a changeset file"
     }
-    // "synchronise-workspace": {
-    //   "factory": "./dist/schematics/synchronise-workspace/factory",
-    //   "schema": "./dist/schematics/synchronise-workspace/schema.json",
-    //   "description": "Applies configuration to a workspace"
-    // },
-    // "blank": {
-    //   "factory": "./dist/schematics/blank/factory",
-    //   "schema": "./dist/schematics/blank/schema.json",
-    //   "description": "Create an empty schematic project or add a blank schematic to the current project."
-    // },
-    // "my-schematic": {
-    //   "factory": "./my-schematic/factory",
-    //   "schema": "./my-schematic/schema.json",
-    //   "description": "Create a Schematic template which can be built and published directly to NPM."
-    // }
   }
 }

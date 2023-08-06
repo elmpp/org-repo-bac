@@ -49,14 +49,8 @@ describe("configure workspace", () => {
     await persistentTestEnv.test({}, async (testContext) => {
       testContext.setActiveWorkspacePath(testContext.testEnvVars.workspacePath)
 
-      console.log(`testContext.testEnvVars.workspacePath :>> `, testContext.testEnvVars.workspacePath)
-
       await setup(testContext, "git-http-default-master.js" as Filename);
 
-      console.log(
-        `testContext.testEnvVars.workspacePath.original :>> `,
-        testContext.testEnvVars.workspacePath.original
-      );
       const res = await testContext.command(
         [
           "synchronise",
