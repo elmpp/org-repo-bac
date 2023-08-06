@@ -13,6 +13,10 @@ import {
   Result,
 } from "../../__types__";
 
+
+/**
+ Synchronise acts on already-configured workspace (e.g. ProjectConfig)
+ */
 export class SynchroniseWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof SynchroniseWorkspaceLifecycleBase<any>
 > {

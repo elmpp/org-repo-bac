@@ -12,38 +12,11 @@ describe("configure workspace", () => {
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(
-      addr.parseAsType(
-        "initialise_workspace_creates_a_skeleton_workspace_without_configPath_using_skeleton_config",
-        "portablePathFilename"
-      ),
+      'creates a skeleton workspace without configPath using skeleton config',
       testContext.testEnvVars.workspacePath
     );
 
     let expectConfig = resCopy.res.expectUtil.createConfig();
-
-    await (async function expectWorkspaceIsSkeletonInitialised() {
-      expectIsOk(resCopy);
-
-      await expectConfig.isValid();
-
-      const cliCheckoutPath = addr.packageUtils.resolve({
-        address: addr.parsePackage(`@business-as-code/cli`),
-        projectCwd: testContext.testEnvVars.checkoutPath,
-        strict: true,
-      });
-
-      const skeletonConfigPath = addr.packageUtils.resolve({
-        address: addr.parsePackage(
-          `@business-as-code/core/src/etc/config/skeleton.js`
-        ),
-        projectCwd: cliCheckoutPath,
-        strict: true,
-      });
-
-      expectConfig.expectText.equals(
-        xfs.readFileSync(skeletonConfigPath.address, "utf8")
-      ); // the stage1 data is good
-    })();
 
     await (async function updateConfig() {
       const gitHttpRepoUrl = addr.pathUtils.resolve(

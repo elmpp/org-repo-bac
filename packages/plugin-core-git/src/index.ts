@@ -1,6 +1,7 @@
 import { Plugin } from '@business-as-code/core'
 import { GitService } from './services/git-service'
 import {ConfigureWorkspaceGitLifecycle} from './lifecycles'
+import {SynchroniseWorkspaceGitLifecycle} from './lifecycles'
 
 // declare global {
 //   interface Bac {
@@ -16,6 +17,7 @@ export const plugin = {
   services: [GitService],
   lifecycles: [
     ConfigureWorkspaceGitLifecycle,
+    SynchroniseWorkspaceGitLifecycle,
     // InitialiseWorkspaceLifecycle,
   ],
   // initialise: ({context}) => {

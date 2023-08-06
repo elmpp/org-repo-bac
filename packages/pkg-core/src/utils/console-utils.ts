@@ -6,7 +6,11 @@
 import { stringUtils } from ".";
 import util from 'util'
 
-const debug = require('debug')('stdout-stderr');
+let debug = (...args: any[]) => {}
+try {
+  debug = require('debug')('stdout-stderr'); // doesn't load when pnpm linked
+}
+catch {}
 
 const g: any = global;
 if (!g['stdout-stderr']) {

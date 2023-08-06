@@ -1,36 +1,37 @@
 import { addr } from "@business-as-code/address";
 import { expectIsOk } from "@business-as-code/core";
-import { xfs } from "@business-as-code/fslib";
+import { Filename, xfs } from "@business-as-code/fslib";
 import {
   createPersistentTestEnv,
   TestContext,
 } from "@business-as-code/tests-core";
 
 /**
- * Stage1 tests are the only ones that may be copied by successive stage tests. Therefore, it is important
- * to keep them to a minimum as they'll always be ran before
- * Note also that the content produced will include both cliRegistry+cliLinked variants, to support other
- * tests being E2E or dev
+ * Checks content produced in stage0
  */
 describe("initialise workspace", () => {
   jest.setTimeout(25000);
 
-  async function run(getArgs: (testContext: TestContext) => string[]) {
-    const persistentTestEnv = await createPersistentTestEnv({});
-    await persistentTestEnv.test({}, async (testContext) => {
-      const args = getArgs(testContext);
+  async function setup({
+    testContext,
+    configFilename,
+    stage0Content,
+  }: {
+    testContext: TestContext;
+    configFilename: Filename;
+    stage0Content: keyof Stage0Content;
+  }) {
+    const resCopy = await testContext.copy(
+      stage0Content,
+      testContext.testEnvVars.workspacePath
+    );
 
-      const res = await testContext.command(args, { logLevel: "debug" });
+    let expectConfig = resCopy.res.expectUtil.createConfig();
 
-      expectIsOk(res);
+    await (async function expectWorkspaceHasConfig() {
+      expectIsOk(resCopy);
 
-      const expectFs = res.res.expectUtil.createFs();
-      const expectConfig = res.res.expectUtil.createConfig();
-
-      console.log(
-        `testContext.testEnvVars.checkoutPath :>> `,
-        testContext.testEnvVars.checkoutPath
-      );
+      await expectConfig.isValid();
 
       const cliCheckoutPath = addr.packageUtils.resolve({
         address: addr.parsePackage(`@business-as-code/cli`),
@@ -38,61 +39,41 @@ describe("initialise workspace", () => {
         strict: true,
       });
 
-      const skeletonConfigPath = addr.packageUtils.resolve({
+      const configPath = addr.packageUtils.resolve({
         address: addr.parsePackage(
-          `@business-as-code/core/src/etc/config/skeleton.js`
+          `@business-as-code/core/src/etc/config/${configFilename}`
         ),
         projectCwd: cliCheckoutPath,
         strict: true,
       });
 
-      await expectConfig.isValid();
       expectConfig.expectText.equals(
-        xfs.readFileSync(skeletonConfigPath.address, "utf8")
-      );
-
-      res.res.expectUtil
-        .createText(expectFs.readText("./.npmrc"))
-        .lineContainsString({ match: `@business-as-code:`, occurrences: 1 }); // local npm registry set up
-      res.res.expectUtil
-        .createText(expectFs.readText("./BOLLOCKS.md"))
-        .lineContainsString({ match: `PANTS`, occurrences: 1 }); // coming from second schematic synchronise-workspace
-      res.res.expectUtil
-        .createText(expectFs.readText("./package.json"))
-        .lineContainsString({
-          match: `"name": "my-new-workspace"`,
-          occurrences: 1,
-        })
-        .lineContainsString({ match: `"private": true`, occurrences: 1 });
-    });
+        xfs.readFileSync(configPath.address, "utf8")
+      ); // the stage0 data is good
+    })();
   }
 
-  describe("cliRegistry", () => {
-    it("creates a skeleton workspace without configPath using skeleton config", async () => {
-      await run((testContext) => [
-        "initialise",
-        "workspace",
-        "--name",
-        "my-new-workspace",
-        "--workspacePath",
-        testContext.testEnvVars.workspacePath.original,
-        "--cliRegistry",
-        "http://localhost:4873",
-      ]);
-    });
-  });
-  describe("cliLinked", () => {
-    it("creates a skeleton workspace without configPath using skeleton config", async () => {
-      await run((testContext) => [
-        "initialise",
-        "workspace",
-        "--name",
-        "my-new-workspace",
-        "--workspacePath",
-        testContext.testEnvVars.workspacePath.original,
-        "--cliPath",
-        testContext.testEnvVars.checkoutCliPath.original,
-      ]);
+  describe("creates a skeleton workspace without configPath using skeleton config", () => {
+    it("is produced ok", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+
+      await persistentTestEnv.test({}, async (testContext) => {
+        testContext.setActiveWorkspacePath(
+          testContext.testEnvVars.workspacePath
+        );
+
+        console.log(
+          `testContext.testEnvVars.workspacePath :>> `,
+          testContext.testEnvVars.workspacePath
+        );
+
+        await setup({
+          testContext,
+          configFilename: "skeleton.js" as Filename,
+          stage0Content:
+            "creates a skeleton workspace without configPath using skeleton config",
+        });
+      });
     });
   });
 });

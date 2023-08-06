@@ -1,4 +1,5 @@
 import { ConfigureWorkspaceGitLifecycle } from "./configure-workspace-git-lifecycle";
+import { SynchroniseWorkspaceGitLifecycle } from "./synchronise-workspace-git-lifecycle";
 // import { ConfigureWorkspaceGitCallbackLifecycle } from "./configure-workspace-git-callback-lifecycle";
 
 // import { InitialiseWorkspaceLifecycle } from "./initialise-workspace-lifecycle";
@@ -10,6 +11,10 @@ declare global {
         configureWorkspace: {
           insType: ConfigureWorkspaceGitLifecycle;
           staticType: typeof ConfigureWorkspaceGitLifecycle;
+        };
+        synchroniseWorkspace: {
+          insType: SynchroniseWorkspaceGitLifecycle;
+          staticType: typeof SynchroniseWorkspaceGitLifecycle;
         };
       };
       // gitCallback: {
@@ -24,6 +29,7 @@ declare global {
 
 export {
   ConfigureWorkspaceGitLifecycle,
+  SynchroniseWorkspaceGitLifecycle,
   // ConfigureWorkspaceGitCallbackLifecycle,
   // InitialiseWorkspaceLifecycle,
 };

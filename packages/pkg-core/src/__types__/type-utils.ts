@@ -3,7 +3,7 @@ import { UnwrapPromise } from "./util";
 export function assertIsOk<R, E extends Error | {error: Error}>(
   res: Result<R, E>
 ): res is Extract<Result<R, E>, { success: true }> {
-  if (res.success === undefined)
+  if (res?.success === undefined)
     throw new Error(
       `assertIsSuccess: res is not valid Result object. res: '${require("util").inspect(
         res,

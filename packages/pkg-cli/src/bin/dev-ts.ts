@@ -16,5 +16,8 @@ oclif.settings.debug = true;
 oclif
   .run()
   .then(() => oclif.flush())
-  .catch(err => BaseCommand.handleError({err, exitProcess: true}));
-  // .catch(oclif.Errors.handle);
+  .catch((err) => {
+    return BaseCommand.handleError({ err, exitProcess: true });
+  });
+
+// .catch(oclif.Errors.handle);

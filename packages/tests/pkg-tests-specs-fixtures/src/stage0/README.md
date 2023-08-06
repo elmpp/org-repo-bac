@@ -1,0 +1,2 @@
+ - stage0 content is where copyable content is produced. Try to keep the amount of validation here to a minimum (see stage1)
+ - all copyable content should be augmented into the Stage0Content interface
