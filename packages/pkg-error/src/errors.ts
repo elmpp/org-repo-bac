@@ -44,7 +44,7 @@ export type ClipanionErrorMeta =
 // type ErrorTypeOrExitCode = 'clipanionUsage' | 'clipanionGeneral' | ExitCode
 export class BacError<
 Code extends MessageName = MessageName,
-Extra = undefined,
+Extra = unknown,
 > extends Error {
   public reportCode: Code;
   public clipanion?: ClipanionErrorMeta; // for compatibility with Clipanion

@@ -148,10 +148,10 @@ export class RunWorkspaceLifecycleBase<
         `lifecycleHook loaded: ${ins.ctor.title}.runWorkspace`
       );
       ins.ctor.hooks.runWorkspace.tapAsync(ins.title, runWorkspaceHook);
-      console.log(
-        `ins.ctor.hooks.runWorkspace.taps :>> `,
-        ins.ctor.hooks.runWorkspace.taps
-      );
+      // console.log(
+      //   `ins.ctor.hooks.runWorkspace.taps :>> `,
+      //   ins.ctor.hooks.runWorkspace.taps
+      // );
     }
     if (afterRunWorkspaceHook) {
       context.logger.debug(

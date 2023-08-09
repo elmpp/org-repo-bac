@@ -101,8 +101,8 @@ tasks:
     options:
       outputStyle: 'buffer-only-failure'
       # persistent: true # disables moon caching etc
-  verdaccioEnsureRunning:
-    command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:ensureRunning'
+  # verdaccioEnsureRunning:
+  #   command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:isRunning'
 
     # local: true
     # options:

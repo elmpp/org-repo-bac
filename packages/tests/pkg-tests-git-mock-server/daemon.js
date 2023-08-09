@@ -51,11 +51,22 @@ module.exports = function (cmdName, target) {
         })
         return
       }
+      case 'isRunning': {
+        try {
+          pid = fs.readFileSync(
+            path.join(process.cwd(), `${cmdName}.pid`),
+            'utf8'
+          );
+          process.exit(0)
+        } catch (err) {
+          process.exit(1)
+        }
+      }
       default: {
         require(target)
       }
     }
   }
-  
+
   minimisted(main)
 }

@@ -49,7 +49,7 @@ type: 'tool'
 #       outputStyle: 'buffer-only-failure'
 #       # persistent: true # disables moon caching etc
 #   verdaccioEnsureRunning:
-#     command: 'pnpm run verdaccio:ensureRunning'
+#     command: 'pnpm run verdaccio:isRunning'
 #     local: true
 #     # options:
 #     #   persistent: true # disables moon caching etc

@@ -12,8 +12,8 @@
   "scripts": {
     "//verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873",
     "verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"",
-    "verdaccio:ensureRunning": "pgrep verdaccio; # need to run 'p moon run pkg-tests-verdaccio:verdaccioRunBackground'",
-    "verdaccio:runBackground": "verdaccio -c ./verdaccio.yml &",
+    "verdaccio:isRunning": "pgrep verdaccio",
+    "verdaccio:runBackground": "verdaccio -c ./verdaccio.yml",
     "verdaccio:stopBackground": "pkill -f verdaccio || true"
   },
   "dependencies": {

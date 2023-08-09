@@ -3938,7 +3938,7 @@
       "config": {
         "tasks": {
           "verdaccioEnsureRunning": {
-            "command": "pnpm run verdaccio:ensureRunning",
+            "command": "pnpm run verdaccio:isRunning",
             "local": true
           },
           "verdaccioLogin": {
@@ -4438,7 +4438,7 @@
         "verdaccioEnsureRunning": {
           "args": [
             "run",
-            "verdaccio:ensureRunning"
+            "verdaccio:isRunning"
           ],
           "command": "pnpm",
           "deps": [],

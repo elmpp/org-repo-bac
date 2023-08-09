@@ -4,9 +4,9 @@
   "version": "0.0.0-bollards-20230521111204",
   "description": "Tool package @business-as-code/tests-specs-fixtures",
   "scripts": {
-    "dev:mockGitServerHttp": "cd repositories && git-http-mock-server",
-    "dev:mockGitServerSsh": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=true git-ssh-mock-server",
-    "dev:mockGitServerSshAnonymous": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=false git-ssh-mock-server"
+    "//dev:mockGitServerHttp": "cd repositories && git-http-mock-server",
+    "//dev:mockGitServerSsh": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=true git-ssh-mock-server",
+    "//dev:mockGitServerSshAnonymous": "cd repositories && GIT_SSH_MOCK_SERVER_PUBKEY=false git-ssh-mock-server"
   },
   "main": "src/index.ts",
   "files": [
@@ -18,12 +18,12 @@
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
     "@business-as-code/fslib": "workspace:*",
+    "@business-as-code/tests-git-server": "workspace:*",
     "@business-as-code/tests-core": "workspace:*",
     "@oclif/core": "2.6.4",
     "@oclif/test": "^2.3.9",
     "@types/jest": "^29.4.0",
     "@types/node": "^18.15.3",
-    "expect-type": "^0.15.0",
-    "git-http-mock-server": "workspace:*"
+    "expect-type": "^0.15.0"
   }
 }

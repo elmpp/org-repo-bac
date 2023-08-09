@@ -1,5 +1,6 @@
 import {
-  BasePackageManagerService, LifecycleProvidersForAsByMethod,
+  BasePackageManagerService,
+  LifecycleProvidersForAsByMethod,
   ServiceInitialiseCommonOptions,
   execUtils as _execUtils,
 } from "@business-as-code/core";
@@ -19,16 +20,14 @@ declare global {
 }
 
 type Options = ServiceInitialiseCommonOptions & {
-  packageManager?: LifecycleProvidersForAsByMethod<
-    "packageManager"
-  >;
+  packageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
 };
 
 export class PackageManagerPnpmService extends BasePackageManagerService<Options> {
   static title = "packageManagerPnpm" as const;
   static as = "packageManager" as const;
 
-  cliName = 'pnpm'
+  cliName = "pnpm";
 
   // options: Options;
 
@@ -45,8 +44,7 @@ export class PackageManagerPnpmService extends BasePackageManagerService<Options
   static async initialise(options: Options) {
     // default to pnpm
     if (
-      options.packageManager ??
-      "packageManagerPnpm" !== "packageManagerPnpm"
+      (options.packageManager ?? "packageManagerPnpm") !== "packageManagerPnpm"
     ) {
       return;
     }
@@ -70,9 +68,7 @@ export class PackageManagerPnpmService extends BasePackageManagerService<Options
   //   // this.options = options;
   // }
 
-
-
-  async link({path}: {path: string}) {
+  async link({ path }: { path: string }) {
     return this.run({
       command: `link ${path}`,
     });

@@ -557,7 +557,9 @@ export abstract class BaseCommand<
       if (res.length === 0) {
         throw new BacError(
           MessageName.SERVICE_NOT_FOUND,
-          `Service '${serviceName}' not found. Ensure you have installed relevant plugins`
+          `Service '${serviceName}' not found. Ensure you have installed relevant plugins. Available: '${Object.keys(
+            staticServices
+          ).join(', ')}'`
         );
       }
 

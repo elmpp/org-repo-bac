@@ -1,17 +1,24 @@
 {
-  "name": "git-http-mock-server",
+  "name": "@business-as-code/tests-git-server",
   "private": true,
-  "version": "0.0.0-bollards-20230521111204",
+  "version": "0.0.0",
   "description": "Clone and push to git repository test fixtures over HTTP.",
   "exports": "./index.js",
   "bin": {
-    "git-http-mock-server": "http-daemon.js",
-    "git-ssh-mock-server": "ssh-daemon.js"
+    "git-http-mock-server": "./http-daemon.js",
+    "git-ssh-mock-server": "./ssh-daemon.js"
   },
   "scripts": {
-    "test": "echo \"No tests\"",
-    "semantic-release": "semantic-release",
-    "travis-deploy-once": "travis-deploy-once"
+    "//gitServerHttp:isRunning": "pgrep -f 'http-daemon.js'",
+    "gitServerHttp:isRunning": "node ./http-daemon.js isRunning",
+    "gitServerHttp:runBackground": "node ./http-daemon.js start",
+    "gitServerHttp:stopBackground": "node ./http-daemon.js stop",
+    "gitServerSshPubKey:isRunning": "node ./ssh-daemon.js isRunning",
+    "gitServerSshPubKey:runBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js start",
+    "gitServerSshPubKey:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js stop",
+    "gitServerSshAnonymous:isRunning": "node ./ssh-daemon.js isRunning",
+    "gitServerSshAnonymous:runBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon.js start",
+    "gitServerSshAnonymous:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon.js stop"
   },
   "repository": {
     "type": "git",
@@ -41,9 +48,5 @@
     "ssh-keygen": "^0.4.2",
     "ssh2": "^1.11.0",
     "tree-kill": "^1.2.2"
-  },
-  "devDependencies": {
-    "semantic-release": "16.0.3",
-    "travis-deploy-once": "4.4.1"
   }
 }

@@ -24,16 +24,21 @@
  PUBLISHING SNAPSHOT LOCAL
   - p dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // 🌈
 
-Oclif commands
+Debugging Packages/Listing
 
  - p dev:runCli plugins --core  // show all packages
  - p dev:runCli  // show all commands
+ - p list -r // show all pnpm workspaces (use --json for more)
 
 ## Test commands
 
  Run tests by stage
    - p dev:runCli test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
    - p dev:runCliWatch test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // WATCH MODE
+
+ Start test daemons (required before testing)
+  - p dev:runCliWatchIgnoreAll test daemon start --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
+  - debug running daemons: 'p --filter @business-as-code/tests-verdaccio run verdaccio:isRunning && p --filter @business-as-code/tests-git-server run gitServerHttp:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning; echo $?'
 
 ## Build commands
 

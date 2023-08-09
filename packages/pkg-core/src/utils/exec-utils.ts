@@ -1,19 +1,33 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
 // const {
 //   execa,
 //   ExecaError,
 //   ExecaReturnValue,
 //   Options: ExecaOptions,
 // } = await import("execa");
-import execa, { ExecaError, ExecaReturnValue, Options as ExecaOptions } from "execa";
+import execa, {
+  ExecaError,
+  ExecaReturnValue,
+  Options as ExecaOptions,
+} from "execa";
 // import {
 //   execa,
 //   ExecaError,
 //   ExecaReturnValue,
 //   Options as ExecaOptions,
 // } from "execa";
-import { assertIsOk, Context, fail, LogLevel, logLevelMatching, ok, Outputs, Result } from "../__types__";
+import {
+  assertIsOk,
+  Context,
+  fail,
+  LogLevel,
+  logLevelMatching,
+  ok,
+  Outputs,
+  Result,
+} from "../__types__";
 
 // export interface ExecOptions
 //   extends Omit<import("child_process").SpawnOptions, "stdio" | "env" | "cwd"> {
@@ -44,10 +58,9 @@ export interface DoExecOptions extends Omit<ExecaOptions, "cwd"> {
   // matched against current process logLevel and will stream to stdout/stderr if matching
   logLevel?: LogLevel;
 }
-export type DoExecOptionsLite = Omit<
-  DoExecOptions,
-  "context" | "cwd"
-> & {cwd?: AddressPathAbsolute}
+export type DoExecOptionsLite = Omit<DoExecOptions, "context" | "cwd"> & {
+  cwd?: AddressPathAbsolute;
+};
 
 // type ErrorSpawnSetup = BacError<
 //   MessageName.EXEC_SPAWN_ERROR,
@@ -72,14 +85,16 @@ export async function doExec({
 }: {
   command: string;
   options: DoExecOptions;
-}): Promise<Result<{ outputs: Outputs; execa: ExecaReturnValue }, {error: ExecError}>> {
+}): Promise<
+  Result<{ outputs: Outputs; execa: ExecaReturnValue }, { error: ExecError }>
+> {
   // }): Promise<{success: boolean, outputs: Outputs}> {
 
   const {
     context,
     // cwd,
     // subProcessType,
-    logLevel = 'debug',
+    logLevel = options.context.cliOptions.flags.logLevel,
     // raw,
     ...spawnOptions
   } = options;
@@ -121,12 +136,28 @@ export async function doExec({
 
   // console.log(`context.cliOptions.flags["log-level"] :>> `, context.cliOptions.flags["log-level"])
 
+  const defaultedEnvs = {
+    FORCE_COLOR: "true",
+    ...(spawnOptions.env ?? {}),
+  };
+
   /** Execa options - https://tinyurl.com/2qndy7hr */
   const execaOptions: ExecaOptions = {
     // shell: true,
     extendEnv: true,
     ...spawnOptions,
-    ...(spawnOptions.cwd ? {cwd: spawnOptions.cwd.original} : {})  as {cwd: string},
+    ...((spawnOptions.cwd ? { cwd: spawnOptions.cwd.original } : {}) as {
+      cwd: string;
+    }),
+    env: defaultedEnvs,
+    // stdio: options.detached
+    //   ? [
+    //       "ignore",
+    //       xfs.openSync(addr.parsePath("/tmp/stdout.log").address, "a"),
+    //       xfs.openSync(addr.parsePath("/tmp/stderr.log").address, "a"),
+    //     ]
+    //   : options.stdio,
+    // shell: options.detached ? false : options.shell,
     // env: {
     //   ...filterAndStringifyEnvs({
     //     // ...toEnvironmentSettings(context.configuration.initialSettings), // pass along anything that was in this process's explicit initialSetting
@@ -158,8 +189,8 @@ export async function doExec({
   // };
 
   const optionsAsCommand = (command: string, options: ExecaOptions): string => {
-    const blacklist = ['XPC_SERVICE_NAME'] as string[];
-    const envs = Object.entries(options.env ?? {})
+    const blacklist = ["XPC_SERVICE_NAME"] as string[];
+    const envs = Object.entries(defaultedEnvs ?? {})
       .filter(([key, val]) => !blacklist.includes(key))
       .map(([key, val]) => `${key}='${val}'`)
       .join(` `);
@@ -177,13 +208,19 @@ export async function doExec({
 
   try {
     // Execa docs for 5.1.1 - https://tinyurl.com/2qefunlh
-    const execaResultPromise = execa(command, execaOptions)
-  // console.log(`context.cliOptions.flags.logLevel, logLevel :>> `, context.cliOptions.flags.logLevel, logLevel)
-    if (logLevelMatching(logLevel, context.cliOptions.flags.logLevel)) {
+    const execaResultPromise = execa(command, execaOptions);
+
+    if (options.detached) {
+      execaResultPromise.unref(); // long running processes require this - https://tinyurl.com/27ahpgr4
+    }
+
+    // console.log(`context.cliOptions.flags.logLevel, logLevel :>> `, context.cliOptions.flags.logLevel, logLevel)
+    if (logLevelMatching(logLevel, "debug")) {
+      // if (logLevelMatching(logLevel, 'debug') && !options.detached) {
       execaResultPromise.stdout!.pipe(process.stdout);
       execaResultPromise.stderr!.pipe(process.stderr);
     }
-    const execaResult = await execaResultPromise
+    const execaResult = await execaResultPromise;
     const successPayload = {
       execa: execaResult,
       outputs: {
@@ -231,7 +268,7 @@ export async function doExec({
     //   }
     // );
 
-    return fail({error: execError});
+    return fail({ error: execError });
   }
 }
 
@@ -249,14 +286,18 @@ export async function doExecThrow(options: {
   throw res.res;
 }
 
-export function getExecRuntime(): 'ts-node' | 'ts-node-dev' | 'node' | undefined {
-  const lifecycleScript = process.env['npm_lifecycle_script'] || ''
-  if (!!lifecycleScript.match(/(\b)?ts-node-dev\b/)) return 'ts-node-dev'
-  if (!!lifecycleScript.match(/(\b)?ts-node\b/)) return 'ts-node'
-  if (!!lifecycleScript.match(/(\b)?node\b/)) return 'node'
+export function getExecRuntime():
+  | "ts-node"
+  | "ts-node-dev"
+  | "node"
+  | undefined {
+  const lifecycleScript = process.env["npm_lifecycle_script"] || "";
+  if (!!lifecycleScript.match(/(\b)?ts-node-dev\b/)) return "ts-node-dev";
+  if (!!lifecycleScript.match(/(\b)?ts-node\b/)) return "ts-node";
+  if (!!lifecycleScript.match(/(\b)?node\b/)) return "node";
 }
 
 export {
   type ExecaReturnValue,
   type execa, // required for dreaded, "reference required ts error"
-}
+};

@@ -2110,7 +2110,7 @@
             "type": null
           },
           "verdaccioEnsureRunning": {
-            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:ensureRunning",
+            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:isRunning",
             "args": null,
             "deps": [],
             "env": {},
@@ -2713,7 +2713,7 @@
             "run",
             "--filter",
             "@business-as-code/tests-verdaccio",
-            "verdaccio:ensureRunning"
+            "verdaccio:isRunning"
           ],
           "command": "pnpm",
           "deps": [],
