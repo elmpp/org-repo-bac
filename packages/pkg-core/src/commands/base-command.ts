@@ -658,7 +658,7 @@ export abstract class BaseCommand<
         try {
           return exitProcess && process.exit(exitCode);
         } catch (err2) {
-          process.stderr.write(err2);
+          process.stderr.write(err2 as any);
         }
       } else {
         exitProcess && process.exit(exitCode);

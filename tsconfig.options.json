@@ -58,6 +58,7 @@
     "module": "CommonJS", // for building
     // "tsBuildInfoFile": "dist/.tsbuildinfo",
     // "rootDir": "src",
+    "noErrorTruncation": true, // more verbose intellisense - https://tinyurl.com/yxa6ocvh
   },
   "exclude": [
     "**/__mocks__/**/*",

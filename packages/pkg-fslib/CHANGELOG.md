@@ -1,5 +1,11 @@
 # @business-as-code/fslib
 
+## 0.0.0-bollards-20230810141915
+
+### Patch Changes
+
+- local snapshot
+
 ## 0.0.0-latest-20230716081621
 
 ### Patch Changes

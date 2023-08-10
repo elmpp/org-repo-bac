@@ -258,6 +258,21 @@ export class TestService {
     // })()
   }
 
+  async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
+    const releaseService = await this.options.context.serviceFactory(
+      "release",
+      {
+        context: this.options.context,
+        workingPath: ".",
+      }
+    );
+    return releaseService.snapshot({
+      message: 'local snapshot',
+      registry: 'http://localhost:4873',
+      tag: 'bollards',
+    })
+  }
+
   async test({
     testFileMatch,
     // testMatch,
@@ -277,6 +292,7 @@ export class TestService {
 
     try {
       await this.ensureDaemons();
+      await this.buildAndPublishSnapshot()
     } catch (err) {
       return {
         success: false as const,

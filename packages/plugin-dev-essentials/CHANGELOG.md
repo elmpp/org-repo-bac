@@ -1,5 +1,16 @@
 # @business-as-code/plugin-dev-essentials
 
+## 0.0.0-bollards-20230810141915
+
+### Patch Changes
+
+- local snapshot
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230810141915
+  - @business-as-code/core@0.0.0-bollards-20230810141915
+  - @business-as-code/error@0.0.0-bollards-20230810141915
+  - @business-as-code/fslib@0.0.0-bollards-20230810141915
+
 ## 0.0.0-latest-20230716081621
 
 ### Patch Changes

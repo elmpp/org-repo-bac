@@ -1,8 +1,8 @@
 {
   "schematics": {
     "git-clone": {
-      "factory": "./src/schematics/git-clone/factory",
-      "schema": "./src/schematics/git-clone/schema.json",
+      "factory": "./dist/schematics/git-clone/factory",
+      "schema": "./dist/schematics/git-clone/schema.json",
       "description": "Clones an entire repository"
     }
   }

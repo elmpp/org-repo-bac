@@ -15,6 +15,7 @@ describe("configure workspace", () => {
         testContext.testEnvVars.workspacePath
       );
 
+      // @ts-ignore
       let expectConfig = resCopy.res.expectUtil.createConfig();
 
       const res = await testContext.command(

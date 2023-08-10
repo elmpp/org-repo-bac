@@ -1,5 +1,4 @@
-import { addr } from "@business-as-code/address";
-import { expectIsFail, expectIsOk } from "@business-as-code/core";
+import { expectIsFail } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 
 describe("initialise workspace", () => {
@@ -144,12 +143,7 @@ describe("initialise workspace", () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
-          [
-            "initialise",
-            "workspace",
-            "--name",
-            "something"
-          ],
+          ["initialise", "workspace", "--name", "something"],
           { logLevel: "debug" }
         );
 

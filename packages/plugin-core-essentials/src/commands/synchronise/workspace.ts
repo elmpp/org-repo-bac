@@ -32,13 +32,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // let workspacePath = await this.getWorkspacePath()
 
     const res = await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace([{
-      provider: 'core',
+      provider: 'git',
       options: {
         context,
         workspacePath: context.workspacePath,
         // workingPath: ".",
         options: {
-
+          a: 'a',
           // name: context.cliOptions.flags.name,
           // config,
           // configPath: configPath.original,
@@ -48,6 +48,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         }, // <!-- typed as any atm ¯\_(ツ)_/¯
       }
     }]);
-    return res;
+    return res.res;
   }
 }

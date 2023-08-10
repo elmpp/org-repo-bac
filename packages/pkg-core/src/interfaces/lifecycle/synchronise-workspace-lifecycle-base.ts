@@ -110,6 +110,7 @@ export class SynchroniseWorkspaceLifecycleBase<
     await SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.callBailAsync(
       { options }
     );
+
     const res =
       await SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace.callBailAsync(
         { options, strict: true }

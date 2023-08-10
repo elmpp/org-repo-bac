@@ -1,10 +1,9 @@
 import {
   BaseCommand,
   ContextCommand,
-  execUtils,
   Flags,
   Args,
-  Interfaces,
+  Interfaces as _Interfaces,
 } from "@business-as-code/core";
 
 export class Test extends BaseCommand<typeof Test> {

@@ -173,12 +173,15 @@ tasks:
   publishDev:
     deps:
       # - ~:returnFail
-      - ~:build
+      # - ~:build
       # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
       # - '@business-as-code/tests-verdaccio:verdaccioLogin'
       # - ~:doUnpublish
       # - ~:unpublishDev
     # local: true
+    inputs:
+      - '/packages/**/*'
+      - '!/packages/**/dist'
     options:
       runDepsInParallel: false
       outputStyle: 'stream'
@@ -187,7 +190,7 @@ tasks:
       # outputStyle: 'buffer'
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-    command: 'pnpm publish -r --no-git-checks --force --tag bollards --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
+    command: "p dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath @workspaceRoot --logLevel debug" # https://tinyurl.com/2okqdgo7
     # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # inputs:
     #   - ../

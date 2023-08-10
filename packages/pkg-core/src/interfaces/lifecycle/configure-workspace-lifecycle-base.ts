@@ -3,14 +3,11 @@ import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
 import { AsyncHook } from "../../hooks";
 import {
-  assertIsResult,
   Context,
   ContextCommand,
-  LifecycleMappedReturnByMethod,
-  LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleOptionsByMethodKeyedByProviderArray,
+  LifecycleMappedReturnByMethod, LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleStaticInterface,
-  Result,
+  Result
 } from "../../__types__";
 
 /**

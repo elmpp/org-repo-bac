@@ -1,10 +1,6 @@
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
-  assertIsOk,
-  Config,
-  Context,
-  SynchroniseWorkspaceLifecycleBase,
-  ServiceMap,
+  assertIsOk, Context, ServiceMap, SynchroniseWorkspaceLifecycleBase
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
@@ -37,7 +33,7 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
     workspacePath: AddressPathAbsolute;
     // workingPath: string;
     options: {
-      // a: 'a'
+      a: 'a'
       // name: string;
       // config: Config;
       // configPath: string;
@@ -46,7 +42,7 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
       // cliPath?: string;
     }
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
-    return async ({ context, workspacePath, options: {name, config, configPath, cliVersion, cliRegistry, cliPath} }) => {
+    return async ({ context, workspacePath, options: {} }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
         const workspacePathParent = addr.pathUtils.dirname(workspacePath);
         if (!(await xfs.existsPromise(workspacePathParent.address))) {
@@ -70,11 +66,11 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
         address: `@business-as-code/plugin-core-essentials#namespace=synchronise-workspace`,
         context,
         options: {
-          name,
-          configPath,
-          cliVersion,
-          cliRegistry,
-          cliPath,
+          // name,
+          // configPath,
+          // cliVersion,
+          // cliRegistry,
+          // cliPath,
 
           // ...context.cliOptions.flags,
           // name: context.cliOptions.flags.name,

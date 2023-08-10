@@ -60,7 +60,8 @@ export class ReleaseService {
   }): Promise<Result<{version: string, tag: string}, {error: BacError}>> {
     const { context } = this.options;
 
-    await this.build();
+    const buildRes = await this.build();
+    expectIsOk(buildRes)
 
     const changesetService = await context.serviceFactory("changeset", {
       context,

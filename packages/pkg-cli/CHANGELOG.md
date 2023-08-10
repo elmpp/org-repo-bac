@@ -1,5 +1,17 @@
 # @business-as-code/cli
 
+## 0.0.0-bollards-20230810141915
+
+### Patch Changes
+
+- local snapshot
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230810141915
+  - @business-as-code/plugin-core-essentials@0.0.0-bollards-20230810141915
+  - @business-as-code/plugin-core-git@0.0.0-bollards-20230810141915
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-bollards-20230810141915
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-bollards-20230810141915
+
 ## 0.0.0-latest-20230716081621
 
 ### Patch Changes

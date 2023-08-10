@@ -1,7 +1,6 @@
 
 import { AddressPathAbsolute, AddressUrlGitString } from "@business-as-code/address";
 import {
-  Config,
   ConfigureWorkspaceLifecycleBase, Context
 } from "@business-as-code/core";
 

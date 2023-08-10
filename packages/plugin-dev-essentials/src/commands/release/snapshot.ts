@@ -50,7 +50,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   async execute(context: ContextCommand<typeof ReleaseSnapshot>) {
 
-    const moonService = await context.serviceFactory('moon', {context, workingPath: '.'})
+    // const moonService = await context.serviceFactory('moon', {context, workingPath: '.'})
     const releaseService = await context.serviceFactory('release', {context, workingPath: '.'})
 
     const moonQuery = `projectType=library || projectType=application`

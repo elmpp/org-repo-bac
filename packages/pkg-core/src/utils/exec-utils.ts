@@ -1,6 +1,5 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
 // const {
 //   execa,
 //   ExecaError,
@@ -10,7 +9,7 @@ import { xfs } from "@business-as-code/fslib";
 import execa, {
   ExecaError,
   ExecaReturnValue,
-  Options as ExecaOptions,
+  Options as ExecaOptions
 } from "execa";
 // import {
 //   execa,
@@ -26,7 +25,7 @@ import {
   logLevelMatching,
   ok,
   Outputs,
-  Result,
+  Result
 } from "../__types__";
 
 // export interface ExecOptions

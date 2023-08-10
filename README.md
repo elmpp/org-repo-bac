@@ -16,9 +16,8 @@
 
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
 
- - p moon run root:publishDev // -> when failing: p moon run root:buildWatch // -> when unauthenticated: (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login)
+ <!-- - p moon run root:publishDev // -> when failing: p moon run root:buildWatch // -> when unauthenticated: (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login) -->
 
- - pnpm ls -r --depth 1; pnpm view @business-as-code/cli --registry http://localhost:4873/; pnpm view @business-as-code/cli@bollards --registry http://localhost:4873/
  - p moon query projects 'projectType=application || projectType=library' # snapshottable projects
 
  PUBLISHING SNAPSHOT LOCAL
@@ -29,6 +28,7 @@ Debugging Packages/Listing
  - p dev:runCli plugins --core  // show all packages
  - p dev:runCli  // show all commands
  - p list -r // show all pnpm workspaces (use --json for more)
+ - pnpm ls -r --depth 1; pnpm view @business-as-code/cli --registry http://localhost:4873/; pnpm view @business-as-code/cli@bollards --registry http://localhost:4873/
 
 ## Test commands
 
