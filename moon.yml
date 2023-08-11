@@ -173,24 +173,33 @@ tasks:
   publishDev:
     deps:
       # - ~:returnFail
-      # - ~:build
+      - ~:build
       # - '@business-as-code/tests-verdaccio:verdaccioEnsureRunning'
       # - '@business-as-code/tests-verdaccio:verdaccioLogin'
       # - ~:doUnpublish
       # - ~:unpublishDev
     # local: true
     inputs:
-      - '/packages/**/*'
-      - '!/packages/**/dist'
+      - "/packages/**/*"
+      # - "!/packages/**/dist/**/*" // GH issue opened - https://tinyurl.com/28axoo53
+      # - "!/packages/**/*" # snapshotting bumps the version/changelog
+      # - "!/packages/**/package.json" # snapshotting bumps the version/changelog
+      # - "!/packages/**/CHANGELOG.md" # snapshotting bumps the version/changelog
+    outputs:
+      - "/packages/**/dist/**/*"
+      - "/packages/**/package.json"
+      - "/packages/**/CHANGELOG.md"
     options:
       runDepsInParallel: false
       outputStyle: 'stream'
       runFromWorkspaceRoot: true
+
       # persistent: true
       # outputStyle: 'buffer'
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
-    command: "p dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath @workspaceRoot --logLevel debug" # https://tinyurl.com/2okqdgo7
+    # command: "echo 'poo'" # https://tinyurl.com/2okqdgo7
+    command: "pnpm dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath $workspaceRoot --logLevel debug" # https://tinyurl.com/2okqdgo7
     # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # inputs:
     #   - ../

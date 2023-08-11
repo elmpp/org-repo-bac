@@ -51,23 +51,22 @@ export class ReleaseService {
     query,
     message,
     registry = "https://registry.npmjs.org",
-    tag = 'latest',
+    tag = "latest",
   }: {
     query?: string;
     message: string;
     registry?: string;
     tag?: string;
-  }): Promise<Result<{version: string, tag: string}, {error: BacError}>> {
+  }): Promise<Result<{ version: string; tag: string }, { error: BacError }>> {
     const { context } = this.options;
 
-    const buildRes = await this.build();
-    expectIsOk(buildRes)
+    // const buildRes = await this.build(); // do not build here - moon
+    // expectIsOk(buildRes)
 
     const changesetService = await context.serviceFactory("changeset", {
       context,
       workingPath: ".",
     });
-
 
     await changesetService.create({
       query: "projectType=library || projectType=application",
@@ -80,21 +79,21 @@ export class ReleaseService {
       isSnapshot: true,
     });
 
-    expectIsOk(versionRes)
+    expectIsOk(versionRes);
 
     const publishRes = await changesetService.publish({
       registry,
       tag,
     });
 
-    expectIsOk(publishRes)
+    expectIsOk(publishRes);
 
     return {
       success: true,
       res: {
-        version: '',
+        version: "",
         tag,
-      }
-    }
+      },
+    };
   }
 }

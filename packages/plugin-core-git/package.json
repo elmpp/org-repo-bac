@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-core-git",
-  "version": "0.0.0-bollards-20230810141915",
+  "version": "0.0.0-latest-20230811071401",
   "description": "Core plugin package @business-as-code/plugin-core-git",
   "main": "src/index.ts",
   "files": [

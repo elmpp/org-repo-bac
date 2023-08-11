@@ -65,6 +65,7 @@ export type ContextCommand<T extends typeof Command> = {
     runWorkspace: RunWorkspaceLifecycleBase<any>,
     runProject: RunProjectLifecycleBase<any>,
   };
+  /** @internal @private @ignore @hidden @deprecated */
   toJSON: () => string
 };
 
@@ -86,6 +87,7 @@ export type Context = {
    Note that this will differ from values in services etc
    */
   workspacePath: AddressPathAbsolute;
+  /** @internal @private @ignore @hidden @deprecated */
   toJSON: () => string
 };
 

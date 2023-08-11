@@ -1,5 +1,155 @@
 # @business-as-code/error
 
+## 0.0.0-latest-20230811071401
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811071255
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811065515
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811065333
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811065238
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811064344
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811064309
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811063804
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811063739
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810180146
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810175911
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810175810
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810175721
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810174829
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810174807
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810174747
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810173737
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810172021
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810171959
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810171910
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810171831
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810171226
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810171123
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230810171057
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-bollards-20230810165657
+
+### Patch Changes
+
+- local snapshot
+
 ## 0.0.0-bollards-20230810141915
 
 ### Patch Changes

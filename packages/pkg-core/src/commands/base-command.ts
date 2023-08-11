@@ -71,6 +71,7 @@ const colors = ansiColors.create();
 export type BaseParseOutput = {
   flags: {
     ["logLevel"]: LogLevel;
+    ["json"]: boolean;
     // ["workspacePath"]?: string;
     // ["options"]: Record<string, any>;
   };
@@ -91,6 +92,7 @@ export abstract class BaseCommand<
       default: "info",
       required: true,
     })(),
+    json: oclif.Flags.boolean(),
     // workspacePath: oclif.Flags.string({
     //   description: "Explicit option to set workspacePath",
     //   // helpGroup: "GLOBAL",
@@ -157,7 +159,8 @@ export abstract class BaseCommand<
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
 
     // @ts-ignore
-    return cmd._run<ReturnType<T["run"]>>();
+    const res = await cmd._run<ReturnType<T["run"]>>();
+    return res
   }
 
   /** Our custom initialise hook. Do not use 'init' which is an oclif base method */
@@ -670,7 +673,7 @@ export abstract class BaseCommand<
     }
   }
 
-  async run(): Promise<void> {
+  async run(): Promise<unknown> {
     const parseOutput = (await this.parse({
       flags: {
         ...this.ctor.flags,
@@ -703,7 +706,7 @@ export abstract class BaseCommand<
       (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
       throw err; // will end up in this.catch()
     }
-    return;
+    return res.res; // return ok payload to support Oclif's --json support - https://tinyurl.com/2bt2z7x7
   }
 
   /**
@@ -716,7 +719,6 @@ export abstract class BaseCommand<
     await this.initialise({ parseOutput, config: this.config });
     const context = await this.setupContext({ parseOutput });
     await this.initialisePlugins({ context });
-
     const res = await this.execute(context);
     return res;
   }

@@ -259,18 +259,14 @@ export class TestService {
   }
 
   async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
-    const releaseService = await this.options.context.serviceFactory(
-      "release",
+    const moonService = await this.options.context.serviceFactory(
+      "moon",
       {
         context: this.options.context,
         workingPath: ".",
       }
     );
-    return releaseService.snapshot({
-      message: 'local snapshot',
-      registry: 'http://localhost:4873',
-      tag: 'bollards',
-    })
+    return moonService.runTask({ command: "publishDev" })
   }
 
   async test({
