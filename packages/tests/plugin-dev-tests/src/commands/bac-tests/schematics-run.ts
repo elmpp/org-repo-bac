@@ -2,7 +2,7 @@ import {
   assertIsOk,
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { MessageName } from "@business-as-code/error";
@@ -27,7 +27,7 @@ export class BacTestsSchematicsRun extends BaseCommand<
   // define flags that can be inherited by any command that extends BaseCommand
   static override baseFlags = {
     ...BaseCommand.baseFlags,
-    schematicOptions: Flags.custom<Record<string, unknown>>({
+    schematicOptions: Oclif.Flags.custom<Record<string, unknown>>({
       summary: "Schematic Options",
       // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
       helpGroup: "GLOBAL",
@@ -44,20 +44,20 @@ export class BacTestsSchematicsRun extends BaseCommand<
   };
 
   static override flags = {
-    // payload: Flags.custom({
+    // payload: Oclif.Flags.custom({
     //     parse: async (): Promise<any> => {},
     //     description: 'team to use',
     //     default: () => {},
     // }),
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: true,
     }),
-    schematicsAddress: Flags.string({
+    schematicsAddress: Oclif.Flags.string({
       description: "Schematics Address",
       required: true,
     }),
-    // name: Flags.string({
+    // name: Oclif.Flags.string({
     //   description: "Schematics Address",
     //   // parse: async (input) => {
     //   //   console.log(`input :>> `, input)
@@ -65,7 +65,7 @@ export class BacTestsSchematicsRun extends BaseCommand<
     //   // }
     //   // required: true,
     // }),
-    // schematicOptions: Flags.custom<any>({
+    // schematicOptions: Oclif.Flags.custom<any>({
     //   description: "Schematics Options",
     //   parse: async (jsonString) => {
     //     // console.log(`input :>> `, input)

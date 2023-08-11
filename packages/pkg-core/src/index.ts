@@ -1,6 +1,6 @@
-import { Args, Flags, ux } from "@oclif/core";
+// import { Args, Flags, ux } from "@oclif/core";
 import * as Interfaces from "@oclif/core/lib/interfaces/parser"; // need to import into subCommands because of this dreaded bug - https://tinyurl.com/2fzprqtm
-// import * as Oclif from '@oclif/core'
+import * as Oclif from '@oclif/core'
 
 export * from "./commands";
 export { constants } from "./constants";
@@ -11,10 +11,10 @@ export * from "./utils";
 export * from "./validation";
 export * from "./__types__";
 export {
-  Args,
-  Flags,
+  // Args,
+  // Flags,
   Interfaces,
-  ux,
+  Oclif,
   // OclifPlugin
 };
 

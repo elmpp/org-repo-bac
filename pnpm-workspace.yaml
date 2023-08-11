@@ -4,3 +4,4 @@ packages:
   - 'packages/tests/*'
   # exclude packages that are inside test directories
   # - '!**/test/**'
+  - '!packages/*.ignore'

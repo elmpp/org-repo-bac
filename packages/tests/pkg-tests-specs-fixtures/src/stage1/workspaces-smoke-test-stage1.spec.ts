@@ -1,7 +1,8 @@
-import { addr } from "@business-as-code/address";
-import { formatUtils } from "@business-as-code/core";
-import { xfs } from "@business-as-code/fslib";
-import { createPersistentTestEnv } from "@business-as-code/tests-core";
+// import { addr } from "@business-as-code/address";
+// import { formatUtils } from "@business-as-code/core";
+// import { xfs } from "@business-as-code/fslib";
+// import { createPersistentTestEnv } from "@business-as-code/tests-core";
+export {}
 
 /** are we creating our packages correctly */
 describe("workspaces-smoke-test", () => {

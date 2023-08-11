@@ -8,7 +8,7 @@ import {
   assertIsOk,
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
@@ -26,26 +26,26 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
 //   ];
 
   static override flags = {
-    // name: Flags.string({
+    // name: Oclif.Flags.string({
     //   description: "Repository name",
     //   required: true,
     // }),
-    repositoriesPath: Flags.string({
+    repositoriesPath: Oclif.Flags.string({
       description: "Repositories name",
       required: false,
     }),
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: false,
     }),
-    // configPath: Flags.string({
+    // configPath: Oclif.Flags.string({
     //   description: "Relative or absolute path to a workspace configuration",
     //   required: false,
     // }),
   };
 
   static override args = {
-    // path: Args.string({
+    // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),

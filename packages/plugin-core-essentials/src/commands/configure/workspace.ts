@@ -2,7 +2,7 @@ import {
   fsUtils,
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
   LifecycleOptionsByMethodKeyedByProviderArray,
 } from "@business-as-code/core";
@@ -17,11 +17,11 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    // name: Flags.string({
+    // name: Oclif.Flags.string({
     //   description: "Workspace name",
     //   required: true,
     // }),
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: true,
     }),

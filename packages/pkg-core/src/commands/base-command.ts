@@ -92,7 +92,9 @@ export abstract class BaseCommand<
       default: "info",
       required: true,
     })(),
-    json: oclif.Flags.boolean(),
+    json: oclif.Flags.boolean({
+      required: false,
+    }),
     // workspacePath: oclif.Flags.string({
     //   description: "Explicit option to set workspacePath",
     //   // helpGroup: "GLOBAL",

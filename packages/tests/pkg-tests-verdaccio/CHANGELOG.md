@@ -1,5 +1,29 @@
 # @business-as-code/tests-verdaccio
 
+## 0.0.0-latest-20230811110927
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230811110927
+  - @business-as-code/fslib@0.0.0-latest-20230811110927
+
+## 0.0.0-latest-20230811110816
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230811110816
+  - @business-as-code/fslib@0.0.0-latest-20230811110816
+
+## 0.0.0-latest-20230811110751
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230811110751
+  - @business-as-code/fslib@0.0.0-latest-20230811110751
+
 ## 0.0.0-latest-20230811071401
 
 ### Patch Changes

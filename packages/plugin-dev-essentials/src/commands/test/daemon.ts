@@ -1,8 +1,7 @@
 import {
   BaseCommand,
   ContextCommand,
-  Flags,
-  Args,
+  Oclif,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 
@@ -17,14 +16,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: false,
     }),
   };
 
   static override args = {
-    action: Args.string({
+    action: Oclif.Args.string({
       description: "Absolute/Relative path",
       required: true,
       options: ["start", "stop"],

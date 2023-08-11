@@ -1,7 +1,7 @@
 import {
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
   execUtils as _execUtils,
   execUtils,
@@ -17,28 +17,28 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: false,
     }),
-    stage: Flags.custom<"stage0" | "stage1" | "stage2" | "stage3">({
+    stage: Oclif.Flags.custom<"stage0" | "stage1" | "stage2" | "stage3">({
       summary: "Test Stage",
       options: ["stage0", "stage1", "stage2", "stage3"],
       required: true,
     })(),
-    testFileMatch: Flags.string({
+    testFileMatch: Oclif.Flags.string({
       description: "Test file match",
       required: false,
     }),
-    watch: Flags.boolean({
+    watch: Oclif.Flags.boolean({
       description: "Watch",
       required: false,
     }),
-    // testMatch: Flags.string({
+    // testMatch: Oclif.Flags.string({
     //   description: "Test it/describe name match",
     //   required: false,
     // }),
-    cliSource: Flags.custom<"cliRegistry" | "cliLinked">({
+    cliSource: Oclif.Flags.custom<"cliRegistry" | "cliLinked">({
       summary: "Method of cli sourcing",
       options: ["cliRegistry", "cliLinked"],
       required: true,
@@ -46,7 +46,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   };
 
   static override args = {
-    // path: Args.string({
+    // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),

@@ -1,5 +1,23 @@
 # @business-as-code/fslib
 
+## 0.0.0-latest-20230811110927
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811110816
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-latest-20230811110751
+
+### Patch Changes
+
+- this is a snapshot release
+
 ## 0.0.0-latest-20230811071401
 
 ### Patch Changes

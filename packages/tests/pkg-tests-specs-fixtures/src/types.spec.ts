@@ -2,7 +2,7 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import {
   Context,
   ContextCommand,
-  Flags,
+  Oclif,
   LifecycleImplementedMethods,
   LifecycleMethods,
   LifecycleOptionsByMethodAndProvider,
@@ -492,7 +492,7 @@ describe("types", () => {
     it("commands", () => {
       class CommandWithCustom extends BaseCommand<typeof CommandWithCustom> {
         static override flags = {
-          stringFlag: Flags.string({
+          stringFlag: Oclif.Flags.string({
             description: "Workspace name",
             required: true,
           }),
@@ -501,7 +501,7 @@ describe("types", () => {
         /** THIS IS HOW TO DEFINE CUSTOM OPTIONS!! */
         static override baseFlags = {
           ...BaseCommand.baseFlags,
-          customOptions: Flags.custom<Record<string, unknown>>({
+          customOptions: Oclif.Flags.custom<Record<string, unknown>>({
             parse: async (...args: any[]) => ({ a: 5 } as any),
             // multiple: true,
             // summary: "Schematic ",
@@ -519,6 +519,8 @@ describe("types", () => {
       expectTypeOf<FlagsInferred>().toMatchTypeOf<{
         stringFlag: string;
         customOptions?: Record<string, unknown>;
+        json: boolean;
+        logLevel: unknown;
       }>();
 
       type ParserOutputType = ParserOutput<
@@ -530,7 +532,7 @@ describe("types", () => {
         Pick<ParserOutputType["flags"], "logLevel">
       >().toEqualTypeOf<{ logLevel: LogLevel | undefined }>(); // we keep the required nullishness as we use ParserOutput inside Commands as well as outside-in
       expectTypeOf<Pick<ParserOutputType["flags"], "json">>().toEqualTypeOf<{
-        json: boolean | undefined;
+        json: boolean;
       }>(); // json is a base type, not derived from baseFlags in BaseCommand - vscode://eamodio.gitlens/link/r/deb373f5256b936edc18b2f0d0353a1f590bb9ff?url=git%40github.com%3Aelmpp%2Forg-repo-bac.git
     });
   });

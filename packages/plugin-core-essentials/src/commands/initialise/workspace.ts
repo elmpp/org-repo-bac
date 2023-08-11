@@ -10,7 +10,7 @@ import {
   fsUtils,
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
   Config,
   configSchema,
@@ -34,37 +34,37 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    name: Flags.string({
+    name: Oclif.Flags.string({
       description: "Workspace name",
       required: true,
     }),
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: true,
     }),
-    configPath: Flags.string({
+    configPath: Oclif.Flags.string({
       description: "Relative or absolute path to a workspace configuration",
       required: false,
     }),
-    cliVersion: Flags.string({
+    cliVersion: Oclif.Flags.string({
       description: "Specify a Bac cli version",
       required: false,
       default: "latest",
     }),
-    cliRegistry: Flags.string({
+    cliRegistry: Oclif.Flags.string({
       description: "Specify a package manager registry to load the Bac cli",
       required: false,
       default: "https://registry.npmjs.org",
       // default: "http://localhost:4873",
     }),
-    cliPath: Flags.string({
+    cliPath: Oclif.Flags.string({
       description: "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
       required: false,
     }),
   };
 
   static override args = {
-    // firstArg: Args.string(
+    // firstArg: Oclif.Args.string(
     //   {
     //     name: 'workspace',               // name of arg to show in help and reference with args[name]
     //     required: false,            // make the arg required with `required: true`
@@ -75,7 +75,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //     options: ['a', 'b'],        // only allow input to be from a discrete set
     //   }
     // ),
-    // path: Args.string({
+    // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),

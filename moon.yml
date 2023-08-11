@@ -126,6 +126,7 @@ tasks:
     platform: 'node'
     options:
       runFromWorkspaceRoot: true
+      cache: false # 'build' task is depended on by others and this busts their cache
       # affectedFiles: true
     # local: true
     # options:

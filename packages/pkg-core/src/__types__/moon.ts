@@ -1,7 +1,7 @@
 import type {
   // ProjectLanguage as MoonLanguage,
   // ProjectType as MoonProjectType,
-  Platform as MoonPlatform,
+  PlatformType as MoonPlatform,
 } from "@moonrepo/types";
 
 /** Moon query language - https://tinyurl.com/2ek7rph4 */

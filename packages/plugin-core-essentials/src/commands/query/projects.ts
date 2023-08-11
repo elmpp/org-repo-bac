@@ -1,9 +1,8 @@
 import {
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
-  ux,
 } from "@business-as-code/core";
 
 export class QueryProjects extends BaseCommand<
@@ -18,12 +17,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    query: Flags.string({
+    query: Oclif.Flags.string({
       description: "Query to select projects",
       required: false,
       default: "projectType=library || projectType=application",
     }),
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: true,
     }),

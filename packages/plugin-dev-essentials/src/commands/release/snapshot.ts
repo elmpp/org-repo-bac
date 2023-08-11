@@ -1,7 +1,7 @@
 import {
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
   execUtils as _execUtils,
 } from "@business-as-code/core";
@@ -16,25 +16,25 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ];
 
   static override flags = {
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: false,
     }),
-    // query: Flags.string({
+    // query: Oclif.Flags.string({
     //   description: "Query to select snapshotted projects",
     //   required: false,
     //   default: "projectType=library || projectType=application",
     // }),
-    message: Flags.string({
+    message: Oclif.Flags.string({
       description: "Message for the changeset",
       required: true,
     }),
-    registry: Flags.string({
+    registry: Oclif.Flags.string({
       description: "Specify a package manager registry to load the Bac cli",
       required: false,
       default: "http://localhost:4873",
     }),
-    tag: Flags.string({
+    tag: Oclif.Flags.string({
       description: "Add a tag to the published package",
       required: false,
       // default: "http://localhost:4873",
@@ -42,7 +42,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   };
 
   static override args = {
-    // path: Args.string({
+    // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),

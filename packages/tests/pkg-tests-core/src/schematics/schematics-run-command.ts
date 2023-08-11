@@ -2,7 +2,7 @@ import {
   assertIsOk,
   BaseCommand,
   ContextCommand,
-  Flags,
+  Oclif,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { MessageName } from "@business-as-code/error";
@@ -22,16 +22,16 @@ export class SchematicsRunCommand extends BaseCommand<
   //   ];
 
   static override flags = {
-    // payload: Flags.custom({
+    // payload: Oclif.Flags.custom({
     //     // parse: async (): Promise<any> => {},
     //     // description: 'team to use',
     //     // default: () => {},
     // }),
-    workspacePath: Flags.string({
+    workspacePath: Oclif.Flags.string({
       description: "Workspace name",
       required: true,
     }),
-    schematicsAddress: Flags.string({
+    schematicsAddress: Oclif.Flags.string({
       description: "Schematics Address",
       required: true,
     }),

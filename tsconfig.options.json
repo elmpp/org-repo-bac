@@ -59,6 +59,7 @@
     // "tsBuildInfoFile": "dist/.tsbuildinfo",
     // "rootDir": "src",
     "noErrorTruncation": true, // more verbose intellisense - https://tinyurl.com/yxa6ocvh
+    "verbatimModuleSyntax": false, // moon-config sets to true. We should probs make this work - https://tinyurl.com/2aps5mpn
   },
   "exclude": [
     "**/__mocks__/**/*",
