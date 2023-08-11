@@ -93,7 +93,7 @@ describe("initialise workspace", () => {
             "--blah",
             "noThere",
             "--workspacePath",
-            testContext.testEnvVars.workspacePath.original,
+            `'${testContext.testEnvVars.workspacePath.original}'`,
           ],
           { logLevel: "debug" }
         );
@@ -121,7 +121,7 @@ describe("initialise workspace", () => {
             "workspace",
             "nonExistentArg",
             "--workspacePath",
-            testContext.testEnvVars.workspacePath.original,
+            `'${testContext.testEnvVars.workspacePath.original}'`,
           ],
           { logLevel: "debug" }
         );

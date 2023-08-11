@@ -1,5 +1,16 @@
 # @business-as-code/tests-core
 
+## 0.0.0-latest-20230811111950
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230811111950
+  - @business-as-code/core@0.0.0-latest-20230811111950
+  - @business-as-code/error@0.0.0-latest-20230811111950
+  - @business-as-code/fslib@0.0.0-latest-20230811111950
+
 ## 0.0.0-latest-20230811110927
 
 ### Patch Changes

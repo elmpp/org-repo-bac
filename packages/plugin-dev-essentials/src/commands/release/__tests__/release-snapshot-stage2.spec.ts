@@ -20,7 +20,7 @@ describe("release-snapshot", () => {
           "http://localhost:4873",
           "--workspacePath",
           // testContext.testEnvVars.workspacePath.original,
-          testContext.testEnvVars.checkoutPath.original,
+          `'${testContext.testEnvVars.checkoutPath.original}'`,
         ],
         { logLevel: "debug" }
       );

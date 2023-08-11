@@ -56,7 +56,7 @@ describe("configure workspace", () => {
           "synchronise",
           "workspace",
           "--workspacePath",
-          testContext.testEnvVars.workspacePath.original,
+          `'${testContext.testEnvVars.workspacePath.original}'`,
         ],
         { logLevel: "debug" }
       );
