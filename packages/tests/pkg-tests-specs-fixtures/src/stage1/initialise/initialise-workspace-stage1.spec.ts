@@ -66,7 +66,7 @@ describe("initialise workspace", () => {
       const persistentTestEnv = await createPersistentTestEnv({});
 
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.setActiveWorkspacePath(
+        testContext.setActiveWorkspaceCliPath(
           testContext.testEnvVars.workspacePath
         );
 

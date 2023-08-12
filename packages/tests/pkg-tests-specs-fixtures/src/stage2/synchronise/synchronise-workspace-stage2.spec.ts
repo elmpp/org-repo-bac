@@ -47,7 +47,7 @@ describe("configure workspace", () => {
   it.only("updating the config will trigger the configure lifecycle and update projects", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
-      testContext.setActiveWorkspacePath(testContext.testEnvVars.workspacePath)
+      testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.workspacePath)
 
       await setup(testContext, "git-http-default-master.js" as Filename);
 

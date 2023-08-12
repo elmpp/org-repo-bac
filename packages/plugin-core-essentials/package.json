@@ -49,9 +49,6 @@
       },
       "configure": {
         "description": "Configuring of content"
-      },
-      "run": {
-        "description": "Running of commands"
       }
     }
   }

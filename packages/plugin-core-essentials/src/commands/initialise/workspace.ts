@@ -38,9 +38,16 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Workspace name",
       required: true,
     }),
-    workspacePath: Oclif.Flags.string({
-      description: "Workspace name",
+    workspacePath: Oclif.Flags.directory({
+      description: "Workspace path",
       required: true,
+      exists: false,
+      parse: async (aPath) => {
+        if (!addr.parsePath(aPath, {strict: false})) {
+          throw new Error(`Expected an valid relative/absolute path but received: ${aPath}`)
+        }
+        return aPath
+      },
     }),
     configPath: Oclif.Flags.string({
       description: "Relative or absolute path to a workspace configuration",
@@ -172,6 +179,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
+
+    console.log(`context. :>> `, context.workspacePath, context.cliOptions)
 
     let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
     if (!assertIsAddressPath(workspacePath)) {

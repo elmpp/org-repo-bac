@@ -34,7 +34,8 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
       description: "Repositories name",
       required: false,
     }),
-    workspacePath: Oclif.Flags.string({
+    workspacePath: Oclif.Flags.directory({
+  exists: true,
       description: "Workspace name",
       required: false,
     }),

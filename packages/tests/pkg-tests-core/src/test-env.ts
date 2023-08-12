@@ -32,6 +32,7 @@ import { SchematicsRunCommand } from "./schematics/schematics-run-command";
 import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,
+  sanitise,
 } from "./test-utils";
 import { XfsCacheManager } from "./xfs-cache-manager";
 
@@ -147,8 +148,8 @@ type EphemeralTestEnvVars = {
 export type TestEnvVars = PersistentTestEnvVars & EphemeralTestEnvVars;
 
 export type TestContext = {
-  /** By default, the cli used is the checkoutPath. Use this to change onto a scaffolded workspace */
-  setActiveWorkspacePath: (workspacePath: AddressPathAbsolute) => void;
+  /** By default, the cli used is the checkoutPath. Use this to change onto a scaffolded workspace. Must be the location holding the package.json with plugins etc */
+  setActiveWorkspaceCliPath: (workspacePath: AddressPathAbsolute) => void;
   copy: (
     sourcePath: keyof Stage0Content,
     // sourcePath: AddressPathRelative,
@@ -314,7 +315,8 @@ async function doCreatePersistentTestEnvs(
   };
 
   const [_folderName, stage] = getStageAndFolderName(
-    createPersistentTestEnvVars.cacheNamespaceFolder ??
+    createPersistentTestEnvVars.cacheNamespaceFolder ?
+      sanitise(createPersistentTestEnvVars.cacheNamespaceFolder) :
       getCurrentTestNameSanitised(),
     testFilename
   );
@@ -356,7 +358,7 @@ async function doCreatePersistentTestEnvs(
     createPersistentTestEnvVars.cacheRenewNamespace ?? false;
   // const cacheRenewNamespace =
   //   truthyFalsy(process.env.TEST_ENV_CACHE_RENEW) ?? createPersistentTestEnvVars.cacheRenewNamespace ?? false
-  const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder;
+  const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder) : undefined;
 
   // const checkoutPath = addr.packageUtils.resolveRoot({
   //   address: addr.parsePackage('root'),
@@ -742,7 +744,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
     function createTestContext(): TestContext {
       return {
-        setActiveWorkspacePath: (workspacePath: AddressPathAbsolute) => {
+        setActiveWorkspaceCliPath: (workspacePath: AddressPathAbsolute) => {
           activeWorkspacePath = workspacePath;
         },
         /** copies from the initialise tranche of tests */
@@ -804,11 +806,15 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // await oclifCore.execute({type: 'cjs', dir: cliPath.original, args})
           // console.log(`cliPath.original :>> `, cliPath.original)
 
-          const checkoutCliPath = getActiveCliPath();
-          // console.log(`checkoutCliPath :>> `, checkoutCliPath)
+          const activeCliPath = getActiveCliPath();
+          // const activeCliPath = testEnvVars.checkoutPath;
 
-          process.chdir(checkoutCliPath.original);
-          const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
+          // process.chdir(checkoutPath.original);
+          // process.chdir(activeCliPath.original); // the root oclif param handles this
+
+          console.log(`activeCliPath.original :>> `, activeCliPath.original)
+          const argsWithAdditional = args[0] === 'help' ? args : args;
+          // const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
           // console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
@@ -823,10 +829,12 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           let error = undefined;
           mockStdStart();
 
+          oclifCore.settings.debug = true;
+
           /**  */
           await oclifCore
             .run(argsWithAdditional, {
-              root: checkoutCliPath.original,
+              root: activeCliPath.original,
               debug: {
                 debug: 9,
                 info: 7,
@@ -838,13 +846,18 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             }) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((anError) => {
+
+              // TO DEBUG STUFF HERE, RUN WITH `DEBUG=* !!`
+
               BaseCommand.handleError({
                 err: anError,
                 exitProcess: false,
                 extra: {
                   args: argsWithAdditional,
                   logLevel,
-                  cwd: checkoutCliPath.original,
+                  cwd: process.cwd(),
+                  // argv: process.argv,
+                  // cwd: checkoutCliPath.original,
                 },
               }); // for parity with bin/{dev.ts,cmd.ts}
 

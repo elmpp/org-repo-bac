@@ -68,12 +68,13 @@ describe("initialise workspace", () => {
   }
 
   describe("creates a skeleton workspace without configPath using skeleton config", () => {
-    it('cliRegistry', async () => {
+    it.only('cliRegistry', async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         cliSource: "cliRegistry",
         cacheNamespaceFolder: 'creates a skeleton workspace without configPath using skeleton config',
       });
       await persistentTestEnv.test({}, async (testContext) => {
+        // testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.checkoutPath)
         const res = await testContext.command(
           [
             "initialise",
@@ -81,7 +82,8 @@ describe("initialise workspace", () => {
             "--name",
             "my-new-workspace",
             "--workspacePath",
-            `'${testContext.testEnvVars.workspacePath.original}'`,
+            `invalid:path`,
+            // `'${testContext.testEnvVars.workspacePath.original}'`,
             "--cliRegistry",
             "http://localhost:4873",
           ],

@@ -8,7 +8,7 @@ describe("configure workspace", () => {
     const persistentTestEnv = await createPersistentTestEnv({});
 
     await persistentTestEnv.test({}, async (testContext) => {
-      testContext.setActiveWorkspacePath(testContext.testEnvVars.workspacePath);
+      testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.workspacePath);
 
       const resCopy = await testContext.copy(
         "creates a skeleton workspace without configPath using skeleton config",

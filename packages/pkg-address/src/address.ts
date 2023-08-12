@@ -226,19 +226,18 @@ export class Address {
   }
 
   /** parses a path string with assumption it is in the platform's format (i.e. NativePath) */
-  parsePath(address: string, options: {resolveFromCwd: AddressPathAbsolute}): AddressPathAbsolute
-  parsePath(address: string, options?: {resolveFromCwd?: AddressPathAbsolute}): AddressDescriptor<AddressTypeByGroup<'path'>>
-  parsePath(address: string, options: {resolveFromCwd?: AddressPathAbsolute} = {}): AddressDescriptor<AddressTypeByGroup<'path'>> {
-    const desc = this.doParse({address, group: 'path', strict: true})
+  parsePath(address: string, options: {strict: false}): AddressDescriptor<AddressTypeByGroup<'path'>> | undefined
+  parsePath(address: string, options?: {strict?: true}): AddressDescriptor<AddressTypeByGroup<'path'>>
+  parsePath(address: string, {strict = true}: {strict?: boolean} = {}): AddressDescriptor<AddressTypeByGroup<'path'>> | undefined {
+    const desc = this.doParse({address, group: 'path', strict})
     // if (assertIsAddressPathRelative(desc) && resolveFromCwd) {
     //   return addressPath.
     // }
     return desc
   }
   /** parses a path string with assumption it is in the posix format regardless of platform (i.e. PortablePath) */
-  parsePPath(address: string, options: {resolveFromCwd: AddressPathAbsolute}): AddressPathAbsolute
-  parsePPath(address: string, options?: {resolveFromCwd?: AddressPathAbsolute}): AddressDescriptor<AddressTypeByGroup<'path'>>
-  parsePPath(address: string, options: {resolveFromCwd?: AddressPathAbsolute} = {}): AddressDescriptor<AddressTypeByGroup<'path'>> {
+  parsePPath(address: string, options?: {}): AddressDescriptor<AddressTypeByGroup<'path'>>
+  parsePPath(address: string, options: {} = {}): AddressDescriptor<AddressTypeByGroup<'path'>> {
     return this.doParse({address, group: 'path', strict: true})
   }
   parseUrl(address: string, options: {} = {}): AddressDescriptor<AddressTypeByGroup<'url'>> {

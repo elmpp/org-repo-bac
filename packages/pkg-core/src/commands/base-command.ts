@@ -95,12 +95,6 @@ export abstract class BaseCommand<
     json: oclif.Flags.boolean({
       required: false,
     }),
-    // workspacePath: oclif.Flags.string({
-    //   description: "Explicit option to set workspacePath",
-    //   // helpGroup: "GLOBAL",
-    //   required: false,
-    // }),
-
     // "options": oclif.Flags.custom<Record<string, unknown>>({
     //   summary: "Additional ",
     //   // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
@@ -140,6 +134,8 @@ export abstract class BaseCommand<
   ): Promise<ReturnType<T["run"]>> {
     if (!argv) argv = process.argv.slice(2);
 
+    console.log(`argv :>> `, argv);
+
     // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
     if (typeof opts === "string" && opts.startsWith("file://")) {
       opts = fileURLToPath(opts);
@@ -162,7 +158,7 @@ export abstract class BaseCommand<
 
     // @ts-ignore
     const res = await cmd._run<ReturnType<T["run"]>>();
-    return res
+    return res;
   }
 
   /** Our custom initialise hook. Do not use 'init' which is an oclif base method */
@@ -190,6 +186,7 @@ export abstract class BaseCommand<
   override warn(input: string | Error) {
     if (!this.jsonEnabled()) {
       this.logger.warn(BacError.fromError(input).toString());
+      // oclif.Errors.warn(BacError.fromError(input).toString());
       oclif.Errors.warn(input);
     }
     return input;
@@ -564,7 +561,7 @@ export abstract class BaseCommand<
           MessageName.SERVICE_NOT_FOUND,
           `Service '${serviceName}' not found. Ensure you have installed relevant plugins. Available: '${Object.keys(
             staticServices
-          ).join(', ')}'`
+          ).join(", ")}'`
         );
       }
 
@@ -618,9 +615,9 @@ export abstract class BaseCommand<
     exitProcess?: boolean;
     extra?: {
       args: string[];
-      cwd: string,
-      logLevel: LogLevel,
-    },
+      cwd: string;
+      logLevel: LogLevel;
+    };
   }) {
     // const logger = process.stderr.write; // reference does not seem to work
 
@@ -640,9 +637,14 @@ export abstract class BaseCommand<
       // }
 
       if (extra) {
-        process.stdout.write(`Failure during command invocation. Command: '${extra.args.join(' ')}'. Cwd: '${
-          extra.cwd
-        }'. Full command: 'cd ${extra.cwd}; pnpm bac ${extra.args.join(' ')}'` + EOL)
+        console.log(`process.cwd(), extra :>> `, process.cwd(), extra);
+        process.stdout.write(
+          `Failure during command invocation. Command: '${extra.args.join(
+            " "
+          )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
+            extra.cwd
+          }; pnpm bac-test ${extra.args.join(" ")}'` + EOL
+        );
       }
 
       const exitCode =
@@ -656,7 +658,7 @@ export abstract class BaseCommand<
           // process.stderr.write(stack)
           // await logger(stack);
           // process.stderr.write('bollocks')
-          process.stderr.write(stack + EOL)
+          process.stderr.write(stack + EOL);
         }
 
         // config.errorLogger.flush()
@@ -910,6 +912,7 @@ export abstract class BaseCommand<
   protected async getWorkspacePath(
     pathRelOrAbsoluteNative?: string
   ): Promise<AddressPathAbsolute> {
+
     if (!pathRelOrAbsoluteNative) {
       // when not supplied we derive it from the current install
       const workspacePathByDotfile = await findUp(
@@ -926,6 +929,7 @@ export abstract class BaseCommand<
         `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?.`
       );
     }
+
     let pathAddress: AddressPathAbsolute | AddressPathRelative = addr.parsePath(
       // pathRelOrAbsoluteNative ?? process.cwd() // do not fall back to cwd() yet - should be explicit until we can detect existing project
       pathRelOrAbsoluteNative
@@ -937,6 +941,11 @@ export abstract class BaseCommand<
       ) as AddressPathAbsolute;
     }
 
+    console.log(
+      `pathRelOrAbsoluteNative :>> `,
+      pathRelOrAbsoluteNative,
+      pathAddress
+    );
     return pathAddress;
   }
 }

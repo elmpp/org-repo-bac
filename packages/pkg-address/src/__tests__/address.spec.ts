@@ -610,7 +610,6 @@ describe("path", () => {
   });
 });
 
-
 describe("url", () => {
   it("githubRepoUrl - https://github.com/elmpp/org-repo.git#head=master", () => {
     runEntry(
@@ -853,7 +852,7 @@ describe("url", () => {
           scheme: "http",
           host: "localhost",
           port: 8174,
-          repo: 'bare-repo1.git',
+          repo: "bare-repo1.git",
           url: new URL(
             "http://localhost:8174/bare-repo1.git#commit=21c39617a9"
           ),
@@ -873,25 +872,19 @@ describe("url", () => {
     runEntry(
       buildEntry<"gitHttpRepoUrl">({
         original: "http://localhost:8174/bare-repo1.git",
-        originalNormalized:
-          "http://localhost:8174/bare-repo1.git",
+        originalNormalized: "http://localhost:8174/bare-repo1.git",
         address: "http://localhost:8174/bare-repo1.git",
-        addressNormalized:
-          "http://localhost:8174/bare-repo1.git",
+        addressNormalized: "http://localhost:8174/bare-repo1.git",
         group: "url",
         type: "gitHttpRepoUrl",
         parts: {
           scheme: "http",
           host: "localhost",
           port: 8174,
-          repo: 'bare-repo1.git',
-          url: new URL(
-            "http://localhost:8174/bare-repo1.git"
-          ),
-          params: new URLSearchParams({
-          }),
-          paramsSorted: new URLSearchParams({
-          }),
+          repo: "bare-repo1.git",
+          url: new URL("http://localhost:8174/bare-repo1.git"),
+          params: new URLSearchParams({}),
+          paramsSorted: new URLSearchParams({}),
         },
         arch: "darwin",
       })
@@ -901,10 +894,12 @@ describe("url", () => {
   it("gitSshRepoUrl - ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9", () => {
     runEntry(
       buildEntry<"gitSshRepoUrl">({
-        original: "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9",
+        original:
+          "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9",
         originalNormalized:
           "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9",
-        address: "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9",
+        address:
+          "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9",
         addressNormalized:
           "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9",
         group: "url",
@@ -912,9 +907,9 @@ describe("url", () => {
         parts: {
           scheme: "ssh",
           host: "localhost",
-          user: 'git-ssh-mock-server',
+          user: "git-ssh-mock-server",
           port: 2222,
-          repo: 'bare-repo1.git',
+          repo: "bare-repo1.git",
           url: new URL(
             "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9"
           ),
@@ -944,16 +939,14 @@ describe("url", () => {
         parts: {
           scheme: "ssh",
           host: "localhost",
-          user: 'git-ssh-mock-server',
+          user: "git-ssh-mock-server",
           port: 2222,
-          repo: 'bare-repo1.git',
+          repo: "bare-repo1.git",
           url: new URL(
             "ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git"
           ),
-          params: new URLSearchParams({
-          }),
-          paramsSorted: new URLSearchParams({
-          }),
+          params: new URLSearchParams({}),
+          paramsSorted: new URLSearchParams({}),
         },
         arch: "darwin",
       })
@@ -972,8 +965,8 @@ describe("url", () => {
         arch: "darwin",
         parts: {
           url: new URL("http://localhost:8174"),
-          scheme: 'http',
-          host: 'localhost',
+          scheme: "http",
+          host: "localhost",
           port: 8174,
         },
       })
@@ -991,8 +984,8 @@ describe("url", () => {
         arch: "darwin",
         parts: {
           url: new URL("http://localhost:8174"),
-          host: 'localhost',
-          scheme: 'http',
+          host: "localhost",
+          scheme: "http",
           port: 8174,
         },
       })
@@ -1724,10 +1717,10 @@ describe("Address posix", () => {
             "https://github.com/elmpp/org-repo.git#commit=21c39617a9"
           ),
           params: new URLSearchParams({
-            commit: '21c39617a9',
+            commit: "21c39617a9",
           }),
           paramsSorted: new URLSearchParams({
-            commit: '21c39617a9',
+            commit: "21c39617a9",
           }),
         },
       });
@@ -1764,7 +1757,14 @@ describe("Address posix", () => {
   });
 
   describe("specific parsing validation", () => {
-    describe("path", () => {});
+    describe("path", () => {
+      it("parsePath fails when expected", () => {
+        const res = addr.parsePath("/clearly\\guff$$$::path", {
+          strict: false,
+        });
+        expect(res).toBeFalsy();
+      });
+    });
     describe("url", () => {});
     describe("package", () => {
       it(`scaffoldIdentPackage requires a 'namespace' param`, () => {

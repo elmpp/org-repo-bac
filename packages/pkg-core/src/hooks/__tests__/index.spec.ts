@@ -60,8 +60,6 @@ describe("Hook", () => {
         },
       ]});
 
-      console.log(`res :>> `, res);
-
       expect(res).toEqual({
         provider: "moon",
         res: "blah",

@@ -22,7 +22,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       required: false,
       default: "projectType=library || projectType=application",
     }),
-    workspacePath: Oclif.Flags.string({
+    workspacePath: Oclif.Flags.directory({
+  exists: true,
       description: "Workspace name",
       required: true,
     }),

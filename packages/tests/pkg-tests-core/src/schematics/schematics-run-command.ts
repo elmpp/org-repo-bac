@@ -27,7 +27,8 @@ export class SchematicsRunCommand extends BaseCommand<
     //     // description: 'team to use',
     //     // default: () => {},
     // }),
-    workspacePath: Oclif.Flags.string({
+    workspacePath: Oclif.Flags.directory({
+  exists: true,
       description: "Workspace name",
       required: true,
     }),

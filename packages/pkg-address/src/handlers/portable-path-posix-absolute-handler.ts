@@ -1,5 +1,6 @@
 import { PortablePath } from '@business-as-code/fslib'
 import { AddressHandler } from '../__types__'
+import * as validateUtils from "../tools/validate-utils";
 import path from 'path'
 
 declare module '../__types__' {
@@ -15,6 +16,7 @@ export const handler: AddressHandler<'portablePathPosixAbsolute'> = {
   group: 'path',
   parse({address, arch, pathType}) {
     if (arch !== 'win32') {
+      if (!validateUtils.isValidPath(address, {})) return
       if (address.match(POSIX_PATH_ABSOLUTE_REGEX)) {
         const suffix = address.endsWith('/*') ? '/*' : undefined
         const original = (pathType === 'portable') ? fromPortablePath(address, arch) : address

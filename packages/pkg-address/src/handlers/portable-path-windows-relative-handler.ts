@@ -1,5 +1,6 @@
 import { PortablePath } from '@business-as-code/fslib'
 import { AddressHandler } from '../__types__'
+import * as validateUtils from "../tools/validate-utils";
 import { fromPortablePath, toPortablePath } from './portable-path-posix-absolute-handler'
 import path from 'path'
 
@@ -16,6 +17,7 @@ export const handler: AddressHandler<'portablePathWindowsRelative'> = {
   group: 'path',
   parse({address, arch, pathType}) {
     if (arch === 'win32') {
+      if (!validateUtils.isValidPath(address, {})) return
       if (address.match(WINDOWS_PATH_RELATIVE_REGEX)) {
         const suffix = address.endsWith('/*') || address.endsWith('\*') ? '/*' : undefined
         const original = (pathType === 'portable') ? fromPortablePath(address, arch) : address
