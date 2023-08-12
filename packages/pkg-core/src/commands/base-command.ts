@@ -134,8 +134,6 @@ export abstract class BaseCommand<
   ): Promise<ReturnType<T["run"]>> {
     if (!argv) argv = process.argv.slice(2);
 
-    console.log(`argv :>> `, argv);
-
     // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
     if (typeof opts === "string" && opts.startsWith("file://")) {
       opts = fileURLToPath(opts);

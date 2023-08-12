@@ -1,5 +1,5 @@
 import { addr } from "@business-as-code/address";
-import { expectIsOk } from "@business-as-code/core";
+import { UnwrapPromise, expectIsOk } from "@business-as-code/core";
 import { Filename, xfs } from "@business-as-code/fslib";
 import {
   createPersistentTestEnv,
@@ -12,25 +12,17 @@ import {
 describe("initialise workspace", () => {
   jest.setTimeout(25000);
 
-  async function setup({
-    testContext,
-    configFilename,
-    stage0Content,
-  }: {
-    testContext: TestContext;
-    configFilename: Filename;
-    stage0Content: keyof Stage0Content;
-  }) {
-    const resCopy = await testContext.copy(
-      stage0Content,
-      testContext.testEnvVars.workspacePath
-    );
-    expectIsOk(resCopy);
-
+  async function assertCommon({testContext, configFilename, res}: {
+    testContext: TestContext,
+    configFilename: Filename,
+    res: UnwrapPromise<ReturnType<TestContext["command"]>>
+  }
+  ) {
+    expectIsOk(res);
 
     await (async function expectWorkspaceHasConfig() {
 
-      let expectConfig = resCopy.res.expectUtil.createConfig();
+      let expectConfig = res.res.expectUtil.createConfig();
 
       const cliCheckoutPath = addr.packageUtils.resolve({
         address: addr.parsePackage(`@business-as-code/cli`),
@@ -53,12 +45,10 @@ describe("initialise workspace", () => {
 
     await (async function expectManifestIsOk() {
 
-      const expectFs = resCopy.res.expectUtil.createFs()
+      const expectFs = res.res.expectUtil.createFs()
 
       expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'])
     })();
-
-
   }
 
   describe("creates a skeleton workspace without configPath using skeleton config", () => {
@@ -70,12 +60,72 @@ describe("initialise workspace", () => {
           testContext.testEnvVars.workspacePath
         );
 
-        await setup({
-          testContext,
-          configFilename: "skeleton.js" as Filename,
-          stage0Content:
-            "creates a skeleton workspace without configPath using skeleton config",
-        });
+        const resCopy = await testContext.copy(
+          "creates a skeleton workspace without configPath using skeleton config",
+          testContext.testEnvVars.workspacePath
+        );
+
+        assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+      });
+    });
+  });
+
+  describe("stage0 content is produced according to current 'cliSource'", () => {
+    it("cliLinked", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+
+      await persistentTestEnv.test({}, async (testContext) => {
+
+        if (testContext.testEnvVars.cliSourceActive !== 'cliLinked') {
+          return
+        }
+
+        testContext.setActiveWorkspaceCliPath(
+          testContext.testEnvVars.workspacePath
+        );
+
+        const resCopy = await testContext.copy(
+          "creates a skeleton workspace without configPath using skeleton config",
+          testContext.testEnvVars.workspacePath
+        );
+
+        assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+
+        await (async function expectManifestIsOk() {
+
+          const expectFs = resCopy.res.expectUtil.createFs()
+
+          expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], expect.stringMatching(/^link\:.*pkg-cli$/))
+        })();
+      });
+    });
+
+    it("cliRegistry", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+
+      await persistentTestEnv.test({}, async (testContext) => {
+
+        if (testContext.testEnvVars.cliSourceActive !== 'cliRegistry') {
+          return
+        }
+
+        testContext.setActiveWorkspaceCliPath(
+          testContext.testEnvVars.workspacePath
+        );
+
+        const resCopy = await testContext.copy(
+          "creates a skeleton workspace without configPath using skeleton config",
+          testContext.testEnvVars.workspacePath
+        );
+
+        assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+
+        await (async function expectManifestIsOk() {
+
+          const expectFs = resCopy.res.expectUtil.createFs()
+
+          expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'latest')
+        })();
       });
     });
   });

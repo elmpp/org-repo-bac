@@ -25,6 +25,8 @@ describe("test-env-smoke-test", () => {
         ["schematics", "initialise-workspace", "factory"],
         expect.stringMatching("./src/schematics/")
       );
+
+      expect(testContext.testEnvVars.cliSourceActive).toMatch(/cliLinked|cliRegistry/) // active is the required runtime env value
     });
   });
 });

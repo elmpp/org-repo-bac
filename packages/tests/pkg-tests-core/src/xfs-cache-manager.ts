@@ -145,7 +145,7 @@ export class XfsCacheManager {
   }
   async removeNamespace({namespace}: {namespace: string}) {
     const cacheEntry = await this.getCacheEntry({key: 'dummy', namespace})
-
+console.log(`removing namespace  :>> `, namespace )
     await xfs.removePromise(cacheEntry.outputs._namespaceBase.address)
     await xfs.removePromise(cacheEntry.content._namespaceBase.address)
 

@@ -31,11 +31,6 @@ describe("initialise workspace", () => {
     const expectFs = res.res.expectUtil.createFs();
     const expectConfig = res.res.expectUtil.createConfig();
 
-    console.log(
-      `testContext.testEnvVars.checkoutPath :>> `,
-      testContext.testEnvVars.checkoutPath
-    );
-
     const cliCheckoutPath = addr.packageUtils.resolve({
       address: addr.parsePackage(`@business-as-code/cli`),
       projectCwd: testContext.testEnvVars.checkoutPath,
@@ -68,7 +63,7 @@ describe("initialise workspace", () => {
   }
 
   describe("creates a skeleton workspace without configPath using skeleton config", () => {
-    it.only('cliRegistry', async () => {
+    it('cliRegistry', async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         cliSource: "cliRegistry",
         cacheNamespaceFolder: 'creates a skeleton workspace without configPath using skeleton config',

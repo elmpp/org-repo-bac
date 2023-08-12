@@ -311,7 +311,7 @@ async function doCreatePersistentTestEnvs(
     if (!matches?.[1]) {
       throw new Error(`Test file must be suffixed with -stage[0-9].spec.ts`);
     }
-    return [testName, matches![1] as `stage${number}`];
+    return [sanitise(testName), matches![1] as `stage${number}`];
   };
 
   const [_folderName, stage] = getStageAndFolderName(
@@ -418,7 +418,7 @@ async function doCreateEphemeralTestEnvVars(
   persistentTestEnvVars: PersistentTestEnvVars
 ): Promise<EphemeralTestEnvVars> {
   const folderNameSanitised =
-    persistentTestEnvVars.cacheNamespaceFolder ?? getCurrentTestNameSanitised();
+    persistentTestEnvVars.cacheNamespaceFolder ? sanitise(persistentTestEnvVars.cacheNamespaceFolder) : getCurrentTestNameSanitised();
   // const processNamespace = createEphemeralTestEnvVars.processNamespace
   //   ? sanitise(createEphemeralTestEnvVars.processNamespace)
   //   : getCurrentTestNameSanitised();
@@ -565,15 +565,14 @@ async function setupFolders(
       testEnvVars.folderName ?? getCurrentTestNameSanitised(false);
     if (!testsFolderName) {
       throw new Error(
-        `For tests within setupFixtures, a 'processNamespace' must be supplied`
+        `testsFolderName not found`
       );
     }
 
     const testPath = addr.pathUtils.join(
       testEnvVars.testsPath,
-      addr.parsePPath(testsFolderName)
+      addr.parsePath(testsFolderName)
     );
-
     await xfs.removePromise(testPath.address);
     await xfs.mkdirpPromise(testPath.address);
   };
@@ -701,11 +700,23 @@ function validateTestEnv({
     );
   }
   if (
-    testEnvVars.cacheNamespaceFolder &&
-    testEnvVars.cacheNamespaceFolder !== testEnvVars.folderName
+    testEnvVars.cacheNamespaceFolder
   ) {
+    if (testEnvVars.cacheNamespaceFolder !== testEnvVars.folderName) {
+      throw new Error(
+        `FolderName has not been set from the supplied cacheNamespaceFolder. Supplied: '${testEnvVars.cacheNamespaceFolder}', folderName: '${testEnvVars.folderName}'`
+      );
+    }
+    if (testEnvVars.cacheNamespaceFolder.match(/['"]/)) {
+      throw new Error(
+        `CacheNamespaceFolder still contains quote characters. Has it been ran through sanitise()?. Supplied: '${testEnvVars.cacheNamespaceFolder}'`
+      );
+    }
+  }
+
+  if (testEnvVars.folderName.match(/['"]/)) {
     throw new Error(
-      `FolderName has not been set from the supplied cacheNamespaceFolder. Supplied: '${testEnvVars.cacheNamespaceFolder}', folderName: '${testEnvVars.folderName}'`
+      `folderName still contains quote characters. Has it been ran through sanitise()?. Supplied: '${testEnvVars.folderName}'`
     );
   }
 
@@ -752,6 +763,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           sourcePathRel: keyof Stage0Content,
           destinationPath: AddressPathAbsolute
         ) => {
+
+          const sourcePathRelSanitised = sanitise(sourcePathRel)
           // assumes copy from stage1 test
           const testStagePath = basePaths["stage0" as keyof typeof basePaths];
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original}`));
@@ -759,7 +772,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           const sourcePath = addr.pathUtils.join(
             testStagePath,
             addr.parsePath("tests"),
-            addr.parsePath(`${sourcePathRel}`)
+            addr.parsePath(`${sourcePathRelSanitised}`)
           );
 
           if (!xfs.existsPromise(sourcePath.address)) {
@@ -812,7 +825,6 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // process.chdir(checkoutPath.original);
           // process.chdir(activeCliPath.original); // the root oclif param handles this
 
-          console.log(`activeCliPath.original :>> `, activeCliPath.original)
           const argsWithAdditional = args[0] === 'help' ? args : args;
           // const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
           // console.log(`argsWithAdditional :>> `, argsWithAdditional)
@@ -1169,8 +1181,6 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
     const testContext = await createTestContext();
 
-    await setupFolders(testEnvVars);
-
     if (
       testEnvVars.cliSource &&
       testEnvVars.cliSourceActive !== testEnvVars.cliSource
@@ -1179,6 +1189,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
         `---- Skipping test with cliSource '${testEnvVars.cliSource}'. Current active cliSource: '${testEnvVars.cliSourceActive}' ----`
       );
     } else {
+      await setupFolders(testEnvVars); // only do this when running the tests!!
       await run(testContext);
     }
 

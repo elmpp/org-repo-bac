@@ -18,7 +18,11 @@ export function getCurrentTestNameSanitised(strict: boolean = true): string | un
   return sanitise(expect.getState().currentTestName!)
   // return (expect.getState().currentTestName ?? testEnvVars?.debugId ?? 'setupFilesAfterEnv')
 }
-export const sanitise = (str: string): string => str.replace(/['"~><]/, '').replace(/[\s;+/\\]+/g, '_')
+export const sanitise = (str: string): string => {
+  // @ts-ignore
+  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\]+/g, '_')
+  return res
+}
 
 
 // export function expectIsOk<T extends Result<any, any>>(res: T): asserts res is Extract<T, {success: true}> {

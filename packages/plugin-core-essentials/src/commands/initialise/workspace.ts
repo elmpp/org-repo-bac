@@ -161,9 +161,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     }
     const configRaw = module.config;
 
-    const config = configSchema.safeParse(configRaw);
+    const config = configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
 
-    if (!config.success) {
+    if (config.success === false) {
       throw new BacErrorWrapper(
         MessageName.CONFIGURATION_INVALID_ERROR,
         `Configuration file found but has validation errors. ${config.error.message}. Path: '${configPath.original}'`,
@@ -179,8 +179,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
-
-    console.log(`context. :>> `, context.workspacePath, context.cliOptions)
 
     let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
     if (!assertIsAddressPath(workspacePath)) {

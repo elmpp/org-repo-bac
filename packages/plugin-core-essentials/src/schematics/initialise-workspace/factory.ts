@@ -31,8 +31,6 @@ export default function (options: Schema): Rule {
         if (!fileEntry.path.match(/.*\.json$/)) {
           return fileEntry
         }
-        console.log(`fileEntry :>> `, fileEntry, fileEntry.path, fileEntry.path.match(/.*\.json$/))
-
         return {
           path: fileEntry.path,
           content: Buffer.from(formatUtils.JSONNormalize(fileEntry.content.toString(), true))
