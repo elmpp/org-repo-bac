@@ -1,5 +1,27 @@
 # @business-as-code/plugin-core-package-manager-yarn
 
+## 0.0.0-bollards-20230812073523
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230812073523
+  - @business-as-code/core@0.0.0-bollards-20230812073523
+  - @business-as-code/error@0.0.0-bollards-20230812073523
+  - @business-as-code/fslib@0.0.0-bollards-20230812073523
+
+## 0.0.0-bollards-20230812073143
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20230812073143
+  - @business-as-code/core@0.0.0-bollards-20230812073143
+  - @business-as-code/error@0.0.0-bollards-20230812073143
+  - @business-as-code/fslib@0.0.0-bollards-20230812073143
+
 ## 0.0.0-latest-20230812071138
 
 ### Patch Changes

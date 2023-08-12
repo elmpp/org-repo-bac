@@ -7,7 +7,7 @@ echo "RUNNING POSTPACK IN '${DIR}'"
 # commands resolution
 jq '.oclif.commands="./src/commands"' package.json | sponge package.json
 
-if [ -f "condition" ]; then
+if [ -f "collection.json" ]; then
   sed -i '' 's/.\/dist\//.\/src\//g' collection.json
 fi
 
