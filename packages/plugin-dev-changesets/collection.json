@@ -1,8 +1,8 @@
 {
   "schematics": {
     "changeset-generate": {
-      "factory": "./dist/schematics/changeset-generate/factory",
-      "schema": "./dist/schematics/changeset-generate/schema.json",
+      "factory": "./src/schematics/changeset-generate/factory",
+      "schema": "./src/schematics/changeset-generate/schema.json",
       "description": "Create a changeset file"
     }
   }

@@ -1764,6 +1764,11 @@ describe("Address posix", () => {
         });
         expect(res).toBeFalsy();
       });
+      it.only('long nm path', () => {
+        const res = addr.parsePath("/Users/matt/dev/tmp/bac-tests/stage0/tests/creates_a_skeleton_workspace_without_configPath_using_skeleton_config/node_modules/.pnpm/@business-as-code+core@0.0.0-latest-20230812065455_@types+node@14.18.54/node_modules/@business-as-code/core/dist/utils", {
+        });
+        expect(res).toBeTruthy();
+      })
     });
     describe("url", () => {});
     describe("package", () => {

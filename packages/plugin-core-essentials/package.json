@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/plugin-core-essentials",
   "library": "lib",
-  "version": "0.0.0-latest-20230811111950",
+  "version": "0.0.0-latest-20230812071138",
   "description": "Core Plugin package @business-as-code/plugin-core-essentials",
   "main": "src/index.ts",
   "files": [

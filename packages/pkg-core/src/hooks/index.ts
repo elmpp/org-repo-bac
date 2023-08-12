@@ -201,9 +201,9 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 
     let res: LifecycleSingularReturnByMethod<LMethod>;
 
-    console.log(`options :>> `, options);
-    console.log(`options :>> `, options);
-    console.log(`this.taps :>> `, this.taps);
+    // console.log(`options :>> `, options);
+    // console.log(`options :>> `, options);
+    // console.log(`this.taps :>> `, this.taps);
 
     let anOptions: any;
     for (anOptions of options) {
@@ -273,9 +273,9 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 
     let resMapped = [] as LifecycleMappedReturnByMethod<LMethod>;
 
-    console.log(`options :>> `, options);
-    console.log(`options :>> `, options);
-    console.log(`this.taps :>> `, this.taps);
+    // console.log(`options :>> `, options);
+    // console.log(`options :>> `, options);
+    // console.log(`this.taps :>> `, this.taps);
 
     let anOptions: any;
 

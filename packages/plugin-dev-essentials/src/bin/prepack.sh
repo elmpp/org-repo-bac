@@ -1,4 +1,8 @@
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # commands resolution
+
+echo "RUNNING PREPACK IN '${DIR}'"
+
 jq '.oclif.commands="./dist/commands"' package.json | sponge package.json
 if [ -f "collection.json" ]; then
   sed -i '' 's/.\/src\//.\/dist\//g' collection.json

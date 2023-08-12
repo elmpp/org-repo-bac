@@ -23,7 +23,7 @@ describe("configure workspace", () => {
           "configure",
           "workspace",
           "--workspacePath",
-          `'${testContext.testEnvVars.workspacePath.original}'`,
+          `${testContext.testEnvVars.workspacePath.original}`,
         ],
         { logLevel: "debug" }
       );

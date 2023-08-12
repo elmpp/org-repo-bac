@@ -637,7 +637,6 @@ export abstract class BaseCommand<
       // }
 
       if (extra) {
-        console.log(`process.cwd(), extra :>> `, process.cwd(), extra);
         process.stdout.write(
           `Failure during command invocation. Command: '${extra.args.join(
             " "
@@ -941,11 +940,6 @@ export abstract class BaseCommand<
       ) as AddressPathAbsolute;
     }
 
-    console.log(
-      `pathRelOrAbsoluteNative :>> `,
-      pathRelOrAbsoluteNative,
-      pathAddress
-    );
     return pathAddress;
   }
 }

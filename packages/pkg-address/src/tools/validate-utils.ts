@@ -16,14 +16,9 @@ const isInvalidPath = (
   options: { extended?: boolean; file?: boolean; windows?: boolean } = {}
 ) => {
   if (aPath === "" || typeof aPath !== "string") return true;
+  if (aPath.match(/^["']|["']$/)) return true; // quoted strings
 
   const validateWindows = () => {
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx#maxpath
-    const MAX_PATH = options.extended ? 32767 : 260;
-    if (typeof aPath !== "string" || aPath.length > MAX_PATH - 12) {
-      return true;
-    }
-
     const rootPath = path.parse(aPath).root;
     if (rootPath) aPath = aPath.slice(rootPath.length);
 
@@ -35,11 +30,6 @@ const isInvalidPath = (
   }
 
   const validatePosix = () => {
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx#maxpath
-    const MAX_PATH = options.extended ? 32767 : 260;
-    if (typeof aPath !== "string" || aPath.length > MAX_PATH - 12) {
-      return true;
-    }
 
     const rootPath = path.parse(aPath).root;
     if (rootPath) aPath = aPath.slice(rootPath.length);

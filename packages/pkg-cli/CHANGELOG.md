@@ -1,5 +1,77 @@
 # @business-as-code/cli
 
+## 0.0.0-latest-20230812071138
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230812071138
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20230812071138
+  - @business-as-code/plugin-core-git@0.0.0-latest-20230812071138
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20230812071138
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20230812071138
+
+## 0.0.0-latest-20230812070809
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230812070809
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20230812070809
+  - @business-as-code/plugin-core-git@0.0.0-latest-20230812070809
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20230812070809
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20230812070809
+
+## 0.0.0-latest-20230812065455
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230812065455
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20230812065455
+  - @business-as-code/plugin-core-git@0.0.0-latest-20230812065455
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20230812065455
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20230812065455
+
+## 0.0.0-latest-20230812065321
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230812065321
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20230812065321
+  - @business-as-code/plugin-core-git@0.0.0-latest-20230812065321
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20230812065321
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20230812065321
+
+## 0.0.0-latest-20230812064733
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230812064733
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20230812064733
+  - @business-as-code/plugin-core-git@0.0.0-latest-20230812064733
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20230812064733
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20230812064733
+
+## 0.0.0-latest-20230812064324
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230812064324
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20230812064324
+  - @business-as-code/plugin-core-git@0.0.0-latest-20230812064324
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20230812064324
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20230812064324
+
 ## 0.0.0-latest-20230811111950
 
 ### Patch Changes

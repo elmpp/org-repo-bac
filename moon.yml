@@ -200,7 +200,7 @@ tasks:
 
     # command: 'echo "hello"' # https://tinyurl.com/2okqdgo7
     # command: "echo 'poo'" # https://tinyurl.com/2okqdgo7
-    command: "pnpm dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath $workspaceRoot --logLevel debug" # https://tinyurl.com/2okqdgo7
+    command: "pnpm dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath $workspaceRoot --tag bollards --logLevel debug" # https://tinyurl.com/2okqdgo7
     # command: 'pnpm publish -u foo -r --no-git-checks --force --registry http://localhost:4873/' # https://tinyurl.com/2okqdgo7
     # inputs:
     #   - ../
