@@ -1,4 +1,4 @@
-import { logging } from "@angular-devkit/core";
+import { JsonObject, logging } from "@angular-devkit/core";
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Command, Interfaces } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -17,6 +17,7 @@ import {
   ServiceStaticMap,
   ServiceStaticInterface,
 } from "./services";
+import { ProcessOutput } from "@angular-devkit/core/node";
 
 export * from "./type-utils";
 export * from "./moon";
@@ -98,4 +99,8 @@ export type Plugin = {
   lifecycles?: LifecycleStaticInterface[];
 };
 
-export type Logger = logging.Logger
+export type Logger = logging.Logger & {
+  /** logger that is unaffected by the current logLevel */
+  stdout: (message: string) => void;
+  // stderr: (message: string, metadata?: JsonObject) => void;
+}

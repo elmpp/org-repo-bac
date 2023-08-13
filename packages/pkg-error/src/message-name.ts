@@ -16,7 +16,7 @@ export enum MessageName {
   CONFIGURATION_CONTENT_ERROR = 14, // configuration file was found but is incorrect. Should have a .config named export. Should be .js/.ts etc
   CONFIGURATION_INVALID_ERROR = 15, // configuration file was found and exports ok etc but has validation errors
   // COMMAND_INVALID_RETURN = 16, // a command has returned a non string/json response in its .execute()
-  COMMAND_DANGEROUS_RETURN = 16, // a return has been returned from a command execute() but the current logLevel/--json don't support clean output()
+  COMMAND_DANGEROUS_JSON = 16, // a command has used .logJson() but the current logLevel/--json don't support clean output()
 
 
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink

@@ -6,13 +6,12 @@ import {
   TestContext,
 } from "@business-as-code/tests-core";
 
-/** simply ensures the testEnv core util is operating properly */
-describe("configure workspace", () => {
+describe("synchronise workspace", () => {
   jest.setTimeout(25000);
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(
-      'creates a skeleton workspace without configPath using skeleton config',
+      'initialise:workspace default skeleton config',
       testContext.testEnvVars.workspacePath
     );
 

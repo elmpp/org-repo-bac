@@ -837,6 +837,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           // console.log(`cliPath :>> `, checkoutCliPath)
 
+          // breaks --json tests!!!
           // process.stdout.write(
           //   `Running command. Command: '${argsWithAdditional.join(
           //     " "

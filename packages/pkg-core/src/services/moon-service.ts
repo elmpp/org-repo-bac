@@ -76,10 +76,10 @@ export class MoonService {
     // const res = this.run({command: '--version'})
   }
 
-  async findProjects(options?: {
+  async findProjectsJson(options: {
     query?: MoonQuery;
     affected?: boolean;
-  }): Promise<MoonQueryProjects> {
+  } = {}): Promise<MoonQueryProjects> {
     const res = await this.run({
       command: `query projects${options?.query ? ` '${options.query}'` : ""}${
         options?.affected ? " --affected" : ""
@@ -93,6 +93,31 @@ export class MoonService {
     // const resJson =
 // console.log(`res :>> `, res)
     return moonQueryProjects.parse(res.res.parsed);
+
+    // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
+
+    // console.log(`projects :>> `, projects)
+  }
+
+  async findProjectsString(options: {
+    query?: MoonQuery;
+    affected?: boolean;
+  } = {}): Promise<string> {
+    const res = await this.run({
+      command: `query projects${options?.query ? ` '${options.query}'` : ""}${
+        options?.affected ? " --affected" : ""
+      }`,
+      options: { json: false },
+    });
+    // console.log(`res :>> `, res.res)
+
+    expectIsOk(res)
+
+    return res.res.outputs.stdout
+
+    // const resJson =
+// console.log(`res :>> `, res)
+    // return moonQueryProjects.parse(res.res.parsed);
 
     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
 

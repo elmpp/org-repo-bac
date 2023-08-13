@@ -11,7 +11,7 @@ describe("configure workspace", () => {
       testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.workspacePath);
 
       const resCopy = await testContext.copy(
-        "creates a skeleton workspace without configPath using skeleton config",
+        "initialise:workspace default skeleton config",
         testContext.testEnvVars.workspacePath
       );
 

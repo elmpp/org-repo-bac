@@ -51,7 +51,7 @@ describe("initialise workspace", () => {
     })();
   }
 
-  describe("creates a skeleton workspace without configPath using skeleton config", () => {
+  describe("initialise:workspace default skeleton config", () => {
     it("is produced ok", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
 
@@ -61,11 +61,30 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "creates a skeleton workspace without configPath using skeleton config",
+          "initialise:workspace default skeleton config",
           testContext.testEnvVars.workspacePath
         );
 
         assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+      });
+    });
+  });
+
+  describe.only("initialise:workspace git-minimal relative config", () => {
+    it("is produced ok", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+
+      await persistentTestEnv.test({}, async (testContext) => {
+        testContext.setActiveWorkspaceCliPath(
+          testContext.testEnvVars.workspacePath
+        );
+
+        const resCopy = await testContext.copy(
+          "initialise:workspace default skeleton config",
+          testContext.testEnvVars.workspacePath
+        );
+
+        assertCommon({testContext, res: resCopy, configFilename: "git-minimal.js" as Filename})
       });
     });
   });
@@ -85,7 +104,7 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "creates a skeleton workspace without configPath using skeleton config",
+          "initialise:workspace default skeleton config",
           testContext.testEnvVars.workspacePath
         );
 
@@ -114,7 +133,7 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "creates a skeleton workspace without configPath using skeleton config",
+          "initialise:workspace default skeleton config",
           testContext.testEnvVars.workspacePath
         );
 

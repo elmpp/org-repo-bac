@@ -9,7 +9,8 @@ import {
 
 declare global {
   interface Stage0Content {
-    'creates a skeleton workspace without configPath using skeleton config': true,
+    'initialise:workspace default skeleton config': true,
+    'initialise:workspace git-minimal relative config': true,
   }
 }
 
@@ -62,11 +63,11 @@ describe("initialise workspace", () => {
       .lineContainsString({ match: `"private": true`, occurrences: 1 });
   }
 
-  describe("creates a skeleton workspace without configPath using skeleton config", () => {
+  describe("initialise:workspace default skeleton config", () => {
     it('cliRegistry', async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         cliSource: "cliRegistry",
-        cacheNamespaceFolder: 'creates a skeleton workspace without configPath using skeleton config',
+        cacheNamespaceFolder: 'initialise:workspace default skeleton config',
       });
       await persistentTestEnv.test({}, async (testContext) => {
         // testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.checkoutPath)
@@ -96,7 +97,7 @@ describe("initialise workspace", () => {
     it('cliLinked', async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         cliSource: "cliLinked",
-        cacheNamespaceFolder: 'creates a skeleton workspace without configPath using skeleton config',
+        cacheNamespaceFolder: 'initialise:workspace default skeleton config',
       });
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
@@ -107,6 +108,70 @@ describe("initialise workspace", () => {
             "my-new-workspace",
             "--workspacePath",
             `${testContext.testEnvVars.workspacePath.original}`,
+            "--cliPath",
+            testContext.testEnvVars.checkoutCliPath.original,
+          ],
+          { logLevel: "debug" }
+        );
+
+        await assertCommon(testContext, res);
+
+        const expectFs = res.res.expectUtil.createFs();
+        res.res.expectUtil
+          .createText(expectFs.readText("./.npmrc"))
+          .lineContainsString({ match: `@business-as-code:registry=https://registry.npmjs.org`, occurrences: 1 });
+      });
+    })
+  })
+
+  describe.only("initialise:workspace git-minimal relative config", () => {
+    it('cliRegistry', async () => {
+      const persistentTestEnv = await createPersistentTestEnv({
+        cliSource: "cliRegistry",
+        cacheNamespaceFolder: 'initialise:workspace git-minimal relative config',
+      });
+      await persistentTestEnv.test({}, async (testContext) => {
+        // testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.checkoutPath)
+        const res = await testContext.command(
+          [
+            "initialise",
+            "workspace",
+            "--name",
+            "my-new-workspace",
+            "--workspacePath",
+            `${testContext.testEnvVars.workspacePath.original}`,
+            "--configPath",
+            "packages/pkg-core/src/etc/config/git-minimal.js",
+            "--cliRegistry",
+            "http://localhost:4873",
+          ],
+          { logLevel: "debug" }
+        );
+
+        await assertCommon(testContext, res);
+
+        const expectFs = res.res.expectUtil.createFs();
+        res.res.expectUtil
+          .createText(expectFs.readText("./.npmrc"))
+          .lineContainsString({ match: `@business-as-code:registry=http://localhost:4873`, occurrences: 1 }); // local npm registry set up
+      });
+    })
+    it('cliLinked', async () => {
+      const persistentTestEnv = await createPersistentTestEnv({
+        cliSource: "cliLinked",
+        cacheNamespaceFolder: 'initialise:workspace git-minimal relative config',
+      });
+      await persistentTestEnv.test({}, async (testContext) => {
+        const res = await testContext.command(
+          [
+            "initialise",
+            "workspace",
+            "--name",
+            "my-new-workspace",
+            "--workspacePath",
+            `${testContext.testEnvVars.workspacePath.original}`,
+            "--configPath",
+            "packages/pkg-core/src/etc/config/git-minimal.js",
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
           ],

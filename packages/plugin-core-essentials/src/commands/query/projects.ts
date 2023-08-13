@@ -42,13 +42,22 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // const name = await ux.prompt('What is your name?')
     // console.log(`name :>> `, name)
 
-    const projects = await moonService.findProjects({
-      query: context.cliOptions.flags.query,
-    });
+    if (context.cliOptions.flags.json) {
+      const projects = await moonService.findProjectsJson({
+        query: context.cliOptions.flags.query,
+      });
+      this.logJson(projects)
+    }
+    else {
+      const projects = await moonService.findProjectsString({
+        query: context.cliOptions.flags.query,
+      });
+      this.logToStdout(projects)
+    }
 
     return {
       success: true as const,
-      res: projects,
+      res: undefined,
     };
   }
 }

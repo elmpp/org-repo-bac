@@ -240,7 +240,7 @@ export abstract class BaseCommand<
   //   console.log(`message :>> `, message)
   //   return this.log(message, ...args)
   // }
-  override log(message = "", ...args: any[]) {
+  override log(message: any = "", ...args: any[]) {
     if (!this.jsonEnabled()) {
       // console.log(`message :>> `, message)
       // console.log(`this.logger :>> `, this.logger, this)
@@ -248,6 +248,20 @@ export abstract class BaseCommand<
         "info",
         message,
         args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
+      );
+      // message =
+      //   typeof message === "string" ? message : (0, util_1.inspect)(message);
+      // stream_1.stdout.write((0, util_1.format)(message, ...args) + "\n");
+    }
+  }
+  /** logging that is unaffected by the logLevel */
+  logToStdout(message: any = "") {
+    if (!this.jsonEnabled()) {
+      // console.log(`message :>> `, message)
+      // console.log(`this.logger :>> `, this.logger, this)
+      this.logger.stdout(
+        message,
+        // args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
       );
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
@@ -275,7 +289,7 @@ export abstract class BaseCommand<
   }: {
     config: oclif.Config;
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
-  }): logging.Logger {
+  }): Logger {
     /**
      * Angular console logger - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/core/node/cli-logger.ts#L19
      */
@@ -286,7 +300,7 @@ export abstract class BaseCommand<
       stderr: ProcessOutput = process.stderr,
       masks?: Partial<Record<logging.LogLevel, (s: string) => string>>
     ): Logger {
-      const logger = new logging.IndentLogger("cling");
+      const logger = new logging.IndentLogger("cling") as Logger
       // console.log(`parseOutput.flags["logLevel"], parseOutput.flags["json"] :>> `, parseOutput.flags["logLevel"], parseOutput.flags["json"])
       logger
         .pipe(
@@ -350,6 +364,10 @@ export abstract class BaseCommand<
           output.write("\n");
           // }
         });
+        logger.stdout = (s: string) => {
+          stdout.write(s + EOL)
+        }
+
 
       return logger;
     }
@@ -799,44 +817,67 @@ export abstract class BaseCommand<
       await this.finally(err);
     }
 
-    // we want to adjust the original outputting logic - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L226
-    if (result) {
-      if (
-        !this.jsonEnabled() &&
-        !logLevelMatching(
-          "error",
-          this.context!.cliOptions.flags.logLevel,
-          this.context!.cliOptions.flags.json
-        )
-      ) {
-        throw new BacError(
-          MessageName.COMMAND_DANGEROUS_RETURN,
-          `Command '${
-            this.ctor.name
-          }' has returned a value but the current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${
-            this.context!.cliOptions.flags.logLevel
-          }'.\n Run again with either --json or --logLevel=error.\n Also ensure you have no console.*() usage`
-        );
-      }
+    // // we want to adjust the original outputting logic - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L226
+    // if (result) {
+    //   if (
+    //     !this.jsonEnabled() &&
+    //     !logLevelMatching(
+    //       "error",
+    //       this.context!.cliOptions.flags.logLevel,
+    //       this.context!.cliOptions.flags.json
+    //     )
+    //   ) {
+    //     throw new BacError(
+    //       MessageName.COMMAND_DANGEROUS_RETURN,
+    //       `Command '${
+    //         this.ctor.name
+    //       }' has returned a value but the current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${
+    //         this.context!.cliOptions.flags.logLevel
+    //       }'.\n Run again with either --json or --logLevel=error.\n Also ensure you have no console.*() usage`
+    //     );
+    //   }
 
-      this.logJson(this.toSuccessJson(result));
+    //   this.logJson(this.toSuccessJson(result));
 
-      // if (this.jsonEnabled()) {
-      //   this.logJson(this.toSuccessJson(result))
-      // }
-      // else if (typeof result === 'string') {
-      //   this.logger.info(result)
-      // }
-      // else {
-      //   console.log(`result :>> `, result)
-      //   throw new BacError(MessageName.COMMAND_INVALID_RETURN, `Invalid return from execute method. Command: '${this.ctor.name}'. Should be a string/json value only`)
-      // }
-    }
+    //   // if (this.jsonEnabled()) {
+    //   //   this.logJson(this.toSuccessJson(result))
+    //   // }
+    //   // else if (typeof result === 'string') {
+    //   //   this.logger.info(result)
+    //   // }
+    //   // else {
+    //   //   console.log(`result :>> `, result)
+    //   //   throw new BacError(MessageName.COMMAND_INVALID_RETURN, `Invalid return from execute method. Command: '${this.ctor.name}'. Should be a string/json value only`)
+    //   // }
+    // }
 
     return result as T;
   }
 
-  async run(): Promise<unknown> {
+  protected override logJson(json: unknown): void {
+
+    if (
+      !this.jsonEnabled() &&
+      !logLevelMatching(
+        "error",
+        this.context!.cliOptions.flags.logLevel,
+        this.context!.cliOptions.flags.json
+      )
+    ) {
+      throw new BacError(
+        MessageName.COMMAND_DANGEROUS_JSON,
+        `Command '${
+          this.ctor.name
+        }' has called logJson but current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${
+          this.context!.cliOptions.flags.logLevel
+        }'.\n Run again with either --json or --logLevel=error.\n Also ensure you have no console.*() usage`
+      );
+    }
+
+    oclif.ux.styledJSON(json)
+  }
+
+  async run(): Promise<void> {
     const parseOutput = (await this.parse({
       flags: {
         ...this.ctor.flags,
@@ -864,15 +905,13 @@ export abstract class BaseCommand<
 
     // console.log(`res :>> `, res);
 
-    if (res) {
-      if (!assertIsOk(res)) {
-        const err = res.res.error;
-        (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
-        throw err; // will end up in this.catch()
-      }
-
-      return res.res; // return ok payload to support Oclif's --json support - https://tinyurl.com/2bt2z7x7 (see this._run)
+    if (!assertIsOk(res)) {
+      const err = res.res.error;
+      (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
+      throw err; // will end up in this.catch()
     }
+
+    // return res.res; // return ok payload to support Oclif's --json support - https://tinyurl.com/2bt2z7x7 (see this._run)
   }
 
   /**
@@ -881,7 +920,7 @@ export abstract class BaseCommand<
   async runDirect(
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput
-  ): Promise<Result<unknown, any> | void> {
+  ): Promise<Result<unknown, any>> {
     await this.initialise({ parseOutput, config: this.config });
     const context = (this.context = await this.setupContext({ parseOutput }));
     await this.initialisePlugins({ context });
@@ -1016,7 +1055,7 @@ export abstract class BaseCommand<
 
   abstract execute(
     context: ContextCommand<T>
-  ): Promise<Result<unknown, { error: BacError<MessageName, any> }> | void>;
+  ): Promise<Result<unknown, { error: BacError<MessageName, any> }>>;
 
   /** oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L332 */
   protected override async catch(
