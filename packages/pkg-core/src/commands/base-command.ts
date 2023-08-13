@@ -1,7 +1,7 @@
 // oclif custom base command docs - https://tinyurl.com/2n3wch65
 // advanced BaseCommand Salesforce example - https://tinyurl.com/2lexro75
 import { logging } from "@angular-devkit/core";
-import { createConsoleLogger } from "@angular-devkit/core/node";
+import { ProcessOutput } from "@angular-devkit/core/node";
 import {
   addr,
   AddressPathAbsolute,
@@ -24,8 +24,23 @@ import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 // import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
 import { EOL } from "os";
+import { filter } from "rxjs/operators";
 import { fileURLToPath } from "url";
 import util from "util";
+import {
+  assertIsOk,
+  Context,
+  ContextCommand,
+  Logger,
+  LogLevel,
+  logLevelMatching,
+  Plugin,
+  Result,
+  ServiceInitialiseLiteOptions,
+  ServiceMap,
+  ServiceStaticMap,
+  ValueOf,
+} from "../__types__";
 import { constants } from "../constants";
 import {
   ConfigureWorkspaceLifecycleBase,
@@ -39,18 +54,6 @@ import { BacService, ExecService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
 import { objectUtils } from "../utils";
 import { findUp, loadModule } from "../utils/fs-utils";
-import {
-  assertIsOk,
-  Context,
-  ContextCommand,
-  LogLevel,
-  Plugin,
-  Result,
-  ServiceInitialiseLiteOptions,
-  ServiceMap,
-  ServiceStaticMap,
-  ValueOf,
-} from "../__types__";
 
 // export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
@@ -104,12 +107,15 @@ export abstract class BaseCommand<
   } satisfies { [key in keyof BaseParseOutput["flags"]]: any };
 
   // @ts-ignore - set in initialise and used optionally in .log()
-  protected logger: logging.Logger;
+  protected logger: Logger;
   protected static oclifConfig: oclif.Interfaces.Config;
+  /** set during successful run/runDirect */
+  private context?: ContextCommand<T>;
 
   // protected flags!: any;
   // protected args!: any;
-  protected flags!: FlagsInfer<T>;
+  protected flags!: FlagsInfer<T> & { logLevel: LogLevel };
+  // protected flags!: FlagsInfer<T>;
   protected args!: ArgsInfer<T>;
 
   constructor(argv: string[], config: oclif.Config) {
@@ -123,7 +129,7 @@ export abstract class BaseCommand<
 
     /** oclif expects .debug to have debug's util.format api - https://tinyurl.com/2j67ajot */
     this.debug = (...args: any[]) => {
-      return this.log(util.format(...args));
+      return this.logger?.debug(util.format(...args));
     };
   }
 
@@ -189,6 +195,7 @@ export abstract class BaseCommand<
     }
     return input;
   }
+
   override error(
     input: string | Error,
     options: {
@@ -238,7 +245,7 @@ export abstract class BaseCommand<
       // console.log(`message :>> `, message)
       // console.log(`this.logger :>> `, this.logger, this)
       this.logger?.log(
-        "debug",
+        "info",
         message,
         args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
       );
@@ -269,21 +276,117 @@ export abstract class BaseCommand<
     config: oclif.Config;
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }): logging.Logger {
+    /**
+     * Angular console logger - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/core/node/cli-logger.ts#L19
+     */
+    function createConsoleLogger(
+      // verbose = false,
+      // logLevel: LogLevel,
+      stdout: ProcessOutput = process.stdout,
+      stderr: ProcessOutput = process.stderr,
+      masks?: Partial<Record<logging.LogLevel, (s: string) => string>>
+    ): Logger {
+      const logger = new logging.IndentLogger("cling");
+      // console.log(`parseOutput.flags["logLevel"], parseOutput.flags["json"] :>> `, parseOutput.flags["logLevel"], parseOutput.flags["json"])
+      logger
+        .pipe(
+          filter((entry) => {
+            return logLevelMatching(
+              parseOutput.flags["logLevel"],
+              entry.level,
+              parseOutput.flags["json"]
+            );
+          })
+        )
+        .subscribe((entry) => {
+          // const color = colors && colors[entry.level];
+          const mask = masks && masks[entry.level];
+          let output = stdout;
+
+          switch (entry.level) {
+            case "warn":
+            case "fatal":
+            case "error":
+              output = stderr;
+              break;
+          }
+
+          // If we do console.log(message) or process.stdout.write(message + '\n'), the process might
+          // stop before the whole message is written and the stream is flushed. This happens when
+          // streams are asynchronous.
+          //
+          // NodeJS IO streams are different depending on platform and usage. In POSIX environment,
+          // for example, they're asynchronous when writing to a pipe, but synchronous when writing
+          // to a TTY. In windows, it's the other way around. You can verify which is which with
+          // stream.isTTY and platform, but this is not good enough.
+          // In the async case, one should wait for the callback before sending more data or
+          // continuing the process. In our case it would be rather hard to do (but not impossible).
+          //
+          // Instead we take the easy way out and simply chunk the message and call the write
+          // function while the buffer drain itself asynchronously. With a smaller chunk size than
+          // the buffer, we are mostly certain that it works. In this case, the chunk has been picked
+          // as half a page size (4096/2 = 2048), minus some bytes for the color formatting.
+          // On POSIX it seems the buffer is 2 pages (8192), but just to be sure (could be different
+          // by platform).
+          //
+          // For more details, see https://nodejs.org/api/process.html#process_a_note_on_process_i_o
+          const chunkSize = 2000; // Small chunk.
+          let message = entry.message;
+          if (!message.length) return; // we return '' when --json
+
+          // console.log(`message :>> `, message)
+          // let written = false
+          while (message) {
+            const chunk = message.slice(0, chunkSize);
+            const masked = mask ? mask(chunk) : chunk;
+            message = message.slice(chunkSize);
+            output.write(masked);
+            // if (masked.length) {
+            //   written = true
+            // }
+          }
+
+          // if (written) {
+          output.write("\n");
+          // }
+        });
+
+      return logger;
+    }
+
     const logger = createConsoleLogger(
-      parseOutput.flags["logLevel"] === "debug",
+      // logLevelMatching("debug", parseOutput.flags["logLevel"], parseOutput.flags["json"]),
+
       process.stdout,
       process.stderr,
       {
-        info: (s) => s,
-        debug: (s) => {
+        info: (s: string) => s,
+        debug: (s: string) => {
           // console.log(s); // not required
           return s;
         },
-        // debug: (s) => s,
-        warn: (s) => colors.bold.yellow(s),
-        error: (s) => colors.bold.red(s),
-        fatal: (s) => colors.bold.red(s),
+        // debug: (s: string) => s,
+        warn: (s: string) => colors.bold.yellow(s),
+        error: (s: string) => colors.bold.red(s),
+        fatal: (s: string) => colors.bold.red(s),
       }
+      // objectMapAndFilter(
+      //   {
+      //     info: (s: string) => s,
+      //     debug: (s: string) => {
+      //       // console.log(s); // not required
+      //       return s;
+      //     },
+      //     // debug: (s: string) => s,
+      //     warn: (s: string) => colors.bold.yellow(s),
+      //     error: (s: string) => colors.bold.red(s),
+      //     fatal: (s: string) => colors.bold.red(s),
+      //   },
+      //   (fn, logLevel) =>
+      //     logLevelMatching(logLevel, parseOutput.flags["logLevel"], parseOutput.flags['json'])
+      //       ? fn
+      //       : (s) => ''
+      // )
     );
     return logger;
   }
@@ -334,6 +437,13 @@ export abstract class BaseCommand<
   }: {
     context: ContextCommand<T>;
   }) {
+    context.logger.debug(
+      `plugin.initialisePlugins: '${
+        context.oclifConfig.plugins.length
+      }' plugins found. '${context.oclifConfig.plugins
+        .map((p) => `${p.name}:${p.root}`)
+        .join("\n")}'`
+    );
     await Promise.all(
       context.oclifConfig.plugins.map(async (plugin) =>
         this.loadLifecycleImplementationsForPlugin({ plugin, context })
@@ -674,6 +784,58 @@ export abstract class BaseCommand<
     }
   }
 
+  protected override async _run<T>(): Promise<T> {
+    let err: Error | undefined;
+    let result;
+    try {
+      // remove redirected env var to allow subsessions to run autoupdated client
+      delete process.env[this.config.scopedEnvVarKey("REDIRECTED")];
+      await this.init();
+      result = await this.run();
+    } catch (error: any) {
+      err = error;
+      await this.catch(error);
+    } finally {
+      await this.finally(err);
+    }
+
+    // we want to adjust the original outputting logic - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L226
+    if (result) {
+      if (
+        !this.jsonEnabled() &&
+        !logLevelMatching(
+          "error",
+          this.context!.cliOptions.flags.logLevel,
+          this.context!.cliOptions.flags.json
+        )
+      ) {
+        throw new BacError(
+          MessageName.COMMAND_DANGEROUS_RETURN,
+          `Command '${
+            this.ctor.name
+          }' has returned a value but the current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${
+            this.context!.cliOptions.flags.logLevel
+          }'.\n Run again with either --json or --logLevel=error.\n Also ensure you have no console.*() usage`
+        );
+      }
+
+      this.logJson(this.toSuccessJson(result));
+
+      // if (this.jsonEnabled()) {
+      //   this.logJson(this.toSuccessJson(result))
+      // }
+      // else if (typeof result === 'string') {
+      //   this.logger.info(result)
+      // }
+      // else {
+      //   console.log(`result :>> `, result)
+      //   throw new BacError(MessageName.COMMAND_INVALID_RETURN, `Invalid return from execute method. Command: '${this.ctor.name}'. Should be a string/json value only`)
+      // }
+    }
+
+    return result as T;
+  }
+
   async run(): Promise<unknown> {
     const parseOutput = (await this.parse({
       flags: {
@@ -695,19 +857,22 @@ export abstract class BaseCommand<
     // console.log(`parseOutput :>> `, parseOutput)
 
     await this.initialise({ parseOutput, config: this.config });
-    const context = await this.setupContext({ parseOutput });
+    const context = (this.context = await this.setupContext({ parseOutput }));
     await this.initialisePlugins({ context });
 
     const res = await this.execute(context);
 
     // console.log(`res :>> `, res);
 
-    if (!assertIsOk(res)) {
-      const err = res.res.error;
-      (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
-      throw err; // will end up in this.catch()
+    if (res) {
+      if (!assertIsOk(res)) {
+        const err = res.res.error;
+        (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
+        throw err; // will end up in this.catch()
+      }
+
+      return res.res; // return ok payload to support Oclif's --json support - https://tinyurl.com/2bt2z7x7 (see this._run)
     }
-    return res.res; // return ok payload to support Oclif's --json support - https://tinyurl.com/2bt2z7x7
   }
 
   /**
@@ -716,9 +881,9 @@ export abstract class BaseCommand<
   async runDirect(
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput
-  ): Promise<Result<unknown, any>> {
+  ): Promise<Result<unknown, any> | void> {
     await this.initialise({ parseOutput, config: this.config });
-    const context = await this.setupContext({ parseOutput });
+    const context = (this.context = await this.setupContext({ parseOutput }));
     await this.initialisePlugins({ context });
     const res = await this.execute(context);
     return res;
@@ -851,7 +1016,7 @@ export abstract class BaseCommand<
 
   abstract execute(
     context: ContextCommand<T>
-  ): Promise<Result<unknown, { error: BacError<MessageName, any> }>>;
+  ): Promise<Result<unknown, { error: BacError<MessageName, any> }> | void>;
 
   /** oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L332 */
   protected override async catch(
@@ -909,7 +1074,6 @@ export abstract class BaseCommand<
   protected async getWorkspacePath(
     pathRelOrAbsoluteNative?: string
   ): Promise<AddressPathAbsolute> {
-
     if (!pathRelOrAbsoluteNative) {
       // when not supplied we derive it from the current install
       const workspacePathByDotfile = await findUp(

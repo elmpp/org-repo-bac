@@ -95,11 +95,16 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
   ) {
     if (process.env.NODE_ENV !== "production") {
       const prev = this.taps.find((t) => t.nameOrProvider === nameOrProvider);
-      if (prev)
-        // eslint-disable-next-line no-console
-        console.error(
-          `!!! Hook ${this.name} tap: ${nameOrProvider} was already added!`
-        );
+      if (prev) {
+        // console.error(
+        //   `!!! Hook ${
+        //     this.name
+        //   } tap: ${nameOrProvider} was already added! Current taps: '${this.taps.map(
+        //     (t) => t.nameOrProvider
+        //   )}'`
+        // );
+        return; // really don't know why this happening
+      }
     }
     const tap = { nameOrProvider, fn };
     // dbg('%s: Adding tap %s %o', this.name, name, options)

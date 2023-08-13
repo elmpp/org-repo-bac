@@ -20,7 +20,7 @@ import {
 /** simple configure lifecycle. Atm, just passes along a git descriptor. Will provide callback semantics later */
 export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleBase<typeof ConfigureWorkspaceGitLifecycle> {
 
-  static override title = 'git' as const
+  static override title = 'core' as const
 
   override configureWorkspace():
     ((options: {

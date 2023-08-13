@@ -32,9 +32,9 @@ export type Outputs = {
 
 export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
 
-export const logLevelMatching = (logLevel: LogLevel, currentLogLevel: LogLevel): boolean => {
+export const logLevelMatching = (logLevel: LogLevel, currentLogLevel: LogLevel, json: boolean | undefined): boolean => {
   const logLevels: LogLevel[] = ["debug", "info", "warn", "error", "fatal"]
-  return logLevels.indexOf(logLevel) <= logLevels.indexOf(currentLogLevel)
+  return (json ? logLevels.indexOf('error') : logLevels.indexOf(logLevel)) <= logLevels.indexOf(currentLogLevel)
 }
 
 /** ball of values made available to command methods. Includes oclif cliOptions */
@@ -47,7 +47,7 @@ export type ContextCommand<T extends typeof Command> = {
     options: ServiceInitialiseLiteOptions<SName>
     // options: ServiceInitialiseCommonOptions
   ) => Promise<ServiceMap[SName][number]>) & { availableServices: (keyof ServiceMap)[] };
-  logger: logging.Logger;
+  logger: Logger;
   // logger: (msg: string, level?: LogLevel) => void;
   /** @internal */
   oclifConfig: Interfaces.Config;
@@ -79,7 +79,7 @@ export type Context = {
     serviceName: SName,
     options: ServiceInitialiseLiteOptions<SName>
   ) => Promise<ServiceMap[SName][number]>) & { availableServices: (keyof ServiceMap)[] };
-  logger: logging.Logger;
+  logger: Logger;
   /** @internal */
   oclifConfig: Interfaces.Config;
   /**
@@ -97,3 +97,5 @@ export type Plugin = {
   // initialise?: (options: { context: ContextCommand<any> }) => void;
   lifecycles?: LifecycleStaticInterface[];
 };
+
+export type Logger = logging.Logger

@@ -214,7 +214,7 @@ export async function doExec({
     }
 
     // console.log(`context.cliOptions.flags.logLevel, logLevel :>> `, context.cliOptions.flags.logLevel, logLevel)
-    if (logLevelMatching(logLevel, "debug")) {
+    if (logLevelMatching(logLevel, "debug", options.context.cliOptions.flags.json)) {
       // if (logLevelMatching(logLevel, 'debug') && !options.detached) {
       execaResultPromise.stdout!.pipe(process.stdout);
       execaResultPromise.stderr!.pipe(process.stderr);

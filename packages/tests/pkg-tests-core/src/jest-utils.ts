@@ -16,7 +16,14 @@ import { virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { configSchema, constants, fsUtils, Outputs, stringUtils } from "@business-as-code/core";
+import {
+  configSchema,
+  constants,
+  fsUtils,
+  formatUtils,
+  Outputs,
+  stringUtils,
+} from "@business-as-code/core";
 import { assertIsError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import os from "os";
@@ -119,12 +126,12 @@ class ExpectConfig {
   options: Options;
   expectFs: ExpectFs;
   /** @internal - do not use!! */
-  _tmpResolvablePath: AddressPathAbsolute
+  _tmpResolvablePath: AddressPathAbsolute;
 
   constructor(expectFs: ExpectFs, options: Options) {
     this.options = options;
     this.expectFs = expectFs;
-    this._tmpResolvablePath = fsUtils.tmpResolvablePath
+    this._tmpResolvablePath = fsUtils.tmpResolvablePath;
   }
 
   // protected async importConfig() {
@@ -143,15 +150,14 @@ class ExpectConfig {
   // }
 
   async isValid(): Promise<ExpectConfig> {
-
-    const config = fsUtils.loadConfig(this.options.testEnvVars.workspacePath)
-    configSchema.parse(config)
+    const config = fsUtils.loadConfig(this.options.testEnvVars.workspacePath);
+    configSchema.parse(config);
     return this;
   }
 
   get expectText() {
-    const fileEntry = this.expectFs.get(constants.RC_FILENAME)
-    assert(fileEntry)
+    const fileEntry = this.expectFs.get(constants.RC_FILENAME);
+    assert(fileEntry);
     return new ExpectText(fileEntry.content.toString(), this.options);
   }
 }
@@ -243,7 +249,18 @@ class ExpectText {
   }
 
   equals(text: string) {
-    expect(text).toEqual(this.outputRaw)
+    expect(text).toEqual(this.outputRaw);
+  }
+
+  asJson({ json5 = false }: { json5?: boolean } = {}) {
+    let res: any;
+    if (json5) {
+      res = formatUtils.JSONParse(this.outputRaw);
+    } else {
+      res = JSON.parse(this.outputRaw);
+    }
+    expect(res).toBeTruthy();
+    return res
   }
 
   /**

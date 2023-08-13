@@ -122,7 +122,7 @@ export class SchematicsService {
   // schematicsCollectionMap: SchematicsCollectionsMap = new Map();
 
   // @ts-ignore - is assigned via initialise
-  schematicsLogger: logging.Logger;
+  schematicsLogger: Logger;
 
   get ctor(): typeof SchematicsService {
     return this.constructor as unknown as typeof SchematicsService
@@ -691,7 +691,7 @@ console.log(`err :>> `, err)
   // context,
   {
     schematicsCollectionMap: SchematicsCollectionsMap;
-    // logger: logging.Logger;
+    // logger: Logger;
     // destinationPath?: AddressPathAbsolute;
     // context: Context;
   }): SchematicResettableNodeWorkflow {
@@ -1172,7 +1172,7 @@ console.log(`err :>> `, err)
     workflow,
   }: {
     context: Context;
-    // logger: logging.Logger;
+    // logger: Logger;
     schematicsCollectionsMap: SchematicsCollectionsMap;
     workflow: SchematicResettableNodeWorkflow;
   }): SchematicsMap {
@@ -1232,7 +1232,7 @@ console.log(`err :>> `, err)
   }: // logger,
   {
     context: Context;
-    // logger: logging.Logger;
+    // logger: Logger;
   }): SchematicsCollectionsMap {
     try {
       // const cliCollection = workflow.engine.createCollection(path.join(cliRoot, 'collection.json'));
@@ -1353,7 +1353,7 @@ console.log(`err :>> `, err)
     // const verbose = true; // @todo - make available from oclif
 
     // /** @todo - integrate with oclif somehow */
-    // const setupLogger = (): logging.Logger => {
+    // const setupLogger = (): Logger => {
     //   /** Create the DevKit Logger used through the CLI. */
     //   const logger = createConsoleLogger(true, process.stdout, process.stderr, {
     //     info: (s) => s,

@@ -35,6 +35,7 @@ import {
   sanitise,
 } from "./test-utils";
 import { XfsCacheManager } from "./xfs-cache-manager";
+import { EOL } from "os";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -825,8 +826,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // process.chdir(checkoutPath.original);
           // process.chdir(activeCliPath.original); // the root oclif param handles this
 
-          const argsWithAdditional = args[0] === 'help' ? args : args;
-          // const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
+          const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
           // console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
@@ -836,6 +836,14 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // );
 
           // console.log(`cliPath :>> `, checkoutCliPath)
+
+          // process.stdout.write(
+          //   `Running command. Command: '${argsWithAdditional.join(
+          //     " "
+          //   )}'. Cwd: '${process.cwd()}'. Full command: 'cd ${
+          //     process.cwd()
+          //   }; pnpm bac-test ${argsWithAdditional.join(" ")}'` + EOL
+          // );
 
           let exitCode = 0;
           let error = undefined;

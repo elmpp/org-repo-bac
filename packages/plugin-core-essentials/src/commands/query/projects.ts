@@ -5,9 +5,7 @@ import {
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 
-export class QueryProjects extends BaseCommand<
-  typeof QueryProjects
-> {
+export class QueryProjects extends BaseCommand<typeof QueryProjects> {
   static override description = "Retrieve details of the workspace projects";
 
   static override examples = [
@@ -23,32 +21,34 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       default: "projectType=library || projectType=application",
     }),
     workspacePath: Oclif.Flags.directory({
-  exists: true,
+      exists: true,
       description: "Workspace name",
       required: true,
     }),
+    // json: Oclif.Flags.boolean({
+    //   description: "Workspace name",
+    //   default: true,
+    // }),
   };
 
-  static override args = {
-  };
+  static override args = {};
 
   async execute(context: ContextCommand<typeof QueryProjects>) {
+    const moonService = await context.serviceFactory("moon", {
+      context: context,
+      workingPath: ".",
+    });
 
-      const moonService = await context.serviceFactory("moon", {
-        context: context,
-        workingPath: ".",
-      });
+    // const name = await ux.prompt('What is your name?')
+    // console.log(`name :>> `, name)
 
-      // const name = await ux.prompt('What is your name?')
-      // console.log(`name :>> `, name)
+    const projects = await moonService.findProjects({
+      query: context.cliOptions.flags.query,
+    });
 
-      const projects = await moonService.findProjects({
-        query: context.cliOptions.flags.query,
-      });
-
-      return {
-        success: true as const,
-        res: projects,
-      }
+    return {
+      success: true as const,
+      res: projects,
+    };
   }
 }

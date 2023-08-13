@@ -22,7 +22,7 @@ import { xfs } from "@business-as-code/fslib";
 export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecycleBase<
   typeof SynchroniseWorkspaceGitLifecycle
 > {
-  static override title = "core" as const;
+  static override title = "git" as const;
 
   // override get ctor(): typeof SynchroniseWorkspaceLifecycle {
   //   return this.constructor as any;

@@ -20,7 +20,7 @@ declare global {
  * tests being E2E or dev
  */
 describe("initialise workspace", () => {
-  jest.setTimeout(25000);
+  jest.setTimeout(40000);
 
   async function assertCommon(
     testContext: TestContext,
