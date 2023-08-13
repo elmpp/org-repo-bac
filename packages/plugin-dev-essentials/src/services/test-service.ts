@@ -308,37 +308,37 @@ export class TestService {
       }
     );
 
-    // context.logger.info(`RUNNING STAGE0 TESTS - ${cliSource}`);
+    context.logger.info(`RUNNING STAGE0 TESTS - ${cliSource}`);
 
-    // const stage0Res = await packageManagerService.run({
-    //   command: `jest 'stage0'${
-    //     stage === 'stage0' ? ` --watch` : ``
-    //   }`,
-    //   options: {
-    //     env: {
-    //       BAC_TEST_CLISOURCE: cliSource,
-    //       FORCE_COLOR: 'true',
-    //     },
-    //     stdin: 'inherit',
-    //   },
-    // });
-    // expectIsOk(stage0Res);
+    const stage0Res = await packageManagerService.run({
+      command: `jest 'stage0'${
+        stage === 'stage0' ? ` --watch` : ``
+      }`,
+      options: {
+        env: {
+          BAC_TEST_CLISOURCE: cliSource,
+          FORCE_COLOR: 'true',
+        },
+        stdin: 'inherit',
+      },
+    });
+    expectIsOk(stage0Res);
 
-    // context.logger.info(`RUNNING STAGE1 TESTS - ${cliSource}`);
+    context.logger.info(`RUNNING STAGE1 TESTS - ${cliSource}`);
 
-    // const stage1Res = await packageManagerService.run({
-    //   command: `jest 'stage1'${
-    //     stage === 'stage1' ? ` --watch` : ``
-    //   }`,
-    //   options: {
-    //     env: {
-    //       BAC_TEST_CLISOURCE: cliSource,
-    //       FORCE_COLOR: 'true',
-    //     },
-    //     stdin: 'inherit',
-    //   },
-    // });
-    // expectIsOk(stage1Res);
+    const stage1Res = await packageManagerService.run({
+      command: `jest 'stage1'${
+        stage === 'stage1' ? ` --watch` : ``
+      }`,
+      options: {
+        env: {
+          BAC_TEST_CLISOURCE: cliSource,
+          FORCE_COLOR: 'true',
+        },
+        stdin: 'inherit',
+      },
+    });
+    expectIsOk(stage1Res);
 
     if (!["stage0", "stage1"].includes(stage)) {
       context.logger.info(

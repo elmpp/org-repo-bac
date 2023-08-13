@@ -20,7 +20,7 @@ export function getCurrentTestNameSanitised(strict: boolean = true): string | un
 }
 export const sanitise = (str: string): string => {
   // @ts-ignore
-  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\]+/g, '_')
+  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\:]+/g, '_')
   return res
 }
 

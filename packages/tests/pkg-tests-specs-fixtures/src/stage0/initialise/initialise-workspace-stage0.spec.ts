@@ -25,7 +25,8 @@ describe("initialise workspace", () => {
 
   async function assertCommon(
     testContext: TestContext,
-    res: UnwrapPromise<ReturnType<TestContext["command"]>>
+    res: UnwrapPromise<ReturnType<TestContext["command"]>>,
+    configFilename: string
   ) {
     expectIsOk(res);
 
@@ -40,7 +41,7 @@ describe("initialise workspace", () => {
 
     const skeletonConfigPath = addr.packageUtils.resolve({
       address: addr.parsePackage(
-        `@business-as-code/core/src/etc/config/skeleton.js`
+        `@business-as-code/core/src/etc/config/${configFilename}`
       ),
       projectCwd: cliCheckoutPath,
       strict: true,
@@ -86,7 +87,7 @@ describe("initialise workspace", () => {
           { logLevel: "debug" }
         );
 
-        await assertCommon(testContext, res);
+        await assertCommon(testContext, res, 'skeleton.js');
 
         const expectFs = res.res.expectUtil.createFs();
         res.res.expectUtil
@@ -114,7 +115,7 @@ describe("initialise workspace", () => {
           { logLevel: "debug" }
         );
 
-        await assertCommon(testContext, res);
+        await assertCommon(testContext, res, 'skeleton.js');
 
         const expectFs = res.res.expectUtil.createFs();
         res.res.expectUtil
@@ -148,7 +149,7 @@ describe("initialise workspace", () => {
           { logLevel: "debug" }
         );
 
-        await assertCommon(testContext, res);
+        await assertCommon(testContext, res, 'git-minimal.js');
 
         const expectFs = res.res.expectUtil.createFs();
         res.res.expectUtil
@@ -178,7 +179,7 @@ describe("initialise workspace", () => {
           { logLevel: "debug" }
         );
 
-        await assertCommon(testContext, res);
+        await assertCommon(testContext, res, 'git-minimal.js');
 
         const expectFs = res.res.expectUtil.createFs();
         res.res.expectUtil

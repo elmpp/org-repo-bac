@@ -202,7 +202,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     const {config, path: configPath} = await this.getConfig(context);
 
-    const _res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace([{
+    const res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace([{
       provider: 'core',
       options: {
         context,
@@ -221,7 +221,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         }
     }}]);
 
-    return
+    return res.res
     // return res.res; // we eschew the provider wrapping for our solitary initialWorkspace
 
     // if (!(await xfs.existsPromise(workspacePath.address))) {

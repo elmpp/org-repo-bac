@@ -80,7 +80,7 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "initialise:workspace default skeleton config",
+          "initialise:workspace git-minimal relative config",
           testContext.testEnvVars.workspacePath
         );
 
@@ -104,7 +104,7 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "initialise:workspace default skeleton config",
+          "initialise:workspace git-minimal relative config",
           testContext.testEnvVars.workspacePath
         );
 

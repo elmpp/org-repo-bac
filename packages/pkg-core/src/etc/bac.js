@@ -4,7 +4,12 @@
  * @type {Config}
  */
 const config = {
-  projectSource: [],
+  projectSource: [{
+    provider: 'git',
+    options: {
+      address: 'descriptor-to-some-public-example-repo',
+    },
+  }],
 }
 
 
