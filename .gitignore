@@ -170,3 +170,7 @@ dist/
 # we'll be dropping cache and test artifacts into this directory (will also break git initialisation due to `rev-parse`)
 etc/var/
 pkg-core/etc
+
+# env files
+.env*
+!.env

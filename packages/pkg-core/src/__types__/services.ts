@@ -1,6 +1,6 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Context } from "./index";
-import { ValueOf } from "./util";
+import { SetOptional, ValueOf } from "./util";
 
 /** instance types of all loaded services */
 export type ServiceMap = {
@@ -31,7 +31,7 @@ export type ServiceInitialiseCommonOptions = {
 };
 export type ServiceInitialiseOptions<SName extends keyof ServiceMap> =
   Parameters<ServiceStaticMap[SName][number]["initialise"]>[0];
-export type ServiceInitialiseLiteOptions<SName extends keyof ServiceMap> = Omit<
+export type ServiceInitialiseLiteOptions<SName extends keyof ServiceMap> = SetOptional<
   Parameters<ServiceStaticMap[SName][number]["initialise"]>[0],
   "workspacePath"
 >; // workspacePath found inside the context

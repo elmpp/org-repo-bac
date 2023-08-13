@@ -1,6 +1,6 @@
 # verdaccio docs - https://tinyurl.com/2q9w56nt
 
-storage: /Users/matt/dev/tmp/bac-tests/verdaccio
+storage: 'DELIBERATELY_WRONG' # NOTE THIS IS REPLACED BY .ENV VALUE VERDACCIO_STORAGE_PATH!!!
 # storage: /tmp/bac-tests/verdaccio
 # storage: ../../../.moon/cache/verdaccio
 

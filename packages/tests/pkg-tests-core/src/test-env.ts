@@ -10,6 +10,7 @@ import {
   assertIsOk,
   BaseCommand,
   consoleUtils,
+  constants,
   LogLevel,
   Outputs,
   Result,
@@ -270,15 +271,15 @@ export type RunFunction = (context: TestContext) => Promise<void>;
 const basePaths = {
   /** single test that smoke tests the test setup */
   stage0: addr.parsePath(
-    "/Users/matt/dev/tmp/bac-tests/stage0"
+    `${constants.TMP_ROOT}/stage0`
   ) as AddressPathAbsolute,
   /** heavy scaffolding that will be made available to successive stages via testContext.copy() */
   stage1: addr.parsePath(
-    "/Users/matt/dev/tmp/bac-tests/stage1"
+    `${constants.TMP_ROOT}/stage1`
   ) as AddressPathAbsolute,
   /** stage2 tests */
   stage2: addr.parsePath(
-    "/Users/matt/dev/tmp/bac-tests/stage2"
+    `${constants.TMP_ROOT}/stage2`
   ) as AddressPathAbsolute,
 };
 

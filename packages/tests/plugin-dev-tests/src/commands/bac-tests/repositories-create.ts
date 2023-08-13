@@ -1,4 +1,5 @@
 import {
+  AddressPathAbsolute,
   addr,
   assertIsAddressPath,
   assertIsAddressPathAbsolute,
@@ -10,32 +11,34 @@ import {
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
+  constants,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import path from "path";
 
-
 export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
   static override description = "Creates the tests git repositories";
 
-//   static override examples = [
-//     `$ oex hello friend --from oclif
-// Produces the repos in the fixtures directory
-// `,
-//   ];
+  //   static override examples = [
+  //     `$ oex hello friend --from oclif
+  // Produces the repos in the fixtures directory
+  // `,
+  //   ];
 
   static override flags = {
     // name: Oclif.Flags.string({
     //   description: "Repository name",
     //   required: true,
     // }),
-    repositoriesPath: Oclif.Flags.string({
+    repositoriesPath: Oclif.Flags.directory({
       description: "Repositories name",
+      exists: true,
       required: false,
+      default: constants.GIT_SSH_MOCK_SERVER_ROOT,
     }),
     workspacePath: Oclif.Flags.directory({
-  exists: true,
+      exists: true,
       description: "Workspace name",
       required: false,
     }),
@@ -53,40 +56,47 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
   };
 
   async execute(context: ContextCommand<typeof BacTestsRepoCreate>) {
-
-    let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
-    if (!assertIsAddressPath(repositoriesPath)) {
-      throw new BacError(
-        MessageName.FS_PATH_FORMAT_ERROR,
-        `Path '${context.cliOptions.args.path.path}' cannot be parsed as a path`
-      );
-    }
-    if (assertIsAddressPathRelative(repositoriesPath)) {
-      repositoriesPath = addr.pathUtils.join(
-        addr.parsePath(process.cwd()),
-        repositoriesPath
-      );
-    }
+    let repositoriesPath = addr.parsePath(
+      context.cliOptions.flags.repositoriesPath!
+    );
+    // if (!assertIsAddressPath(repositoriesPath)) {
+    //   throw new BacError(
+    //     MessageName.FS_PATH_FORMAT_ERROR,
+    //     `Path '${context.cliOptions.args.path.path}' cannot be parsed as a path`
+    //   );
+    // }
+    // if (assertIsAddressPathRelative(repositoriesPath)) {
+    //   repositoriesPath = addr.pathUtils.join(
+    //     addr.parsePath(process.cwd()),
+    //     repositoriesPath
+    //   );
+    // }
     if (!assertIsAddressPathAbsolute(repositoriesPath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
         `Path '${repositoriesPath.original}' must be absolute/relative`
       );
     }
-    if (!(await xfs.existsPromise(repositoriesPath.address))) {
-      const repositoriesPathParent = addr.pathUtils.dirname(repositoriesPath);
-      if (!(await xfs.existsPromise(repositoriesPathParent.address))) {
-        throw new BacError(
-          MessageName.FS_PATH_FORMAT_ERROR,
-          `Parent path '${repositoriesPathParent.original}' must be present when creating workspace at '${repositoriesPath.original}'`
-        );
-      }
-      await xfs.mkdirpPromise(repositoriesPath.address);
-    }
-// console.log(`repositoriesPath :>> `, repositoriesPath)
+    // if (!(await xfs.existsPromise(repositoriesPath.address))) {
+    //   const repositoriesPathParent = addr.pathUtils.dirname(repositoriesPath);
+    //   if (!(await xfs.existsPromise(repositoriesPathParent.address))) {
+    //     throw new BacError(
+    //       MessageName.FS_PATH_FORMAT_ERROR,
+    //       `Parent path '${repositoriesPathParent.original}' must be present when creating workspace at '${repositoriesPath.original}'`
+    //     );
+    //   }
+    //   await xfs.mkdirpPromise(repositoriesPath.address);
+    // }
+    // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    const schematicsService = await context.serviceFactory('schematics', {context, workingPath: '.'})
+    const schematicsService = await context.serviceFactory("schematics", {
+      context,
+      workingPath: ".",
+      workspacePath: repositoriesPath,
+    });
+
+    context.logger.info(`Creating repositories in '${repositoriesPath.original}'`)
 
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
@@ -108,7 +118,7 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
       }
     }
 
-    return res
+    return res;
 
     //   override async run(): Promise<void> {
     //     }
