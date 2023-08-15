@@ -546,15 +546,6 @@ export class SchematicsService {
 
     /** ensure this instance's fs location has been setup correctly */
     (function validateWorkspacePath(this: SchematicsService) {
-      console.log(
-        `this.workflow :>> `,
-        require("util").inspect(this.workflow, {
-          showHidden: false,
-          depth: undefined,
-          colors: true,
-        })
-      );
-
       // @ts-expect-error:
       const fsHostPath = this.getCurrentFsHost()._root;
       const workspacePath = this.options.workspacePath.original;
@@ -564,13 +555,6 @@ export class SchematicsService {
         );
       }
     }).bind(this)();
-
-    console.log(
-      `this.options.context.workspacePath.original :>> `,
-      this.options.context.workspacePath.original,
-      this.options.workspacePath,
-      this.getCurrentFsHost()
-    );
 
     const schematicPath = addr.parseAsType(address, "scaffoldIdentPackage", {
       strict: false,
@@ -657,12 +641,12 @@ export class SchematicsService {
      *  when everything is done.
      */
     try {
-      console.log(
-        `context.workspacePath, _bacContext, this.options :>> `,
-        this.options.context.workspacePath,
-        workflow.engineHost,
-        this.options
-      );
+      // console.log(
+      //   `context.workspacePath, _bacContext, this.options :>> `,
+      //   this.options.context.workspacePath,
+      //   workflow.engineHost,
+      //   this.options
+      // );
       await workflow
         .execute({
           collection: schematicMapEntry.collectionPath.original,
@@ -711,7 +695,7 @@ export class SchematicsService {
       // } else {
       //   message = `Error: ${err instanceof Error ? err.message : err}`;
       // }
-      console.log(`err :>> `, err);
+      console.log(`schematicsService:runSchematic err :>> `, err);
       const error = BacErrorWrapper.fromError(err as Error, {
         reportCode: MessageName.SCHEMATICS_ERROR,
       });
@@ -749,10 +733,13 @@ export class SchematicsService {
     const scaffoldBase = path.resolve(__dirname, "../..");
     const cliRoot = process.cwd(); // todo make available through context
 
-    const workflowRoot = addr.pathUtils.join(
-      this.options.workspacePath,
-      addr.parsePath(this.options.workingPath)
-    ).original as Path;
+    const workflowRoot = this.options.workspacePath.original as Path; // do NOT merge workingPath into base here. Need it to be separate throughout
+    // const workflowRoot = addr.pathUtils.join(
+    //   this.options.workspacePath,
+    //   addr.parsePath(this.options.workingPath)
+    // ).original as Path;
+
+
     // const workflowRoot = (destinationPath?.original ?? process.cwd()) as Path;
     // const pluginRoots = context.oclifConfig.plugins.filter(p => p.type === 'core').map(p => p.root)
 
@@ -762,7 +749,7 @@ export class SchematicsService {
     // let error = false;
     // let nothingDone = true
 
-    console.log(`workflowRoot :>> `, workflowRoot, this.options);
+    // console.log(`workflowRoot :>> `, workflowRoot, this.options);
 
     const fsHost = new SchematicResettableScopedNodeJsSyncHost(workflowRoot);
     // const fsHost = new NodeJsSyncHost
@@ -855,7 +842,11 @@ export class SchematicsService {
           event.description == "alreadyExist"
             ? "already exists"
             : "does not exist";
-        this.options.context.logger.error(`ERROR! ${eventPath} ${desc}.`);
+        this.options.context.logger.error(
+          `ERROR! ${eventPath} ${desc}. Current FSHost root: '${(this.getCurrentFsHost() as any)._root}', options.workspacePath: '${
+            this.options.workspacePath.original
+          }', options.workingPath: '${this.options.workingPath}'`
+        );
         return;
       }
 
@@ -967,7 +958,7 @@ export class SchematicsService {
         this.options.force
       );
 
-      console.log(`this.getCurrentFsHost() :>> `, this.getCurrentFsHost());
+      // console.log(`this.getCurrentFsHost() :>> `, this.getCurrentFsHost());
 
       const dryRunSubscriber = dryRunSink.reporter.subscribe((event) => {
         // if (action === "report") {

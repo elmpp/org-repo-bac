@@ -1,6 +1,7 @@
 import { join, normalize, Path, virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Host } from "@angular-devkit/core/src/virtual-fs/host";
+import util from "util";
 import {
   HostCreateTree,
   HostDirEntry,
@@ -17,11 +18,12 @@ import { from } from "rxjs";
 import { schematicUtils } from ".";
 import {
   Context,
+  logLevelMatching,
   ServiceInitialiseOptions,
   ServiceMap,
   ServiceStaticMap,
 } from "../__types__";
-import fs from 'fs'
+import fs from "fs";
 import { SchematicsResettableHostTree } from "./schematics-resettable-host-tree";
 import { ServiceExecTask } from "./tasks";
 
@@ -60,9 +62,7 @@ export function getEngineHost(
   return (context.engine.workflow as any)._host;
 }
 
-export const getHostRoot = (
-  context: SchematicContext
-): AddressPathAbsolute => {
+export const getHostRoot = (context: SchematicContext): AddressPathAbsolute => {
   return addr.parsePath(
     (context.engine.workflow as any)?._host?._root!
   ) as AddressPathAbsolute;
@@ -451,7 +451,7 @@ export const branchMerge = (
     context: Context;
     initialiseOptions: ServiceOptionsLite<"schematics">["initialiseOptions"];
   },
-  mergeStrategy: MergeStrategy,
+  mergeStrategy: MergeStrategy
 ): Rule => {
   return (tree: Tree, schematicContext: SchematicContext) => {
     const res = from(
@@ -475,7 +475,7 @@ export const branchMerge = (
                   // getCurrentSchematicHostRoot(schematicContext).original,
                   // tree,
                   nextTree,
-                  mergeStrategy , // incoming changes will overwrite if existent
+                  mergeStrategy // incoming changes will overwrite if existent
                 ) as Tree;
               // console.log(`applicableNextTree.readText('./README.md') :>> `, applicableNextTree.readText('./README.md'))
               return applicableNextTree;
@@ -647,7 +647,6 @@ export function remove(
       );
     }
   } catch (err) {
-    // console.log(`schematicUtils::remove: err :>> `, err);
     throw new BacErrorWrapper(
       MessageName.UNNAMED,
       `schematicUtils::remove: Error occurred whilst deleting. OriginalRemovePath: '${originalRemovePath}'`,
@@ -746,7 +745,6 @@ export function copy(
   }
 
   if (tree.exists(fromPath)) {
-
     schematicContext.logger.debug(
       `schematicUtils::copy: folder ${fromPath} being copied. fromPath: '${fromPath}' toPath: '${toPath}'`
     );
@@ -757,20 +755,19 @@ export function copy(
     // console.log(`:>> 222`);
     schematicContext.logger.debug(
       `schematicUtils::copy: file ${fromPath} being copied from outside the tree. fromPath: '${fromPath}' toPath: '${toPath}'`
-      );
-      console.log(`schematicContext.strategy :>> `, schematicContext.strategy)
-      if (tree.exists(toPath)) {
-        tree.overwrite(to, fs.readFileSync(from, {encoding: 'utf8'}))
-      }
-      else {
-        tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
-      }
-      // if (schematicContext.strategy === MergeStrategy.Overwrite) {
-      // }
-      // else {
-      //   tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
-      // }
+    );
+    console.log(`schematicContext.strategy :>> `, schematicContext.strategy);
+    if (tree.exists(toPath)) {
+      tree.overwrite(to, fs.readFileSync(from, { encoding: "utf8" }));
     } else {
+      tree.create(to, fs.readFileSync(from, { encoding: "utf8" }));
+    }
+    // if (schematicContext.strategy === MergeStrategy.Overwrite) {
+    // }
+    // else {
+    //   tree.create(to, fs.readFileSync(from, {encoding: 'utf8'}))
+    // }
+  } else {
     // console.log(`:>> 333`);
     schematicContext.logger.debug(
       `schematicUtils::copy: directory ${fromPath} being individually copied. fromPath: '${fromPath}' toPath: '${toPath}'`
@@ -811,7 +808,7 @@ export function debugRule(
   options: Pick<
     schematicUtils.ServiceOptionsLite<"git">,
     "initialiseOptions" | "context"
-  > & {withRealFs?: boolean}
+  > & { withRealFs?: boolean }
 ): Rule {
   function getFsContents(tree: Tree) {
     const treeFiles: string[] = [];
@@ -827,11 +824,21 @@ export function debugRule(
   }
 
   return (tree: Tree, schematicContext: SchematicContext) => {
+    if (
+      !logLevelMatching(
+        "debug",
+        options.context.cliOptions.flags.logLevel,
+        options.context.cliOptions.flags.json
+      )
+    ) {
+      return tree; // expensive computation otherwise
+    }
+
     const liveFsTree = new HostCreateTree(
       // const liveFsTree = new HostCreateTree(
       new virtualFs.ScopedHost(
         new NodeJsSyncHost(),
-        schematicUtils.getHostRoot(schematicContext).original as Path,
+        schematicUtils.getHostRoot(schematicContext).original as Path
       )
     );
 
@@ -857,7 +864,15 @@ export function debugRule(
             debuggable.logs = await repo.log();
           }
 
-          console.log(`debugRule: :>> `, debuggable);
+          options.context.logger.debug(
+            util.inspect(debuggable, {
+              showHidden: false,
+              depth: undefined,
+              colors: true,
+            })
+          );
+
+          // console.log(`debugRule: :>> `, debuggable);
 
           return tree;
         },

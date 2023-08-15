@@ -1,5 +1,6 @@
 import { Path } from "@angular-devkit/core";
 import {
+  DeleteFileAction,
   DryRunCreateEvent,
   DryRunDeleteEvent,
   DryRunErrorEvent,
@@ -8,7 +9,7 @@ import {
   DryRunUpdateEvent,
   UnknownActionException,
 } from "@angular-devkit/schematics";
-import { concat, EMPTY, Observable, of, Subject } from "rxjs";
+import { concat, EMPTY, Observable, of as observableOf, Subject } from "rxjs";
 import { ignoreElements, map } from "rxjs/operators";
 import {
   ResettableAction,
@@ -178,8 +179,37 @@ export class SchematicResettableDryRunSink extends DryRunSink {
     );
   }
 
+  protected override _validateDeleteAction(action: DeleteFileAction): Observable<void> {
+    return this._validateFileExists(action.path).pipe(
+      map((b) => {
+        if (!b) {
+          this._fileDoesNotExistException(action.path);
+        }
+      }),
+    );
+  }
+  protected override _validateFileExists(p: Path): Observable<boolean> {
+    if (this._filesToCreate.has(p) || this._filesToUpdate.has(p)) {
+      return observableOf(true);
+    }
+
+    if (this._filesToDelete.has(p)) {
+      return observableOf(false);
+    }
+
+    for (const [from, to] of this._filesToRename.values()) {
+      switch (p) {
+        case from:
+          return observableOf(false);
+        case to:
+          return observableOf(true);
+      }
+    }
+    return this._host.exists(p);
+  }
+
   protected _validateDirExists(p: Path): Observable<boolean> {
-    return of(true);
+    return observableOf(true);
 
     // if (this._filesToCreate.has(p) || this._filesToUpdate.has(p)) {
     //   return of(true);
@@ -258,6 +288,6 @@ export class SchematicResettableDryRunSink extends DryRunSink {
 
     this._subject.complete();
 
-    return of<void>(undefined);
+    return observableOf<void>(undefined);
   }
 }

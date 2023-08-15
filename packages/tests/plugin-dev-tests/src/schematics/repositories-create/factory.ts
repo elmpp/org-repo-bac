@@ -12,6 +12,7 @@ import {
 import { constants, schematicUtils } from "@business-as-code/core";
 import path from "path";
 import { Schema } from "./schema";
+import { getHostRoot } from "@business-as-code/core/src/schematics/schematics-utils";
 
 /** normal repo to bare repo - https://tinyurl.com/28qht2am */
 const convertToBareRepo = ({
@@ -34,9 +35,11 @@ const convertToBareRepo = ({
   const tmpDestinationGitPath = path.join(tmpDestinationPath, ".git");
   const destinationPath = path.join(sourceBasedir, sourceFoldername) + ".git";
 
-  return  chain([(tree: Tree, schematicContext: SchematicContext) => {
+  return chain([(tree: Tree, schematicContext: SchematicContext) => {
     // move(workingPath, tmpDestinationPath) // remove
     // move(tmpDestinationGitPath, destinationPath) // remove
+
+    // console.log(`getHostRoot(schematicContext), workingPath, tmpDestinationPath, sourceBasedir :>> `, getHostRoot(schematicContext), workingPath, tmpDestinationPath, sourceBasedir)
 
     // schematicUtils.copy(workingPath, tmpDestinationPath, tree, schematicContext) // remove
     // schematicUtils.copy(tmpDestinationGitPath, destinationPath, tree, schematicContext) // remove
@@ -146,7 +149,7 @@ export default function (options: Schema): Rule {
         move(workingPath),
       ]);
 
-      console.log(`workingPath :>> `, workingPath, options._bacContext.workspacePath)
+      // console.log(`workingPath :>> `, workingPath, options._bacContext.workspacePath)
 
       const packageTemplateSource1 = apply(url("./package"), [
         template({
