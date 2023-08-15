@@ -58,7 +58,7 @@ export class GitService {
     const workspacePathAbsolute = GitService.getWorkingDestinationPath(options)
 
     if (!(await xfs.existsPromise(workspacePathAbsolute.address))) {
-      options.context.logger.warn(`gitService: service initialised on a non-existent path '${workspacePathAbsolute.original}'. Is this really what you desire?`)
+      options.context.logger.error(`gitService: service initialised on a non-existent path '${workspacePathAbsolute.original}'. Is this really what you desire?`)
       return ins
     }
 

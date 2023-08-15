@@ -68,7 +68,6 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
 
       const res = await schematicsService.runSchematic({
         address: `@business-as-code/plugin-core-essentials#namespace=initialise-workspace`,
-        context,
         options: {
           name,
           configPath,

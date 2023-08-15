@@ -260,7 +260,7 @@ export abstract class BaseCommand<
       // console.log(`message :>> `, message)
       // console.log(`this.logger :>> `, this.logger, this)
       this.logger.stdout(
-        message,
+        message
         // args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
       );
       // message =
@@ -300,7 +300,7 @@ export abstract class BaseCommand<
       stderr: ProcessOutput = process.stderr,
       masks?: Partial<Record<logging.LogLevel, (s: string) => string>>
     ): Logger {
-      const logger = new logging.IndentLogger("cling") as Logger
+      const logger = new logging.IndentLogger("cling") as Logger;
       // console.log(`parseOutput.flags["logLevel"], parseOutput.flags["json"] :>> `, parseOutput.flags["logLevel"], parseOutput.flags["json"])
       logger
         .pipe(
@@ -364,10 +364,9 @@ export abstract class BaseCommand<
           output.write("\n");
           // }
         });
-        logger.stdout = (s: string) => {
-          stdout.write(s + EOL)
-        }
-
+      logger.stdout = (s: string) => {
+        stdout.write(s + EOL);
+      };
 
       return logger;
     }
@@ -594,7 +593,7 @@ export abstract class BaseCommand<
 
   protected async loadServiceFactory({
     plugins,
-    workspacePath,
+    workspacePath: originalWorkspacePath,
   }: {
     plugins: oclif.Interfaces.Plugin[];
     logger: Context["logger"];
@@ -650,12 +649,61 @@ export abstract class BaseCommand<
       const initialiseService = async (
         staticService: ValueOf<ServiceStaticMap>[number]
       ) => {
+
+        /**
+         * workspacePath should always spring back to the original bootstrapped value if not explicitly given!!
+         * This next value should propogate through to all derivative values such as context
+        */
+        function deriveNextWorkspacePath() {
+          return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath;
+          // return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath;
+        }
+
+        const nextContext = {
+          ...initialiseOptionsLite.context,
+          workspacePath: deriveNextWorkspacePath()
+        };
         const serviceIns = (await staticService.initialise(
           {
+            workspacePath: originalWorkspacePath, // we DO allow passing through of workspacePath
             ...initialiseOptionsLite,
-            workspacePath,
+            context: nextContext,
           } // more weird static class stuff
         )) as ServiceMap[SName][number];
+
+        (function validateService() {
+          if (!initialiseOptionsLite.workingPath) return;
+
+          const serviceOptions = (serviceIns as any)?.options as Parameters<
+            typeof staticService.initialise
+          >[0];
+
+          // console.log(
+          //   `serviceOptions && serviceOptions.workspacePath.original :>> `,
+          //   serviceOptions && serviceOptions?.workspacePath?.original
+          // );
+          // console.log(
+          //   `serviceOptions.context.workspacePath.original :>> `,
+          //   serviceOptions?.context?.workspacePath?.original
+          // );
+          // console.log(`serviceIns.ctor.name :>> `, serviceIns.ctor.name);
+          // console.log(
+          //   `nextContext.workspacePath, initialiseOptionsLite.workspacePath :>> `,
+          //   nextContext.workspacePath,
+          //   initialiseOptionsLite.workspacePath
+          // );
+
+          if (
+            serviceOptions?.workspacePath.original !==
+            serviceOptions?.context?.workspacePath.original
+          ) {
+            throw new Error(
+              `Intended new workspacePath parameter option has not been propogated to the context option. Service: '${serviceIns.ctor.name}'. Supplied new workspacePath: '${serviceOptions?.workspacePath.original}' has not been propogated to the instance options.context.workspacePath: '${serviceOptions?.context?.workspacePath.original}'. It was supplied to instance as nextContext.workspacePath: '${nextContext.workspacePath.original}'.
+              initialiseOptionsLite.workspacePath: '${initialiseOptionsLite?.workspacePath?.original}'
+              `
+            );
+          }
+        })();
 
         if (!serviceIns) {
           this.debug(
@@ -855,7 +903,6 @@ export abstract class BaseCommand<
   }
 
   protected override logJson(json: unknown): void {
-
     if (
       !this.jsonEnabled() &&
       !logLevelMatching(
@@ -874,7 +921,7 @@ export abstract class BaseCommand<
       );
     }
 
-    oclif.ux.styledJSON(json)
+    oclif.ux.styledJSON(json);
   }
 
   async run(): Promise<void> {

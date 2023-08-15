@@ -146,6 +146,8 @@ export default function (options: Schema): Rule {
         move(workingPath),
       ]);
 
+      console.log(`workingPath :>> `, workingPath, options._bacContext.workspacePath)
+
       const packageTemplateSource1 = apply(url("./package"), [
         template({
           ...options,

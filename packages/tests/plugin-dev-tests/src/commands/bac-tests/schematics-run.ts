@@ -50,7 +50,7 @@ export class BacTestsSchematicsRun extends BaseCommand<
     //     default: () => {},
     // }),
     workspacePath: Oclif.Flags.directory({
-  exists: true,
+    exists: true, // do NOT infer from the RC file
       description: "Workspace name",
       required: true,
     }),
@@ -159,7 +159,6 @@ export class BacTestsSchematicsRun extends BaseCommand<
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
-      context,
       options: context.cliOptions.flags["schematicOptions"]!,
       // destinationPath: workspacePath,
       // dryRun: false,

@@ -7,13 +7,13 @@ import {
   SchematicContext,
   Sink,
   TaskExecutorFactory,
-  Tree
+  Tree,
 } from "@angular-devkit/schematics";
 import { BaseWorkflow } from "@angular-devkit/schematics/src/workflow";
 import {
   NodeModulesEngineHost,
   NodePackageDoesNotSupportSchematics,
-  NodeWorkflowOptions
+  NodeWorkflowOptions,
 } from "@angular-devkit/schematics/tools";
 import {
   addr,
@@ -21,12 +21,12 @@ import {
   AddressPackageScaffoldIdent,
   AddressPackageScaffoldIdentString,
   AddressPathAbsolute,
-  AddressPathAbsoluteString
+  AddressPathAbsoluteString,
 } from "@business-as-code/address";
 import {
   BacError,
   BacErrorWrapper,
-  MessageName
+  MessageName,
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import { Interfaces } from "@oclif/core";
@@ -37,15 +37,17 @@ import { concatMap, finalize, ignoreElements } from "rxjs/operators";
 import { SchematicResettableScopedNodeJsSyncHost } from "../schematics/schematic-resettable-scoped-node-js-sync-host";
 import {
   ResettableDryRunEvent,
-  SchematicResettableDryRunSink
+  SchematicResettableDryRunSink,
 } from "../schematics/schematics-resettable-dry-run-sink";
 import { SchematicResettableHostSink } from "../schematics/schematics-resettable-host-sink";
 import { SchematicResettableNodeWorkflow } from "../schematics/schematics-resettable-node-workflow";
 import {
   Context,
+  logLevelMatching,
   Result,
-  ServiceInitialiseCommonOptions
+  ServiceInitialiseCommonOptions,
 } from "../__types__";
+import { Logger } from "@oclif/core/lib/errors";
 
 declare global {
   namespace Bac {
@@ -103,7 +105,7 @@ type Options = ServiceInitialiseCommonOptions & {
 // const sinkTreeStack: Set<any> = new Set()
 
 export class SchematicsService {
-  static title = "schematics" as const
+  static title = "schematics" as const;
   options: Required<Options>;
   runCache = {
     nothingDone: true,
@@ -125,10 +127,11 @@ export class SchematicsService {
   schematicsLogger: Logger;
 
   get ctor(): typeof SchematicsService {
-    return this.constructor as unknown as typeof SchematicsService
+    return this.constructor as unknown as typeof SchematicsService;
   }
-  get title(): (typeof SchematicsService)['title'] {
-    return (this.constructor as any).title as unknown as (typeof SchematicsService)['title']
+  get title(): (typeof SchematicsService)["title"] {
+    return (this.constructor as any)
+      .title as unknown as (typeof SchematicsService)["title"];
   }
 
   // @ts-expect-error:
@@ -155,20 +158,20 @@ export class SchematicsService {
   ) {
     // console.log(`options :>> `, options)
 
-//     /** we can skip the resolving of plugins after initial instance.
-//      * Also, it is necessary when calling to .runSchematic for workflow.engine to be consistent
-//      * */
-//     if (false && prevInstance) { // NOT WORKING when running tests in a row
-//       this.workflow = prevInstance.workflow;
-//       this.schematicsMap = prevInstance.schematicsMap;
-// console.log(`:>> schematics service being reused`);
+    //     /** we can skip the resolving of plugins after initial instance.
+    //      * Also, it is necessary when calling to .runSchematic for workflow.engine to be consistent
+    //      * */
+    //     if (false && prevInstance) { // NOT WORKING when running tests in a row
+    //       this.workflow = prevInstance.workflow;
+    //       this.schematicsMap = prevInstance.schematicsMap;
+    // console.log(`:>> schematics service being reused`);
 
-//     } else {
-//       const { workflow, schematicsMap } = await this.setupSchematics(options);
-//       this.workflow = workflow;
-//       this.schematicsMap = schematicsMap;
-//       this.registerTasks({ workflow: this.workflow });
-//     }
+    //     } else {
+    //       const { workflow, schematicsMap } = await this.setupSchematics(options);
+    //       this.workflow = workflow;
+    //       this.schematicsMap = schematicsMap;
+    //       this.registerTasks({ workflow: this.workflow });
+    //     }
 
     const { workflow, schematicsMap } = await this.setupSchematics(options);
     this.workflow = workflow;
@@ -515,11 +518,11 @@ export class SchematicsService {
 
   async runSchematic({
     address,
-    context,
+    // context,
     options,
   }: {
     address: AddressPackageScaffoldIdentString;
-    context: Context;
+    // context: Context; // must use the one supplied when created!
     options: Record<PropertyKey, unknown>;
   }): Promise<
     Result<
@@ -540,6 +543,34 @@ export class SchematicsService {
         },
       };
     }
+
+    /** ensure this instance's fs location has been setup correctly */
+    (function validateWorkspacePath(this: SchematicsService) {
+      console.log(
+        `this.workflow :>> `,
+        require("util").inspect(this.workflow, {
+          showHidden: false,
+          depth: undefined,
+          colors: true,
+        })
+      );
+
+      // @ts-expect-error:
+      const fsHostPath = this.getCurrentFsHost()._root;
+      const workspacePath = this.options.workspacePath.original;
+      if (fsHostPath !== workspacePath) {
+        throw new Error(
+          `SchematicService:runSchematic: workspacePath has not been propogated. Supplied: '${workspacePath}', fsHost: '${fsHostPath}'`
+        );
+      }
+    }).bind(this)();
+
+    console.log(
+      `this.options.context.workspacePath.original :>> `,
+      this.options.context.workspacePath.original,
+      this.options.workspacePath,
+      this.getCurrentFsHost()
+    );
 
     const schematicPath = addr.parseAsType(address, "scaffoldIdentPackage", {
       strict: false,
@@ -601,12 +632,20 @@ export class SchematicsService {
       // return `(cd ${context.workspacePath.original}; p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} ${Object.values(objectMapAndFilter(schematicsOptions, (v, k) => `--${k}=${v}`))})`;
       // const schematicOptionsJson = JSON.stringify(Object.keys(options)) // sans _bacContext
       // const optionsAsFlags = Object.entries(options).map(([k, v]) => `--${k} ${v}`).join(' ')
-      const schematicOptionsJson = JSON.stringify(options) // sans _bacContext
+      const schematicOptionsJson = JSON.stringify(options); // sans _bacContext
       // return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} ${optionsAsFlags}`;
-      return `rm -rf ${context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${context.workspacePath.original} --schematicOptions='${schematicOptionsJson}'`;
+      return `rm -rf ${this.options.context.workspacePath.original}/*(D); p dev:runCli bac-tests schematics-run --schematicsAddress=${schematicMapEntry.address.original} --workspacePath=${this.options.context.workspacePath.original} --schematicOptions='${schematicOptionsJson}'`;
     };
-    context.logger.debug(
-      `Running schematic '${schematicMapEntry.address.addressNormalized}'. Collection path: '${schematicMapEntry.collectionPath.original}', DestinationPath: '${this.options.workspacePath.original}'${this.options.context.cliOptions.flags["logLevel"] === 'debug' ? `, Full command: '${optionsAsCommand(schematicMapEntry)}'` : ''}`
+    this.options.context.logger.debug(
+      `Running schematic '${
+        schematicMapEntry.address.addressNormalized
+      }'. Collection path: '${
+        schematicMapEntry.collectionPath.original
+      }', DestinationPath: '${this.options.workspacePath.original}'${
+        this.options.context.cliOptions.flags["logLevel"] === "debug"
+          ? `, Full command: '${optionsAsCommand(schematicMapEntry)}'`
+          : ""
+      }`
     );
 
     /**
@@ -618,6 +657,12 @@ export class SchematicsService {
      *  when everything is done.
      */
     try {
+      console.log(
+        `context.workspacePath, _bacContext, this.options :>> `,
+        this.options.context.workspacePath,
+        workflow.engineHost,
+        this.options
+      );
       await workflow
         .execute({
           collection: schematicMapEntry.collectionPath.original,
@@ -625,9 +670,9 @@ export class SchematicsService {
           // options,
           options: {
             ...options,
-            _bacContext: context,
+            _bacContext: this.options.context,
           },
-          logger: context.logger,
+          logger: this.options.context.logger,
 
           // parentContext: (this.workflow as any)?._context,
           // collection: collectionName,
@@ -635,14 +680,20 @@ export class SchematicsService {
           // options: schematicOptions,
 
           allowPrivate: allowPrivate,
-          debug: this.options.context.cliOptions.flags["logLevel"] === 'debug',
+          debug: logLevelMatching(
+            "debug",
+            this.options.context.cliOptions.flags["logLevel"],
+            this.options.context.cliOptions.flags["json"]
+          ),
         })
         .toPromise();
 
       if (this.runCache.nothingDone) {
-        context.logger.debug("Nothing to be done.");
+        this.options.context.logger.debug("Nothing to be done.");
       } else if (this.options.dryRun) {
-        context.logger.debug(`Dry run enabled. No files written to disk.`);
+        this.options.context.logger.debug(
+          `Dry run enabled. No files written to disk.`
+        );
       }
 
       return {
@@ -654,13 +705,13 @@ export class SchematicsService {
       // if (err instanceof UnsuccessfulWorkflowExecution) {
       //   // "See above" because we already printed the error.
       //   message = "The Schematic workflow failed. See above.";
-      //   // context.logger("The Schematic workflow failed. See above.", "error");
+      //   // this.options.context.logger("The Schematic workflow failed. See above.", "error");
       // } else if (debug && err instanceof Error) {
       //   message = `An error occured:\n${err.stack}`;
       // } else {
       //   message = `Error: ${err instanceof Error ? err.message : err}`;
       // }
-console.log(`err :>> `, err)
+      console.log(`err :>> `, err);
       const error = BacErrorWrapper.fromError(err as Error, {
         reportCode: MessageName.SCHEMATICS_ERROR,
       });
@@ -710,6 +761,8 @@ console.log(`err :>> `, err)
     // let loggingQueue: string[] = [];
     // let error = false;
     // let nothingDone = true
+
+    console.log(`workflowRoot :>> `, workflowRoot, this.options);
 
     const fsHost = new SchematicResettableScopedNodeJsSyncHost(workflowRoot);
     // const fsHost = new NodeJsSyncHost
@@ -913,6 +966,9 @@ console.log(`err :>> `, err)
         this.getCurrentFsHost(),
         this.options.force
       );
+
+      console.log(`this.getCurrentFsHost() :>> `, this.getCurrentFsHost());
+
       const dryRunSubscriber = dryRunSink.reporter.subscribe((event) => {
         // if (action === "report") {
         this.getCurrentWorkflowReporter().next(event);
@@ -1069,7 +1125,7 @@ console.log(`err :>> `, err)
           kind: "flush",
           path: "/",
         });
-        // schematicContext.logger.debug(`${colors.magenta("FLUSH")}`)
+        // schematicThisthis.options.Context.logger.debug(`${colors.magenta("FLUSH")}`)
       })
     );
   }
@@ -1103,7 +1159,7 @@ console.log(`err :>> `, err)
     });
   }
 
-  // context.logger(`registerServicesAsTasks: registering '${context.}' services`)
+  // this.options.context.logger(`registerServicesAsTasks: registering '${context.}' services`)
   // need to register the cb here somehow ¯\_(ツ)_/¯
   // }
 
@@ -1117,7 +1173,7 @@ console.log(`err :>> `, err)
   //   }: {
   //     serviceName: keyof ServicesStatic;
   //   }) => {
-  //     context.logger(
+  //     this.options.context.logger(
   //       `registerServicesAsTasks: registering service '${serviceName}' as schematic task`
   //     );
 
@@ -1160,7 +1216,7 @@ console.log(`err :>> `, err)
 
   //   console.log(`workflow.engineHost :>> `, workflow.engineHost)
 
-  //   // context.logger(`registerServicesAsTasks: registering '${context.}' services`)
+  //   // this.options.context.logger(`registerServicesAsTasks: registering '${context.}' services`)
   //   // need to register the cb here somehow ¯\_(ツ)_/¯
   // }
 
@@ -1212,7 +1268,7 @@ console.log(`err :>> `, err)
             err,
             collectionPath.original
           );
-          context.logger.debug(
+          this.options.context.logger.debug(
             `schematic collection path '${collectionPath.original}' unresolvable`
           );
           // logger.debug(
@@ -1248,7 +1304,7 @@ console.log(`err :>> `, err)
           // logger.debug(
           //   `schematic collection path '${collectionPath.original}' unresolvable`
           //   );
-          context.logger.debug(
+          this.options.context.logger.debug(
             `schematic collection path '${collectionPath.original}' unresolvable`
           );
         } else {
@@ -1280,7 +1336,9 @@ console.log(`err :>> `, err)
       // logger.debug(collection.listSchematicNames().join('\n'));
     } catch (error) {
       // logger.fatal(error instanceof Error ? error.message : `${error}`);
-      context.logger.fatal(error instanceof Error ? error.message : `${error}`);
+      this.options.context.logger.fatal(
+        error instanceof Error ? error.message : `${error}`
+      );
       throw error;
     }
   }
@@ -1322,7 +1380,7 @@ console.log(`err :>> `, err)
   //           }
   //         }
   //       } catch (err) {
-  //         context.logger(
+  //         this.options.context.logger(
   //           `schematic collection path '${collectionPath.original}' unresolvable`,
   //           "debug"
   //         );
@@ -1389,7 +1447,7 @@ console.log(`err :>> `, err)
     // this.schematicsLogger = logger;
 
     // logger.debug(`schematicsService::setupSchematics: found '${schematicsMap.size}' schematics '${Array.from(schematicsMap.values()).map(s => s.address.original).join(', ')}'`)
-    options.context.logger.debug(
+    this.options.context.logger.debug(
       `schematicsService::setupSchematics: found '${
         schematicsMap.size
       }' schematics '${Array.from(schematicsMap.values())

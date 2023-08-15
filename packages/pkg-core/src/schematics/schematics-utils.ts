@@ -268,6 +268,7 @@ export const flushBranchMerge = (
         .serviceFactory("schematics", {
           ...serviceOptions.initialiseOptions,
           context: serviceOptions.context,
+          workspacePath: serviceOptions.context.workspacePath, // ALWAYS pass along workspacePath in utils
           // workspacePath: getHostRoot(schematicContext),
         })
         .then((schematicsService) => {
@@ -458,6 +459,7 @@ export const branchMerge = (
         .serviceFactory("schematics", {
           ...serviceOptions.initialiseOptions,
           context: serviceOptions.context,
+          workspacePath: serviceOptions.context.workspacePath, // ALWAYS pass along workspacePath in utils
           // workspacePath: getHostRoot(schematicContext),
         })
         .then((schematicsService) => {

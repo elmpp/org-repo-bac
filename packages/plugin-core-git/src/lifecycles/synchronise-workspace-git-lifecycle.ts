@@ -64,7 +64,6 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
 
       const res = await schematicsService.runSchematic({
         address: `@business-as-code/plugin-core-essentials#namespace=synchronise-workspace`,
-        context,
         options: {
           // name,
           // configPath,

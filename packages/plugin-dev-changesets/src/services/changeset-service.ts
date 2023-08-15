@@ -80,7 +80,6 @@ export class ChangesetService {
 
     await schematicService.runSchematic({
       address: `@business-as-code/plugin-dev-changesets#namespace=changeset-generate`,
-      context,
       options: {
         ...schematicOptionsChanges,
         _bacContext: context,

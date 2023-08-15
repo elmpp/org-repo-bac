@@ -89,7 +89,6 @@ export class SchematicsRunCommand extends BaseCommand<
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
-      context: context,
       options: (context.cliOptions.flags as any).schematicOptions,
       // destinationPath: workspacePath,
     });

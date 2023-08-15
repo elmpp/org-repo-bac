@@ -98,11 +98,17 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
 
     context.logger.info(`Creating repositories in '${repositoriesPath.original}'`)
 
+    if (!(await xfs.existsPromise(repositoriesPath.address))) {
+      context.logger.info(`Creating repositories directory at '${repositoriesPath.original}'`)
+      await xfs.mkdirPromise(repositoriesPath.address)
+    }
+
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
-      context,
       options: {},
     });
+
+    context.logger.info(`Created repositories in '${repositoriesPath.original}'`)
 
     if (!assertIsOk(res)) {
       switch (res.res.error.reportCode) {
