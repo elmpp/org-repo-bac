@@ -14,6 +14,7 @@ describe("repositories-create", () => {
             workspacePath: testContext.testEnvVars.workspacePath.original,
             schematicsAddress:
               "@business-as-code/plugin-dev-tests#namespace=repositories-create",
+            payload: {},
             ["logLevel"]: "info",
             json: false,
           },
@@ -34,21 +35,21 @@ describe("repositories-create", () => {
         await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
-            cb: async ({ service }) => {
-              const repo = service.getRepository(false);
+            cb: async ({ service: gitService }) => {
+              const repo = gitService.getRepository(false);
 
-              expect(service.getWorkingDestinationPath().original).toMatch(
+              expect(gitService.getWorkingDestinationPath().original).toMatch(
                 new RegExp(`/${workingPath}$`)
               );
               assert(
                 repo,
                 `Initialised repo not found at '${
-                  service.getWorkingDestinationPath().original
+                  gitService.getWorkingDestinationPath().original
                 }'`
               );
 
               expect(
-                await repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)
+                await repo.checkIsRepo(gitService.CheckRepoActions.IS_REPO_ROOT)
               ).toBeTruthy();
 
               const logs = await repo.log();

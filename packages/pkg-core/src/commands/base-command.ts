@@ -638,7 +638,7 @@ export abstract class BaseCommand<
       // console.log(`staticServices :>> `, staticServices)
       // console.log(`staticService, serviceName :>> `, staticService, serviceName)
       if (!staticServiceArr) {
-        console.log(`staticServices :>> `, staticServices);
+        // console.log(`staticServices :>> `, staticServices);
         this.error(
           `Attempting initialisation of unknown service '${serviceName}'. Loaded services: '${Object.keys(
             staticServices

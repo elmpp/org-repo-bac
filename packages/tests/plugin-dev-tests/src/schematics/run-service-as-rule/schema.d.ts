@@ -3,24 +3,24 @@
 import { Rule } from "@angular-devkit/schematics";
 import { ServiceOptions } from "@business-as-code/core";
 
-export type RepoMap = {
-  // language: 'javascript' | 'rust'
-  // committers: {
-  //   name: string
-  //   email: string
-  //   message: string
-  // }[]
-  // // languageVariant: 'typescript' | 'javascript' | 'rust'
-  // packages: {
-  // },
-  // commits: {
-  //   committer: {
-  //     name: string
-  //     email: string
-  //     message: string
-  //   }
-  // }[]
-};
+// export type RepoMap = {
+//   // language: 'javascript' | 'rust'
+//   // committers: {
+//   //   name: string
+//   //   email: string
+//   //   message: string
+//   // }[]
+//   // // languageVariant: 'typescript' | 'javascript' | 'rust'
+//   // packages: {
+//   // },
+//   // commits: {
+//   //   committer: {
+//   //     name: string
+//   //     email: string
+//   //     message: string
+//   //   }
+//   // }[]
+// };
 
 export interface Schema {
   // rule: Rule,

@@ -26,7 +26,38 @@ describe("test-env-smoke-test", () => {
         expect.stringMatching("./src/schematics/")
       );
 
-      expect(testContext.testEnvVars.cliSourceActive).toMatch(/cliLinked|cliRegistry/) // active is the required runtime env value
+      expect(testContext.testEnvVars.cliSourceActive).toMatch(
+        /cliLinked|cliRegistry/
+      ); // active is the required runtime env value
+    });
+  });
+
+  describe("daemons are running ok", () => {
+    it("git-ssh repositories are visible", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+      await persistentTestEnv.test({}, async (testContext) => {
+
+        // const gitService = await testContext.testEnvVars
+
+        const collectionJsonPath = addr.pathUtils.join(
+          testContext.testEnvVars.checkoutPath,
+          addr.parsePath("packages/plugin-core-essentials/collection.json")
+        );
+        const collectionJson = await xfs.readFilePromise(
+          collectionJsonPath.address,
+          "utf-8"
+        );
+        const collection = formatUtils.JSONParse(collectionJson);
+
+        expect(collection).toHaveProperty(
+          ["schematics", "initialise-workspace", "factory"],
+          expect.stringMatching("./src/schematics/")
+        );
+
+        expect(testContext.testEnvVars.cliSourceActive).toMatch(
+          /cliLinked|cliRegistry/
+        ); // active is the required runtime env value
+      });
     });
   });
 });

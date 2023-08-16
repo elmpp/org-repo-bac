@@ -22,13 +22,22 @@ export class SchematicsRunCommand extends BaseCommand<
   //   ];
 
   static override flags = {
-    // payload: Oclif.Flags.custom({
-    //     // parse: async (): Promise<any> => {},
-    //     // description: 'team to use',
-    //     // default: () => {},
+    // schematicOptions: Oclif.Flags.custom<unknown>({
+    //   // parse: async (): Promise<any> => {},
+    //   description: 'team to use',
+    //   // default: () => {},
     // }),
+    payload: Oclif.Flags.custom<any>({
+      // summary: "Specify level for bumping",
+      // options: ["major", "minor", "patch"],
+      description: 'team to use',
+      // helpGroup: "GLOBAL",
+      // default: "patch",
+      required: false,
+      default: {},
+    })(),
     workspacePath: Oclif.Flags.directory({
-  exists: true,
+    exists: true,
       description: "Workspace name",
       required: true,
     }),
@@ -89,7 +98,7 @@ export class SchematicsRunCommand extends BaseCommand<
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
-      options: (context.cliOptions.flags as any).schematicOptions,
+      options: context.cliOptions.flags.payload,
       // destinationPath: workspacePath,
     });
 

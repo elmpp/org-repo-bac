@@ -16,7 +16,6 @@
 
  SUPPORT TASKS
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
- - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
  -
 
  <!-- - p moon run root:publishDev // -> when failing: p moon run root:buildWatch // -> when unauthenticated: (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login) -->

@@ -1,6 +1,8 @@
 import dotenv from "dotenv-flow";
 
-const dotenvParsed = dotenv.config();
+const dotenvParsed = dotenv.config({
+  silent: true,
+});
 if (dotenvParsed.error) {
   throw new Error(`Unable to read env file`);
 }
