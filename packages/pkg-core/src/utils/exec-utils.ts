@@ -296,6 +296,10 @@ export function getExecRuntime():
   if (!!lifecycleScript.match(/(\b)?node\b/)) return "node";
 }
 
+export function promiseAwait<T extends Promise<unknown>>(prom: T, duration: number = 2000): T {
+  return Promise.race([prom, new Promise((resolve, reject) => setTimeout(() => reject(new BacError(MessageName.UNNAMED, `Promise did not resolve within expected '${duration}' ms`)), duration))]) as T
+}
+
 export {
   type ExecaReturnValue,
   type execa, // required for dreaded, "reference required ts error"

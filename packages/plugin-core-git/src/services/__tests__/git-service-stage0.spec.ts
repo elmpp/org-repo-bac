@@ -1,4 +1,4 @@
-import { expectIsOk } from "@business-as-code/core";
+import { constants, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 import { CheckRepoActions } from "simple-git";
 
@@ -7,17 +7,19 @@ describe("git-service", () => {
 
   /** @online-only */
   describe("cloning", () => {
-    it("clone standard", async () => {
+    it.only("clone standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.runServiceCb({
           serviceOptions: {
             serviceName: "git",
             cb: async ({ service }) => {
-              await service.clone(
-                `https://github.com/elmpp/bac-tester.git`,
+              const res = await service.clone(
+                // `https://github.com/elmpp/bac-tester.git`,
+                `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
                 {}
               );
+              expectIsOk(res)
             },
             initialiseOptions: {
               workingPath: ".",
@@ -30,11 +32,19 @@ describe("git-service", () => {
 
         const expectFs = res.res.expectUtil.createFs();
         // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
+        // expect(
+        //   res.res.expectUtil
+        //     .createText(expectFs.readText("./package.json"))
+        //     .lineContainsString({ match: `# bac-tester`, occurrences: 1 })
+        // );
         expect(
           res.res.expectUtil
-            .createText(expectFs.readText("./README.md"))
-            .lineContainsString({ match: `# bac-tester`, occurrences: 1 })
-        );
+            .createText(expectFs.readText("./package.json")).asJson()
+        ).toHaveProperty('name', 'root-package');
+        expect(
+          res.res.expectUtil
+            .createText(expectFs.readText("./packages/my-package-1/package.json")).asJson()
+        ).toHaveProperty('name', 'my-package-1');
 
         await testContext.runServiceCb({
           serviceOptions: {
@@ -46,12 +56,12 @@ describe("git-service", () => {
               ).toBeTruthy();
               // const currentDir = (await service.getRepository()).cwd()/
               // console.log(`currentDir :>> `, currentDir)
-              console.log(
-                `service.getWorkingDestinationPath :>> `,
-                service.getWorkingDestinationPath()
-              );
-              const logs = await repo.log();
-              console.log(`logs :>> `, logs);
+              // console.log(
+              //   `service.getWorkingDestinationPath :>> `,
+              //   service.getWorkingDestinationPath()
+              // );
+              // const logs = await repo.log();
+              // console.log(`logs :>> `, logs);
               // expect((await service.getRepository()).log()).toBeTruthy()
               // expect((await service.getRepository()).commit(CheckRepoActions.BARE)).toBeTruthy()
               // await service.clone(`https://github.com/elmpp/bac-tester.git`, {bare: null});

@@ -37,6 +37,11 @@ function checkValue(input, allowed) {
 // console.log(`keyPaths :>> `, keyPaths)
 
 new Promise((resolve, reject) => {
+
+  if ((process.env?.GIT_SSH_MOCK_SERVER_PUBKEY ?? 'false').toUpperCase() === 'true' || (process.env?.GIT_SSH_MOCK_SERVER_PASSWORD ?? 'false').toUpperCase() === 'true') {
+    throw new Error(`ssh-server-anonymous is not intended for private or password access!!. '${process.env.GIT_SSH_MOCK_SERVER_PUBKEY}', '${process.env.GIT_SSH_MOCK_SERVER_PASSWORD}'`)
+  }
+
   try {
     let key = fs.readFileSync(keyPaths.prv)
     let pubKey = fs.readFileSync(keyPaths.pub)
@@ -200,9 +205,9 @@ new Promise((resolve, reject) => {
       //   // process.exit(1)
       // })
     }
-  // ).listen(process.env.GIT_SSH_MOCK_SERVER_PORT || 2222, '127.0.0.1', function () {
+  // ).listen(process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || 2222, '127.0.0.1', function () {
   ).listen({
-    port: process.env.GIT_SSH_MOCK_SERVER_PORT || 2222,
+    port: process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || 2223,
     host: '127.0.0.1',
     debug: console.log,
   }, function () {

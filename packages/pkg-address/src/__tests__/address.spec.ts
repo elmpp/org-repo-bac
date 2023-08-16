@@ -10,7 +10,7 @@ import { AddressDescriptor, AddressHandler, AddressType } from "../__types__";
 
 // import {createMockContext} from '@monotonous/tests-core'
 import { PortablePath } from "@business-as-code/fslib";
-import { constants } from "../../../pkg-core/src";
+// import { constants } from "@business-as-code/core";
 
 type TestMapEntry<AddName extends keyof AddressType> =
   AddressDescriptor<AddName> & {
@@ -1765,11 +1765,11 @@ describe("Address posix", () => {
         });
         expect(res).toBeFalsy();
       });
-      it.only('long nm path', () => {
-        const res = addr.parsePath(`${constants.TMP_ROOT}/stage1/tests/creates_a_skeleton_workspace_without_configPath_using_skeleton_config/node_modules/.pnpm/@business-as-code+core@0.0.0-latest-20230812065455_@types+node@14.18.54/node_modules/@business-as-code/core/dist/utils`, {
-        });
-        expect(res).toBeTruthy();
-      })
+      // it.only('long nm path', () => {
+      //   // const res = addr.parsePath(`${constants.TMP_ROOT}/stage1/tests/creates_a_skeleton_workspace_without_configPath_using_skeleton_config/node_modules/.pnpm/@business-as-code+core@0.0.0-latest-20230812065455_@types+node@14.18.54/node_modules/@business-as-code/core/dist/utils`, {
+      //   });
+      //   expect(res).toBeTruthy();
+      // })
     });
     describe("url", () => {});
     describe("package", () => {

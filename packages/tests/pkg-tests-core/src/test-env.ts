@@ -2,10 +2,7 @@
 import { virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { HostCreateTree, Tree } from "@angular-devkit/schematics";
-import {
-  addr,
-  AddressPathAbsolute,
-} from "@business-as-code/address";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
   assertIsOk,
   BaseCommand,
@@ -126,6 +123,11 @@ type PersistentTestEnvVars = {
   fixturesPath: AddressPathAbsolute;
   // /** the mntCwd of this repository instance (mntPath = path to the mnt.ts folder). See main-cli options for mntCwd info */
   // checkoutMntCwd: AddressPathAbsolute
+
+  /** the git-server key-gens an sshKey each time it starts up - private */
+  sshPrivateKeyPath: AddressPathAbsolute;
+  /** the git-server key-gens an sshKey each time it starts up - public */
+  sshPublicKeyPath: AddressPathAbsolute;
 
   cacheRenewNamespace: boolean;
   cacheNamespaceFolder?: string;
@@ -270,21 +272,13 @@ export type RunFunction = (context: TestContext) => Promise<void>;
 
 const basePaths = {
   /** single test that smoke tests the test setup */
-  stage0: addr.parsePath(
-    `${constants.TMP_ROOT}/stage0`
-  ) as AddressPathAbsolute,
+  stage0: addr.parsePath(`${constants.TMP_ROOT}/stage0`) as AddressPathAbsolute,
   /** heavy scaffolding that will be made available to successive stages via testContext.copy() */
-  stage1: addr.parsePath(
-    `${constants.TMP_ROOT}/stage1`
-  ) as AddressPathAbsolute,
+  stage1: addr.parsePath(`${constants.TMP_ROOT}/stage1`) as AddressPathAbsolute,
   /** stage2 tests */
-  stage2: addr.parsePath(
-    `${constants.TMP_ROOT}/stage2`
-  ) as AddressPathAbsolute,
+  stage2: addr.parsePath(`${constants.TMP_ROOT}/stage2`) as AddressPathAbsolute,
   /** stage2 tests */
-  stage3: addr.parsePath(
-    `${constants.TMP_ROOT}/stage2`
-  ) as AddressPathAbsolute,
+  stage3: addr.parsePath(`${constants.TMP_ROOT}/stage2`) as AddressPathAbsolute,
 };
 
 const checkoutPath = addr.pathUtils.resolve(
@@ -321,9 +315,9 @@ async function doCreatePersistentTestEnvs(
   };
 
   const [_folderName, stage] = getStageAndFolderName(
-    createPersistentTestEnvVars.cacheNamespaceFolder ?
-      sanitise(createPersistentTestEnvVars.cacheNamespaceFolder) :
-      getCurrentTestNameSanitised(),
+    createPersistentTestEnvVars.cacheNamespaceFolder
+      ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
+      : getCurrentTestNameSanitised(),
     testFilename
   );
 
@@ -364,7 +358,9 @@ async function doCreatePersistentTestEnvs(
     createPersistentTestEnvVars.cacheRenewNamespace ?? false;
   // const cacheRenewNamespace =
   //   truthyFalsy(process.env.TEST_ENV_CACHE_RENEW) ?? createPersistentTestEnvVars.cacheRenewNamespace ?? false
-  const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder) : undefined;
+  const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder
+    ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
+    : undefined;
 
   // const checkoutPath = addr.packageUtils.resolveRoot({
   //   address: addr.parsePackage('root'),
@@ -389,7 +385,7 @@ async function doCreatePersistentTestEnvs(
 
   const cliSource = createPersistentTestEnvVars.cliSource;
   if (stage === "stage1" && !cliSource) {
-    throw new Error(`Stage0 tests must declare their 'cliSource'!!`);
+    throw new Error(`Stage1 tests must declare their 'cliSource'!!`);
   }
 
   const testEnvVars: PersistentTestEnvVars = {
@@ -408,6 +404,26 @@ async function doCreatePersistentTestEnvs(
     cacheRenewNamespace,
     cacheNamespaceFolder,
     stage,
+    sshPrivateKeyPath: addr.pathUtils.join(addr.pathUtils.resolve(
+      addr.parsePath(__dirname) as AddressPathAbsolute,
+      addr.parsePath('../../pkg-tests-git-mock-server')
+      ),
+      addr.parsePath("id_rsa")
+    ) as AddressPathAbsolute,
+    sshPublicKeyPath: addr.pathUtils.join(addr.pathUtils.resolve(
+      addr.parsePath(__dirname) as AddressPathAbsolute,
+      addr.parsePath('../../pkg-tests-git-mock-server')
+      ),
+      addr.parsePath("id_rsa.pub")
+    ) as AddressPathAbsolute,
+    // sshPrivateKeyPath: addr.pathUtils.join(
+    //   addr.packageUtils.resolveRoot({
+    //     address: addr.parsePackage("@business-as-code/tests-git-server"),
+    //     projectCwd: addr.pathUtils.dirname(addr.parsePath(__dirname)) as AddressPathAbsolute,
+    //     strict: true,
+    //   }),
+    //   addr.parsePath("id_rsa")
+    // ) as AddressPathAbsolute,
     /** the current test has declared how its cli should be sourced. This really only applies to stage1 tests */
     cliSource,
     /** the test run has been ran with a cliSource */
@@ -423,8 +439,9 @@ async function doCreateEphemeralTestEnvVars(
   createEphemeralTestEnvVars: CreateEphemeralTestEnvVars,
   persistentTestEnvVars: PersistentTestEnvVars
 ): Promise<EphemeralTestEnvVars> {
-  const folderNameSanitised =
-    persistentTestEnvVars.cacheNamespaceFolder ? sanitise(persistentTestEnvVars.cacheNamespaceFolder) : getCurrentTestNameSanitised();
+  const folderNameSanitised = persistentTestEnvVars.cacheNamespaceFolder
+    ? sanitise(persistentTestEnvVars.cacheNamespaceFolder)
+    : getCurrentTestNameSanitised();
   // const processNamespace = createEphemeralTestEnvVars.processNamespace
   //   ? sanitise(createEphemeralTestEnvVars.processNamespace)
   //   : getCurrentTestNameSanitised();
@@ -570,9 +587,7 @@ async function setupFolders(
     const testsFolderName =
       testEnvVars.folderName ?? getCurrentTestNameSanitised(false);
     if (!testsFolderName) {
-      throw new Error(
-        `testsFolderName not found`
-      );
+      throw new Error(`testsFolderName not found`);
     }
 
     const testPath = addr.pathUtils.join(
@@ -705,9 +720,7 @@ function validateTestEnv({
       `When producing stage1 content, an explicit cacheNamespaceFolder must be provided (and be augmented into the 'Stage1Content' interface)`
     );
   }
-  if (
-    testEnvVars.cacheNamespaceFolder
-  ) {
+  if (testEnvVars.cacheNamespaceFolder) {
     if (testEnvVars.cacheNamespaceFolder !== testEnvVars.folderName) {
       throw new Error(
         `FolderName has not been set from the supplied cacheNamespaceFolder. Supplied: '${testEnvVars.cacheNamespaceFolder}', folderName: '${testEnvVars.folderName}'`
@@ -769,8 +782,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           sourcePathRel: keyof Stage1Content,
           destinationPath: AddressPathAbsolute
         ) => {
-
-          const sourcePathRelSanitised = sanitise(sourcePathRel)
+          const sourcePathRelSanitised = sanitise(sourcePathRel);
           // assumes copy from stage1 test
           const testStagePath = basePaths["stage1" as keyof typeof basePaths];
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original}`));
@@ -831,7 +843,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // process.chdir(checkoutPath.original);
           // process.chdir(activeCliPath.original); // the root oclif param handles this
 
-          const argsWithAdditional = args[0] === 'help' ? args : [...args, "--logLevel", logLevel];
+          const argsWithAdditional =
+            args[0] === "help" ? args : [...args, "--logLevel", logLevel];
           // console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
@@ -872,7 +885,6 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             }) // @oclif/core source - https://tinyurl.com/2qnt23kr
             .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
             .catch((anError) => {
-
               // TO DEBUG STUFF HERE, RUN WITH `DEBUG=* !!`
 
               BaseCommand.handleError({

@@ -330,6 +330,7 @@ importers:
       '@business-as-code/core': workspace:*
       '@business-as-code/error': workspace:*
       '@business-as-code/fslib': workspace:*
+      '@business-as-code/tests-git-server': workspace:^0.0.0
       '@oclif/core': 2.6.4
       '@oclif/test': ^2.3.9
       '@types/node': 18.14.2
@@ -342,6 +343,7 @@ importers:
       '@business-as-code/error': link:../../pkg-error
       '@business-as-code/fslib': link:../../pkg-fslib
     devDependencies:
+      '@business-as-code/tests-git-server': link:../pkg-tests-git-mock-server
       '@oclif/core': 2.6.4_6bgvkausea6luhfwc2tw5lwncq_wwpsflofdsa3l3b6sjtuf2g2ki
       '@oclif/test': 2.4.4_wwpsflofdsa3l3b6sjtuf2g2ki
       '@types/node': 18.14.2

@@ -40,8 +40,9 @@ Debugging Packages/Listing
 
 ## Daemons
   - p dev:runCli test daemon start --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // Start test daemons (required before testing)
-  - debug running daemons: 'p --filter @business-as-code/tests-verdaccio run verdaccio:isRunning && p --filter @business-as-code/tests-git-server run gitServerHttp:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning; echo $?'
-  - git ls-remote
+  - p --filter @business-as-code/tests-verdaccio run verdaccio:isRunning && p --filter @business-as-code/tests-git-server run gitServerHttp:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning; echo $? // debug the running daemons
+  - pnpm --filter @business-as-code/tests-git-server run gitServerHttp:stopBackground; pnpm --filter @business-as-code/tests-git-server run gitServerHttp:startBackground // start the githttp server directly, for example
+  - git ls-remote http://localhost:8174/repo1.git // test the running githttp server directly
 
 ## Build commands
 

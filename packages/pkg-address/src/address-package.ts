@@ -106,8 +106,8 @@ export const createAddressPackage = (addressIns: Address, parseParams: Initialis
 
     checkGroup(options.address, addressIns)
     const pkgPath = addressIns.parsePackage(`${options.address.parts.descriptor.identString}/package.json`)
-    const resolved = doResolve({...options, address: pkgPath, includeSubpath: false})
 
+    const resolved = doResolve({...options, address: pkgPath, includeSubpath: false})
     if (!resolved) return
     return addressIns.pathUtils.dirname(resolved)
   }

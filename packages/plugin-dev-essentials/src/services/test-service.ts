@@ -92,6 +92,18 @@ export class TestService {
         command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
       }))
     }
+    if (!assertIsOk((await packageManagerService.run({
+      command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
+    })))) {
+      // const res3 = await packageManagerService.run({
+      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
+      //   options: {detached: true},
+      // });
+      // if (!assertIsOk(res3)) return res3
+      proms.push(packageManagerService.run({
+        command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
+      }))
+    }
 
     // if (!assertIsOk((await packageManagerService.run({
     //   command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
@@ -200,6 +212,17 @@ export class TestService {
         );
       }
     })();
+    await (async function gitServerSshAnonyous() {
+      const isRunning = await packageManagerService.run({
+        command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
+      });
+      if (!assertIsOk(isRunning)) {
+        throw new BacError(
+          MessageName.UNNAMED,
+          `Git ssh anonymous server not running`
+        );
+      }
+    })();
 
     this.options.context.logger.info(`Daemons running ok`)
 
@@ -243,6 +266,11 @@ export class TestService {
         command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:stopBackground`,
       });
     })();
+    // await (async function gitServerSshAnonymous() {
+    //   await packageManagerService.run({
+    //     command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:stopBackground`,
+    //   });
+    // })();
 
     this.options.context.logger.info(`Daemons stopped`)
 
@@ -311,7 +339,9 @@ export class TestService {
     context.logger.info(`RUNNING STAGE0 TESTS (non content-dependent test-env tests) - ${cliSource}`);
 
     const stage0Res = await packageManagerService.run({
-      command: `jest 'stage0'${
+      command: `jest ${
+        testFileMatch && stage === 'stage0' ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
+      } ${
         stage === 'stage0' ? ` --watch` : ``
       }`,
       options: {
@@ -327,7 +357,9 @@ export class TestService {
     context.logger.info(`RUNNING STAGE1 TESTS (content-creating test-env tests) - ${cliSource}`);
 
     const stage1Res = await packageManagerService.run({
-      command: `jest 'stage1'${
+      command: `jest ${
+        testFileMatch && stage === 'stage1' ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
+      } ${
         stage === 'stage1' ? ` --watch` : ``
       }`,
       options: {
@@ -343,7 +375,9 @@ export class TestService {
     context.logger.info(`RUNNING STAGE2 TESTS (content-validating test-env tests) - ${cliSource}`);
 
     const stage2Res = await packageManagerService.run({
-      command: `jest 'stage1'${
+      command: `jest ${
+        testFileMatch && stage === 'stage2' ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
+      } ${
         stage === 'stage2' ? ` --watch` : ``
       }`,
       options: {

@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "description": "Clone and push to git repository test fixtures over HTTP.",
+  "main": "index.js",
   "exports": "./index.js",
   "bin": {
     "git-http-mock-server": "./http-daemon.js",
@@ -16,9 +17,9 @@
     "gitServerSshPubKey:isRunning": "node ./ssh-daemon.js isRunning || lsof -i 4tcp:2222 -sTCP:LISTEN",
     "gitServerSshPubKey:startBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js start",
     "gitServerSshPubKey:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js stop || kill-port 2222 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning",
-    "//gitServerSshAnonymous:isRunning": "node ./ssh-daemon.js isRunning",
-    "//gitServerSshAnonymous:startBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon.js start",
-    "//gitServerSshAnonymous:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon.js stop"
+    "gitServerSshAnonymous:isRunning": "node ./ssh-daemon-anonymous.js isRunning || lsof -i 4tcp:2223 -sTCP:LISTEN",
+    "gitServerSshAnonymous:startBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon-anonymous.js start",
+    "gitServerSshAnonymous:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon-anonymous.js stop"
   },
   "repository": {
     "type": "git",

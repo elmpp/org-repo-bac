@@ -89,7 +89,6 @@ describe("repositories-create", () => {
       const dirEntries = expectFs.getDir('.')
 
       expect(dirEntries.subdirs).toHaveLength(3) // cleared up
-      console.log(`dirEntries.subdirs :>> `, dirEntries.subdirs)
     });
   });
 });
