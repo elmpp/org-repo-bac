@@ -308,7 +308,7 @@ export class TestService {
       }
     );
 
-    context.logger.info(`RUNNING STAGE0 TESTS - ${cliSource}`);
+    context.logger.info(`RUNNING STAGE0 TESTS (non content-dependent test-env tests) - ${cliSource}`);
 
     const stage0Res = await packageManagerService.run({
       command: `jest 'stage0'${
@@ -324,7 +324,7 @@ export class TestService {
     });
     expectIsOk(stage0Res);
 
-    context.logger.info(`RUNNING STAGE1 TESTS - ${cliSource}`);
+    context.logger.info(`RUNNING STAGE1 TESTS (content-creating test-env tests) - ${cliSource}`);
 
     const stage1Res = await packageManagerService.run({
       command: `jest 'stage1'${
@@ -340,7 +340,23 @@ export class TestService {
     });
     expectIsOk(stage1Res);
 
-    if (!["stage0", "stage1"].includes(stage)) {
+    context.logger.info(`RUNNING STAGE2 TESTS (content-validating test-env tests) - ${cliSource}`);
+
+    const stage2Res = await packageManagerService.run({
+      command: `jest 'stage1'${
+        stage === 'stage2' ? ` --watch` : ``
+      }`,
+      options: {
+        env: {
+          BAC_TEST_CLISOURCE: cliSource,
+          FORCE_COLOR: 'true',
+        },
+        stdin: 'inherit',
+      },
+    });
+    expectIsOk(stage2Res);
+
+    if (!["stage0", "stage1", "stage2"].includes(stage)) {
       context.logger.info(
         `RUNNING ${stage.toUpperCase()} TESTS - ${cliSource} - testFileMatch: '${testFileMatch}'`
       );

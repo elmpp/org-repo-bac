@@ -39,9 +39,9 @@ type CacheContentAddress<TAddressDescriptor extends AddressDescriptorUnion> = {
 // }
 
 
-/** the stage0 persistable content */
+/** the stage1 persistable content */
 declare global {
-  interface Stage0Content {
+  interface Stage1Content {
     // 'initialise_workspace_skeleton_workspace_without_configPath_using_skeleton_config': true,
   }
 }

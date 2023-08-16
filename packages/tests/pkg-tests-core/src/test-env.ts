@@ -106,8 +106,8 @@ type CreatePersistentTestEnvVars = {
   // testsPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   /** skips (+clears) cache namespace for the current test file. (remember we strongly encourage single 'makeTestEnv = await setupMakeTestEnv' per test file) */
   cacheRenewNamespace?: boolean;
-  // /** overrides the cache location for all tests (normally taken from processNamespace/test name). Can only be an augmented key of Stage0Content */
-  cacheNamespaceFolder?: keyof Stage0Content;
+  // /** overrides the cache location for all tests (normally taken from processNamespace/test name). Can only be an augmented key of Stage1Content */
+  cacheNamespaceFolder?: keyof Stage1Content;
   /** test must declare the cliSource it produces. Mandatory for stage1 tests */
   cliSource?: "cliRegistry" | "cliLinked";
 };
@@ -153,7 +153,7 @@ export type TestContext = {
   /** By default, the cli used is the checkoutPath. Use this to change onto a scaffolded workspace. Must be the location holding the package.json with plugins etc */
   setActiveWorkspaceCliPath: (workspacePath: AddressPathAbsolute) => void;
   copy: (
-    sourcePath: keyof Stage0Content,
+    sourcePath: keyof Stage1Content,
     // sourcePath: AddressPathRelative,
     destinationPath: AddressPathAbsolute
   ) => Promise<
@@ -281,6 +281,10 @@ const basePaths = {
   stage2: addr.parsePath(
     `${constants.TMP_ROOT}/stage2`
   ) as AddressPathAbsolute,
+  /** stage2 tests */
+  stage3: addr.parsePath(
+    `${constants.TMP_ROOT}/stage2`
+  ) as AddressPathAbsolute,
 };
 
 const checkoutPath = addr.pathUtils.resolve(
@@ -384,7 +388,7 @@ async function doCreatePersistentTestEnvs(
   );
 
   const cliSource = createPersistentTestEnvVars.cliSource;
-  if (stage === "stage0" && !cliSource) {
+  if (stage === "stage1" && !cliSource) {
     throw new Error(`Stage0 tests must declare their 'cliSource'!!`);
   }
 
@@ -696,9 +700,9 @@ function validateTestEnv({
       `Tests must be ran with BAC_TEST_CLISOURCE. Possible values: ['cliRegistry', 'cliLinked']`
     );
   }
-  if (testEnvVars.stage === "stage0" && !testEnvVars.cacheNamespaceFolder) {
+  if (testEnvVars.stage === "stage1" && !testEnvVars.cacheNamespaceFolder) {
     throw new Error(
-      `When producing stage1 content, an explicit cacheNamespaceFolder must be provided (and be augmented into the 'Stage0Content' interface)`
+      `When producing stage1 content, an explicit cacheNamespaceFolder must be provided (and be augmented into the 'Stage1Content' interface)`
     );
   }
   if (
@@ -762,13 +766,13 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
         },
         /** copies from the initialise tranche of tests */
         copy: async (
-          sourcePathRel: keyof Stage0Content,
+          sourcePathRel: keyof Stage1Content,
           destinationPath: AddressPathAbsolute
         ) => {
 
           const sourcePathRelSanitised = sanitise(sourcePathRel)
           // assumes copy from stage1 test
-          const testStagePath = basePaths["stage0" as keyof typeof basePaths];
+          const testStagePath = basePaths["stage1" as keyof typeof basePaths];
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original}`));
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original} - ${process.env.BAC_TEST_CLISOURCE}`));
           const sourcePath = addr.pathUtils.join(

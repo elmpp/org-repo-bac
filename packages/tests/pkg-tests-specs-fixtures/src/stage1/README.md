@@ -1,1 +1,2 @@
-stage1 content is here to validate the content produced in stage1 + other testing meta tests
+ - stage1 content is where copyable content is produced. Try to keep the amount of validation here to a minimum (see stage1)
+ - all copyable content should be augmented into the Stage1Content interface
