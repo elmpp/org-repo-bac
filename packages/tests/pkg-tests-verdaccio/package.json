@@ -13,7 +13,7 @@
     "//verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873",
     "verdaccio:login": "npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"",
     "verdaccio:isRunning": "pgrep verdaccio",
-    "verdaccio:runBackground": "verdaccio -c ./verdaccio.yml",
+    "verdaccio:startBackground": "verdaccio -c ./verdaccio.yml",
     "verdaccio:stopBackground": "pkill -f verdaccio || true"
   },
   "dependencies": {

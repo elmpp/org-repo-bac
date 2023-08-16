@@ -132,6 +132,22 @@ export class GitService {
     return this
   }
 
+  /**
+   simpleGit example - https://tinyurl.com/25o9sjbz
+   nodeGit example - https://tinyurl.com/23cn82ao
+   */
+  async remote(url: string, options?: TaskOptions): Promise<this> {
+    const simpleGit = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
+    await simpleGit.clone(
+      url,
+      this.options.workspacePath.original,
+      options,
+    )
+    // @todo - error handling
+    this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
+    return this
+  }
+
   async init(options?: TaskOptions): Promise<this> {
     // const repository = await nodeGit.Repository.init(
     //   this.options.destinationPath.original,

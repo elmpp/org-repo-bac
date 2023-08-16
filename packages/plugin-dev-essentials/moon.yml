@@ -77,10 +77,10 @@ tasks:
   #   local: true
   #   # options:
   #   #   persistent: true # disables moon caching etc
-  # verdaccioRunBackground:
+  # verdacciostartBackground:
   #   deps:
   #     - '~:verdaccioStopBackground'
-  #   command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:runBackground'
+  #   command: 'pnpm run --filter @business-as-code/tests-verdaccio verdaccio:startBackground'
   #   # command: 'pnpm jest --passWithNoTests @in(0)'
   #   # inputs:
   #   #   - 'tests/pkg-tests-specs-fixtures'

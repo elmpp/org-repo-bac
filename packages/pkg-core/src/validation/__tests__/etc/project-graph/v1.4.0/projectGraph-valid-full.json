@@ -1881,8 +1881,8 @@
                 "outputStyle": "buffer-only-failure"
               }
             },
-            "verdaccioRunBackground": {
-              "command": "pnpm run verdaccio:runBackground",
+            "verdacciostartBackground": {
+              "command": "pnpm run verdaccio:startBackground",
               "deps": [
                 "~:verdaccioStopBackground"
               ],
@@ -2090,10 +2090,10 @@
             "target": "pkg-tests-verdaccio:verdaccioLogin",
             "type": "run"
           },
-          "verdaccioRunBackground": {
+          "verdacciostartBackground": {
             "args": [
               "run",
-              "verdaccio:runBackground"
+              "verdaccio:startBackground"
             ],
             "command": "pnpm",
             "deps": [
@@ -2104,7 +2104,7 @@
             "globalInputs": [
               "/.moon/*.yml"
             ],
-            "id": "verdaccioRunBackground",
+            "id": "verdacciostartBackground",
             "inputs": [
               "**/*"
             ],
@@ -2134,7 +2134,7 @@
             "outputGlobs": [],
             "outputPaths": [],
             "platform": "node",
-            "target": "pkg-tests-verdaccio:verdaccioRunBackground",
+            "target": "pkg-tests-verdaccio:verdacciostartBackground",
             "type": "run"
           },
           "verdaccioStopBackground": {

@@ -25,7 +25,7 @@ type: 'library'
   # publish:
   #   deps:
   #     - root:build
-  #     - pkg-tests-verdaccio:verdaccioRunBackground
+  #     - pkg-tests-verdaccio:verdacciostartBackground
   #   command: 'pnpm publish --registry http://localhost:4873/'
   #   # command: 'pnpm jest --passWithNoTests @in(0)'
   #   # inputs:

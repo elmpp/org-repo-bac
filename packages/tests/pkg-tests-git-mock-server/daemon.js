@@ -13,10 +13,11 @@ module.exports = function (cmdName, target) {
   async function main({_: [cmd]}) {
     switch (cmd) {
       case 'start': {
-        require('daemonize-process')()
+        require('daemonize-process')({stdio: 'inherit'})
         let server = spawn(
-          'node', args,
+          'pnpm run -w dev:run', args,
           {
+            shell: true,
             stdio: 'inherit',
             windowsHide: true,
           }
@@ -38,6 +39,7 @@ module.exports = function (cmdName, target) {
           );
         } catch (err) {
           console.log(`No ${cmdName}.pid file`)
+          process.exit(1)
           return
         }
         pid = parseInt(pid)
@@ -45,10 +47,13 @@ module.exports = function (cmdName, target) {
         kill(pid, (err) => {
           if (err) {
             console.log(err)
+            process.exit(1)
           } else {
             fs.unlinkSync(path.join(process.cwd(), `${cmdName}.pid`))
+            process.exit(0)
           }
         })
+
         return
       }
       case 'isRunning': {

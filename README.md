@@ -10,9 +10,9 @@
  - p multi ls # list all workspaces + deps // list all projects, using pnpm
  - p moon project-graph
 
- <!-- - run verdaccio: p moon run root:verdaccioKillBackground; p moon run root:verdaccioRunBackground -->
- <!-- - run verdaccio: p moon run @business-as-code/plugin-dev-essentials:verdaccioRunBackground -->
- - run verdaccio: pnpm run --filter @business-as-code/tests-verdaccio verdaccio:stopBackground && pnpm run --filter @business-as-code/tests-verdaccio verdaccio:runBackground
+ <!-- - run verdaccio: p moon run root:verdaccioKillBackground; p moon run root:verdacciostartBackground -->
+ <!-- - run verdaccio: p moon run @business-as-code/plugin-dev-essentials:verdacciostartBackground -->
+ - run verdaccio: pnpm run --filter @business-as-code/tests-verdaccio verdaccio:stopBackground && pnpm run --filter @business-as-code/tests-verdaccio verdaccio:startBackground
 
  SUPPORT TASKS
  - p dev:runCli bac-tests repositories-create --workspacePath ./packages/tests/pkg-tests-specs-fixtures/repositories // create repositories
@@ -38,9 +38,10 @@ Debugging Packages/Listing
    - p dev:runCli test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
    - p dev:runCliWatch test test --cliSource cliLinked --stage stage2 --testFileMatch initialise-workspace --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // WATCH MODE
 
- Start test daemons (required before testing)
-  - p dev:runCliWatchIgnoreAll test daemon start --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
+## Daemons
+  - p dev:runCli test daemon start --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // Start test daemons (required before testing)
   - debug running daemons: 'p --filter @business-as-code/tests-verdaccio run verdaccio:isRunning && p --filter @business-as-code/tests-git-server run gitServerHttp:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning; echo $?'
+  - git ls-remote
 
 ## Build commands
 

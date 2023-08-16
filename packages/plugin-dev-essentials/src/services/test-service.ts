@@ -59,12 +59,12 @@ export class TestService {
       command: `--filter @business-as-code/tests-verdaccio run verdaccio:isRunning`,
     })))) {
       // const res1 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-verdaccio run verdaccio:runBackground`,
+      //   command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res1)) return res1
       proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-verdaccio run verdaccio:runBackground`,
+        command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
       }))
       // if (!assertIsOk(res1)) return res1
     }
@@ -72,24 +72,24 @@ export class TestService {
       command: `--filter @business-as-code/tests-git-server run gitServerHttp:isRunning`,
     })))) {
       // const res2 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-git-server run gitServerHttp:runBackground`,
+      //   command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res2)) return res2
       proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerHttp:runBackground`,
+        command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
       }))
     }
     if (!assertIsOk((await packageManagerService.run({
       command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning`,
     })))) {
       // const res3 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:runBackground`,
+      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res3)) return res3
       proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:runBackground`,
+        command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
       }))
     }
 
@@ -97,12 +97,12 @@ export class TestService {
     //   command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
     // })))) {
     //   // const res4 = await packageManagerService.run({
-    //   //   command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:runBackground`,
+    //   //   command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
     //   //   options: {detached: true}
     //   // });
     //   // if (!assertIsOk(res4)) return res4
     //   proms.push(packageManagerService.run({
-    //     command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:runBackground`,
+    //     command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
     //   }))
     // }
 
@@ -118,7 +118,7 @@ export class TestService {
     //   });
     //   if (!assertIsOk(isRunning)) {
     //     return await packageManagerService.run({
-    //       command: `--filter @business-as-code/tests-verdaccio run verdaccio:runBackground`,
+    //       command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
     //     });
     //   }
     // })();
@@ -129,7 +129,7 @@ export class TestService {
     //   });
     //   if (!assertIsOk(isRunning)) {
     //     return packageManagerService.run({
-    //       command: `--filter @business-as-code/tests-git-server run gitServerHttp:runBackground`,
+    //       command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
     //     });
     //   }
     // })();
@@ -140,7 +140,7 @@ export class TestService {
     //   });
     //   if (!assertIsOk(isRunning)) {
     //     return packageManagerService.run({
-    //       command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:runBackground`,
+    //       command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
     //     });
     //   }
     // })();
@@ -151,7 +151,7 @@ export class TestService {
     //   });
     //   if (!assertIsOk(isRunning)) {
     //     return packageManagerService.run({
-    //       command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:runBackground`,
+    //       command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
     //     });
     //   }
     // })();

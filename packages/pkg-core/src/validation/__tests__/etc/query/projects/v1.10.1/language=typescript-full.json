@@ -2167,8 +2167,8 @@
             "platform": "unknown",
             "type": null
           },
-          "verdaccioRunBackground": {
-            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:runBackground",
+          "verdacciostartBackground": {
+            "command": "pnpm run --filter @business-as-code/tests-verdaccio verdaccio:startBackground",
             "args": null,
             "deps": [
               "~:verdaccioStopBackground"
@@ -2812,12 +2812,12 @@
           "target": "plugin-dev-essentials:verdaccioLogin",
           "type": "test"
         },
-        "verdaccioRunBackground": {
+        "verdacciostartBackground": {
           "args": [
             "run",
             "--filter",
             "@business-as-code/tests-verdaccio",
-            "verdaccio:runBackground"
+            "verdaccio:startBackground"
           ],
           "command": "pnpm",
           "deps": [
@@ -2828,7 +2828,7 @@
             "emptyInputs": false,
             "local": true
           },
-          "id": "verdaccioRunBackground",
+          "id": "verdacciostartBackground",
           "inputs": [
             "**/*",
             "/.moon/*.yml"
@@ -2860,7 +2860,7 @@
           "outputGlobs": [],
           "outputPaths": [],
           "platform": "node",
-          "target": "plugin-dev-essentials:verdaccioRunBackground",
+          "target": "plugin-dev-essentials:verdacciostartBackground",
           "type": "run"
         },
         "verdaccioStopBackground": {

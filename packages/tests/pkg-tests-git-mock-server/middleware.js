@@ -40,7 +40,7 @@ function factory (config) {
   if (!config.route) throw new Error('Missing required "gitHttpServer.route" config option')
   if (!config.route.startsWith('/')) throw new Error('"gitHttpServer.route" must start with a "/"')
   // TODO: Make this configurable in karma.conf.js
-  var f = fixturez(config.root, {root: process.cwd(), glob: config.glob})
+  var f = fixturez(config.root, {root: config.root, glob: config.glob})
 
   function getGitDir (req) {
     var u = url.parse(req.url)
@@ -66,6 +66,10 @@ function factory (config) {
     return null
   }
 
+  console.log(`git-server booting up: `, {
+    config,
+  })
+
   return async function middleware (req, res, next) {
     try {
       // handle pre-flight OPTIONS
@@ -77,11 +81,14 @@ function factory (config) {
       }
       if (!next) next = () => void(0)
       try {
+        // process.stdout.write(`config :>> ` + require('util').inspect(config, {showHidden: false, depth: 2, colors: true}) + `\n`)
+        console.log(`req.url :>> `, req.url)
         var gitdir = getGitDir(req)
+        console.log(`gitdir :>> `, gitdir)
       } catch (err) {
         res.statusCode = 404
-        res.end(err.message + '\n')
         console.log(chalk.red('[git-http-server] 404 ' + pad(req.method) + ' ' + req.url))
+        res.end(err.message + '\n')
         return
       }
       if (gitdir == null) return next()

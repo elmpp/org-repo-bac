@@ -25,10 +25,10 @@ type: 'tool'
 #     local: true
 #     # options:
 #     #   persistent: true # disables moon caching etc
-#   verdaccioRunBackground:
+#   verdacciostartBackground:
 #     deps:
 #       - '~:verdaccioStopBackground'
-#     command: 'pnpm run verdaccio:runBackground'
+#     command: 'pnpm run verdaccio:startBackground'
 #     # command: 'pnpm jest --passWithNoTests @in(0)'
 #     # inputs:
 #     #   - 'tests/pkg-tests-specs-fixtures'
