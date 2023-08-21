@@ -97,19 +97,22 @@ export class ConfigureProjectLifecycleBase<
 
   async executeConfigureProject(
     options: LifecycleOptionsByMethodKeyedByProviderArray<"configureProject">
-  ): Promise<LifecycleSingularReturnByMethod<"configureProject">> {
+  ): Promise<
+    Result<
+      LifecycleSingularReturnByMethod<"configureProject">,
+      { error: BacError }
+    >
+  > {
     await ConfigureProjectLifecycleBase.hooks.beforeConfigureProject.callBailAsync(
       {
         options,
       }
     );
     const res =
-      await ConfigureProjectLifecycleBase.hooks.configureProject.callBailAsync(
-        {
-          options,
-          strict: true,
-        }
-      );
+      await ConfigureProjectLifecycleBase.hooks.configureProject.callBailAsync({
+        options,
+        strict: true,
+      });
     assertIsResult(res);
     await ConfigureProjectLifecycleBase.hooks.afterConfigureProject.callBailAsync(
       {
@@ -126,7 +129,7 @@ export class ConfigureProjectLifecycleBase<
         workingPath: string;
         options: any;
         config?: Config;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected configureProject():
@@ -136,7 +139,7 @@ export class ConfigureProjectLifecycleBase<
         workingPath: string;
         options: any;
         config?: Config;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected afterConfigureProject():
@@ -146,6 +149,6 @@ export class ConfigureProjectLifecycleBase<
         workingPath: string;
         options: any;
         config?: Config;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 }

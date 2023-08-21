@@ -15,6 +15,7 @@ import {
   schematicUtils,
   ServiceMap,
   ServiceStaticMap,
+  XfsCacheManager,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -32,8 +33,6 @@ import {
   getCurrentTestNameSanitised,
   sanitise,
 } from "./test-utils";
-import { XfsCacheManager } from "./xfs-cache-manager";
-import { EOL } from "os";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -277,8 +276,8 @@ const basePaths = {
   stage1: addr.parsePath(`${constants.TMP_ROOT}/stage1`) as AddressPathAbsolute,
   /** stage2 tests */
   stage2: addr.parsePath(`${constants.TMP_ROOT}/stage2`) as AddressPathAbsolute,
-  /** stage2 tests */
-  stage3: addr.parsePath(`${constants.TMP_ROOT}/stage2`) as AddressPathAbsolute,
+  /** stage3 tests */
+  stage3: addr.parsePath(`${constants.TMP_ROOT}/stage3`) as AddressPathAbsolute,
 };
 
 const checkoutPath = addr.pathUtils.resolve(
@@ -662,6 +661,9 @@ function createTree(workspacePath: string): Tree {
   const tree = new HostCreateLazyTree(
     new virtualFs.ScopedHost(new NodeJsSyncHost(), workspacePath as any)
   );
+  // const tree = new HostCreateLazyTree(
+  //   new virtualFs.ScopedHost(new NodeJsSyncHost(), workspacePath as any)
+  // );
 
   // const tree = new HostCreateTree(
   //   new virtualFs.ScopedHost(
@@ -680,24 +682,24 @@ function createTree(workspacePath: string): Tree {
   //   return fs.existsSync(filePath)
   // }
 
-  return Object.assign(tree, {
-    /**
-     improved exists that supports folders and checks the actual FS
-     Original Schematics GH implementation - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/tree/host-tree.ts#L330
-     */
-    // exists(this: HostTree, filePath: string): boolean {
-    //   const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
-    //   console.log(`(this as any)._recordSync :>> `, (this as any)._recordSync)
-    //   console.log(`this._normalizePath(filePath) :>> `, this._normalizePath(filePath))
-    //   return origRes
-    // },
-    // getDir(this: SchematicResettableScopedNodeJsSyncHost, filePath: string): boolean {
-    //   const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
-    //   return origRes
-    // },
-  });
+  // return Object.assign(tree, {
+  //   /**
+  //    improved exists that supports folders and checks the actual FS
+  //    Original Schematics GH implementation - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/tree/host-tree.ts#L330
+  //    */
+  //   // exists(this: HostTree, filePath: string): boolean {
+  //   //   const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
+  //   //   console.log(`(this as any)._recordSync :>> `, (this as any)._recordSync)
+  //   //   console.log(`this._normalizePath(filePath) :>> `, this._normalizePath(filePath))
+  //   //   return origRes
+  //   // },
+  //   // getDir(this: SchematicResettableScopedNodeJsSyncHost, filePath: string): boolean {
+  //   //   const origRes = (this as any)._recordSync.exists(this._normalizePath(filePath)); // .exists checks both file and folder and actually hits the FS so all good!
+  //   //   return origRes
+  //   // },
+  // });
 
-  // return tree;
+  return tree;
 }
 
 function validateTestEnv({

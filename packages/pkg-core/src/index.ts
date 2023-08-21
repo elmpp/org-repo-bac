@@ -2,6 +2,7 @@
 import * as Interfaces from "@oclif/core/lib/interfaces/parser"; // need to import into subCommands because of this dreaded bug - https://tinyurl.com/2fzprqtm
 import * as Oclif from '@oclif/core'
 
+export * from "./xfs-cache-manager";
 export * from "./commands";
 export { constants } from "./constants";
 export * from "./interfaces";

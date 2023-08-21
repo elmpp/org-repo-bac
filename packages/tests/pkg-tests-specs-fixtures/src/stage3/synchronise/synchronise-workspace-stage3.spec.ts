@@ -10,6 +10,7 @@ describe("synchronise workspace", () => {
   jest.setTimeout(25000);
 
   async function setup(testContext: TestContext, configFilename: Filename) {
+
     const resCopy = await testContext.copy(
       'initialise:workspace default skeleton config',
       testContext.testEnvVars.workspacePath
@@ -44,6 +45,9 @@ describe("synchronise workspace", () => {
   }
 
   it.only("updating the config will trigger the configure lifecycle and update projects", async () => {
+
+
+
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.workspacePath)

@@ -609,6 +609,47 @@ describe("path", () => {
       })
     );
   });
+
+  it("cacheOther - cache:aNamespace/aKey", () => {
+    runEntry(
+      buildEntry<"cacheOther">({
+        original: "cache:aNamespace/aKey",
+        originalNormalized: "cache:aNamespace/aKey" as PortablePath,
+        address: "cache:aNamespace/aKey" as PortablePath,
+        addressNormalized: "cache:aNamespace/aKey" as PortablePath,
+        group: "other",
+        type: "cacheOther",
+        arch: "darwin",
+        parts: {
+          namespace: 'aNamespace',
+          key: 'aKey',
+        },
+      })
+    );
+  });
+  it("cacheOther - cache:aNamespace/aKey#checksum=blah", () => {
+    runEntry(
+      buildEntry<"cacheOther">({
+        original: "cache:aNamespace/aKey#checksum=blah",
+        originalNormalized: "cache:aNamespace/aKey#checksum=blah" as PortablePath,
+        address: "cache:aNamespace/aKey#checksum=blah" as PortablePath,
+        addressNormalized: "cache:aNamespace/aKey#checksum=blah" as PortablePath,
+        group: "other",
+        type: "cacheOther",
+        arch: "darwin",
+        parts: {
+          namespace: 'aNamespace',
+          key: 'aKey',
+          params: new URLSearchParams({
+            checksum: "blah",
+          }),
+          paramsSorted: new URLSearchParams({
+            checksum: "blah",
+          }),
+        },
+      })
+    );
+  });
 });
 
 describe("url", () => {
@@ -1764,6 +1805,17 @@ describe("Address posix", () => {
           strict: false,
         });
         expect(res).toBeFalsy();
+      });
+      it(`cacheOther only accepts a checksum param`, () => {
+        expect(() =>
+          addr.parseAsType(
+            "cache:aNamespace/aKey#invalidParam=blah",
+            "cacheOther",
+            { strict: true }
+          )
+        ).toThrowError(
+          /Address: unknown params has been supplied with cache address inside 'cache-other-handler'. Allowed params are 'checksum'./
+        );
       });
       // it.only('long nm path', () => {
       //   // const res = addr.parsePath(`${constants.TMP_ROOT}/stage1/tests/creates_a_skeleton_workspace_without_configPath_using_skeleton_config/node_modules/.pnpm/@business-as-code+core@0.0.0-latest-20230812065455_@types+node@14.18.54/node_modules/@business-as-code/core/dist/utils`, {

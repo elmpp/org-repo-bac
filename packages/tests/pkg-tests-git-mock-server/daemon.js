@@ -20,6 +20,7 @@ module.exports = function (cmdName, target) {
             shell: true,
             stdio: 'inherit',
             windowsHide: true,
+            env: process.env,
           }
         )
         fs.writeFileSync(

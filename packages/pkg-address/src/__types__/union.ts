@@ -2,7 +2,7 @@ import { AddressType } from "."
 import { AddressDescriptor } from "./main"
 
 
-export type AddressGroupUnion = 'path' | 'url' | 'package'
+export type AddressGroupUnion = 'path' | 'url' | 'package' | 'other'
 
 type ValueOf<T> = T[keyof T]
 

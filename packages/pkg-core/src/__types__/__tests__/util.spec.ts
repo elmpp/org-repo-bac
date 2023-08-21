@@ -1,5 +1,6 @@
 import { expectTypeOf } from "expect-type";
 import { IncludeMatchingProperties, NullishToOptional, Simplify } from "../util";
+import { InferOkResult, Result, ok } from "../type-utils";
 
 describe('util', () => {
   it('includeMatchingProperties understanding', () => {
@@ -33,5 +34,19 @@ describe('util', () => {
       b?: "b";
       c: "c";
     }>();
+  })
+})
+
+describe('result', () => {
+  it('infers an ok branch of a result', () => {
+    const okRes = ok('blah' as const)
+    type OKBranch = InferOkResult<typeof okRes>
+    expectTypeOf<OKBranch>().toEqualTypeOf<{success: true, res: 'blah'}>()
+  })
+  it('infers an ok branch of a result that has been inferred as a union of the result branches', () => {
+    type Res = Result<'blah', {error: Error}>
+    // type OKBranch = InferOkResult<typeof okRes>
+    type OKBranch = InferOkResult<Res>
+    expectTypeOf<OKBranch>().toEqualTypeOf<{success: true, res: 'blah'}>() // does not include the fail branch
   })
 })

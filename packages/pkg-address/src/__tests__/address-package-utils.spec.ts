@@ -20,7 +20,7 @@ describe("Address.packageUtils", () => {
     it.todo("dunno if worthwhile setting all this up");
   });
   describe("other methods", () => {
-    it.only("resolveRoot", () => {
+    it("resolveRoot", () => {
       // const realCwd = process.cwd();
       process.chdir("/");
 
@@ -28,7 +28,6 @@ describe("Address.packageUtils", () => {
         address: addr.parsePackage("@business-as-code/error"),
         projectCwd: addr.parsePath(__dirname) as AddressPathAbsolute,
       })
-      console.log(`errorPackageRoot :>> `, errorPackageRoot)
       expect(
         errorPackageRoot
       ).toHaveProperty('original', expect.stringMatching(new RegExp('packages/pkg-error$')))

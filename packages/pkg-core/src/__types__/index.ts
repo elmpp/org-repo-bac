@@ -1,4 +1,4 @@
-import { JsonObject, logging } from "@angular-devkit/core";
+import { logging } from "@angular-devkit/core";
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Command, Interfaces } from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -7,24 +7,29 @@ import {
   BaseParseOutput,
   FlagsInfer,
 } from "../commands/base-command";
-import { ConfigureWorkspaceLifecycleBase, InitialiseWorkspaceLifecycleBase, RunProjectLifecycleBase, RunWorkspaceLifecycleBase, SynchroniseWorkspaceLifecycleBase } from "../interfaces";
+import {
+  ConfigureWorkspaceLifecycleBase,
+  InitialiseWorkspaceLifecycleBase,
+  RunProjectLifecycleBase,
+  RunWorkspaceLifecycleBase,
+  SynchroniseWorkspaceLifecycleBase,
+} from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 // import { Lifecycles } from "../lifecycles";
 import { LifecycleStaticInterface } from "./lifecycles";
 import {
   ServiceInitialiseLiteOptions,
   ServiceMap,
-  ServiceStaticMap,
   ServiceStaticInterface,
+  ServiceStaticMap,
 } from "./services";
-import { ProcessOutput } from "@angular-devkit/core/node";
 
-export * from "./type-utils";
+export * from "./interfaces";
+export * from "./lifecycles";
 export * from "./moon";
+export * from "./services";
+export * from "./type-utils";
 export * from "./util";
-
-export * from './services'
-export * from './lifecycles'
 
 export type Outputs = {
   stdout: string;
@@ -33,10 +38,17 @@ export type Outputs = {
 
 export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
 
-export const logLevelMatching = (logLevel: LogLevel, currentLogLevel: LogLevel, json: boolean | undefined): boolean => {
-  const logLevels: LogLevel[] = ["debug", "info", "warn", "error", "fatal"]
-  return (json ? logLevels.indexOf('error') : logLevels.indexOf(logLevel)) <= logLevels.indexOf(currentLogLevel)
-}
+export const logLevelMatching = (
+  logLevel: LogLevel,
+  currentLogLevel: LogLevel,
+  json: boolean | undefined
+): boolean => {
+  const logLevels: LogLevel[] = ["debug", "info", "warn", "error", "fatal"];
+  return (
+    (json ? logLevels.indexOf("error") : logLevels.indexOf(logLevel)) <=
+    logLevels.indexOf(currentLogLevel)
+  );
+};
 
 /** ball of values made available to command methods. Includes oclif cliOptions */
 export type ContextCommand<T extends typeof Command> = {
@@ -47,7 +59,9 @@ export type ContextCommand<T extends typeof Command> = {
     serviceName: SName,
     options: ServiceInitialiseLiteOptions<SName>
     // options: ServiceInitialiseCommonOptions
-  ) => Promise<ServiceMap[SName][number]>) & { availableServices: (keyof ServiceMap)[] };
+  ) => Promise<ServiceMap[SName][number]>) & {
+    availableServices: (keyof ServiceMap)[];
+  };
   logger: Logger;
   // logger: (msg: string, level?: LogLevel) => void;
   /** @internal */
@@ -59,15 +73,15 @@ export type ContextCommand<T extends typeof Command> = {
   workspacePath: AddressPathAbsolute;
 
   lifecycles: {
-    initialiseWorkspace: InitialiseWorkspaceLifecycleBase<any>,
-    configureWorkspace: ConfigureWorkspaceLifecycleBase<any>,
-    configureProject: ConfigureProjectLifecycleBase<any>,
-    synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>,
-    runWorkspace: RunWorkspaceLifecycleBase<any>,
-    runProject: RunProjectLifecycleBase<any>,
+    initialiseWorkspace: InitialiseWorkspaceLifecycleBase<any>;
+    configureWorkspace: ConfigureWorkspaceLifecycleBase<any>;
+    configureProject: ConfigureProjectLifecycleBase<any>;
+    synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
+    runWorkspace: RunWorkspaceLifecycleBase<any>;
+    runProject: RunProjectLifecycleBase<any>;
   };
   /** @internal @private @ignore @hidden @deprecated */
-  toJSON: () => string
+  toJSON: () => string;
 };
 
 /** ball of values made available to "userspace" methods */
@@ -79,7 +93,9 @@ export type Context = {
   serviceFactory: (<SName extends keyof ServiceStaticMap>(
     serviceName: SName,
     options: ServiceInitialiseLiteOptions<SName>
-  ) => Promise<ServiceMap[SName][number]>) & { availableServices: (keyof ServiceMap)[] };
+  ) => Promise<ServiceMap[SName][number]>) & {
+    availableServices: (keyof ServiceMap)[];
+  };
   logger: Logger;
   /** @internal */
   oclifConfig: Interfaces.Config;
@@ -89,7 +105,7 @@ export type Context = {
    */
   workspacePath: AddressPathAbsolute;
   /** @internal @private @ignore @hidden @deprecated */
-  toJSON: () => string
+  toJSON: () => string;
 };
 
 export type Plugin = {
@@ -103,4 +119,4 @@ export type Logger = logging.Logger & {
   /** logger that is unaffected by the current logLevel */
   stdout: (message: string) => void;
   // stderr: (message: string, metadata?: JsonObject) => void;
-}
+};

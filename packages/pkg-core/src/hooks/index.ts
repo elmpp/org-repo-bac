@@ -3,10 +3,18 @@
 // import debug from 'debug'
 
 import {
+  BacError,
+  BacErrorWrapper,
+  MessageName,
+} from "@business-as-code/error";
+import {
   LifecycleMappedReturnByMethod,
   LifecycleMethods,
   LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleSingularReturnByMethod,
+  Result,
+  fail,
+  ok,
 } from "../__types__";
 
 // const dbg = debug('tapable')
@@ -54,16 +62,16 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
     return this._async;
   }
 
-  _handleError(name: string, error: Error) {
-    if (error?.message) {
-      error.message = `Hook ${this.name} tap ${name}: ${error.message}`;
-      throw error;
-    } else {
-      throw new Error(
-        `Hook ${this.name} tap ${name} errored: ${String(error)}`
-      );
-    }
-  }
+  // _handleError(name: string, error: Error) {
+  //   if (error?.message) {
+  //     error.message = `Hook ${this.name} tap ${name}: ${error.message}`;
+  //     throw error;
+  //   } else {
+  //     throw new Error(
+  //       `Hook ${this.name} tap ${name} errored: ${String(error)}`
+  //     );
+  //   }
+  // }
 
   // _testArgs(args: { name: string; fn: Function; }[], isSync?: boolean) {
   _testArgs(args: any, isSync?: boolean) {
@@ -199,7 +207,9 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
   }: {
     options: LifecycleOptionsByMethodKeyedByProviderArray<LMethod>;
     strict?: boolean;
-  }): Promise<LifecycleSingularReturnByMethod<LMethod>> {
+  }): Promise<
+    Result<LifecycleSingularReturnByMethod<LMethod>, { error: BacError }>
+  > {
     this._testArgs(options, false);
 
     // dbg('%s.callAsync%o', this.name, args)
@@ -214,22 +224,24 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
     for (anOptions of options) {
       if (!anOptions.provider) {
         throw new Error(
-          `hooks#callBailAsync accepts only {provider: string}[]. '${JSON.stringify(
-            options
-          )}'`
+          `hooks#callBailAsync: accepts only {provider: string}[]. Lifecycle: '${
+            this._lifecycleMethod
+          }'. Supplied: '${JSON.stringify(options)}'`
         );
       }
 
       for (const { nameOrProvider, fn } of this.taps) {
         if (anOptions.provider !== nameOrProvider) {
           anOptions?.options?.context?.logger.debug(
-            `Lifecycle method skipped. Hook type: 'callBailAsync', provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
+            `hooks#callBailAsync: Lifecycle method skipped. Lifecycle: '${this._lifecycleMethod}'. Hook type: 'callBailAsync', provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
           );
           continue;
         }
 
         anOptions?.options?.context?.logger.debug(
-          `Lifecycle method being triggered: Hook type: 'callBailAsync', provider: '${
+          `hooks#callBailAsync: Lifecycle: '${
+            this._lifecycleMethod
+          }'. Lifecycle method being triggered: Hook type: 'callBailAsync', provider: '${
             anOptions.provider
           }', hook provider: '${nameOrProvider}, options: '${JSON.stringify(
             anOptions.options
@@ -245,20 +257,39 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
               res: fnRes,
             };
           }
-        } catch (error) {
-          this._handleError(nameOrProvider, error as Error);
+        } catch (err) {
+          // this._handleError(nameOrProvider, error as Error);
+          const error = new BacErrorWrapper(
+            MessageName.UNNAMED,
+            `Error caught during hook lifecycle: '${this._lifecycleMethod}', provider: '${nameOrProvider}'`,
+            err as Error
+          );
+          // this._handleError(nameOrProvider, error);
+          if (strict) {
+            // throw error
+            return fail({
+              error,
+            });
+          } else {
+            anOptions?.options?.context?.logger.warn(error.message);
+          }
         }
       }
     }
 
     if (!res! && strict) {
-      throw new Error(
-        `hooks#callBailAsync: no provider returned expected result for hook '${
-          this._name
-        }'. '${JSON.stringify(options)}'`
-      );
+      return fail({
+        error: new BacError(
+          MessageName.UNNAMED,
+          `hooks#callBailAsync: no provider returned expected result for hook '${
+            this._name
+          }'. Lifecycle: '${this._lifecycleMethod}'. '${JSON.stringify(
+            options
+          )}'`
+        ),
+      });
     }
-    return res!;
+    return ok(res!);
   }
 
   /**
@@ -271,7 +302,9 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
   }: {
     options: LifecycleOptionsByMethodKeyedByProviderArray<LMethod>;
     strict?: boolean;
-  }): Promise<LifecycleMappedReturnByMethod<LMethod>> {
+  }): Promise<
+    Result<LifecycleMappedReturnByMethod<LMethod>, { error: BacError }>
+  > {
     this._testArgs(options, false);
 
     // dbg('%s.callAsync%o', this.name, args)
@@ -297,15 +330,17 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
       for (const { nameOrProvider, fn } of this.taps) {
         if (anOptions.provider !== nameOrProvider) {
           anOptions?.options?.context?.logger.debug(
-            `Lifecycle method skipped. Hook type: 'mapAsync', provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
+            `hooks#callBailAsync: Lifecycle method skipped. Lifecycle: '${this._lifecycleMethod}'. Hook type: 'mapAsync', provider: '${anOptions.provider}', hook provider: '${nameOrProvider}'`
           );
           continue;
         }
 
         anOptions?.options?.context?.logger.debug(
-          `Lifecycle method being triggered: Hook type: 'mapAsync', provider: '${
+          `hooks#callBailAsync: Lifecycle method being triggered. Lifecycle: '${
+            this._lifecycleMethod
+          }'. Hook type: 'mapAsync', provider: '${
             anOptions.provider
-          }', hook provider: '${nameOrProvider}, options: '${JSON.stringify(
+          }', hook provider: '${nameOrProvider}', options: '${JSON.stringify(
             anOptions.options
           )}''`
         );
@@ -320,21 +355,42 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
             });
             break;
           }
-        } catch (error) {
-          this._handleError(nameOrProvider, error as Error);
+        } catch (err) {
+          const error = new BacErrorWrapper(
+            MessageName.UNNAMED,
+            `Error caught during hook lifecycle: '${this._lifecycleMethod}', provider: '${nameOrProvider}'`,
+            err as Error
+          );
+          // this._handleError(nameOrProvider, error);
+          if (strict) {
+            // throw error
+            return fail({
+              error,
+            });
+          } else {
+            anOptions?.options?.context?.logger.warn(error.message);
+          }
+          // resMapped.push(fail({
+          //   error,
+          // }))
         }
       }
-      if (!resMapped! && strict) {
-        throw new Error(
-          `hooks#mapAsync: no provider returned expected result for hook '${
-            this._name
-          }'. '${JSON.stringify(options)}'`
-        );
+      if (!resMapped!.length && strict) {
+        return fail({
+          error: new BacError(
+            MessageName.UNNAMED,
+            `hooks#mapAsync: no provider returned expected result for hook '${
+              this._name
+            }'. Lifecycle: '${this._lifecycleMethod}'. '${JSON.stringify(
+              options
+            )}'`
+          ),
+        });
       }
       // resMapped.push(undefined)
     }
 
-    return resMapped!;
+    return ok(resMapped!);
   }
   // /**
   //  * await all taps in added order

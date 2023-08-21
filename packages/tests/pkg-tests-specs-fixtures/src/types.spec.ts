@@ -24,6 +24,8 @@ import {
   ServiceInitialiseOptions,
   ServiceMap,
   Simplify,
+  LifecycleMappedReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -166,7 +168,8 @@ describe("types", () => {
         // @ts-expect-error:
         type ALLKeys = Simplify<keyof Bac.Lifecycles>;
         // @ts-expect-error:
-        type ALLImplemented = LifecycleImplementedMethods;
+        type ALLMethodsImplemented = LifecycleImplementedMethods;
+        type ALLMethodsRegardless = LifecycleMethods;
       });
 
       it("can derive a union of lifecycle method return types with provider key", () => {
@@ -223,6 +226,16 @@ describe("types", () => {
         expectTypeOf<AllProviderOptions>().not.toMatchTypeOf<{
           workingPath: string;
         }>(); // workingPath should be within options.options as specific
+      });
+      it("can derive a union of lifecycle option types with provider key without common options (context+workspacePath)", () => {
+        // type InitialiseWorkspaceInitialiseMethodMap =
+        type InitialiseWorkspaceOptions =
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"initialiseWorkspace">;
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
+        expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<{
+          provider: "core";
+          options: any;
+        }[]>();
       });
       it("can derive a union of lifecycle option types with provider key 1", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
@@ -311,6 +324,11 @@ describe("types", () => {
         expectTypeOf<OptionsProviders>().toMatchTypeOf<"packageManager">;
         expectTypeOf<OptionsProviders>().not
           .toMatchTypeOf<"packageManagerPnpm">;
+      });
+      it("can derive a union of lifecycle option types with provider key 4", () => {
+        type Options =
+          LifecycleMappedReturnByMethod<'configureWorkspace'>;
+        expectTypeOf<Options>().not.toBeAny();
       });
       // it("can derive a union of lifecycle option types with the complex common properties removed", () => {
 

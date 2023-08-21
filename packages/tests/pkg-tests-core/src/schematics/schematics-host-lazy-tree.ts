@@ -1,9 +1,11 @@
 import { virtualFs } from "@angular-devkit/core";
 import { FileEntry, HostTree } from "@angular-devkit/schematics";
-import { LazyFileEntry } from "@angular-devkit/schematics/src/tree/entry";
+import { concat as concatObservables, from as observableFrom } from "rxjs";
+import { LazyFileEntry, SimpleFileEntry } from "@angular-devkit/schematics/src/tree/entry";
+import { first } from "rxjs/operators";
 
 export class HostCreateLazyTree extends HostTree {
-  constructor(protected host: any) {
+  constructor(protected host: virtualFs.Host) {
     super();
 
     // @ts-ignore
@@ -11,7 +13,7 @@ export class HostCreateLazyTree extends HostTree {
     // this._record = new virtualFs.SafeReadonlyHost(host);
     // @ts-ignore
     // this._recordSync = new virtualFs.SyncDelegateHost(host);
-    this._recordSync = new virtualFs.SyncDelegateHost(this._record);
+    this._recordSync = new virtualFs.SyncDelegateHost(this._record)
 
     // const tempHost = new HostTree(host);
     // tempHost.visit((path) => {
@@ -21,7 +23,8 @@ export class HostCreateLazyTree extends HostTree {
     //     }
     // });
   }
-  override get(path: string): FileEntry | null {
+
+  override get(path: string): FileEntry {
     // console.log(`path get :>> `, path);
     const p = this._normalizePath(path);
     // @ts-ignore
@@ -31,13 +34,15 @@ export class HostCreateLazyTree extends HostTree {
     // }
 
     // use this.host for checking as we've skipped upfront loading
-    if (!this.host.exists(p)) {
-      // console.log(`:>> path not found ${p}`);
-      return null;
-    }
+    // const exists = await this.host.exists(p).pipe(first()).toPromise()
+    // const exists = this._recordSync.exists(p)
+    // if (exists) {
+    //   // console.log(`:>> path not found ${p}`);
+    //   return null;
+    // }
 
-    // @ts-ignore
-    return new LazyFileEntry(p, () => Buffer.from(this._recordSync.read(p)));
+    // return new SimpleFileEntry(p, Buffer.from(this._recordSync.read(p)));
+    return new LazyFileEntry(p, () => this._recordSync.exists(p) ? Buffer.from(this._recordSync.read(p)) : null);
   }
   // override readText(path: string): string {
   //   console.log(`path readText :>> `, path)

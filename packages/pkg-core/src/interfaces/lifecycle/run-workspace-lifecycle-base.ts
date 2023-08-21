@@ -61,11 +61,11 @@ export class RunWorkspaceLifecycleBase<
   }
 
   static hooks = {
-    beforeRunWorkspace: new AsyncHook<
-      {},
-      void,
-      "runWorkspace"
-    >(["options"], "runWorkspace", "beforeRunWorkspace"),
+    beforeRunWorkspace: new AsyncHook<{}, void, "runWorkspace">(
+      ["options"],
+      "runWorkspace",
+      "beforeRunWorkspace"
+    ),
     runWorkspace: new AsyncHook<
       {},
       Result<
@@ -78,11 +78,11 @@ export class RunWorkspaceLifecycleBase<
       >,
       "runWorkspace"
     >(["options"], "runWorkspace", "runWorkspace"),
-    afterRunWorkspace: new AsyncHook<
-      {},
-      void,
-      "runWorkspace"
-    >(["options"], "runWorkspace", "afterRunWorkspace"),
+    afterRunWorkspace: new AsyncHook<{}, void, "runWorkspace">(
+      ["options"],
+      "runWorkspace",
+      "afterRunWorkspace"
+    ),
     // runWorkspace: new AsyncHook< THIS NEED TO BE ITS OWN CLASS SO INFERENCE WORKS OK
     //   {
     //     context: Context;
@@ -173,28 +173,22 @@ export class RunWorkspaceLifecycleBase<
     options: LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">[]
     // options: LifecycleOptionsByMethodAndProvider<"runWorkspace", "core">
   ): Promise<
-    LifecycleSingularReturnByMethod<"runWorkspace">
+    Result<LifecycleSingularReturnByMethod<"runWorkspace">, { error: BacError }>
     // InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
   > {
-    await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.callBailAsync(
-      {
-        options,
-      }
-    );
+    await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.callBailAsync({
+      options,
+    });
     // type DDDD = InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
     const res =
-      await RunWorkspaceLifecycleBase.hooks.runWorkspace.callBailAsync(
-        {
-          options,
-          strict: true,
-        }
-      );
-    assertIsResult(res);
-    await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.callBailAsync(
-      {
+      await RunWorkspaceLifecycleBase.hooks.runWorkspace.callBailAsync({
         options,
-      }
-    );
+        strict: true,
+      });
+    assertIsResult(res);
+    await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.callBailAsync({
+      options,
+    });
     return res;
   }
 
@@ -204,7 +198,7 @@ export class RunWorkspaceLifecycleBase<
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected runWorkspace():
@@ -213,7 +207,7 @@ export class RunWorkspaceLifecycleBase<
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected afterRunWorkspace():
@@ -222,6 +216,6 @@ export class RunWorkspaceLifecycleBase<
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 }

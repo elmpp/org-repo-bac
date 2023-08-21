@@ -1,5 +1,6 @@
 import {
   logLevelMatching,
+  ok,
   Result,
   ServiceInitialiseCommonOptions,
 } from "@business-as-code/core";
@@ -12,7 +13,7 @@ import simpleGitFactory, {
   CheckRepoActions as CheckRepoActionsImport,
   InitResult,
   SimpleGit,
-  // TaskOptions as OrigTaskOptions,
+  TaskOptions as OrigTaskOptions,
 } from "simple-git";
 
 declare global {
@@ -174,16 +175,13 @@ export class GitService {
     const res = await simpleGit.clone(
       url,
       this.options.workspacePath.original,
-      options
+      options as OrigTaskOptions
     );
     // @todo - error handling
     simpleGitFactory({
       baseDir: GitService.getWorkingDestinationPath(this.options).original,
     });
-    return {
-      success: true as const,
-      res,
-    };
+    return ok(res);
   }
 
   /**
@@ -198,15 +196,12 @@ export class GitService {
     const res = await simpleGit.listRemote([url]);
     // @todo - error handling
     // this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
-    return {
-      success: true as const,
-      res,
-    };
+    return ok(res);
   }
 
   async init(
     options?: TaskOptions
-  ): Promise<Result<InitResult, { error: BacError }>> {
+): Promise<Result<InitResult, { error: BacError }>> {
     // const repository = await nodeGit.Repository.init(
     //   this.options.destinationPath.original,
     //   Number(options?.bare ?? false),
@@ -215,15 +210,12 @@ export class GitService {
     // this.repository = repository
     // console.log(`GitService.getWorkingDestinationPath(this.options) :>> `, GitService.getWorkingDestinationPath(this.options))
     const simpleGit = this.create(options);
-    const res = await simpleGit.init(options ?? {});
+    const res = await simpleGit.init((options ?? {}) as OrigTaskOptions);
     // @todo - error handling
     simpleGitFactory({
       baseDir: GitService.getWorkingDestinationPath(this.options).original,
     });
-    return {
-      success: true as const,
-      res,
-    };
+    return ok(res);
   }
 
   protected create(options: TaskOptions = {}) {

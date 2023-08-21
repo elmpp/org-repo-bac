@@ -47,9 +47,11 @@ import {
 /**
  execute a command across many projects within a project. Will use moon via the arbitrary extra command feature - https://tinyurl.com/24459t9e
  */
-export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof RunProjectLifecycleBase<any>> {
+export class RunProjectLifecycleBase<
+  T extends LifecycleStaticInterface = typeof RunProjectLifecycleBase<any>
+> {
   static lifecycleTitle = "runProject" as const;
-  static title = ''
+  static title = "";
 
   get ctor(): T {
     return this.constructor as unknown as T;
@@ -59,11 +61,11 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
   }
 
   static hooks = {
-    beforeRunProject: new AsyncHook<
-      {},
-      void,
-      "runProject"
-    >(["options"], "runProject", "beforeRunProject"),
+    beforeRunProject: new AsyncHook<{}, void, "runProject">(
+      ["options"],
+      "runProject",
+      "beforeRunProject"
+    ),
     runProject: new AsyncHook<
       {},
       Result<
@@ -76,11 +78,11 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
       >,
       "runProject"
     >(["options"], "runProject", "runProject"),
-    afterRunProject: new AsyncHook<
-      {},
-      void,
-      "runProject"
-    >(["options"], "runProject", "afterRunProject"),
+    afterRunProject: new AsyncHook<{}, void, "runProject">(
+      ["options"],
+      "runProject",
+      "afterRunProject"
+    ),
     // runProject: new AsyncHook< THIS NEED TO BE ITS OWN CLASS SO INFERENCE WORKS OK
     //   {
     //     context: Context;
@@ -126,29 +128,29 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
     this: { new (): T },
     options: { context: ContextCommand<any> }
   ) {
-    const {context} = options
+    const { context } = options;
     const ins = new this();
     const beforeRunProjectHook = ins.beforeRunProject();
     const runProjectHook = ins.runProject();
     const afterRunProjectHook = ins.afterRunProject();
 
     if (beforeRunProjectHook) {
-      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.beforeRunProject`)
-      ins.ctor.hooks.beforeRunProject.tapAsync(
-        ins.title,
-        beforeRunProjectHook
-        );
-      }
-      if (runProjectHook) {
-      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.runProject`)
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.beforeRunProject`
+      );
+      ins.ctor.hooks.beforeRunProject.tapAsync(ins.title, beforeRunProjectHook);
+    }
+    if (runProjectHook) {
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.runProject`
+      );
       ins.ctor.hooks.runProject.tapAsync(ins.title, runProjectHook);
     }
     if (afterRunProjectHook) {
-      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.afterRunProject`)
-      ins.ctor.hooks.afterRunProject.tapAsync(
-        ins.title,
-        afterRunProjectHook
+      context.logger.debug(
+        `lifecycleHook loaded: ${ins.ctor.title}.afterRunProject`
       );
+      ins.ctor.hooks.afterRunProject.tapAsync(ins.title, afterRunProjectHook);
     }
 
     // addProviderInterception(ins.ctor.hooks.beforeRunProject, ins.ctor.title)
@@ -161,21 +163,20 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
     options: LifecycleOptionsByMethodKeyedByProvider<"runProject">[]
     // options: LifecycleOptionsByMethodAndProvider<"runProject", "core">
   ): Promise<
-    LifecycleSingularReturnByMethod<"runProject">
+    Result<LifecycleSingularReturnByMethod<"runProject">, { error: BacError }>
     // InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
   > {
     await RunProjectLifecycleBase.hooks.beforeRunProject.callBailAsync({
-      options
+      options,
     });
     // type DDDD = InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
-    const res =
-      await RunProjectLifecycleBase.hooks.runProject.callBailAsync({
-        options,
-        strict: true,
-  });
+    const res = await RunProjectLifecycleBase.hooks.runProject.callBailAsync({
+      options,
+      strict: true,
+    });
     assertIsResult(res);
     await RunProjectLifecycleBase.hooks.afterRunProject.callBailAsync({
-      options
+      options,
     });
     return res;
   }
@@ -187,7 +188,7 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
         // projectPath: AddressPathAbsolute;
         workingPath: string;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected runProject():
@@ -197,7 +198,7 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
         // projectPath: AddressPathAbsolute;
         workingPath: string;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected afterRunProject():
@@ -207,6 +208,6 @@ export class RunProjectLifecycleBase<T extends LifecycleStaticInterface = typeof
         // projectPath: AddressPathAbsolute;
         workingPath: string;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 }

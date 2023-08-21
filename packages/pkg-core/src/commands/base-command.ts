@@ -786,7 +786,7 @@ export abstract class BaseCommand<
     extra,
   }: {
     err: Error & Partial<PrettyPrintableError> & Partial<OclifError>;
-    exitProcess?: boolean;
+    exitProcess: boolean;
     extra?: {
       args: string[];
       cwd: string;

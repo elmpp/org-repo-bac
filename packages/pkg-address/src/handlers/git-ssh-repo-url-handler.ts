@@ -43,6 +43,7 @@ const REGEX = new RegExp(`${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+)
   - ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git
   - ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git?tag=v0.24
   - ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git?commit=21c39617a9
+  - ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git?head=main
  */
 export const handler: AddressHandler<'gitSshRepoUrl'> = {
   name: 'gitSshRepoUrl',

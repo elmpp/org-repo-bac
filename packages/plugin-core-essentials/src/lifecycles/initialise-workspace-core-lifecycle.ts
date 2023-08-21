@@ -39,14 +39,13 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
     options: {
       // a: 'a'
       name: string;
-      config: Config;
       configPath: string;
       cliVersion: string;
       cliRegistry: string;
       cliPath?: string;
     }
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
-    return async ({ context, workspacePath, options: {name, config, configPath, cliVersion, cliRegistry, cliPath} }) => {
+    return async ({ context, workspacePath, options: {name, configPath, cliVersion, cliRegistry, cliPath} }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
         const workspacePathParent = addr.pathUtils.dirname(workspacePath);
         if (!(await xfs.existsPromise(workspacePathParent.address))) {

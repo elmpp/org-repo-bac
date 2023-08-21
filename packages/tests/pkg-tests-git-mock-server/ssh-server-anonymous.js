@@ -207,7 +207,7 @@ new Promise((resolve, reject) => {
     }
   // ).listen(process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || 2222, '127.0.0.1', function () {
   ).listen({
-    port: process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || 2223,
+    port: process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT,
     host: '127.0.0.1',
     debug: console.log,
   }, function () {

@@ -5,6 +5,7 @@ import {
   Oclif,
   Interfaces as _Interfaces,
   LifecycleOptionsByMethodKeyedByProviderArray,
+  ok,
 } from "@business-as-code/core";
 
 export class ConfigureWorkspace extends BaseCommand<typeof ConfigureWorkspace> {
@@ -55,9 +56,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         lifecycleOptions
       );
 
-    return {
-      success: true as const,
-      res,
-    };
+    return ok(res);
   }
 }

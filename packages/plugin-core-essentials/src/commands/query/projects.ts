@@ -3,6 +3,7 @@ import {
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
+  ok,
 } from "@business-as-code/core";
 
 export class QueryProjects extends BaseCommand<typeof QueryProjects> {
@@ -55,9 +56,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       this.logToStdout(projects)
     }
 
-    return {
-      success: true as const,
-      res: undefined,
-    };
+    return ok(undefined);
   }
 }

@@ -334,6 +334,7 @@ importers:
       '@oclif/core': 2.6.4
       '@oclif/test': ^2.3.9
       '@types/node': 18.14.2
+      rxjs: 6.6.7
       typescript: 5.0.2
     dependencies:
       '@angular-devkit/core': 15.2.4
@@ -342,6 +343,7 @@ importers:
       '@business-as-code/core': link:../../pkg-core
       '@business-as-code/error': link:../../pkg-error
       '@business-as-code/fslib': link:../../pkg-fslib
+      rxjs: 6.6.7
     devDependencies:
       '@business-as-code/tests-git-server': link:../pkg-tests-git-mock-server
       '@oclif/core': 2.6.4_6bgvkausea6luhfwc2tw5lwncq_wwpsflofdsa3l3b6sjtuf2g2ki

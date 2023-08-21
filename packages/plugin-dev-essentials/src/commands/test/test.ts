@@ -35,6 +35,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Watch",
       required: false,
     }),
+    skipEarlier: Oclif.Flags.boolean({
+      description: "Skip Earlier Stages",
+      required: false,
+    }),
     // testMatch: Oclif.Flags.string({
     //   description: "Test it/describe name match",
     //   required: false,
@@ -65,12 +69,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       }
     }
 
-    return testService.test({
+    return await testService.test({
       stage: context.cliOptions.flags.stage as `stage${number}`,
       testFileMatch: context.cliOptions.flags.testFileMatch,
       // testMatch: context.cliOptions.flags.testMatch,
       cliSource: context.cliOptions.flags.cliSource!,
       watch,
+      skipEarlier: context.cliOptions.flags.skipEarlier,
     })
   }
 }

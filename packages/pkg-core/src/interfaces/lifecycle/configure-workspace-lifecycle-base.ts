@@ -5,9 +5,10 @@ import { AsyncHook } from "../../hooks";
 import {
   Context,
   ContextCommand,
-  LifecycleMappedReturnByMethod, LifecycleOptionsByMethodKeyedByProviderArray,
+  LifecycleMappedReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleStaticInterface,
-  Result
+  Result,
 } from "../../__types__";
 
 /**
@@ -112,7 +113,12 @@ export class ConfigureWorkspaceLifecycleBase<
 
   async executeConfigureWorkspace(
     options: LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace">
-  ): Promise<LifecycleMappedReturnByMethod<"configureWorkspace">> {
+  ): Promise<
+    Result<
+      LifecycleMappedReturnByMethod<"configureWorkspace">,
+      { error: BacError }
+    >
+  > {
     await ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.mapAsync(
       { options }
     );
@@ -139,7 +145,7 @@ export class ConfigureWorkspaceLifecycleBase<
         // workingPath: string;
         // config: Config;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | undefined {
     return;
   }
@@ -151,7 +157,7 @@ export class ConfigureWorkspaceLifecycleBase<
         // workingPath: string;
         // config: Config;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | undefined {
     return;
   }
@@ -163,7 +169,7 @@ export class ConfigureWorkspaceLifecycleBase<
         // workingPath: string;
         // config: Config;
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | undefined {
     return;
   }

@@ -4,6 +4,7 @@ import { BacError } from "@business-as-code/error";
 import { AsyncHook } from "../../hooks";
 import { Config } from "../../validation";
 import {
+  assertIsOk,
   assertIsResult,
   Context,
   ContextCommand,
@@ -112,7 +113,12 @@ export class InitialiseWorkspaceLifecycleBase<
 
   async executeInitialiseWorkspace(
     options: LifecycleOptionsByMethodKeyedByProvider<"initialiseWorkspace">[]
-  ): Promise<LifecycleSingularReturnByMethod<"initialiseWorkspace">> {
+  ): Promise<
+    Result<
+      LifecycleSingularReturnByMethod<"initialiseWorkspace">,
+      { error: BacError }
+    >
+  > {
     await InitialiseWorkspaceLifecycleBase.hooks.beforeInitialiseWorkspace.callBailAsync(
       {
         options,
@@ -126,7 +132,11 @@ export class InitialiseWorkspaceLifecycleBase<
         }
       );
 
-    assertIsResult(res.res); // wrapped in provider
+    if (!assertIsOk(res)) {
+      return res
+    }
+
+    assertIsResult(res.res.res); // wrapped in provider
 
     await InitialiseWorkspaceLifecycleBase.hooks.afterInitialiseWorkspace.callBailAsync(
       {
@@ -149,7 +159,7 @@ export class InitialiseWorkspaceLifecycleBase<
         //   cliRegistry: string;
         // }
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | undefined {
     return;
   }
@@ -167,7 +177,7 @@ export class InitialiseWorkspaceLifecycleBase<
         //   cliRegistry: string;
         // }
         options: any;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | undefined {
     return;
   }
@@ -185,7 +195,7 @@ export class InitialiseWorkspaceLifecycleBase<
         //   cliVersion: string;
         //   cliRegistry: string;
         // }
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | undefined {
     return;
   }

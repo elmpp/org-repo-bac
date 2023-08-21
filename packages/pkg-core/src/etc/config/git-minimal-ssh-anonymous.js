@@ -7,7 +7,7 @@ const config = {
   projectSource: [{
     provider: 'git',
     options: {
-      address: 'descriptor-to-some-public-example-repo',
+      address: 'http://localhost:2224/repo1.git',
     },
   }],
 }

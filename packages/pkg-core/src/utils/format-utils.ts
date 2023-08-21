@@ -13,8 +13,8 @@ export const JSONParse = (content: string): JsonSerialisable => {
     throw new BacErrorWrapper(MessageName.UNNAMED, `Caught error when parsing content \n'${content}'`, err as Error)
   }
 }
-export const JSONStringify = (content: JsonSerialisable): string => {
-  return JSON.stringify(content, null, 2)
+export const JSONStringify = (content: JsonSerialisable, prettify = false): string => {
+  return JSON.stringify(content, null, prettify ? 2 : 0)
 }
 
 export function trimFileContent(contents: string): string {

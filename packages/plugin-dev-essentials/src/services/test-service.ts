@@ -4,6 +4,7 @@ import {
   Result,
   expectIsOk,
   assertIsOk,
+  ok,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 
@@ -53,56 +54,98 @@ export class TestService {
       }
     );
 
-    const proms: Promise<unknown>[] = []
+    const proms: Promise<unknown>[] = [];
 
-    if (!assertIsOk((await packageManagerService.run({
-      command: `--filter @business-as-code/tests-verdaccio run verdaccio:isRunning`,
-    })))) {
+    if (
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `--filter @business-as-code/tests-verdaccio run verdaccio:isRunning`,
+        })
+      )
+    ) {
       // const res1 = await packageManagerService.run({
       //   command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res1)) return res1
-      proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
-      }))
+      proms.push(
+        packageManagerService.run({
+          command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
+        })
+      );
       // if (!assertIsOk(res1)) return res1
     }
-    if (!assertIsOk((await packageManagerService.run({
-      command: `--filter @business-as-code/tests-git-server run gitServerHttp:isRunning`,
-    })))) {
+    if (
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerHttp:isRunning`,
+        })
+      )
+    ) {
       // const res2 = await packageManagerService.run({
       //   command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res2)) return res2
-      proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
-      }))
+      proms.push(
+        packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
+        })
+      );
     }
-    if (!assertIsOk((await packageManagerService.run({
-      command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning`,
-    })))) {
+    if (
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning`,
+        })
+      )
+    ) {
       // const res3 = await packageManagerService.run({
       //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res3)) return res3
-      proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
-      }))
+      proms.push(
+        packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
+        })
+      );
     }
-    if (!assertIsOk((await packageManagerService.run({
-      command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
-    })))) {
+    if (
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning`,
+        })
+      )
+    ) {
       // const res3 = await packageManagerService.run({
       //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
       //   options: {detached: true},
       // });
       // if (!assertIsOk(res3)) return res3
-      proms.push(packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
-      }))
+      proms.push(
+        packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:startBackground`,
+        })
+      );
+    }
+    if (
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
+        })
+      )
+    ) {
+      // const res3 = await packageManagerService.run({
+      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
+      //   options: {detached: true},
+      // });
+      // if (!assertIsOk(res3)) return res3
+      proms.push(
+        packageManagerService.run({
+          command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
+        })
+      );
     }
 
     // if (!assertIsOk((await packageManagerService.run({
@@ -118,11 +161,17 @@ export class TestService {
     //   }))
     // }
 
-    proms.push(new Promise((resolve, reject) => setTimeout(() => {
-      this.ensureDaemons().then(resolve).catch(reject)
-    }, 10000)))
+    proms.push(
+      new Promise((resolve, reject) =>
+        setTimeout(() => {
+          this.ensureDaemons().then(resolve).catch(reject);
+        }, 10000)
+      )
+    );
 
-    await Promise.all(proms).then(() => this.options.context.logger.info(`Daemons already all started`))
+    await Promise.all(proms).then(() =>
+      this.options.context.logger.info(`Daemons already all started`)
+    );
 
     // const res1 = await (async function verdaccio() {
     //   const isRunning = await packageManagerService.run({
@@ -169,10 +218,7 @@ export class TestService {
     // })();
     // if (!assertIsOk(res4)) return res4;
 
-    return {
-      success: true as const,
-      res: {},
-    };
+    return ok({});
   }
 
   protected async ensureDaemons() {
@@ -190,7 +236,10 @@ export class TestService {
         command: `--filter @business-as-code/tests-verdaccio run verdaccio:isRunning`,
       });
       if (!assertIsOk(isRunning)) {
-        throw new BacError(MessageName.UNNAMED, `Verdaccio server not running`);
+        throw new BacError(
+          MessageName.UNNAMED,
+          `Verdaccio server not running. Do you need to start the daemons?`
+        );
       }
     })();
     await (async function gitServerHttp() {
@@ -198,7 +247,10 @@ export class TestService {
         command: `--filter @business-as-code/tests-git-server run gitServerHttp:isRunning`,
       });
       if (!assertIsOk(isRunning)) {
-        throw new BacError(MessageName.UNNAMED, `Git http server not running`);
+        throw new BacError(
+          MessageName.UNNAMED,
+          `Git http server not running. Do you need to start the daemons?`
+        );
       }
     })();
     await (async function gitServerSshPubKey() {
@@ -208,23 +260,34 @@ export class TestService {
       if (!assertIsOk(isRunning)) {
         throw new BacError(
           MessageName.UNNAMED,
-          `Git ssh public key server not running`
+          `Git ssh public key server not running. Do you need to start the daemons?`
         );
       }
     })();
-    await (async function gitServerSshAnonyous() {
+    await (async function gitServerSshPassword() {
+      const isRunning = await packageManagerService.run({
+        command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning`,
+      });
+      if (!assertIsOk(isRunning)) {
+        throw new BacError(
+          MessageName.UNNAMED,
+          `Git ssh password server not running. Do you need to start the daemons?`
+        );
+      }
+    })();
+    await (async function gitServerSshAnonymous() {
       const isRunning = await packageManagerService.run({
         command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
       });
       if (!assertIsOk(isRunning)) {
         throw new BacError(
           MessageName.UNNAMED,
-          `Git ssh anonymous server not running`
+          `Git ssh anonymous server not running. Do you need to start the daemons?`
         );
       }
     })();
 
-    this.options.context.logger.info(`Daemons running ok`)
+    this.options.context.logger.info(`Daemons running ok`);
 
     // ;await (async function gitServerSshAnonymous() {
     //   const isRunning = await packageManagerService.run({
@@ -261,6 +324,11 @@ export class TestService {
         command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:stopBackground`,
       });
     })();
+    await (async function gitServerSshPassword() {
+      await packageManagerService.run({
+        command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:stopBackground`,
+      });
+    })();
     await (async function gitServerSshAnonymous() {
       await packageManagerService.run({
         command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:stopBackground`,
@@ -272,12 +340,9 @@ export class TestService {
     //   });
     // })();
 
-    this.options.context.logger.info(`Daemons stopped`)
+    this.options.context.logger.info(`Daemons stopped`);
 
-    return {
-      success: true as const,
-      res: {},
-    };
+    return ok({});
 
     // ;await (async function gitServerSshAnonymous() {
     //     await packageManagerService.run({
@@ -287,14 +352,11 @@ export class TestService {
   }
 
   async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
-    const moonService = await this.options.context.serviceFactory(
-      "moon",
-      {
-        context: this.options.context,
-        workingPath: ".",
-      }
-    );
-    return moonService.runTask({ command: "publishDev" })
+    const moonService = await this.options.context.serviceFactory("moon", {
+      context: this.options.context,
+      workingPath: ".",
+    });
+    return moonService.runTask({ command: "publishDev" });
   }
 
   async test({
@@ -303,6 +365,7 @@ export class TestService {
     stage,
     cliSource,
     watch = false,
+    skipEarlier = false,
   }: {
     /** actual test file name match */
     testFileMatch?: string;
@@ -311,13 +374,14 @@ export class TestService {
     stage: `stage${number}`;
     cliSource: "cliRegistry" | "cliLinked";
     watch?: boolean;
+    skipEarlier?: boolean;
   }): Promise<Result<{}, { error: BacError }>> {
     const { context } = this.options;
 
     try {
       await this.ensureDaemons();
-      if (cliSource === 'cliRegistry') {
-        await this.buildAndPublishSnapshot()
+      if (cliSource === "cliRegistry") {
+        await this.buildAndPublishSnapshot();
       }
     } catch (err) {
       return {
@@ -336,59 +400,89 @@ export class TestService {
       }
     );
 
-    context.logger.info(`RUNNING STAGE0 TESTS (non content-dependent test-env tests) - ${cliSource}`);
+    async function runIf(cb: () => {}, aStage: `stage${number}`) {
+      const stageNumberCurrent = parseInt(stage.at(-1)!)
+      const stageNumberIntended = parseInt(aStage.at(-1)!)
 
-    const stage0Res = await packageManagerService.run({
-      command: `jest ${
-        testFileMatch && stage === 'stage0' ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
-      } ${
-        stage === 'stage0' ? ` --watch` : ``
-      }`,
-      options: {
-        env: {
-          BAC_TEST_CLISOURCE: cliSource,
-          FORCE_COLOR: 'true',
+      // console.log(`stageNumberCurrent, stageNumberIntended :>> `, stageNumberCurrent, stageNumberIntended, stage, aStage, stage.at(-1), aStage.at(-1))
+
+      if (skipEarlier && (stageNumberIntended <= stageNumberCurrent)) {
+        context.logger.info(
+          `SKIPPING ${aStage.toUpperCase()} TESTS (due to --skipEarlier) - ${cliSource}`
+        );
+        return
+      }
+      await cb()
+    }
+
+    await runIf(async () => {
+      context.logger.info(
+        `RUNNING STAGE0 TESTS (non content-dependent test-env tests) - ${cliSource}`
+      );
+
+      const stage0Res = await packageManagerService.run({
+        command: `jest ${
+          testFileMatch && stage === "stage0"
+            ? ` '${testFileMatch}.*stage0'`
+            : ` 'stage0'`
+        } ${stage === "stage0" ? ` --watch` : ``}`,
+        options: {
+          env: {
+            BAC_TEST_CLISOURCE: cliSource,
+            FORCE_COLOR: "true",
+          },
+          stdin: "inherit",
+          logLevel: 'debug', // always
         },
-        stdin: 'inherit',
-      },
-    });
-    expectIsOk(stage0Res);
+      });
+      expectIsOk(stage0Res);
+    }, "stage0");
 
-    context.logger.info(`RUNNING STAGE1 TESTS (content-creating test-env tests) - ${cliSource}`);
+    await runIf(async () => {
+      context.logger.info(
+        `RUNNING STAGE1 TESTS (content-creating test-env tests) - ${cliSource}`
+      );
 
-    const stage1Res = await packageManagerService.run({
-      command: `jest ${
-        testFileMatch && stage === 'stage1' ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
-      } ${
-        stage === 'stage1' ? ` --watch` : ``
-      }`,
-      options: {
-        env: {
-          BAC_TEST_CLISOURCE: cliSource,
-          FORCE_COLOR: 'true',
+      const stage1Res = await packageManagerService.run({
+        command: `jest ${
+          testFileMatch && stage === "stage1"
+            ? ` '${testFileMatch}.*stage1'`
+            : ` 'stage1'`
+        } ${stage === "stage1" ? ` --watch` : ``}`,
+        options: {
+          env: {
+            BAC_TEST_CLISOURCE: cliSource,
+            FORCE_COLOR: "true",
+          },
+          stdin: "inherit",
+          logLevel: 'debug', // always
         },
-        stdin: 'inherit',
-      },
-    });
-    expectIsOk(stage1Res);
+      });
+      expectIsOk(stage1Res);
+    }, "stage1");
 
-    context.logger.info(`RUNNING STAGE2 TESTS (content-validating test-env tests) - ${cliSource}`);
+    await runIf(async () => {
+      context.logger.info(
+        `RUNNING STAGE2 TESTS (content-validating test-env tests) - ${cliSource}`
+      );
 
-    const stage2Res = await packageManagerService.run({
-      command: `jest ${
-        testFileMatch && stage === 'stage2' ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
-      } ${
-        stage === 'stage2' ? ` --watch` : ``
-      }`,
-      options: {
-        env: {
-          BAC_TEST_CLISOURCE: cliSource,
-          FORCE_COLOR: 'true',
+      const stage2Res = await packageManagerService.run({
+        command: `jest ${
+          testFileMatch && stage === "stage2"
+            ? ` '${testFileMatch}.*stage2'`
+            : ` 'stage2'`
+        } ${stage === "stage2" ? ` --watch` : ``}`,
+        options: {
+          env: {
+            BAC_TEST_CLISOURCE: cliSource,
+            FORCE_COLOR: "true",
+          },
+          stdin: "inherit",
+          logLevel: 'debug', // always
         },
-        stdin: 'inherit',
-      },
-    });
-    expectIsOk(stage2Res);
+      });
+      expectIsOk(stage2Res);
+    }, "stage2");
 
     if (!["stage0", "stage1", "stage2"].includes(stage)) {
       context.logger.info(
@@ -400,12 +494,12 @@ export class TestService {
           testFileMatch ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
         } --config jest.config.js${watch ? ` --watch` : ``}`,
         options: {
-          logLevel: "debug",
           env: {
             BAC_TEST_CLISOURCE: cliSource,
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
+          logLevel: "debug",
         },
       });
 

@@ -17,9 +17,12 @@
     "gitServerSshPubKey:isRunning": "node ./ssh-daemon.js isRunning || lsof -i 4tcp:2222 -sTCP:LISTEN",
     "gitServerSshPubKey:startBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js start",
     "gitServerSshPubKey:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js stop || kill-port 2222 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning",
-    "gitServerSshAnonymous:isRunning": "node ./ssh-daemon-anonymous.js isRunning || lsof -i 4tcp:2223 -sTCP:LISTEN",
-    "gitServerSshAnonymous:startBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon-anonymous.js start",
-    "gitServerSshAnonymous:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=false node ./ssh-daemon-anonymous.js stop"
+    "gitServerSshPassword:isRunning": "node ./ssh-daemon-password.js isRunning || lsof -i 4tcp:2223 -sTCP:LISTEN",
+    "gitServerSshPassword:startBackground": "GIT_SSH_MOCK_SERVER_PASSWORD=password node ./ssh-daemon-password.js start",
+    "gitServerSshPassword:stopBackground": "GIT_SSH_MOCK_SERVER_PASSWORD=password node ./ssh-daemon-password.js stop || kill-port 2223 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning",
+    "gitServerSshAnonymous:isRunning": "node ./ssh-daemon-anonymous.js isRunning || lsof -i 4tcp:2224 -sTCP:LISTEN",
+    "gitServerSshAnonymous:startBackground": "node ./ssh-daemon-anonymous.js start",
+    "gitServerSshAnonymous:stopBackground": "node ./ssh-daemon-anonymous.js stop || kill-port 2224 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning"
   },
   "repository": {
     "type": "git",

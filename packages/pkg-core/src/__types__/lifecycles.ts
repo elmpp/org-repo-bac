@@ -1,5 +1,5 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
-import { Context, ContextCommand } from ".";
+import { Context, ContextCommand, InferOkResult, Result } from ".";
 import {
   IsEmptyObject,
   SafeGet,
@@ -205,6 +205,19 @@ type LifecycleMap<
           "runProject"
         >
       : never;
+    fetchContent: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      fetchContent: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { fetchContent: any }
+          >["fetchContent"]["insType"],
+          "fetchContent"
+        >
+      : never;
   };
 //   never
 // >;
@@ -295,6 +308,12 @@ export type LifecycleOptionsByMethodKeyedByProviderWithoutCommon<
   ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
   { options: never }
 >, {options: any}>;
+export type LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<
+  LMethod extends LifecycleMethods = LifecycleMethods
+> = Extract<Exclude<
+  ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
+  { options: never }
+>, {options: any}>[];
 export type LifecycleOptionsByMethodKeyedByProviderArray<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
@@ -359,8 +378,10 @@ export type LifecycleProvidersForAsByMethod<
 // type HHH2 = LifecycleOptionsByProviderMap['initialiseWorkspace'][_LifecycleAllProviders]
 
 type LifecycleReturnType<
-  T extends () => ((...args: any[]) => any) | undefined
-> = UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>;
+  T extends () => ((...args: any[]) => Result<unknown, any>) | undefined
+  // T extends () => ((...args: any[]) => any) | undefined
+> = InferOkResult<UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>>;
+// > = UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>;
 type LifecycleOptionsType<
   T extends () => ((...args: any[]) => any) | undefined
 > = "options" extends keyof Parameters<NonNullable<ReturnType<T>>>[0]

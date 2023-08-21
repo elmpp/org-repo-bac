@@ -18,6 +18,7 @@ import "./param-descriptor-stringified-package-handler";
 import "./param-ident-stringified-package-handler";
 // import './template-ident-package-handler'
 import "./scaffold-ident-package-handler";
+import "./cache-other-handler";
 
 import { handler as portablePathPosixAbsoluteHandler } from "./portable-path-posix-absolute-handler";
 import { handler as portablePathPosixRelativeHandler } from "./portable-path-posix-relative-handler";
@@ -38,6 +39,7 @@ import { handler as paramDescriptorStringifiedPackageHandler } from "./param-des
 import { handler as paramIdentStringifiedPackageHandler } from "./param-ident-stringified-package-handler";
 // import {handler as templateIdentPackageHandler} from './template-ident-package-handler'
 import { handler as scaffoldIdentPackageHandler } from "./scaffold-ident-package-handler";
+import { handler as cacheOtherHandler } from "./cache-other-handler";
 // import {handler as descriptorPackageHandler} from './descriptor-package-handler'
 
 export const handlers = [
@@ -61,4 +63,5 @@ export const handlers = [
   portablePathWindowsRelativeHandler, // windows before sibling posix
   portablePathPosixRelativeHandler,
   portablePathFilenameHandler, // default
+  cacheOtherHandler,
 ];

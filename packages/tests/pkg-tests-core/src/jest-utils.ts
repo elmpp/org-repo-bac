@@ -131,7 +131,7 @@ class ExpectConfig {
   constructor(expectFs: ExpectFs, options: Options) {
     this.options = options;
     this.expectFs = expectFs;
-    this._tmpResolvablePath = fsUtils.tmpResolvablePath;
+    this._tmpResolvablePath = addr.pathUtils.join(fsUtils.tmpResolvableFolder, addr.parsePath(constants.RC_FILENAME)) as AddressPathAbsolute
   }
 
   // protected async importConfig() {

@@ -1,10 +1,11 @@
 import { addr } from "@business-as-code/address";
-import { UnwrapPromise, expectIsOk } from "@business-as-code/core";
+import { UnwrapPromise, constants, expectIsFail, expectIsOk } from "@business-as-code/core";
 import { Filename, xfs } from "@business-as-code/fslib";
 import {
   createPersistentTestEnv,
   TestContext,
 } from "@business-as-code/tests-core";
+import { assertions } from "../../assertions";
 
 /**
  * Checks content produced in stage1
@@ -70,7 +71,7 @@ describe("initialise workspace", () => {
     });
   });
 
-  describe.only("initialise:workspace git-minimal relative config", () => {
+  describe("initialise:workspace git-minimal-http relative config", () => {
     it("is produced ok", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
 
@@ -80,11 +81,11 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "initialise:workspace git-minimal relative config",
+          "initialise:workspace git-minimal-http relative config",
           testContext.testEnvVars.workspacePath
         );
 
-        assertCommon({testContext, res: resCopy, configFilename: "git-minimal.js" as Filename})
+        assertCommon({testContext, res: resCopy, configFilename: "git-minimal-http.js" as Filename})
       });
     });
   });
@@ -104,7 +105,7 @@ describe("initialise workspace", () => {
         );
 
         const resCopy = await testContext.copy(
-          "initialise:workspace git-minimal relative config",
+          "initialise:workspace git-minimal-http relative config",
           testContext.testEnvVars.workspacePath
         );
 
@@ -148,4 +149,49 @@ describe("initialise workspace", () => {
       });
     });
   });
+
+  describe('errors', () => {
+    it.only('initialise:workspace git-http unreachable config fails and prevents configure', async () => {
+      const persistentTestEnv = await createPersistentTestEnv({});
+      await persistentTestEnv.test({}, async (testContext) => {
+        const res = await testContext.command(
+          [
+            "initialise",
+            "workspace",
+            "--name",
+            "my-new-workspace",
+            "--workspacePath",
+            `${testContext.testEnvVars.workspacePath.original}`,
+            "--configPath",
+            "packages/pkg-core/src/etc/config/git-http-unreachable.js",
+            "--cliPath",
+            testContext.testEnvVars.checkoutCliPath.original,
+          ],
+          { logLevel: "debug" }
+        );
+
+        expectIsFail(res) // the configure-workspace git lifecycle provider should trigger a fail
+        await assertions.workspace.commonFiles(testContext, res); // initialise-workspace has completed and created files
+        await assertions.workspace.config(testContext, res, 'git-http-unreachable.js'); // initialise-workspace has still copied the config
+
+        const expectStdout = res.res.expectUtil.createStdout()
+        const expectStderr = res.res.expectUtil.createStderr()
+        const expectFs = res.res.expectUtil.createFs()
+
+        expectStderr.lineContainsString({match: `repository 'http://localhost:8174/thisrepodoesnotexist.git/' not found`, occurrences: 1})
+        expectStdout.lineContainsString({match: `repository 'http://localhost:8174/thisrepodoesnotexist.git/' not found`, occurrences: 0})
+        expect(expectFs.existsSync(`${constants.RC_FOLDER}/${constants.RC_FILENAME}`)).toBeFalsy() // hasn't written the configured config
+
+        // const expectFs = res.res.expectUtil.createFs();
+        // expect(res.res.expectUtil
+        //   .createText(expectFs.readText(`${constants.RC_FOLDER}/${constants.RC_FILENAME}`)).asJson()
+        // ).toEqual(expect.objectContaining([{
+        //   provider: 'git',
+        //   options: {
+        //       address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
+        //   }
+        // }]))
+      });
+    })
+  })
 });

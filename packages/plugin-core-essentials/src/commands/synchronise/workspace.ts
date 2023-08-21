@@ -3,6 +3,7 @@ import {
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
+  expectIsOk,
 } from "@business-as-code/core";
 
 export class SynchroniseWorkspace extends BaseCommand<
@@ -32,6 +33,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // let workspacePath = await this.getWorkspacePath()
 
+    // has the configured config file been changed?
+    const moonService = await context.serviceFactory('moon', {
+      context,
+      workspacePath: await this.getWorkspacePath(),
+      workingPath: '.',
+    })
+    // const configuredConfigAffected = moonService.
+
     const res = await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace([{
       provider: 'git',
       options: {
@@ -49,6 +58,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         }, // <!-- typed as any atm ¯\_(ツ)_/¯
       }
     }]);
-    return res.res;
+
+    expectIsOk(res)
+    return res.res.res;
   }
 }

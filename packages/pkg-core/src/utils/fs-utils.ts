@@ -2,6 +2,7 @@ import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { xfs } from "@business-as-code/fslib";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as oclif from "@oclif/core";
+import crypto from 'crypto'
 import { Config } from "../validation";
 import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
 import { constants } from "../constants";
@@ -73,7 +74,7 @@ export async function loadModule(pathOrPluginOrConfig: string | oclif.Interfaces
 
 }
 
-export const tmpResolvablePath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath(`../etc/${constants.RC_FILENAME}`))
+export const tmpResolvableFolder = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath(`../etc/tmp`))
 
 /**
  * loads a config file via require. Has fallback behaviour whereby it's copied into the present checkout.
@@ -92,12 +93,18 @@ export function loadConfig(workspacePath: AddressPathAbsolute): Config {
 
   // assert(configModule.config)
 
+
   const importConfig = (configPath: AddressPathAbsolute) => {
 
-    // const sourcePath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME))
-    xfs.copyFileSync(configPath.address, tmpResolvablePath.address)
+    const tmpFilename = addr.parsePath(`config-${crypto.randomBytes(16).toString('hex')}`)
+    const tmpFilepath = addr.pathUtils.join(tmpResolvableFolder, tmpFilename)
 
-    const configModule = require(`../etc/${constants.RC_FILENAME}`)
+    // console.log(`tmpFilepath, ../etc/${tmpFilename.original} :>> `, tmpFilepath, )
+
+    // const sourcePath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME))
+    xfs.copyFileSync(configPath.address, tmpFilepath.address)
+
+    const configModule = require(`../etc/${tmpFilename.original}`)
     return configModule
     // // console.log(`configModule :>> `, configModule)
 

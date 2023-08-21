@@ -13,7 +13,6 @@ import {
   Result,
 } from "../../__types__";
 
-
 /**
  Synchronise acts on already-configured workspace (e.g. ProjectConfig)
  */
@@ -33,7 +32,7 @@ export class SynchroniseWorkspaceLifecycleBase<
   static hooks = {
     beforeSynchroniseWorkspace: new AsyncHook<
       {
-        config?: Config,
+        config?: Config;
         // unknown;
       },
       void,
@@ -41,7 +40,7 @@ export class SynchroniseWorkspaceLifecycleBase<
     >(["options"], "synchroniseWorkspace", "beforeSynchroniseWorkspace"),
     synchroniseWorkspace: new AsyncHook<
       {
-        config?: Config,
+        config?: Config;
         // unknown;
       },
       Result<
@@ -55,10 +54,10 @@ export class SynchroniseWorkspaceLifecycleBase<
       "synchroniseWorkspace"
     >(["options"], "synchroniseWorkspace", "synchroniseWorkspace"),
     afterSynchroniseWorkspace: new AsyncHook<
-    {
-      config?: Config,
-      // unknown;
-    },
+      {
+        config?: Config;
+        // unknown;
+      },
       void,
       "synchroniseWorkspace"
     >(["options"], "synchroniseWorkspace", "afterSynchroniseWorkspace"),
@@ -106,7 +105,12 @@ export class SynchroniseWorkspaceLifecycleBase<
 
   async executeSynchroniseWorkspace(
     options: LifecycleOptionsByMethodKeyedByProviderArray<"synchroniseWorkspace">
-  ): Promise<LifecycleSingularReturnByMethod<"synchroniseWorkspace">> {
+  ): Promise<
+    Result<
+      LifecycleSingularReturnByMethod<"synchroniseWorkspace">,
+      { error: BacError }
+    >
+  > {
     await SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.callBailAsync(
       { options }
     );
@@ -129,7 +133,7 @@ export class SynchroniseWorkspaceLifecycleBase<
         // workingPath: string;
         options: any;
         config?: Config;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected synchroniseWorkspace():
@@ -139,7 +143,7 @@ export class SynchroniseWorkspaceLifecycleBase<
         // workingPath: string;
         options: any;
         config?: Config;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 
   protected afterSynchroniseWorkspace():
@@ -149,6 +153,6 @@ export class SynchroniseWorkspaceLifecycleBase<
         // workingPath: string;
         options: any;
         config?: Config;
-      }) => Promise<unknown>)
+      }) => Promise<unknown | void>)
     | void {}
 }

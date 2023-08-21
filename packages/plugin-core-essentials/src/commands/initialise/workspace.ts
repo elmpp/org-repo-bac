@@ -14,6 +14,12 @@ import {
   Interfaces as _Interfaces,
   Config,
   configSchema,
+  expectIsOk,
+  constants,
+  formatUtils,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommon,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  ok,
 } from "@business-as-code/core";
 import {
   BacError,
@@ -43,10 +49,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       required: true,
       exists: false,
       parse: async (aPath) => {
-        if (!addr.parsePath(aPath, {strict: false})) {
-          throw new Error(`Expected an valid relative/absolute path but received: ${aPath}`)
+        if (!addr.parsePath(aPath, { strict: false })) {
+          throw new Error(
+            `Expected an valid relative/absolute path but received: ${aPath}`
+          );
         }
-        return aPath
+        return aPath;
       },
     }),
     configPath: Oclif.Flags.string({
@@ -65,7 +73,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       // default: "http://localhost:4873",
     }),
     cliPath: Oclif.Flags.string({
-      description: "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
+      description:
+        "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
       required: false,
     }),
   };
@@ -90,9 +99,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   protected async getConfig(
     context: ContextCommand<typeof InitialiseWorkspace>
-  ): Promise<{config: Config, path: AddressPathAbsolute}> {
+  ): Promise<{ config: Config; path: AddressPathAbsolute }> {
     const getConfigPath = (
-      runtimeConfigRelOrAbsoluteNative: string | AddressPathAbsolute | AddressPathRelative
+      runtimeConfigRelOrAbsoluteNative:
+        | string
+        | AddressPathAbsolute
+        | AddressPathRelative
     ): AddressPathAbsolute => {
       let configPath: AddressPathAbsolute | AddressPathRelative =
         typeof runtimeConfigRelOrAbsoluteNative === "string"
@@ -105,15 +117,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       // if (typeof configPath === 'string') {
       //   configPath = addr.parsePath(configPath)
       // }
-// console.log(`configPath :>> `, configPath)
-//       const cliCheckoutPath = addr.packageUtils.resolve({
-//         address: addr.parsePackage(
-//           `@business-as-code/cli`
-//         ),
-//         projectCwd: testContext.testEnvVars.checkoutPath,
-//         strict: true,
-//       })
-
+      // console.log(`configPath :>> `, configPath)
+      //       const cliCheckoutPath = addr.packageUtils.resolve({
+      //         address: addr.parsePackage(
+      //           `@business-as-code/cli`
+      //         ),
+      //         projectCwd: testContext.testEnvVars.checkoutPath,
+      //         strict: true,
+      //       })
 
       if (assertIsAddressPathRelative(configPath)) {
         configPath = addr.pathUtils.resolve(
@@ -125,7 +136,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       if (!xfs.existsSync(configPath.address)) {
         throw new BacError(
           MessageName.OCLIF_ERROR,
-          `Config path at '${configPath.original}' does not exist, supplied as '${require('util').inspect(runtimeConfigRelOrAbsoluteNative, {showHidden: false, depth: undefined, colors: true})}`
+          `Config path at '${
+            configPath.original
+          }' does not exist, supplied as '${require("util").inspect(
+            runtimeConfigRelOrAbsoluteNative,
+            { showHidden: false, depth: undefined, colors: true }
+          )}`
         );
       }
       return configPath;
@@ -143,13 +159,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       address: addr.parsePackage(
         `@business-as-code/core/src/etc/config/skeleton.js`
       ),
-      projectCwd: addr.parsePath(context.oclifConfig.root) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
+      projectCwd: addr.parsePath(
+        context.oclifConfig.root
+      ) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
       strict: true,
     });
 
     const inputConfigPathWithDefault =
-      context.cliOptions.flags.configPath ??
-      skeletonConfigPath;
+      context.cliOptions.flags.configPath ?? skeletonConfigPath;
     const configPath = getConfigPath(inputConfigPathWithDefault);
     const { module } = await fsUtils.loadModule(configPath.address);
 
@@ -174,7 +191,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     return {
       config: config.data,
       path: configPath,
-    }
+    };
   }
 
   async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
@@ -200,28 +217,81 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
 
-    const {config, path: configPath} = await this.getConfig(context);
+    const { path: configPath } = await this.getConfig(context);
 
-    const res = await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace([{
-      provider: 'core',
+    const initialiseRes =
+      await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace([
+        {
+          provider: "core",
+          options: {
+            context,
+            workspacePath,
+            // workingPath: ".",
+            options: {
+              name: context.cliOptions.flags.name,
+              configPath: configPath.original,
+              cliVersion: context.cliOptions.flags.cliVersion,
+              cliRegistry: context.cliOptions.flags.cliRegistry,
+              cliPath: context.cliOptions.flags.cliPath,
+              // options: {
+              //   a: 'a',
+              // }, // <!-- typed as any atm ¯\_(ツ)_/¯
+            },
+          },
+        },
+      ]);
+
+    // return initialiseRes.res
+    expectIsOk(initialiseRes);
+
+    context.logger.info(`initialise:workspace: lifecycle initialise success`);
+
+    const configWithoutCommon = fsUtils.loadConfig(workspacePath);
+    const config = configWithoutCommon.projectSource.map((c) => ({
+      ...c,
       options: {
-        context,
-        workspacePath,
-        // workingPath: ".",
         options: {
-          name: context.cliOptions.flags.name,
-          config,
-          configPath: configPath.original,
-          cliVersion: context.cliOptions.flags.cliVersion,
-          cliRegistry: context.cliOptions.flags.cliRegistry,
-          cliPath: context.cliOptions.flags.cliPath,
-          // options: {
-          //   a: 'a',
-          // }, // <!-- typed as any atm ¯\_(ツ)_/¯
-        }
-    }}]);
+          ...c.options,
+        },
+        context,
+        workspacePath: workspacePath as AddressPathAbsolute,
+      },
+    }));
 
-    return res.res
+    const configureRes =
+      await context.lifecycles.configureWorkspace.executeConfigureWorkspace(
+        config
+      );
+    expectIsOk(configureRes)
+
+    // this is the outputs of the configure providers but in a LifecycleOptionsByMethodKeyedByProviderWithoutCommon format
+    const configuredConfig = configureRes.res.map((c) => {
+      expectIsOk(c.res)
+      return {
+        provider: c.provider,
+        options: {
+          ...c.res.res,
+        },
+      };
+    }) as LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'configureWorkspace'>;
+    await xfs.writeFileSync(
+      addr.pathUtils.join(
+        workspacePath,
+        addr.parsePath(constants.RC_FOLDER),
+        addr.parsePath(constants.RC_FILENAME)
+      ).address,
+      formatUtils.JSONStringify(configuredConfig, true),
+      "utf-8"
+    );
+
+    context.logger.info(`initialise:workspace: lifecycle configure success`);
+
+    // expectIsOk(configureRes.res)
+
+    // we have an array of lifecycle return types after configure...
+    return ok({});
+    // return configureRes.
+
     // return res.res; // we eschew the provider wrapping for our solitary initialWorkspace
 
     // if (!(await xfs.existsPromise(workspacePath.address))) {
