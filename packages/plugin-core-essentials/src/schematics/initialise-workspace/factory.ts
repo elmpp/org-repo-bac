@@ -68,9 +68,23 @@ export default function (options: Schema): Rule {
       // }), nextTaskHandles));
     }
 
-    nextTaskHandles.push(schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.',  quiet: false, hideOutput: false, packageManager: 'pnpm'}), nextTaskHandles));
-    // const pmTaskHandle2 = schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
-    // const addDepTaskHandle = schematicContext.addTask(new NodePackageInstallTask({packageName: '@business-as-code/cli', workingDirectory: '.', quiet: false, hideOutput: false, packageManager: 'pnpm'}), [pmTaskHandle]);
+    // nextTaskHandles.push(schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.',  quiet: false, hideOutput: false, packageManager: 'pnpm'}), nextTaskHandles));
+
+    nextTaskHandles.push(schematicContext.addTask(schematicUtils.wrapServiceAsTask({
+        serviceOptions: {
+          serviceName: "packageManager",
+          cb: async ({ service }) => {
+            // console.log(`optionseeeee :>> `, require('util').inspect(options, {showHidden: false, depth: undefined, colors: true}))
+            await service.install({logLevel: 'debug'})
+          },
+          initialiseOptions: {
+            workingPath: '.',
+          },
+          context: options._bacContext,
+        },
+        schematicContext,
+      }), nextTaskHandles));
+
 
 
 

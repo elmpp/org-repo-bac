@@ -41,11 +41,6 @@ packages:
     publish: $authenticated
     unpublish: $authenticated
     proxy: npmjs
-  # "react":
-  #   access: $all
-  #   publish: $authenticated
-  #   unpublish: $authenticated
-  #   proxy: verdacciobk
   "**":
     access: $all
     publish: $authenticated

@@ -8,7 +8,6 @@ import {
   BaseCommand,
   consoleUtils,
   constants,
-  fsUtils,
   LogLevel,
   Outputs,
   Result,
@@ -1031,7 +1030,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
             {
-              root: checkoutCliPath.workspace.original, // schematics needs to run from the workspace base
+              root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
               // debug: 9,
             },
             parseOutput
@@ -1195,7 +1194,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
             {
-              root: checkoutCliPath.workspace.original, // schematics needs to run from the workspace base
+              root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
               // debug: 9,
             },
             parseOutput

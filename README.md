@@ -31,6 +31,7 @@ Debugging Packages/Listing
  - p dev:runCli  // show all commands
  - p list -r // show all pnpm workspaces (use --json for more)
  - pnpm ls -r --depth 1; pnpm view @business-as-code/cli --registry http://localhost:4873/; pnpm view @business-as-code/cli@bollards --registry http://localhost:4873/
+ - verdaccio can be used in offline mode - comment out the `proxy: npmjs` lines of `.packages/{"@*/*", "**"}`
 
 ## Test commands
 
