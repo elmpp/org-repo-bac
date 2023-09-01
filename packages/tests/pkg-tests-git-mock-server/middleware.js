@@ -82,9 +82,9 @@ function factory (config) {
       if (!next) next = () => void(0)
       try {
         // process.stdout.write(`config :>> ` + require('util').inspect(config, {showHidden: false, depth: 2, colors: true}) + `\n`)
-        console.log(`req.url :>> `, req.url)
+        // console.log(`req.url :>> `, req.url)
         var gitdir = getGitDir(req)
-        console.log(`gitdir :>> `, gitdir)
+        // console.log(`gitdir :>> `, gitdir)
       } catch (err) {
         res.statusCode = 404
         console.log(chalk.red('[git-http-server] 404 ' + pad(req.method) + ' ' + req.url))

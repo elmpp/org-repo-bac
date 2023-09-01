@@ -2,13 +2,14 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import {
   Context,
   ContextCommand,
-  Oclif,
   LifecycleImplementedMethods,
+  LifecycleMappedReturnByMethod,
   LifecycleMethods,
   LifecycleOptionsByMethodAndProvider,
   LifecycleOptionsByMethodKeyedByProvider,
   LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleOptionsByMethodKeyedByProviderWithoutCommon,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
   LifecycleProvidersForAsByMethod,
   LifecycleSingularReturnByMethod,
   LifecycleSingularReturnByMethodAndProvider,
@@ -20,12 +21,11 @@ import {
   // LifecycleProviders,
   // LifecycleStaticMap,
   LogLevel,
+  Oclif,
   ServiceInitialiseCommonOptions,
   ServiceInitialiseOptions,
   ServiceMap,
   Simplify,
-  LifecycleMappedReturnByMethod,
-  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -101,6 +101,14 @@ describe("types", () => {
           ServiceInitialiseOptions<"schematics">;
         type BacInitialiseOptions = ServiceInitialiseOptions<"bac">;
 
+        // type CacheInitialiseOptions = ServiceInitialiseOptions<"cache">;
+        // type CacheInitialiseOptions2 = Simplify<ServiceInitialiseLiteOptions<"cache">>;
+        // type CacheInitialiseOptions3 = Simplify<ServiceInitialiseLiteOptions<keyof ServiceMap>>
+
+        // expectTypeOf<CacheInitialiseOptions3>().toMatchTypeOf<{
+        //   rootPath: unknown
+        // }>()
+
         expectTypeOf<SchematicInitialiseOptions>().toMatchTypeOf<ServiceInitialiseCommonOptions>();
         expectTypeOf<SchematicInitialiseOptions>().toMatchTypeOf<{
           dryRun?: boolean;
@@ -169,7 +177,7 @@ describe("types", () => {
         type ALLKeys = Simplify<keyof Bac.Lifecycles>;
         // @ts-expect-error:
         type ALLMethodsImplemented = LifecycleImplementedMethods;
-        type ALLMethodsRegardless = LifecycleMethods;
+        // type ALLMethodsRegardless = LifecycleMethods;
       });
 
       it("can derive a union of lifecycle method return types with provider key", () => {
@@ -232,10 +240,12 @@ describe("types", () => {
         type InitialiseWorkspaceOptions =
           LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
-        expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<{
-          provider: "core";
-          options: any;
-        }[]>();
+        expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
+          {
+            provider: "core";
+            options: any;
+          }[]
+        >();
       });
       it("can derive a union of lifecycle option types with provider key 1", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
@@ -326,8 +336,7 @@ describe("types", () => {
           .toMatchTypeOf<"packageManagerPnpm">;
       });
       it("can derive a union of lifecycle option types with provider key 4", () => {
-        type Options =
-          LifecycleMappedReturnByMethod<'configureWorkspace'>;
+        type Options = LifecycleMappedReturnByMethod<"configureWorkspace">;
         expectTypeOf<Options>().not.toBeAny();
       });
       // it("can derive a union of lifecycle option types with the complex common properties removed", () => {

@@ -57,9 +57,9 @@ describe("initialise workspace", () => {
       const persistentTestEnv = await createPersistentTestEnv({});
 
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.setActiveWorkspaceCliPath(
-          testContext.testEnvVars.workspacePath
-        );
+        testContext.setActiveWorkspacePaths({
+          workspace: testContext.testEnvVars.workspacePath,
+        });
 
         const resCopy = await testContext.copy(
           "initialise:workspace default skeleton config",
@@ -76,9 +76,9 @@ describe("initialise workspace", () => {
       const persistentTestEnv = await createPersistentTestEnv({});
 
       await persistentTestEnv.test({}, async (testContext) => {
-        testContext.setActiveWorkspaceCliPath(
-          testContext.testEnvVars.workspacePath
-        );
+        testContext.setActiveWorkspacePaths({
+          workspace: testContext.testEnvVars.workspacePath,
+        });
 
         const resCopy = await testContext.copy(
           "initialise:workspace git-minimal-http relative config",
@@ -100,9 +100,9 @@ describe("initialise workspace", () => {
           return
         }
 
-        testContext.setActiveWorkspaceCliPath(
-          testContext.testEnvVars.workspacePath
-        );
+        testContext.setActiveWorkspacePaths({
+          workspace: testContext.testEnvVars.workspacePath,
+        });
 
         const resCopy = await testContext.copy(
           "initialise:workspace git-minimal-http relative config",
@@ -129,9 +129,9 @@ describe("initialise workspace", () => {
           return
         }
 
-        testContext.setActiveWorkspaceCliPath(
-          testContext.testEnvVars.workspacePath
-        );
+        testContext.setActiveWorkspacePaths({
+          workspace: testContext.testEnvVars.workspacePath,
+        });
 
         const resCopy = await testContext.copy(
           "initialise:workspace default skeleton config",
@@ -144,7 +144,7 @@ describe("initialise workspace", () => {
 
           const expectFs = resCopy.res.expectUtil.createFs()
 
-          expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'latest')
+          expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'bollards')
         })();
       });
     });

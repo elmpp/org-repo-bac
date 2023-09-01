@@ -21,6 +21,9 @@ describe("release-snapshot", () => {
           "--workspacePath",
           // testContext.testEnvVars.workspacePath.original,
           `${testContext.testEnvVars.checkoutPath.original}`,
+          "--message",
+          `Making a release`,
+
         ],
         { logLevel: "debug" }
       );

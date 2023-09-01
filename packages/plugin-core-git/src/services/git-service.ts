@@ -1,5 +1,4 @@
 import {
-  logLevelMatching,
   ok,
   Result,
   ServiceInitialiseCommonOptions,
@@ -8,12 +7,11 @@ import { BacError, MessageName } from "@business-as-code/error";
 // import nodeGit, { Repository } from 'nodegit'
 // import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { xfs } from "@business-as-code/fslib";
 import simpleGitFactory, {
   CheckRepoActions as CheckRepoActionsImport,
   InitResult,
-  SimpleGit,
   TaskOptions as OrigTaskOptions,
+  SimpleGit,
 } from "simple-git";
 
 declare global {
@@ -33,9 +31,8 @@ declare global {
 type Options = ServiceInitialiseCommonOptions & {};
 
 type TaskOptions = Record<string, unknown> & {
-
-  sshPrivateKeyPath?: string,
-  sshStrictHostCheckingDisable?: boolean,
+  sshPrivateKeyPath?: string;
+  sshStrictHostCheckingDisable?: boolean;
 };
 
 // /**
@@ -76,7 +73,7 @@ export class GitService {
     //   ? (process.env.DEBUG ? `${process.env.DEBUG},simple-git,simple-git:*` : `simple-git,simple-git:*`)
     //   : process.env.DEBUG;
 
-      // console.log(`process.env.DEBUG :>> `, process.env.DEBUG)
+    // console.log(`process.env.DEBUG :>> `, process.env.DEBUG)
 
     const ins = new GitService(options);
     return ins;
@@ -201,7 +198,7 @@ export class GitService {
 
   async init(
     options?: TaskOptions
-): Promise<Result<InitResult, { error: BacError }>> {
+  ): Promise<Result<InitResult, { error: BacError }>> {
     // const repository = await nodeGit.Repository.init(
     //   this.options.destinationPath.original,
     //   Number(options?.bare ?? false),
@@ -228,17 +225,19 @@ export class GitService {
      *  - simpleGit auth docs: https://tinyurl.com/25lb83xa
      */
     if (options.sshPrivateKeyPath) {
-
       const GIT_SSH_COMMAND = `ssh -i ${options.sshPrivateKeyPath} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null`;
 
       ins.env({ GIT_SSH_COMMAND });
-      this.options.context.logger.debug(`gitService: sshPrivateKey requested for instance. GIT_SSH_COMMAND: '${GIT_SSH_COMMAND}'`)
-    }
-    else if (options.sshStrictHostCheckingDisable) {
+      this.options.context.logger.debug(
+        `gitService: sshPrivateKey requested for instance. GIT_SSH_COMMAND: '${GIT_SSH_COMMAND}'`
+      );
+    } else if (options.sshStrictHostCheckingDisable) {
       const GIT_SSH_COMMAND = `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null`;
 
       ins.env({ GIT_SSH_COMMAND });
-      this.options.context.logger.debug(`gitService: sshPrivateKey requested for instance. GIT_SSH_COMMAND: '${GIT_SSH_COMMAND}'`)
+      this.options.context.logger.debug(
+        `gitService: sshPrivateKey requested for instance. GIT_SSH_COMMAND: '${GIT_SSH_COMMAND}'`
+      );
     }
     return ins;
   }

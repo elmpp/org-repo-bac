@@ -1,5 +1,5 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { AddressPathAbsolute, AddressPathCache, addr } from "@business-as-code/address";
+import { AddressPathAbsolute, AddressOtherCache, addr } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
 import {
   FetchOptions,
@@ -33,7 +33,7 @@ type Options = ServiceInitialiseCommonOptions & {
   // workspacePath: AddressPathAbsolute;
 
   /** lives outside of the workspacePath */
-  rootPath: AddressPathAbsolute;
+  rootPath?: AddressPathAbsolute;
 };
 // type DoExecOptionsLite = Omit<
 //   Parameters<typeof execUtils.doExec>[0]["options"],
@@ -49,7 +49,7 @@ type Options = ServiceInitialiseCommonOptions & {
  */
 export class CacheService {
   static title = "cache" as const;
-  options: Required<Options>;
+  options: Options;
   // @ts-expect-error: set in initialise
   cacheManager: XfsCacheManager;
 
@@ -66,15 +66,15 @@ export class CacheService {
     await ins.initialise(options);
     ins.cacheManager = await XfsCacheManager.initialise({
       contentBaseAddress: addr.pathUtils.join(
-        options.rootPath,
+        options.rootPath ?? options.workspacePath,
         addr.parseAsType("content", "portablePathFilename")
       ) as AddressPathAbsolute,
       metaBaseAddress: addr.pathUtils.join(
-        options.rootPath,
+        options.rootPath ?? options.workspacePath,
         addr.parseAsType("meta", "portablePathFilename")
       ) as AddressPathAbsolute,
       outputsBaseAddress: addr.pathUtils.join(
-        options.rootPath,
+        options.rootPath ?? options.workspacePath,
         addr.parseAsType("outputs", "portablePathFilename")
       ) as AddressPathAbsolute,
     });
@@ -89,7 +89,7 @@ export class CacheService {
 
   async fetchFromCache(options: {
     // address: AddressDescriptorUnion;
-    address: AddressPathCache
+    address: AddressOtherCache
     key: string;
     namespace?: string;
     cacheOptions: FetchOptions["cacheOptions"];
@@ -118,7 +118,7 @@ export class CacheService {
     });
 
     if (entry) {
-      return ok({ entry });
+      return ok({ entry, checksum: 'blah' });
     } else {
       const error = new BacError(
         MessageName.UNNAMED,

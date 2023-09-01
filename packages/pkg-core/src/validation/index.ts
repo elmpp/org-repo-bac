@@ -1,4 +1,4 @@
-import { type MoonQueryProjects, moonQueryProjects } from './moon-query-projects'
+import { moonQueryProjects } from './moon-query-projects'
 
 export const validators = {
   moonQueryProjects,

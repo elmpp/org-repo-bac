@@ -22,7 +22,7 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
     // this.options = options;
   }
 
-  async login() {
+  async login(options?: DoExecOptionsLite) {
     const cwd = addr.packageUtils.resolveRoot({
       address: addr.parsePackage(
         `@business-as-code/plugin-core-package-manager-pnpm`
@@ -38,8 +38,27 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
       options: {
         // shell: false
+        ...options,
         cwd,
         // cwd: addr.pathUtils.resolve(addr.parsePath(__filename), addr.parsePath('../../../')),
+      },
+    });
+  }
+
+  async install(options?: DoExecOptionsLite) {
+    // const cwd = addr.packageUtils.resolveRoot({
+    //   address: addr.parsePackage(
+    //     `@business-as-code/plugin-core-package-manager-pnpm`
+    //   ),
+    //   projectCwd: addr.parsePath(__filename) as AddressPathAbsolute,
+    //   strict: true,
+    // })
+console.log(`this.options. :>> `, this.options.context.cliOptions.flags.logLevel)
+    return this.run({
+      command: `install`,
+      // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
+      options: {
+        ...options,
       },
     });
   }

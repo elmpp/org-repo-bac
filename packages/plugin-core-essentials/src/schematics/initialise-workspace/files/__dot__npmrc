@@ -1,3 +1,4 @@
 <% if (cliRegistry) { %>
 @business-as-code:registry=<%= cliRegistry %>
+registry=<%= cliRegistry %>
 <% } %>

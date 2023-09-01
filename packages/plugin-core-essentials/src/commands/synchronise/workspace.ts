@@ -34,11 +34,11 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // let workspacePath = await this.getWorkspacePath()
 
     // has the configured config file been changed?
-    const moonService = await context.serviceFactory('moon', {
-      context,
-      workspacePath: await this.getWorkspacePath(),
-      workingPath: '.',
-    })
+    // const moonService = await context.serviceFactory('moon', {
+    //   context,
+    //   workspacePath: await this.getWorkspacePath(),
+    //   workingPath: '.',
+    // })
     // const configuredConfigAffected = moonService.
 
     const res = await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace([{

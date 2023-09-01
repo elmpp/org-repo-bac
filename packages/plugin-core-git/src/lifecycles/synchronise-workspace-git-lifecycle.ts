@@ -2,6 +2,7 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import {
   Context,
   fsUtils,
+  ok,
   ServiceMap,
   SynchroniseWorkspaceLifecycleBase,
 } from "@business-as-code/core";
@@ -47,6 +48,10 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
       const config = await fsUtils.loadConfig(workspacePath);
 
       console.log(`config :>> `, config);
+
+      return ok({
+        destinationPath: workspacePath,
+      })
 
       // is the configured config up to date
       // if ()

@@ -12,7 +12,6 @@ import {
 import { constants, schematicUtils } from "@business-as-code/core";
 import path from "path";
 import { Schema } from "./schema";
-import { getHostRoot } from "@business-as-code/core/src/schematics/schematics-utils";
 
 /** normal repo to bare repo - https://tinyurl.com/28qht2am */
 const convertToBareRepo = ({

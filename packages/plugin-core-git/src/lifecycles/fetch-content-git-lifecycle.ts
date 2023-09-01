@@ -1,28 +1,24 @@
 import {
-  addr,
   AddressDescriptor,
-  AddressDescriptorUnion,
+  AddressOtherCache,
   AddressPathAbsolute,
   AddressType,
   AddressUrlGit,
-  assertIsAddressPathAbsolute,
+  addr,
 } from "@business-as-code/address";
 import {
-  assertIsOk,
+  CacheSourceEntry,
   Context,
-  ServiceMap,
   FetchContentLifecycleBase,
   FetchOptions,
   FetchResult,
   Result,
-  ok,
+  assertIsOk,
   expectIsOk,
-  CacheEntry,
-  CacheSourceEntry,
+  ok,
 } from "@business-as-code/core";
 import { CacheKey } from "@business-as-code/core/services/cache-service";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
+import { BacError } from "@business-as-code/error";
 
 // declare global {
 //   namespace Bac {
@@ -85,6 +81,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
       }
 
       const fetchRes = await cacheService.fetchFromCache({
+        address: "" as unknown as AddressOtherCache,
         key: applicableAddress.addressNormalized,
         // namespace,
         cacheOptions,
@@ -93,13 +90,13 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
           return this.createChecksum({
             ...options,
             options: {
-              ...options,
+              ...options.options,
               address: applicableAddress,
               cacheService,
             },
             contentPath,
             existentChecksum,
-          })
+          });
         },
         onHit: () =>
           options.context.logger.debug(
@@ -109,16 +106,18 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
           options.context.logger.debug(
             `Cache miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
           ),
-        onChecksumFail: ({existentChecksum}) =>
+        onChecksumFail: ({ existentChecksum }) =>
           options.context.logger.debug(
-            `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${applicableAddress.addressNormalized}'. Will be updated from source`
+            `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${
+              applicableAddress.addressNormalized
+            }'. Will be updated from source`
           ),
         // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
         loader: async ({ existentChecksum, contentPath }) => {
           return await this.fetchFromNetwork({
             ...options,
             options: {
-              ...options,
+              ...options.options,
               address: applicableAddress,
               cacheService,
             },
@@ -177,8 +176,8 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
     contentPath: AddressPathAbsolute;
     // existent checksum if content found (but failed checksum)
     existentChecksum?: CacheKey;
-  }): Promise<> {
-
+  }) {
+    return {} as CacheKey;
   }
 
   protected async fetchFromNetwork(options: {
@@ -190,82 +189,88 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
     contentPath: AddressPathAbsolute;
     // existent checksum if content found (but failed checksum)
     existentChecksum?: CacheKey;
-  }): Promise<Result<{contentPath: AddressPathAbsolute}, { error: BacError }>> {
+  }): Promise<Result<CacheSourceEntry, { error: BacError }>> {
     const {
       contentPath,
       context,
-      workspacePath,
-      options: { address, cacheService, cacheOptions = {} },
+      existentChecksum,
+      options: { address },
     } = options;
+
+    const gitService = await context.serviceFactory("git", {
+      context,
+      workspacePath: contentPath,
+      workingPath: "",
+    });
 
     async function updateFromSource() {}
 
-    /**
-     do the actual download to a temp location. By returning the CacheSourceEntry,
-      this is what will put content into cache
-      */
     async function cloneFromSource() {
-      return await xfs.mktempPromise(async (p): Result<CacheSourceEntry, {error: BacError}> => {
-        const gitService = await context.serviceFactory("git", {
-          context,
-          workspacePath: addr.parsePPath(p) as AddressPathAbsolute,
-          workingPath: "",
-        });
-        const cloneOpts: Parameters<typeof gitService.clone>[1] = {
-          // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
-        }
-        const cloneRes = await gitService.clone(address.addressNormalized, cloneOpts)
+      const cloneOpts: Parameters<typeof gitService.clone>[1] = {
+        // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
+      };
+      const cloneRes = await gitService.clone(
+        address.addressNormalized,
+        cloneOpts
+      );
 
-        if (!assertIsOk(cloneRes)) {
-          return fail(cloneRes.res)
-        }
-        return ok({
-          content: cloneRes.res,
-          meta: {
-            destinationPath:
-          }
-        })
-      })
-    }
-
-    if (cacheEntry) {
-      return await updateFromSource();
-    } else {
-      return await cloneFromSource();
-    }
-
-    const sourceBuffer = await httpUtils.get(
-      this.getLocatorUrl(locator, opts),
-      {
-        configuration: opts.project.configuration,
+      if (!assertIsOk(cloneRes)) {
+        return fail(cloneRes.res);
       }
-    );
-
-    return await xfs.mktempPromise(async (extractPath) => {
-      const extractTarget = new CwdFS(extractPath);
-
-      await tgzUtils.extractArchiveTo(sourceBuffer, extractTarget, {
-        stripComponents: 1,
+      return ok({
+        content: cloneRes.res,
+        meta: {
+          destinationPath: "",
+        },
       });
+    }
 
-      const repoUrlParts = gitUtils.splitRepoUrl(locator.reference);
-      const packagePath = ppath.join(extractPath, `package.tgz`);
+    if (existentChecksum) {
+      await updateFromSource();
+    } else {
+      await cloneFromSource();
+    }
 
-      await scriptUtils.prepareExternalProject(extractPath, packagePath, {
-        configuration: opts.project.configuration,
-        report: opts.report,
-        workspace: repoUrlParts.extra.workspace,
-        locator,
-      });
-
-      const packedBuffer = await xfs.readFilePromise(packagePath);
-
-      return await tgzUtils.convertToZip(packedBuffer, {
-        compressionLevel: opts.project.configuration.get(`compressionLevel`),
-        prefixPath: structUtils.getIdentVendorPath(locator),
-        stripComponents: 1,
-      });
+    return ok({
+      outputs: {
+        stdout: "",
+        stderr: "",
+      },
+      content: contentPath, // the cache manager should be smart enough to know this is already a destination location
     });
+
+    // const sourceBuffer = await httpUtils.get(
+    //   this.getLocatorUrl(locator, opts),
+    //   {
+    //     configuration: opts.project.configuration,
+    //   }
+    // );
+
+    // return await xfs.mktempPromise(async (extractPath) => {
+    //   const extractTarget = new CwdFS(extractPath);
+
+    //   await tgzUtils.extractArchiveTo(sourceBuffer, extractTarget, {
+    //     stripComponents: 1,
+    //   });
+
+    //   const repoUrlParts = gitUtils.splitRepoUrl(locator.reference);
+    //   const packagePath = ppath.join(extractPath, `package.tgz`);
+
+    //   await scriptUtils.prepareExternalProject(extractPath, packagePath, {
+    //     configuration: opts.project.configuration,
+    //     report: opts.report,
+    //     workspace: repoUrlParts.extra.workspace,
+    //     locator,
+    //   });
+
+    //   const packedBuffer = await xfs.readFilePromise(packagePath);
+
+    //   return await tgzUtils.convertToZip(packedBuffer, {
+    //     compressionLevel: opts.project.configuration.get(`compressionLevel`),
+    //     prefixPath: structUtils.getIdentVendorPath(locator),
+    //     stripComponents: 1,
+    //   });
+    // });
   }
 }
 

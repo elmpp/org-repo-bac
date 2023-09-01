@@ -17,6 +17,7 @@ describe("git-clone", () => {
               schematicsAddress:
                 "@business-as-code/plugin-core-git#namespace=git-clone",
               json: false,
+              payload: {},
               logLevel: 'info',
             },
             args: {},

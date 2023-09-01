@@ -1,8 +1,6 @@
 import { virtualFs } from "@angular-devkit/core";
 import { FileEntry, HostTree } from "@angular-devkit/schematics";
-import { concat as concatObservables, from as observableFrom } from "rxjs";
-import { LazyFileEntry, SimpleFileEntry } from "@angular-devkit/schematics/src/tree/entry";
-import { first } from "rxjs/operators";
+import { LazyFileEntry } from "@angular-devkit/schematics/src/tree/entry";
 
 export class HostCreateLazyTree extends HostTree {
   constructor(protected host: virtualFs.Host) {
@@ -13,7 +11,7 @@ export class HostCreateLazyTree extends HostTree {
     // this._record = new virtualFs.SafeReadonlyHost(host);
     // @ts-ignore
     // this._recordSync = new virtualFs.SyncDelegateHost(host);
-    this._recordSync = new virtualFs.SyncDelegateHost(this._record)
+    this._recordSync = new virtualFs.SyncDelegateHost(this._record);
 
     // const tempHost = new HostTree(host);
     // tempHost.visit((path) => {
@@ -41,8 +39,11 @@ export class HostCreateLazyTree extends HostTree {
     //   return null;
     // }
 
+    // if (!this._recordSync.exists(p)) return null
+
     // return new SimpleFileEntry(p, Buffer.from(this._recordSync.read(p)));
-    return new LazyFileEntry(p, () => this._recordSync.exists(p) ? Buffer.from(this._recordSync.read(p)) : null);
+    return this._recordSync.exists(p) ? new LazyFileEntry(p, () =>
+      Buffer.from((this as any)._recordSync.read(p))) : null
   }
   // override readText(path: string): string {
   //   console.log(`path readText :>> `, path)

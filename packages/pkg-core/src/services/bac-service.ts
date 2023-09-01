@@ -15,8 +15,6 @@ declare global {
 }
 
 type Options = ServiceInitialiseCommonOptions & {
-  /** path to root of instance */
-  // workspacePath: AddressPathAbsolute;
 };
 type DoExecOptionsLite = Omit<
   Parameters<typeof execUtils.doExec>[0]["options"],

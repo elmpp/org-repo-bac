@@ -104,7 +104,7 @@ export function loadConfig(workspacePath: AddressPathAbsolute): Config {
     // const sourcePath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME))
     xfs.copyFileSync(configPath.address, tmpFilepath.address)
 
-    const configModule = require(`../etc/${tmpFilename.original}`)
+    const configModule = require(`../etc/tmp/${tmpFilename.original}`)
     return configModule
     // // console.log(`configModule :>> `, configModule)
 

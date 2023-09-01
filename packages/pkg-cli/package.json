@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/cli",
-  "version": "0.0.0-bollards-20230812095812",
+  "version": "0.0.0-latest-20230829112232",
   "description": "Tool package @business-as-code/cli",
   "main": "src/index.ts",
   "files": [
@@ -39,14 +39,15 @@
     "@oclif/core": "2.6.4",
     "@oclif/plugin-help": "^5.2.7",
     "@oclif/plugin-not-found": "^2.3.21",
-    "@oclif/plugin-plugins": "^2.3.2"
+    "@oclif/plugin-plugins": "^2.3.2",
+    "ts-node": "^10.9.1",
+    "typescript": "5.0.2"
   },
   "devDependencies": {
     "@business-as-code/plugin-dev-tests": "workspace:*",
     "@business-as-code/plugin-dev-changesets": "workspace:*",
     "@business-as-code/plugin-dev-essentials": "workspace:*",
-    "@types/node": "18.14.2",
-    "typescript": "5.0.2"
+    "@types/node": "18.14.2"
   },
   "oclif": {
     "topicSeparator": " ",

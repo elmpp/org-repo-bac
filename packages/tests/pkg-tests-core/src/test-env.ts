@@ -8,6 +8,7 @@ import {
   BaseCommand,
   consoleUtils,
   constants,
+  fsUtils,
   LogLevel,
   Outputs,
   Result,
@@ -21,7 +22,11 @@ import {
   ArgsInfer,
   FlagsInfer,
 } from "@business-as-code/core/commands/base-command";
-import { BacError } from "@business-as-code/error";
+import {
+  BacError,
+  BacErrorWrapper,
+  MessageName,
+} from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
@@ -106,6 +111,8 @@ type CreatePersistentTestEnvVars = {
   cacheNamespaceFolder?: keyof Stage1Content;
   /** test must declare the cliSource it produces. Mandatory for stage1 tests */
   cliSource?: "cliRegistry" | "cliLinked";
+  /** default value for further processes */
+  defaultLogLevel?: LogLevel;
 };
 
 type PersistentTestEnvVars = {
@@ -122,6 +129,7 @@ type PersistentTestEnvVars = {
   fixturesPath: AddressPathAbsolute;
   // /** the mntCwd of this repository instance (mntPath = path to the mnt.ts folder). See main-cli options for mntCwd info */
   // checkoutMntCwd: AddressPathAbsolute
+  defaultLogLevel: LogLevel;
 
   /** the git-server key-gens an sshKey each time it starts up - private */
   sshPrivateKeyPath: AddressPathAbsolute;
@@ -151,8 +159,10 @@ type EphemeralTestEnvVars = {
 export type TestEnvVars = PersistentTestEnvVars & EphemeralTestEnvVars;
 
 export type TestContext = {
-  /** By default, the cli used is the checkoutPath. Use this to change onto a scaffolded workspace. Must be the location holding the package.json with plugins etc */
-  setActiveWorkspaceCliPath: (workspacePath: AddressPathAbsolute) => void;
+  /** only pass the workspace base path. This location should always carry a cli dependency and thus be resolvable */
+  setActiveWorkspacePaths: (workspacePaths: {
+    workspace: AddressPathAbsolute;
+  }) => void;
   copy: (
     sourcePath: keyof Stage1Content,
     // sourcePath: AddressPathRelative,
@@ -360,6 +370,7 @@ async function doCreatePersistentTestEnvs(
   const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder
     ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
     : undefined;
+  const defaultLogLevel = createPersistentTestEnvVars.defaultLogLevel ?? "info";
 
   // const checkoutPath = addr.packageUtils.resolveRoot({
   //   address: addr.parsePackage('root'),
@@ -395,6 +406,7 @@ async function doCreatePersistentTestEnvs(
 
     checkoutPath,
     checkoutCliPath,
+    defaultLogLevel,
     // checkoutMntCwd,
     basePath,
     cachePath,
@@ -403,15 +415,17 @@ async function doCreatePersistentTestEnvs(
     cacheRenewNamespace,
     cacheNamespaceFolder,
     stage,
-    sshPrivateKeyPath: addr.pathUtils.join(addr.pathUtils.resolve(
-      addr.parsePath(__dirname) as AddressPathAbsolute,
-      addr.parsePath('../../pkg-tests-git-mock-server')
+    sshPrivateKeyPath: addr.pathUtils.join(
+      addr.pathUtils.resolve(
+        addr.parsePath(__dirname) as AddressPathAbsolute,
+        addr.parsePath("../../pkg-tests-git-mock-server")
       ),
       addr.parsePath("id_rsa")
     ) as AddressPathAbsolute,
-    sshPublicKeyPath: addr.pathUtils.join(addr.pathUtils.resolve(
-      addr.parsePath(__dirname) as AddressPathAbsolute,
-      addr.parsePath('../../pkg-tests-git-mock-server')
+    sshPublicKeyPath: addr.pathUtils.join(
+      addr.pathUtils.resolve(
+        addr.parsePath(__dirname) as AddressPathAbsolute,
+        addr.parsePath("../../pkg-tests-git-mock-server")
       ),
       addr.parsePath("id_rsa.pub")
     ) as AddressPathAbsolute,
@@ -756,12 +770,18 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
       addr.parsePath("../../../..")
     );
     /** default to the checkout path cli package */
-    let activeWorkspacePath = addr.pathUtils.join(
-      checkoutPath,
-      addr.parsePath("packages/pkg-cli")
-    ) as AddressPathAbsolute;
+    let activeWorkspacePaths: {
+      workspace: AddressPathAbsolute;
+      cli: AddressPathAbsolute;
+    } = {
+      workspace: checkoutPath,
+      cli: addr.pathUtils.join(
+        checkoutPath,
+        addr.parsePath("packages/pkg-cli")
+      ) as AddressPathAbsolute,
+    };
 
-    const getActiveCliPath = () => activeWorkspacePath;
+    const getActiveCliPath = () => activeWorkspacePaths;
 
     const ephemeralTestEnvVars = await doCreateEphemeralTestEnvVars(
       createEphemeralTestEnvVars,
@@ -776,8 +796,32 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
     function createTestContext(): TestContext {
       return {
-        setActiveWorkspaceCliPath: (workspacePath: AddressPathAbsolute) => {
-          activeWorkspacePath = workspacePath;
+        setActiveWorkspacePaths: (workspacePaths: {
+          workspace: AddressPathAbsolute;
+          // cli: AddressPathAbsolute;
+        }) => {
+          if (workspacePaths.workspace.original.endsWith("pkg-cli"))
+            throw new Error(
+              `Should be a project root, not the checkoutCliPath. Perhaps workspacePath?`
+            );
+          try {
+            const workspaceCliPath = addr.packageUtils.resolveRoot({
+              address: addr.parsePackage("@business-as-code/cli"),
+              projectCwd: workspacePaths.workspace,
+              strict: true,
+            });
+            activeWorkspacePaths = {
+              ...workspacePaths,
+              cli: workspaceCliPath,
+            };
+          } catch (err) {
+            throw new BacErrorWrapper(
+              MessageName.UNNAMED,
+              `Project base does not allow resolving of @business-as-code/cli. Perhaps you need to run package manager?`,
+              err as Error
+            );
+          }
+          console.log(`activeWorkspacePath :>> `, activeWorkspacePaths);
         },
         /** copies from the initialise tranche of tests */
         copy: async (
@@ -825,7 +869,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           };
         },
         command: async (args: string[], options = {}) => {
-          const { logLevel = "info" } = options;
+          const { logLevel = testEnvVars.defaultLogLevel } = options;
 
           // @oclif/core::runCommand - https://tinyurl.com/2qf3qzzo
           // @oclif/core::execute - https://tinyurl.com/2hpmxhqn
@@ -839,7 +883,11 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // await oclifCore.execute({type: 'cjs', dir: cliPath.original, args})
           // console.log(`cliPath.original :>> `, cliPath.original)
 
-          const activeCliPath = getActiveCliPath();
+          const activeCheckoutPaths: {
+            workspace: AddressPathAbsolute;
+            cli: AddressPathAbsolute;
+          } = getActiveCliPath();
+
           // const activeCliPath = testEnvVars.checkoutPath;
 
           // process.chdir(checkoutPath.original);
@@ -872,10 +920,16 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           oclifCore.settings.debug = true;
 
+          console.log(
+            `activeCliPaths.original, process.cwd() :>> `,
+            activeCheckoutPaths,
+            process.cwd()
+          );
+
           /**  */
           await oclifCore
             .run(argsWithAdditional, {
-              root: activeCliPath.original,
+              root: activeCheckoutPaths.cli.original, // needs to be location with the Oclif package.json definitions
               debug: {
                 debug: 9,
                 info: 7,
@@ -895,7 +949,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 extra: {
                   args: argsWithAdditional,
                   logLevel,
-                  cwd: process.cwd(),
+                  cwd: activeCheckoutPaths.cli.original, // this is what Oclif would have done
+                  // cwd: process.cwd(),
                   // argv: process.argv,
                   // cwd: checkoutCliPath.original,
                 },
@@ -976,7 +1031,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
             {
-              root: checkoutCliPath.original,
+              root: checkoutCliPath.workspace.original, // schematics needs to run from the workspace base
               // debug: 9,
             },
             parseOutput
@@ -1122,7 +1177,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                 cb,
                 serviceName,
               },
-              ["logLevel"]: "info",
+              ["logLevel"]: testEnvVars.defaultLogLevel,
               ["json"]: false,
             },
             args: {},
@@ -1140,7 +1195,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
             {
-              root: checkoutCliPath.original,
+              root: checkoutCliPath.workspace.original, // schematics needs to run from the workspace base
               // debug: 9,
             },
             parseOutput
@@ -1151,18 +1206,10 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           });
 
           if (assertIsOk(res)) {
-            const resultTree = new HostCreateTree(
-              new virtualFs.ScopedHost(
-                new NodeJsSyncHost(),
-                testEnvVars.workspacePath.original as any
-              )
-            );
-            const outputs = mockStdEnd();
-            const expectUtil = new ExpectUtil({
-              outputs,
+            const expectUtil = createExpectUtil({
+              workspacePath: testEnvVars.workspacePath,
               testEnvVars,
-              tree: resultTree,
-              exitCode: 0,
+              outputs: mockStdEnd(),
             });
 
             return {
@@ -1258,3 +1305,33 @@ function mockStdEnd(): Outputs {
     stderr: consoleUtils.stderr.output,
   };
 }
+
+export const createExpectUtil = ({
+  workspacePath,
+  outputs = { stderr: "", stdout: "" },
+  testEnvVars,
+}: {
+  workspacePath: AddressPathAbsolute;
+  outputs?: Outputs;
+  testEnvVars: TestEnvVars;
+}) => {
+  const nextTestEnvVars = {
+    ...testEnvVars,
+    workspacePath,
+  }
+
+  const resultTree = new HostCreateTree(
+    new virtualFs.ScopedHost(
+      new NodeJsSyncHost(),
+      workspacePath as any // Path required,
+    )
+  );
+  // const outputs = mockStdEnd();
+  const expectUtil = new ExpectUtil({
+    outputs,
+    testEnvVars: nextTestEnvVars,
+    tree: resultTree,
+    exitCode: 0,
+  });
+  return expectUtil;
+};

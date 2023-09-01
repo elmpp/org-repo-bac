@@ -1,21 +1,14 @@
+import { addr, assertIsAddressPathAbsolute } from "@business-as-code/address";
 import {
-  AddressPathAbsolute,
-  addr,
-  assertIsAddressPath,
-  assertIsAddressPathAbsolute,
-  assertIsAddressPathRelative,
-} from "@business-as-code/address";
-import {
-  assertIsOk,
   BaseCommand,
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
+  assertIsOk,
   constants,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
-import path from "path";
 
 export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
   static override description = "Creates the tests git repositories";
@@ -96,11 +89,15 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
       workspacePath: repositoriesPath,
     });
 
-    context.logger.info(`Creating repositories in '${repositoriesPath.original}'`)
+    context.logger.info(
+      `Creating repositories in '${repositoriesPath.original}'`
+    );
 
     if (!(await xfs.existsPromise(repositoriesPath.address))) {
-      context.logger.info(`Creating repositories directory at '${repositoriesPath.original}'`)
-      await xfs.mkdirPromise(repositoriesPath.address)
+      context.logger.info(
+        `Creating repositories directory at '${repositoriesPath.original}'`
+      );
+      await xfs.mkdirPromise(repositoriesPath.address);
     }
 
     const res = await schematicsService.runSchematic({
@@ -108,7 +105,9 @@ export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
       options: {},
     });
 
-    context.logger.info(`Created repositories in '${repositoriesPath.original}'`)
+    context.logger.info(
+      `Created repositories in '${repositoriesPath.original}'`
+    );
 
     if (!assertIsOk(res)) {
       switch (res.res.error.reportCode) {

@@ -39,7 +39,6 @@ import {
   ServiceInitialiseLiteOptions,
   ServiceMap,
   ServiceStaticMap,
-  ValueOf,
 } from "../__types__";
 import { constants } from "../constants";
 import {
@@ -647,13 +646,13 @@ export abstract class BaseCommand<
       }
 
       const initialiseService = async (
-        staticService: ValueOf<ServiceStaticMap>[number]
+        // staticService: ValueOf<ServiceStaticMap>[number]
+        staticService: ServiceStaticMap[SName][number]
       ) => {
-
         /**
          * workspacePath should always spring back to the original bootstrapped value if not explicitly given!!
          * This next value should propogate through to all derivative values such as context
-        */
+         */
         function deriveNextWorkspacePath() {
           return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath;
           // return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath;
@@ -661,14 +660,14 @@ export abstract class BaseCommand<
 
         const nextContext = {
           ...initialiseOptionsLite.context,
-          workspacePath: deriveNextWorkspacePath()
+          workspacePath: deriveNextWorkspacePath(),
         };
         const serviceIns = (await staticService.initialise(
           {
             workspacePath: originalWorkspacePath, // we DO allow passing through of workspacePath
             ...initialiseOptionsLite,
             context: nextContext,
-          } // more weird static class stuff
+          } as any // weird union static type
         )) as ServiceMap[SName][number];
 
         (function validateService() {
@@ -771,6 +770,8 @@ export abstract class BaseCommand<
     cmd.ctor.oclifConfig = config;
 
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
+
+    console.log(`parseOutput :>> `, require('util').inspect(parseOutput, {showHidden: false, depth: undefined, colors: true}))
 
     // @ts-ignore
     const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);

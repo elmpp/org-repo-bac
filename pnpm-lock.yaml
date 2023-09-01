@@ -84,6 +84,7 @@ importers:
       '@oclif/plugin-not-found': ^2.3.21
       '@oclif/plugin-plugins': ^2.3.2
       '@types/node': 18.14.2
+      ts-node: ^10.9.1
       typescript: 5.0.2
     dependencies:
       '@business-as-code/core': link:../pkg-core
@@ -97,12 +98,13 @@ importers:
       '@oclif/plugin-help': 5.2.16_wwpsflofdsa3l3b6sjtuf2g2ki
       '@oclif/plugin-not-found': 2.3.36_wwpsflofdsa3l3b6sjtuf2g2ki
       '@oclif/plugin-plugins': 2.4.7_wwpsflofdsa3l3b6sjtuf2g2ki
+      ts-node: 10.9.1_wwpsflofdsa3l3b6sjtuf2g2ki
+      typescript: 5.0.2
     devDependencies:
       '@business-as-code/plugin-dev-changesets': link:../plugin-dev-changesets
       '@business-as-code/plugin-dev-essentials': link:../plugin-dev-essentials
       '@business-as-code/plugin-dev-tests': link:../tests/plugin-dev-tests
       '@types/node': 18.14.2
-      typescript: 5.0.2
 
   packages/pkg-core:
     specifiers:
@@ -330,7 +332,7 @@ importers:
       '@business-as-code/core': workspace:*
       '@business-as-code/error': workspace:*
       '@business-as-code/fslib': workspace:*
-      '@business-as-code/tests-git-server': workspace:^0.0.0
+      '@business-as-code/tests-git-server': workspace:0.0.0-bollards-20230829105338
       '@oclif/core': 2.6.4
       '@oclif/test': ^2.3.9
       '@types/node': 18.14.2

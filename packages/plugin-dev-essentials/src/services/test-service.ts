@@ -71,6 +71,9 @@ export class TestService {
       proms.push(
         packageManagerService.run({
           command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
+          options: {
+            stdio: 'inherit',
+          },
         })
       );
       // if (!assertIsOk(res1)) return res1
@@ -90,6 +93,9 @@ export class TestService {
       proms.push(
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
+          options: {
+            stdio: 'inherit',
+          },
         })
       );
     }
@@ -108,6 +114,9 @@ export class TestService {
       proms.push(
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
+          options: {
+            stdio: 'inherit',
+          },
         })
       );
     }
@@ -126,6 +135,9 @@ export class TestService {
       proms.push(
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:startBackground`,
+          options: {
+            stdio: 'inherit',
+          },
         })
       );
     }
@@ -144,6 +156,9 @@ export class TestService {
       proms.push(
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
+          options: {
+            stdio: 'inherit',
+          },
         })
       );
     }
@@ -165,7 +180,7 @@ export class TestService {
       new Promise((resolve, reject) =>
         setTimeout(() => {
           this.ensureDaemons().then(resolve).catch(reject);
-        }, 10000)
+        }, 7000)
       )
     );
 
@@ -366,6 +381,7 @@ export class TestService {
     cliSource,
     watch = false,
     skipEarlier = false,
+    skipPublish = false,
   }: {
     /** actual test file name match */
     testFileMatch?: string;
@@ -375,21 +391,27 @@ export class TestService {
     cliSource: "cliRegistry" | "cliLinked";
     watch?: boolean;
     skipEarlier?: boolean;
+    skipPublish?: boolean;
   }): Promise<Result<{}, { error: BacError }>> {
     const { context } = this.options;
 
     try {
       await this.ensureDaemons();
-      if (cliSource === "cliRegistry") {
-        await this.buildAndPublishSnapshot();
-      }
     } catch (err) {
+      console.log(`err :>> `, err)
       return {
         success: false as const,
         res: {
           error: err as BacError,
         },
       };
+    }
+
+    if (cliSource === "cliRegistry" && !skipPublish) {
+      const publishRes = await this.buildAndPublishSnapshot();
+      if (!assertIsOk(publishRes)) {
+        return publishRes
+      }
     }
 
     const packageManagerService = await context.serviceFactory(
@@ -406,13 +428,14 @@ export class TestService {
 
       // console.log(`stageNumberCurrent, stageNumberIntended :>> `, stageNumberCurrent, stageNumberIntended, stage, aStage, stage.at(-1), aStage.at(-1))
 
-      if (skipEarlier && (stageNumberIntended <= stageNumberCurrent)) {
+      if (skipEarlier && (stageNumberIntended < stageNumberCurrent)) {
         context.logger.info(
           `SKIPPING ${aStage.toUpperCase()} TESTS (due to --skipEarlier) - ${cliSource}`
         );
         return
       }
-      await cb()
+
+      return await cb()
     }
 
     await runIf(async () => {

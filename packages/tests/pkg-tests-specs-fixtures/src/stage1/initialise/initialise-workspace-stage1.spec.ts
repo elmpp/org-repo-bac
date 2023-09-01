@@ -38,6 +38,8 @@ describe("initialise workspace", () => {
             `${testContext.testEnvVars.workspacePath.original}`,
             "--cliRegistry",
             "http://localhost:4873",
+            "--cliVersion",
+            "bollards",
           ],
           { logLevel: "debug" }
         );
@@ -111,6 +113,8 @@ describe("initialise workspace", () => {
             "packages/pkg-core/src/etc/config/git-minimal-http.js",
             "--cliRegistry",
             "http://localhost:4873",
+            "--cliVersion",
+            "bollards",
           ],
           { logLevel: "debug" }
         );

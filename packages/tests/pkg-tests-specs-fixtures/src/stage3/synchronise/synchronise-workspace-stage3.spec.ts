@@ -2,17 +2,16 @@ import { addr } from "@business-as-code/address";
 import { constants, expectIsOk } from "@business-as-code/core";
 import { Filename, xfs } from "@business-as-code/fslib";
 import {
-  createPersistentTestEnv,
   TestContext,
+  createPersistentTestEnv,
 } from "@business-as-code/tests-core";
 
 describe("synchronise workspace", () => {
   jest.setTimeout(25000);
 
   async function setup(testContext: TestContext, configFilename: Filename) {
-
     const resCopy = await testContext.copy(
-      'initialise:workspace default skeleton config',
+      "initialise:workspace default skeleton config",
       testContext.testEnvVars.workspacePath
     );
 
@@ -23,6 +22,7 @@ describe("synchronise workspace", () => {
         addr.parsePath(__dirname),
         addr.parsePath(`../../etc/config/${configFilename}`)
       );
+      // const gitHttpRepoUrl = addr.pathUtils.join(fsUtils.tmpResolvableFolder, addr.parsePath(`config/${configFilename}`))
       console.log(
         `gitHttpRepoUrl.address, addr.parsePath(expectConfig.destinationPath).address :>> `,
         gitHttpRepoUrl.address,
@@ -45,12 +45,11 @@ describe("synchronise workspace", () => {
   }
 
   it.only("updating the config will trigger the configure lifecycle and update projects", async () => {
-
-
-
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
-      testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.workspacePath)
+      testContext.setActiveWorkspacePaths({
+        workspace: testContext.testEnvVars.workspacePath,
+    });
 
       await setup(testContext, "git-http-default-master.js" as Filename);
 

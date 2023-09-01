@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/tests-core",
-  "version": "0.0.0-bollards-20230812095812",
+  "version": "0.0.0-latest-20230829112232",
   "description": "Tool package @business-as-code/tests-core",
   "main": "src/index.ts",
   "files": [
@@ -22,7 +22,7 @@
     "rxjs": "6.6.7"
   },
   "devDependencies": {
-    "@business-as-code/tests-git-server": "workspace:^0.0.0",
+    "@business-as-code/tests-git-server": "workspace:0.0.0-latest-20230829112232",
     "@oclif/core": "2.6.4",
     "@oclif/test": "^2.3.9",
     "@types/node": "18.14.2",

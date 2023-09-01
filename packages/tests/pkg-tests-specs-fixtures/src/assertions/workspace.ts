@@ -1,8 +1,7 @@
 import { addr } from "@business-as-code/address";
-import { UnwrapPromise, expectIsOk } from "@business-as-code/core";
+import { UnwrapPromise } from "@business-as-code/core";
 import { xfs } from "@business-as-code/fslib";
 import { TestContext } from "@business-as-code/tests-core";
-
 
 export async function config(
   testContext: TestContext,
@@ -26,14 +25,12 @@ export async function config(
   });
 
   await expectConfig.isValid();
-  expectConfig.expectText.equals(
-    xfs.readFileSync(configPath.address, "utf8")
-  );
+  expectConfig.expectText.equals(xfs.readFileSync(configPath.address, "utf8"));
 }
 
 export async function commonFiles(
   testContext: TestContext,
-  res: UnwrapPromise<ReturnType<TestContext["command"]>>,
+  res: UnwrapPromise<ReturnType<TestContext["command"]>>
 ) {
   const expectFs = res.res.expectUtil.createFs();
   const expectConfig = res.res.expectUtil.createConfig();
@@ -51,4 +48,3 @@ export async function commonFiles(
     })
     .lineContainsString({ match: `"private": true`, occurrences: 1 });
 }
-

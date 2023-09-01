@@ -1,7 +1,7 @@
 import {
   AddressDescriptorUnion,
   AddressPathAbsolute,
-  AddressPathCache,
+  AddressOtherCache,
 } from "@business-as-code/address";
 import { ServiceMap } from "./services";
 
@@ -10,7 +10,7 @@ export type FetchOptions = {
   /** where content is coming from */
   sourceAddress: AddressDescriptorUnion;
   // /** optionally specify the location in the cache */
-  cacheAddress?: AddressPathCache;
+  cacheAddress?: AddressOtherCache;
   /** where content will be going. To specify a cache address, use a AddressPathCache */
   destinationAddress: AddressDescriptorUnion;
   cacheService: ServiceMap["cache"][0];

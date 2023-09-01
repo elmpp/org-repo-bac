@@ -1,12 +1,15 @@
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 import { expectTypeOf } from "expect-type";
-import { Context, LifecycleSingularReturnByMethod, Result } from "../../__types__";
+import {
+  Context,
+  LifecycleSingularReturnByMethod,
+  Result,
+} from "../../__types__";
 import { AsyncHook } from "../index";
 import { InferAsyncHookOptions, InferAsyncHookReturn } from "../__types__";
 
 describe("Hook", () => {
-
   describe.only("callLifecycleBailAsync", () => {
     it("returns tapped return", async () => {
       const hook = new AsyncHook<
@@ -32,7 +35,7 @@ describe("Hook", () => {
         //   provider: "moon",
         //   res: "blah",
         // };
-        return "blah"
+        return "blah";
       });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
@@ -45,27 +48,30 @@ describe("Hook", () => {
 
       const res = await hook.callBailAsync({
         options: [
-        {
-          provider: "moon",
-          options: {
-            context: { logger: { debug: jest.fn() } } as unknown as Context,
-            // workingPath: ".",
-            workspacePath: addr.parsePath(".") as AddressPathAbsolute,
+          {
+            provider: "moon",
             options: {
-              command: "my command",
-              platform: "node",
-
+              context: { logger: { debug: jest.fn() } } as unknown as Context,
+              // workingPath: ".",
+              workspacePath: addr.parsePath(".") as AddressPathAbsolute,
+              options: {
+                command: "my command",
+                platform: "node",
+              },
             },
           },
-        },
-      ]});
+        ],
+      });
 
+      expectTypeOf(res).toMatchTypeOf<{ success: boolean; res: unknown }>(); // hooks return Results
       expect(res).toEqual({
         provider: "moon",
         res: "blah",
       });
+      type RunWorkspaceReturnTypeSing =
+        LifecycleSingularReturnByMethod<"runWorkspace">;
       expectTypeOf(res).toEqualTypeOf<
-        LifecycleSingularReturnByMethod<"runWorkspace">
+        Result<RunWorkspaceReturnTypeSing, { error: BacError }>
       >();
     });
     it("throws when options do not match tap providers", async () => {
@@ -88,7 +94,7 @@ describe("Hook", () => {
       >(["options"], "runWorkspace", "beforeRunWorkspace");
 
       hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
-        return "blah"
+        return "blah";
       });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
@@ -100,21 +106,24 @@ describe("Hook", () => {
       // expect(hook.taps[hook.taps.length - 1].name).toBe("test5");
 
       await expect(
-        hook.callBailAsync({options: [
-          {
-            // @ts-expect-error:
-            provider: "notMoon",
-            options: {
-              context: { logger: { debug: jest.fn() } } as unknown as Context,
-              // workingPath: ".",
-              workspacePath: addr.parsePath(".") as AddressPathAbsolute,
+        hook.callBailAsync({
+          options: [
+            {
+              // @ts-expect-error:
+              provider: "notMoon",
               options: {
-                command: "my command",
-                platform: "node",
+                context: { logger: { debug: jest.fn() } } as unknown as Context,
+                // workingPath: ".",
+                workspacePath: addr.parsePath(".") as AddressPathAbsolute,
+                options: {
+                  command: "my command",
+                  platform: "node",
+                },
               },
             },
-          },
-        ], strict: true})
+          ],
+          strict: true,
+        })
       ).rejects.toThrowError();
     });
     it("can be inferred", async () => {
@@ -123,7 +132,7 @@ describe("Hook", () => {
         // workspacePath: AddressPathAbsolute;
         // workingPath: string;
         // options: {
-          a: 'a'
+        a: "a";
         // };
       };
       type Return = Result<
@@ -157,14 +166,12 @@ describe("AsyncHook", () => {
   //     `async hello(hi, there)`
   //   );
   // });
-
   // it("tap", () => {
   //   const hook = new AsyncHook(["meep"], "hi");
   //   const fn = jest.fn();
   //   hook.tap("test", fn);
   //   expect(fn).not.toHaveBeenCalled();
   // });
-
   // it("tapAsync", () => {
   //   const hook = new AsyncHook(["meep"], "hi");
   //   const fn = jest.fn();

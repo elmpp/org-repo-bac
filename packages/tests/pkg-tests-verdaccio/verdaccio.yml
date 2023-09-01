@@ -24,6 +24,7 @@ auth:
 uplinks:
   npmjs:
     url: https://registry.npmjs.org/
+    maxage: 30d
   # verdacciobk:
   #   url: http://localhost:8000/
   #   auth:
@@ -45,11 +46,11 @@ packages:
   #   publish: $authenticated
   #   unpublish: $authenticated
   #   proxy: verdacciobk
-  # "**":
-  #   access: $all
-  #   publish: $authenticated
-  #   unpublish: $authenticated
-  #   proxy: npmjs
+  "**":
+    access: $all
+    publish: $authenticated
+    unpublish: $authenticated
+    proxy: npmjs
 
 # rate limit configuration
 rateLimit:

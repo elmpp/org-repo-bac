@@ -17,7 +17,6 @@ import {
   expectIsOk,
   constants,
   formatUtils,
-  LifecycleOptionsByMethodKeyedByProviderWithoutCommon,
   LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
   ok,
 } from "@business-as-code/core";
@@ -126,6 +125,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       //         strict: true,
       //       })
 
+      // console.log(`process.cwd() :>> `, process.cwd())
+
       if (assertIsAddressPathRelative(configPath)) {
         configPath = addr.pathUtils.resolve(
           addr.parsePath(process.cwd()),
@@ -141,7 +142,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           }' does not exist, supplied as '${require("util").inspect(
             runtimeConfigRelOrAbsoluteNative,
             { showHidden: false, depth: undefined, colors: true }
-          )}`
+          )}'`
         );
       }
       return configPath;
