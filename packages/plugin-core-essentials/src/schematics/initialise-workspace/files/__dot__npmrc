@@ -1,4 +1,5 @@
 <% if (cliRegistry) { %>
 @business-as-code:registry=<%= cliRegistry %>
 registry=<%= cliRegistry %>
+fetch-retries=0
 <% } %>

@@ -1,5 +1,49 @@
 # git-http-mock-server
 
+## 0.0.0-latest-20230902060501
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230902060501
+
+## 0.0.0-latest-20230902060429
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230902060429
+
+## 0.0.0-latest-20230902060343
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230902060343
+
+## 0.0.0-latest-20230902060234
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230902060234
+
+## 0.0.0-latest-20230902055955
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230902055955
+
+## 0.0.0-bollards-20230902055819
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [0d3b6f8]
+  - @business-as-code/core@0.0.0-bollards-20230902055819
+
 ## 0.0.0-bollards-20230901073049
 
 ### Patch Changes

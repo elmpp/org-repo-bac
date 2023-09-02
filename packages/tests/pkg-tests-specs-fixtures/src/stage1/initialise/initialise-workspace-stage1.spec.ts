@@ -45,7 +45,7 @@ describe("initialise workspace", () => {
         );
 
         expectIsOk(res);
-        console.log(`res :>> `, res)
+
         await assertions.workspace.commonFiles(testContext, res);
         await assertions.workspace.config(testContext, res, "skeleton.js");
 

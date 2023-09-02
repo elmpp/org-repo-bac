@@ -6,7 +6,6 @@ import {
   TaskId,
   template, url
 } from "@angular-devkit/schematics";
-import { NodePackageInstallTask } from "@angular-devkit/schematics/tasks";
 import { constants, expectIsOk, formatUtils, schematicUtils } from "@business-as-code/core";
 import { Schema } from "./schema";
 
@@ -75,7 +74,8 @@ export default function (options: Schema): Rule {
           serviceName: "packageManager",
           cb: async ({ service }) => {
             // console.log(`optionseeeee :>> `, require('util').inspect(options, {showHidden: false, depth: undefined, colors: true}))
-            await service.install({logLevel: 'debug'})
+            const res = await service.install({logLevel: 'debug'})
+            expectIsOk(res)
           },
           initialiseOptions: {
             workingPath: '.',

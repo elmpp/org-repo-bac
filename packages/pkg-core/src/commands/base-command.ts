@@ -771,7 +771,7 @@ export abstract class BaseCommand<
 
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
 
-    console.log(`parseOutput :>> `, require('util').inspect(parseOutput, {showHidden: false, depth: undefined, colors: true}))
+    // console.log(`parseOutput :>> `, require('util').inspect(parseOutput, {showHidden: false, depth: undefined, colors: true}))
 
     // @ts-ignore
     const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);

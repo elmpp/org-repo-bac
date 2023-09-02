@@ -1,5 +1,86 @@
 # @business-as-code/plugin-core-git
 
+## 0.0.0-latest-20230902060501
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230902060501
+  - @business-as-code/core@0.0.0-latest-20230902060501
+  - @business-as-code/error@0.0.0-latest-20230902060501
+  - @business-as-code/fslib@0.0.0-latest-20230902060501
+
+## 0.0.0-latest-20230902060429
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230902060429
+  - @business-as-code/core@0.0.0-latest-20230902060429
+  - @business-as-code/error@0.0.0-latest-20230902060429
+  - @business-as-code/fslib@0.0.0-latest-20230902060429
+
+## 0.0.0-latest-20230902060343
+
+### Patch Changes
+
+- Making a release
+- Making a release
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230902060343
+  - @business-as-code/core@0.0.0-latest-20230902060343
+  - @business-as-code/error@0.0.0-latest-20230902060343
+  - @business-as-code/fslib@0.0.0-latest-20230902060343
+
+## 0.0.0-latest-20230902060311
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230902060311
+  - @business-as-code/core@0.0.0-latest-20230902060311
+  - @business-as-code/error@0.0.0-latest-20230902060311
+  - @business-as-code/fslib@0.0.0-latest-20230902060311
+
+## 0.0.0-latest-20230902060234
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230902060234
+  - @business-as-code/core@0.0.0-latest-20230902060234
+  - @business-as-code/error@0.0.0-latest-20230902060234
+  - @business-as-code/fslib@0.0.0-latest-20230902060234
+
+## 0.0.0-latest-20230902055955
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20230902055955
+  - @business-as-code/core@0.0.0-latest-20230902055955
+  - @business-as-code/error@0.0.0-latest-20230902055955
+  - @business-as-code/fslib@0.0.0-latest-20230902055955
+
+## 0.0.0-bollards-20230902055819
+
+### Patch Changes
+
+- this is a snapshot release
+- 0d3b6f8: Making a release
+- Updated dependencies
+- Updated dependencies [0d3b6f8]
+  - @business-as-code/address@0.0.0-bollards-20230902055819
+  - @business-as-code/core@0.0.0-bollards-20230902055819
+  - @business-as-code/error@0.0.0-bollards-20230902055819
+  - @business-as-code/fslib@0.0.0-bollards-20230902055819
+
 ## 0.0.0-bollards-20230901073049
 
 ### Patch Changes

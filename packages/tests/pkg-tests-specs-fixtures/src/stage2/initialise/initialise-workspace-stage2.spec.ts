@@ -151,7 +151,7 @@ describe("initialise workspace", () => {
   });
 
   describe('errors', () => {
-    it.only('initialise:workspace git-http unreachable config fails and prevents configure', async () => {
+    it('initialise:workspace git-http unreachable config fails and prevents configure', async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(

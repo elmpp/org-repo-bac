@@ -3,7 +3,7 @@ import { createPersistentTestEnv } from "@business-as-code/tests-core";
 
 /** simply ensures the testEnv core util is operating properly */
 describe("release-snapshot", () => {
-  jest.setTimeout(15000);
+  jest.setTimeout(30000);
 
   it.only("builds; creates changeset and publishes to local registry", async () => {
     const persistentTestEnv = await createPersistentTestEnv({

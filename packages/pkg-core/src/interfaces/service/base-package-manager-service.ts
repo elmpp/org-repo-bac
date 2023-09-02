@@ -53,7 +53,7 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
     //   projectCwd: addr.parsePath(__filename) as AddressPathAbsolute,
     //   strict: true,
     // })
-console.log(`this.options. :>> `, this.options.context.cliOptions.flags.logLevel)
+
     return this.run({
       command: `install`,
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,

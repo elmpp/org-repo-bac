@@ -66,10 +66,6 @@ function factory (config) {
     return null
   }
 
-  console.log(`git-server booting up: `, {
-    config,
-  })
-
   return async function middleware (req, res, next) {
     try {
       // handle pre-flight OPTIONS

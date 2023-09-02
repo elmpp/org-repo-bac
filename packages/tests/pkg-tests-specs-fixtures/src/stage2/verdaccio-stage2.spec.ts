@@ -27,11 +27,11 @@ describe("verdaccio", () => {
       });
       const expectFs = expectUtil.createFs();
 
-      console.log(`verdaccioStoragePath :>> `, verdaccioStoragePath);
-      console.log(`expectFs.di :>> `, expectFs.getDir(".").subdirs);
+      // console.log(`verdaccioStoragePath :>> `, verdaccioStoragePath);
+      // console.log(`expectFs.di :>> `, expectFs.getDir(".").subdirs);
 
       expect(expectFs.getDir(".").subdirs).toEqual(
-        expect.objectContaining([
+        expect.arrayContaining([
           "@business-as-code", // is created when we publish snapshots anyway
           "@moonrepo", // verdaccio caching of uplink packages - https://tinyurl.com/29f7dvfw. Perhaps you need to do a `pnpm install --force` to flush through verdaccio
         ])
