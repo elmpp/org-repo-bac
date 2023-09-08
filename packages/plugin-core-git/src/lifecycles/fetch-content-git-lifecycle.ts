@@ -14,6 +14,7 @@ import {
   FetchResult,
   Result,
   assertIsOk,
+  constants,
   expectIsOk,
   ok,
 } from "@business-as-code/core";
@@ -67,6 +68,8 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         options: { sourceAddress, cacheService, cacheOptions = {} },
       } = options;
 
+      // console.log(`options :>> `, options)
+
       if (!assertIsAddressGit(sourceAddress)) {
         return;
       }
@@ -80,9 +83,8 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         });
       }
 
-      const fetchRes = await cacheService.fetchFromCache({
-        address: "" as unknown as AddressOtherCache,
-        key: applicableAddress.addressNormalized,
+      const fetchRes = await cacheService.getWithFetch({
+        address: applicableAddress,
         // namespace,
         cacheOptions,
         // expectedChecksum: "",
@@ -102,110 +104,75 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
           options.context.logger.debug(
             `Cache hit. Address: '${applicableAddress.addressNormalized}'`
           ),
-        onMiss: () =>
-          options.context.logger.debug(
-            `Cache miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
-          ),
-        onChecksumFail: ({ existentChecksum }) =>
-          options.context.logger.debug(
-            `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${
-              applicableAddress.addressNormalized
-            }'. Will be updated from source`
-          ),
+        // onMiss: async () =>
+        //   options.context.logger.debug(
+        //     `Cache miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
+        //   ),
+        onStale: async ({ contentPath, existentChecksum }) =>
+          {
+            options.context.logger.debug(
+              `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${applicableAddress.addressNormalized}'. Will be updated from source`
+            );
+            await this.updateFromNetwork({
+              ...options,
+              options: {
+                ...options.options,
+                address: applicableAddress,
+                cacheService,
+              },
+              destinationPath: contentPath,
+              existentChecksum,
+            });
+          },
         // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
-        loader: async ({ existentChecksum, contentPath }) => {
-          return await this.fetchFromNetwork({
+        onMiss: async ({ contentPath }) => {
+          options.context.logger.debug(
+            `Cache Miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
+          );
+          await this.cloneFromNetwork({
             ...options,
             options: {
               ...options.options,
               address: applicableAddress,
               cacheService,
             },
-            contentPath,
-            existentChecksum,
+            destinationPath: contentPath,
           });
         },
       });
 
-      console.log(`cacheEntryRes :>> `, fetchRes);
+      // console.log(`fetchRes :>> `, require('util').inspect(fetchRes, {showHidden: false, depth: undefined, colors: true}))
 
-      expectIsOk(fetchRes);
-      return ok({
-        checksum: fetchRes.res.checksum,
-        path: fetchRes.res.entry.content.main,
-      });
-
-      // const [packageFs, releaseFs, checksum] = await cacheService.fetchFromCache(locator, expectedChecksum, {
-      //   onHit: () => options.report.reportCacheHit(locator),
-      //   onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
-      //   loader: () => this.fetchFromNetwork(options),
-      //   ...options.cacheOptions,
-      // });
-
-      // return {
-      //   packageFs,
-      //   releaseFs,
-      //   prefixPath: structUtils.getIdentVendorPath(locator),
-      //   checksum,
-      // };
-
-      // if (!assertIsOk(res)) {
-      //   switch (res.res.error.reportCode) {
-      //     case MessageName.SCHEMATICS_ERROR:
-      //       context.logger.error(res.res.error.message);
-      //       break;
-      //     case MessageName.SCHEMATICS_INVALID_ADDRESS:
-      //       context.logger.error(res.res.error.message);
-      //       break;
-      //     case MessageName.SCHEMATICS_NOT_FOUND:
-      //       context.logger.error(res.res.error.message);
-      //       break;
-      //   }
-      // }
-
-      // return res;
+      // expectIsOk(fetchRes);
+      return fetchRes;
     };
   }
 
-  protected async createChecksum(options: {
+  protected async cloneFromNetwork(options: {
     context: Context;
     workspacePath: AddressPathAbsolute;
     // workingPath: string;
     options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
     // where to add the content
-    contentPath: AddressPathAbsolute;
-    // existent checksum if content found (but failed checksum)
-    existentChecksum?: CacheKey;
-  }) {
-    return {} as CacheKey;
-  }
-
-  protected async fetchFromNetwork(options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
-    // workingPath: string;
-    options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
-    // where to add the content
-    contentPath: AddressPathAbsolute;
-    // existent checksum if content found (but failed checksum)
-    existentChecksum?: CacheKey;
-  }): Promise<Result<CacheSourceEntry, { error: BacError }>> {
+    destinationPath: AddressPathAbsolute;
+  }): Promise<void> {
     const {
-      contentPath,
+      destinationPath,
       context,
-      existentChecksum,
       options: { address },
     } = options;
 
     const gitService = await context.serviceFactory("git", {
       context,
-      workspacePath: contentPath,
-      workingPath: "",
+      workspacePath: destinationPath,
+      workingPath: ".",
     });
 
-    async function updateFromSource() {}
-
     async function cloneFromSource() {
+      context.logger.debug(
+        `fetchContentGitLifecycle: adding new cache entry from source. Source: '${address.addressNormalized}', destination: '${destinationPath.addressNormalized}'`
+      );
+
       const cloneOpts: Parameters<typeof gitService.clone>[1] = {
         // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
       };
@@ -214,63 +181,80 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         cloneOpts
       );
 
-      if (!assertIsOk(cloneRes)) {
-        return fail(cloneRes.res);
-      }
-      return ok({
-        content: cloneRes.res,
-        meta: {
-          destinationPath: "",
-        },
-      });
+      expectIsOk(cloneRes)
     }
 
-    if (existentChecksum) {
-      await updateFromSource();
-    } else {
-      await cloneFromSource();
-    }
+    await cloneFromSource();
+  }
 
-    return ok({
-      outputs: {
-        stdout: "",
-        stderr: "",
-      },
-      content: contentPath, // the cache manager should be smart enough to know this is already a destination location
+  protected async updateFromNetwork(options: {
+    context: Context;
+    workspacePath: AddressPathAbsolute;
+    // workingPath: string;
+    options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
+    // where to add the content
+    destinationPath: AddressPathAbsolute;
+    existentChecksum: CacheKey;
+  }): Promise<undefined> {
+    const {
+      destinationPath,
+      context,
+      existentChecksum,
+      options: { address },
+    } = options;
+
+    const gitService = await context.serviceFactory("git", {
+      context,
+      workspacePath: destinationPath,
+      workingPath: ".",
     });
 
-    // const sourceBuffer = await httpUtils.get(
-    //   this.getLocatorUrl(locator, opts),
-    //   {
-    //     configuration: opts.project.configuration,
-    //   }
-    // );
+    async function updateFromSource() {
+      context.logger.debug(
+        `fetchContentGitLifecycle: updating existent cache entry from source. Source: '${address.addressNormalized}', destination: '${destinationPath.addressNormalized}', existent checksum: '${existentChecksum}'`
+      );
 
-    // return await xfs.mktempPromise(async (extractPath) => {
-    //   const extractTarget = new CwdFS(extractPath);
+      const cloneOpts: Parameters<typeof gitService.clone>[1] = {
+        // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
+      };
+      const cloneRes = await gitService.pull(
+        address.addressNormalized,
+        cloneOpts
+      );
 
-    //   await tgzUtils.extractArchiveTo(sourceBuffer, extractTarget, {
-    //     stripComponents: 1,
-    //   });
+      expectIsOk(cloneRes)
+    }
 
-    //   const repoUrlParts = gitUtils.splitRepoUrl(locator.reference);
-    //   const packagePath = ppath.join(extractPath, `package.tgz`);
+    await updateFromSource();
+  }
 
-    //   await scriptUtils.prepareExternalProject(extractPath, packagePath, {
-    //     configuration: opts.project.configuration,
-    //     report: opts.report,
-    //     workspace: repoUrlParts.extra.workspace,
-    //     locator,
-    //   });
+  protected async createChecksum({existentChecksum, context, workspacePath, contentPath}: {
+    context: Context;
+    workspacePath: AddressPathAbsolute;
+    // workingPath: string;
+    options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
+    // where to find the content
+    contentPath: AddressPathAbsolute;
+    // existent checksum if content found (but failed checksum)
+    existentChecksum?: CacheKey;
+  }): Promise<CacheKey> {
+    // let's always just return a git HEAD SHA
+    const gitService = await context.serviceFactory("git", {
+      context,
+      workspacePath: contentPath,
+      workingPath: ".",
+    });
 
-    //   const packedBuffer = await xfs.readFilePromise(packagePath);
+    const res = await gitService.revParse('HEAD')
+    expectIsOk(res)
+    return {
+      globalVersion: constants.GLOBAL_CACHE_KEY,
+      key: res.res,
+    }
 
-    //   return await tgzUtils.convertToZip(packedBuffer, {
-    //     compressionLevel: opts.project.configuration.get(`compressionLevel`),
-    //     prefixPath: structUtils.getIdentVendorPath(locator),
-    //     stripComponents: 1,
-    //   });
-    // });
+    // if (existentChecksum) {
+
+    // }
   }
 }
 

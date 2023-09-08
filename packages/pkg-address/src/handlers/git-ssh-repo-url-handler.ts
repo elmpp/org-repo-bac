@@ -33,7 +33,7 @@ declare module '../__types__' {
 // const REGEX = /https?:\/\/.*github.com\/([^/]+)\/(.*)\.git(?:#([^#]+))?$/
 // console.log(`${URL_REGEX}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`)
 
-const URL_REGEX = /(ssh):\/\/([^@]+)@((?:(?:[-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})|(?:localhost))(?:\:([0-9]+))?([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
+const URL_REGEX = /(ssh):\/\/(?:([^@]+)@)?((?:(?:[-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})|(?:localhost))(?:\:([0-9]+))?([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
 const REGEX = new RegExp(`${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`)
 // const GITHUB_REPO_NORMALIZED_REGEX = /.*github.com\/([^/]+)\/(.*)\.git[#?]?.*/
 

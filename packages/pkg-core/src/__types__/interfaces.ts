@@ -4,6 +4,7 @@ import {
   AddressOtherCache,
 } from "@business-as-code/address";
 import { ServiceMap } from "./services";
+import { CacheKey } from "../services/cache-service";
 
 /** constrain the options of the fetch lifecycle implementations - Yarn2 - https://github.com/yarnpkg/berry/blob/985bed20234cd03ce7565da1d2558036e9507d1b/packages/yarnpkg-core/sources/Fetcher.ts#L13*/
 export type FetchOptions = {
@@ -21,17 +22,17 @@ export type FetchOptions = {
 export type FetchResult = {
   // packageFs: FakeFS<PortablePath>;
 
-  /**
-   * If set, this function will be called once the fetch result isn't needed
-   * anymore. Typically used to release the ZipFS memory.
-   */
-  releaseFs?: () => void;
+  // /**
+  //  * If set, this function will be called once the fetch result isn't needed
+  //  * anymore. Typically used to release the ZipFS memory.
+  //  */
+  // releaseFs?: () => void;
 
   /**
    * The path where the package can be found within the `packageFs`. This is
    * typically the `node_modules/<scope>/<name>` path.
    */
-  path: AddressPathAbsolute;
+  contentPath: AddressPathAbsolute;
 
   // /**
   //  * The "true" place where we can find the sources. We use that in order to
@@ -42,7 +43,7 @@ export type FetchResult = {
   /**
    * The checksum for the fetch result.
    */
-  checksum?: string;
+  checksum: CacheKey;
 
   // /** Serves as a default  */
   // canonicalChecksum?: string;

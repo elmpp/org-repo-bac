@@ -7,7 +7,7 @@ const config = {
   projectSource: [{
     provider: 'git',
     options: {
-      address: 'ssh://localhost:2224/repo1.git',
+      address: 'ssh://git-ssh-mock-server@localhost:2222/repo1.git',
     },
   }],
 }

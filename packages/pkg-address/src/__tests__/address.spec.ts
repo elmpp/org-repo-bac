@@ -933,6 +933,72 @@ describe("url", () => {
     );
   });
 
+  it("gitSshRepoUrl (anonymous) - ssh://localhost:2222/bare-repo1.git#commit=21c39617a9", () => {
+    runEntry(
+      buildEntry<"gitSshRepoUrl">({
+        original:
+          "ssh://localhost:2222/bare-repo1.git#commit=21c39617a9",
+        originalNormalized:
+          "ssh://localhost:2222/bare-repo1.git#commit=21c39617a9",
+        address:
+          "ssh://localhost:2222/bare-repo1.git#commit=21c39617a9",
+        addressNormalized:
+          "ssh://localhost:2222/bare-repo1.git#commit=21c39617a9",
+        group: "url",
+        type: "gitSshRepoUrl",
+        parts: {
+          scheme: "ssh",
+          host: "localhost",
+          user: undefined,
+          port: 2222,
+          repo: "bare-repo1.git",
+          url: new URL(
+            "ssh://localhost:2222/bare-repo1.git#commit=21c39617a9"
+          ),
+          params: new URLSearchParams({
+            commit: "21c39617a9",
+          }),
+          paramsSorted: new URLSearchParams({
+            commit: "21c39617a9",
+          }),
+        },
+        arch: "darwin",
+      })
+    );
+  });
+
+  it("gitSshRepoUrl (anonymous) - ssh://localhost:2222/bare-repo1.git", () => {
+    runEntry(
+      buildEntry<"gitSshRepoUrl">({
+        original:
+          "ssh://localhost:2222/bare-repo1.git",
+        originalNormalized:
+          "ssh://localhost:2222/bare-repo1.git",
+        address:
+          "ssh://localhost:2222/bare-repo1.git",
+        addressNormalized:
+          "ssh://localhost:2222/bare-repo1.git",
+        group: "url",
+        type: "gitSshRepoUrl",
+        parts: {
+          scheme: "ssh",
+          host: "localhost",
+          user: undefined,
+          port: 2222,
+          repo: "bare-repo1.git",
+          url: new URL(
+            "ssh://localhost:2222/bare-repo1.git"
+          ),
+          params: new URLSearchParams({
+          }),
+          paramsSorted: new URLSearchParams({
+          }),
+        },
+        arch: "darwin",
+      })
+    );
+  });
+
   it("gitSshRepoUrl - ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git#commit=21c39617a9", () => {
     runEntry(
       buildEntry<"gitSshRepoUrl">({

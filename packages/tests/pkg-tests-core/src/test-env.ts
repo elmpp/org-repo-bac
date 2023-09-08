@@ -8,6 +8,7 @@ import {
   BaseCommand,
   consoleUtils,
   constants,
+  ContextCommand,
   LogLevel,
   Outputs,
   Result,
@@ -16,6 +17,7 @@ import {
   ServiceMap,
   ServiceStaticMap,
   XfsCacheManager,
+  fsUtils,
 } from "@business-as-code/core";
 import {
   ArgsInfer,
@@ -35,8 +37,8 @@ import { SchematicsRunCommand } from "./schematics/schematics-run-command";
 import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,
-  sanitise,
 } from "./test-utils";
+import { ContextTestCommand } from "./commands/context-test-command";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -208,57 +210,15 @@ export type TestContext = {
   /**
    Allows a service task to be run directly
    */
-  runServiceCb: <SName extends keyof ServiceMap>(
-    options: {
-      serviceOptions: ServiceOptionsTestLite<SName>;
-      /** optional Source path for the Rule. Defaults to an empty() Source */
-      originPath?: AddressPathAbsolute;
-      /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
-      tree?: Tree;
-    }
-    // options: {
-    //   cb: (options: {
-    //     service: Services[SName];
-    //     serviceName: SName;
-    //   }) => Promise<void>;
-    //   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
-    //   serviceName: SName;
-    //   /**  */
-    //   // initialiseOptions: Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions> extends never ? Record<never, never> | undefined : Exclude<Parameters<ServicesStatic[SName]['initialise']>[0], ServiceInitialiseOptions>
-    //   initialiseOptions: (IsEmptyObject<
-    //     Omit<
-    //       Parameters<ServicesStatic[SName]["initialise"]>[0],
-    //       keyof ServiceInitialiseOptions
-    //     >
-    //   > extends true
-    //     ? Record<never, any>
-    //     : Omit<
-    //         Parameters<ServicesStatic[SName]["initialise"]>[0],
-    //         keyof ServiceInitialiseOptions
-    //       >) & {workingPath?: string};
-    //   // serviceName: SName
-    //   // cb: Parameters<typeof wrapServiceAsRule<SName>>[0];
-    //   // /** optional Source path for the Rule. Defaults to an empty() Source */
-    //   originPath?: AddressPathAbsolute;
-    //   /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
-    //   tree?: Tree;
-    //   // parseOutput: ParserOutput<
-    //   //   FlagsInfer<typeof SchematicsRunCommand>,
-    //   //   FlagsInfer<typeof SchematicsRunCommand>,
-    //   //   ArgsInfer<typeof SchematicsRunCommand>
-    //   // >,
-    //   // schematicAddress: string,
-    //   // workspacePath: string,
-    // } & {}
-  ) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, never>>;
-  // runSchematic: (options: {
-  //   args: any[];
-  //   flags: any[];
-  //   schematicAddress: string,
-  //   workspacePath: string,
-  //   logLevel?: LogLevel,
-  //   // destinationPath
-  // }) => Promise<Result<{ exitCode: number; tree: Tree }, { exitCode: number }>>;
+  runServiceCb: <SName extends keyof ServiceMap>(options: {
+    serviceOptions: ServiceOptionsTestLite<SName>;
+    /** optional Source path for the Rule. Defaults to an empty() Source */
+    originPath?: AddressPathAbsolute;
+    /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
+    tree?: Tree;
+  }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, never>>;
+  context: ContextCommand<typeof ContextTestCommand>;
+  createExpectUtil: (options: {workspacePath: AddressPathAbsolute, outputs?: Outputs}) => Promise<ExpectUtil>;
 };
 
 /**
@@ -280,13 +240,21 @@ export type RunFunction = (context: TestContext) => Promise<void>;
 
 const basePaths = {
   /** single test that smoke tests the test setup */
-  stage0: addr.parsePath(`${constants.TMP_ROOT}/stage0`) as AddressPathAbsolute,
+  stage0: addr.parsePath(
+    `${constants.TESTS_STORAGE_PATH}/stage0`
+  ) as AddressPathAbsolute,
   /** heavy scaffolding that will be made available to successive stages via testContext.copy() */
-  stage1: addr.parsePath(`${constants.TMP_ROOT}/stage1`) as AddressPathAbsolute,
+  stage1: addr.parsePath(
+    `${constants.TESTS_STORAGE_PATH}/stage1`
+  ) as AddressPathAbsolute,
   /** stage2 tests */
-  stage2: addr.parsePath(`${constants.TMP_ROOT}/stage2`) as AddressPathAbsolute,
+  stage2: addr.parsePath(
+    `${constants.TESTS_STORAGE_PATH}/stage2`
+  ) as AddressPathAbsolute,
   /** stage3 tests */
-  stage3: addr.parsePath(`${constants.TMP_ROOT}/stage3`) as AddressPathAbsolute,
+  stage3: addr.parsePath(
+    `${constants.TESTS_STORAGE_PATH}/stage3`
+  ) as AddressPathAbsolute,
 };
 
 const checkoutPath = addr.pathUtils.resolve(
@@ -319,12 +287,12 @@ async function doCreatePersistentTestEnvs(
     if (!matches?.[1]) {
       throw new Error(`Test file must be suffixed with -stage[0-9].spec.ts`);
     }
-    return [sanitise(testName), matches![1] as `stage${number}`];
+    return [fsUtils.sanitise(testName), matches![1] as `stage${number}`];
   };
 
   const [_folderName, stage] = getStageAndFolderName(
     createPersistentTestEnvVars.cacheNamespaceFolder
-      ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
+      ? fsUtils.sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
       : getCurrentTestNameSanitised(),
     testFilename
   );
@@ -367,7 +335,7 @@ async function doCreatePersistentTestEnvs(
   // const cacheRenewNamespace =
   //   truthyFalsy(process.env.TEST_ENV_CACHE_RENEW) ?? createPersistentTestEnvVars.cacheRenewNamespace ?? false
   const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder
-    ? sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
+    ? fsUtils.sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
     : undefined;
   const defaultLogLevel = createPersistentTestEnvVars.defaultLogLevel ?? "info";
 
@@ -452,10 +420,10 @@ async function doCreateEphemeralTestEnvVars(
   persistentTestEnvVars: PersistentTestEnvVars
 ): Promise<EphemeralTestEnvVars> {
   const folderNameSanitised = persistentTestEnvVars.cacheNamespaceFolder
-    ? sanitise(persistentTestEnvVars.cacheNamespaceFolder)
+    ? fsUtils.sanitise(persistentTestEnvVars.cacheNamespaceFolder)
     : getCurrentTestNameSanitised();
   // const processNamespace = createEphemeralTestEnvVars.processNamespace
-  //   ? sanitise(createEphemeralTestEnvVars.processNamespace)
+  //   ? fsUtils.sanitise(createEphemeralTestEnvVars.processNamespace)
   //   : getCurrentTestNameSanitised();
 
   // const getStageAndFolderName = (testName: string, testFileName: string): [folderName: string, stage: `stage${number}`] => {
@@ -507,10 +475,6 @@ async function createCacheManager(
       testEnvVars.cachePath,
       addr.parseAsType("meta", "portablePathFilename")
     ) as AddressPathAbsolute,
-    outputsBaseAddress: addr.pathUtils.join(
-      testEnvVars.cachePath,
-      addr.parseAsType("outputs", "portablePathFilename")
-    ) as AddressPathAbsolute,
   });
 }
 
@@ -545,7 +509,7 @@ export async function createPersistentTestEnv(
 
     if (namespaceExists) {
       console.log(
-        `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY. DELETING EXISTING NAMESPACE. Content directory: '${cacheEntry.content._namespaceBase.original}' Outputs directory: '${cacheEntry.outputs._namespaceBase.original}'`
+        `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY. DELETING EXISTING NAMESPACE. Content directory: '${cacheEntry.content._namespaceBase.original}'`
       );
       await cacheManager.removeNamespace({
         namespace: getCacheNamespace(persistentTestEnvVars),
@@ -553,7 +517,7 @@ export async function createPersistentTestEnv(
       // await xfs.removePromise(contentCachePath.address)
     } else {
       console.log(
-        `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY (NONE EXISTENT). Content directory: '${cacheEntry.content._namespaceBase.original}' Outputs directory: '${cacheEntry.outputs._namespaceBase.original}'`
+        `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY (NONE EXISTENT). Content directory: '${cacheEntry.content._namespaceBase.original}'`
       );
     }
     await cacheManager.removeNamespace({
@@ -743,14 +707,14 @@ function validateTestEnv({
     }
     if (testEnvVars.cacheNamespaceFolder.match(/['"]/)) {
       throw new Error(
-        `CacheNamespaceFolder still contains quote characters. Has it been ran through sanitise()?. Supplied: '${testEnvVars.cacheNamespaceFolder}'`
+        `CacheNamespaceFolder still contains quote characters. Has it been ran through fsUtils.sanitise()?. Supplied: '${testEnvVars.cacheNamespaceFolder}'`
       );
     }
   }
 
   if (testEnvVars.folderName.match(/['"]/)) {
     throw new Error(
-      `folderName still contains quote characters. Has it been ran through sanitise()?. Supplied: '${testEnvVars.folderName}'`
+      `folderName still contains quote characters. Has it been ran through fsUtils.sanitise()?. Supplied: '${testEnvVars.folderName}'`
     );
   }
 
@@ -793,7 +757,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
     // if the test has been wrapped in a describe block of 'cliRegistry|cliLinked' we'll just skip it based on the env var
     // console.log(`testEnvVars :>> `, testEnvVars)
 
-    function createTestContext(): TestContext {
+    async function createTestContext(): Promise<TestContext> {
       return {
         setActiveWorkspacePaths: (workspacePaths: {
           workspace: AddressPathAbsolute;
@@ -827,7 +791,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           sourcePathRel: keyof Stage1Content,
           destinationPath: AddressPathAbsolute
         ) => {
-          const sourcePathRelSanitised = sanitise(sourcePathRel);
+          const sourcePathRelSanitised = fsUtils.sanitise(sourcePathRel);
           // assumes copy from stage1 test
           const testStagePath = basePaths["stage1" as keyof typeof basePaths];
           // const sourcePath = addr.pathUtils.join(testStagePath, addr.parsePath('tests'), addr.parsePath(`${sourcePathRel.original}`));
@@ -1222,6 +1186,48 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             throw res.res.error; // for test purposes, our is Result<blah, never>
           }
         },
+        createExpectUtil: async (options: {
+          workspacePath: AddressPathAbsolute;
+          outputs?: Outputs;
+        }) => {
+          const tree = createTree(testEnvVars.workspacePath.original);
+          const expectUtil = new ExpectUtil({
+            testEnvVars,
+            outputs: options.outputs,
+            tree: tree as Tree,
+            exitCode: 0,
+          });
+          return expectUtil
+        },
+        context: await (async () => {
+          const checkoutCliPath = getActiveCliPath();
+
+          const parseOutput: ParserOutput<
+            FlagsInfer<typeof ContextTestCommand>,
+            FlagsInfer<typeof ContextTestCommand>,
+            ArgsInfer<typeof ContextTestCommand>
+          > = {
+            flags: {
+              workspacePath: testEnvVars.workspacePath.original,
+              ["logLevel"]: testEnvVars.defaultLogLevel,
+              ["json"]: false,
+            },
+            args: {},
+            argv: [],
+            metadata: {} as any,
+            raw: {} as any,
+            nonExistentFlags: {} as any,
+          };
+
+          // @ts-ignore
+          return ContextTestCommand.createContext(
+            {
+              root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
+              // debug: 9,
+            },
+            parseOutput
+          );
+        })(),
         // mockStdStart: () => {
         //   // docs - https://tinyurl.com/24tptzy8
         //   mockStd.stdout.print = true
@@ -1317,7 +1323,7 @@ export const createExpectUtil = ({
   const nextTestEnvVars = {
     ...testEnvVars,
     workspacePath,
-  }
+  };
 
   const resultTree = new HostCreateTree(
     new virtualFs.ScopedHost(

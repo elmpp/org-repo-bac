@@ -161,15 +161,29 @@ export class GitService {
   // }
 
   /**
+   simpleGit example - https://tinyurl.com/2akaywmr
+   */
+   async revParse(
+    args: string,
+    options?: TaskOptions
+  ): Promise<Result<string, { error: BacError }>> {
+    const simpleGit = this.create(options);
+    const res = await simpleGit.revparse(
+      args,
+      options as OrigTaskOptions
+    );
+    return ok(res);
+  }
+
+  /**
    simpleGit example - https://tinyurl.com/25o9sjbz
-   nodeGit example - https://tinyurl.com/23cn82ao
    */
   async clone(
     url: string,
     options?: TaskOptions
-  ): Promise<Result<string, { error: BacError }>> {
+  ): Promise<Result<undefined, { error: BacError }>> {
     const simpleGit = this.create(options);
-    const res = await simpleGit.clone(
+    await simpleGit.clone(
       url,
       this.options.workspacePath.original,
       options as OrigTaskOptions
@@ -178,7 +192,27 @@ export class GitService {
     simpleGitFactory({
       baseDir: GitService.getWorkingDestinationPath(this.options).original,
     });
-    return ok(res);
+    return ok(undefined);
+  }
+
+  /**
+   simpleGit example - https://tinyurl.com/23eteq7t
+   */
+  async pull(
+    url: string,
+    options?: TaskOptions
+  ): Promise<Result<undefined, { error: BacError }>> {
+    const simpleGit = this.create(options);
+    await simpleGit.pull(
+      url,
+      this.options.workspacePath.original,
+      options as OrigTaskOptions
+    );
+    // @todo - error handling
+    // simpleGitFactory({
+    //   baseDir: GitService.getWorkingDestinationPath(this.options).original,
+    // });
+    return ok(undefined);
   }
 
   /**

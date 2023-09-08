@@ -47,7 +47,8 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
     return async ({ context, workspacePath, options: {} }) => {
       const config = await fsUtils.loadConfig(workspacePath);
 
-      console.log(`config :>> `, config);
+      console.log(`config :>> `, require('util').inspect(config, {showHidden: false, depth: undefined, colors: true}))
+
 
       return ok({
         destinationPath: workspacePath,

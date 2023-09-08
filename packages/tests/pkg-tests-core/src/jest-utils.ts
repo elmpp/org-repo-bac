@@ -41,7 +41,7 @@ export const escapeForRegexp = (str: string) =>
   str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&"); // https://tinyurl.com/2ey6wbqk
 
 type Options = {
-  outputs: Outputs;
+  outputs?: Outputs;
   //  mntExec: MntExecService
   /** Guaranteed to be the path to ultimate destination content. You should not be asserting on content outside of here as this may be subject to different cache mechanisms possibly */
   //  destinationPath: AddressPathAbsolute
@@ -79,11 +79,17 @@ export function fail(err: string | Error) {
 
 // type RunPropsAnchored = RunFunctionProps & {scaffoldPath: PortablePath}
 export class ExpectUtil {
-  options: Options;
+  options: Required<Options>;
 
   constructor(options: Options) {
     // this.options = {...runProps, scaffoldPath: normalizePath(ppath.join(runProps.projectScaffoldPath, scaffoldPath))}
-    this.options = options;
+    this.options = {
+      outputs: {
+        stdout: '',
+        stderr: '',
+      },
+      ...options,
+    }
 
     // expect(options.testEnvVars.checkoutMntCwd.original).toMatch(new RegExp('/mnt-pkg-cli/src/bin$'))
     expect(options.testEnvVars.workspacePath.originalNormalized).not.toMatch(

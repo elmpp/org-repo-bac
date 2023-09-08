@@ -43,13 +43,14 @@ import {
 import { constants } from "../constants";
 import {
   ConfigureWorkspaceLifecycleBase,
+  FetchContentLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
   RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
   SynchroniseWorkspaceLifecycleBase,
 } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
-import { BacService, ExecService, MoonService } from "../services";
+import { BacService, CacheService, ExecService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
 import { objectUtils } from "../utils";
 import { findUp, loadModule } from "../utils/fs-utils";
@@ -600,6 +601,7 @@ export abstract class BaseCommand<
   }): Promise<Context["serviceFactory"]> {
     const coreServices = {
       bac: [BacService],
+      cache: [CacheService],
       exec: [ExecService],
       moon: [MoonService],
       schematics: [SchematicsService],
@@ -1023,9 +1025,10 @@ export abstract class BaseCommand<
         initialiseWorkspace: new InitialiseWorkspaceLifecycleBase<any>(),
         configureWorkspace: new ConfigureWorkspaceLifecycleBase<any>(),
         configureProject: new ConfigureProjectLifecycleBase<any>(),
-        synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
-        runWorkspace: new RunWorkspaceLifecycleBase<any>(),
+        fetchContent: new FetchContentLifecycleBase<any>(),
         runProject: new RunProjectLifecycleBase<any>(),
+        runWorkspace: new RunWorkspaceLifecycleBase<any>(),
+        synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
       },
     };
     return contextCommand;

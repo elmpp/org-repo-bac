@@ -1,3 +1,4 @@
+import {fsUtils} from '@business-as-code/core'
 import assert from "assert"
 import path from 'path'
 
@@ -7,7 +8,7 @@ export function getCurrentTestFilenameSanitised(strict?: boolean): string
 export function getCurrentTestFilenameSanitised(strict: boolean = true): string | undefined {
   if (!!!expect.getState().currentTestName && !strict) return
   assert(!!expect.getState().testPath)
-  return sanitise(path.basename(expect.getState().testPath!))
+  return fsUtils.sanitise(path.basename(expect.getState().testPath!))
   // return (expect.getState().currentTestName ?? testEnvVars?.debugId ?? 'setupFilesAfterEnv')
 }
 export function getCurrentTestNameSanitised(strict: false): string | undefined
@@ -15,13 +16,8 @@ export function getCurrentTestNameSanitised(strict?: boolean): string
 export function getCurrentTestNameSanitised(strict: boolean = true): string | undefined {
   if (!!!expect.getState().currentTestName && !strict) return
   assert(!!expect.getState().currentTestName)
-  return sanitise(expect.getState().currentTestName!)
+  return fsUtils.sanitise(expect.getState().currentTestName!)
   // return (expect.getState().currentTestName ?? testEnvVars?.debugId ?? 'setupFilesAfterEnv')
-}
-export const sanitise = (str: string): string => {
-  // @ts-ignore
-  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\:]+/g, '_')
-  return res
 }
 
 

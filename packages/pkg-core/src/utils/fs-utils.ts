@@ -138,3 +138,9 @@ export function loadConfig(workspacePath: AddressPathAbsolute): Config {
     throw new BacErrorWrapper(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not importable()able at '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`, err as Error)
   }
 }
+
+export const sanitise = (str: string): string => {
+  // @ts-ignore
+  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\:]+/g, '_')
+  return res
+}

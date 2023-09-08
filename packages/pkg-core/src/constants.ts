@@ -11,6 +11,8 @@ export const constants = {
   ...{
     TMP_ROOT:'',
     VERDACCIO_STORAGE_PATH:'',
+    TESTS_STORAGE_PATH:'',
+    CACHE_STORAGE_PATH:'',
     GIT_HTTP_MOCK_SERVER_ROOT:'',
     GIT_HTTP_MOCK_SERVER_PORT:'',
     GIT_SSH_MOCK_SERVER_ROOT:'',

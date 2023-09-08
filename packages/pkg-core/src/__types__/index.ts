@@ -9,6 +9,7 @@ import {
 } from "../commands/base-command";
 import {
   ConfigureWorkspaceLifecycleBase,
+  FetchContentLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
   RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
@@ -79,6 +80,7 @@ export type ContextCommand<T extends typeof Command> = {
     synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
     runWorkspace: RunWorkspaceLifecycleBase<any>;
     runProject: RunProjectLifecycleBase<any>;
+    fetchContent: FetchContentLifecycleBase<any>;
   };
   /** @internal @private @ignore @hidden @deprecated */
   toJSON: () => string;

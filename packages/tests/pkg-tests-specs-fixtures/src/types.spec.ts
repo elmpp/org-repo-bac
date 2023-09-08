@@ -180,6 +180,16 @@ describe("types", () => {
         // type ALLMethodsRegardless = LifecycleMethods;
       });
 
+      it("lifecycle methods augmented", () => {
+        expectTypeOf<
+          | "fetchContent"
+          | "initialiseWorkspace"
+          | "configureWorkspace"
+          | "synchroniseWorkspace"
+          | "runWorkspace"
+          | "runProject"
+        >().toMatchTypeOf<LifecycleImplementedMethods>();
+      });
       it("can derive a union of lifecycle method return types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceReturn =
