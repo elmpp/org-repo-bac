@@ -30,7 +30,8 @@ declare global {
   }
 }
 
-type Options = ServiceInitialiseCommonOptions & Parameters<(typeof XfsCacheManager)["initialise"]>[0];
+// type Options = ServiceInitialiseCommonOptions & Parameters<(typeof XfsCacheManager)["initialise"]>[0];
+type Options = ServiceInitialiseCommonOptions & {rootPath: AddressPathAbsolute}
 
 type GetEntry = {
   sourceAddress: AddressDescriptorUnion;
@@ -80,8 +81,14 @@ export class CacheService {
     ins.cacheManager = await AddressCacheManager.initialise(
       {
         ...options,
-        metaBaseAddress: options.metaBaseAddress,
-        contentBaseAddress: options.contentBaseAddress,
+        contentBaseAddress: addr.pathUtils.join(
+          options.rootPath,
+          addr.parseAsType("content", "portablePathFilename")
+        ) as AddressPathAbsolute,
+        metaBaseAddress: addr.pathUtils.join(
+          options.rootPath,
+          addr.parseAsType("meta", "portablePathFilename")
+        ) as AddressPathAbsolute,
         createAttributes: (address) => {
           return {
             key: sanitise(address.addressNormalized),

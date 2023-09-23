@@ -54,6 +54,7 @@ export const constants = {
     RC_CONFIGURED_FILENAME: "bac.json",
     RC_FOLDER: ".bac",
     RC_META_FOLDER: "meta",
+    RC_CONTENT_FOLDER: "content",
     NPM_RC_FILENAME: ".npmrc",
     // DEFAULT_COMMITTER_NAME: 'no reply',
     // DEFAULT_COMMITTER_EMAIL: 'no-reply@bac.com',

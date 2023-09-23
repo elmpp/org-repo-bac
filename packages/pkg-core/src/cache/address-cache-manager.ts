@@ -33,7 +33,7 @@ type _GetEntry = {
   metaPath: AddressPathAbsolute;
   checksum: CacheKey;
   existentChecksum?: CacheKey;
-  checksumMatch: boolean;
+  checksumValid: boolean;
 };
 type GetEntry<WithContent extends boolean> = WithContent extends boolean
   ? SetRequired<_GetEntry, "contentPath" | "contentPathRelative">
@@ -127,7 +127,7 @@ export class AddressCacheManager<WithContent extends boolean> {
     );
     const meta = await this.xfsCacheManager.getMeta(cacheKeyAttributes);
     let checksum: CacheKey;
-    let checksumMatch: boolean = false;
+    let checksumValid: boolean = false;
 
     const hasEntry = await this.xfsCacheManager.has(cacheKeyAttributes);
 
@@ -159,6 +159,14 @@ export class AddressCacheManager<WithContent extends boolean> {
           existentChecksum: undefined,
           contentPath: cacheEntry.content?.main,
         });
+
+        checksumValid = true; // checksum valid means whether we're ok to trust it
+
+        // const checksumMatchRes = await this.xfsCacheManager.checksumMatch({
+        //   prevChecksum: undefined,
+        //   nextChecksum: checksum,
+        //   cacheEntry,
+        // });
 
         await updateCacheEntry({
           cacheEntry,
@@ -192,7 +200,7 @@ export class AddressCacheManager<WithContent extends boolean> {
             contentPath: cacheEntry.content?.main!,
           });
         } else {
-          checksumMatch = true;
+          checksumValid = true;
           await onHit({
             existentChecksum: meta.contentChecksum,
             // @ts-expect-error: conditional meh
@@ -241,7 +249,7 @@ export class AddressCacheManager<WithContent extends boolean> {
       metaPath: cacheEntry.meta.main,
       checksum: checksum!,
       existentChecksum: meta?.contentChecksum,
-      checksumMatch,
+      checksumValid,
     });
 
     // const possiblyStaleEntry = await this.xfsCacheManager

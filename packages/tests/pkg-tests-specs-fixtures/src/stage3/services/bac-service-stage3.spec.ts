@@ -4,7 +4,7 @@ import { createPersistentTestEnv } from "@business-as-code/tests-core";
 describe("bac-service", () => {
   jest.setTimeout(10000);
 
-  it("getConfig", async () => {
+  it("getConfigEntry", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       const bacService = await testContext.context.serviceFactory("bac", {
@@ -19,17 +19,20 @@ describe("bac-service", () => {
       );
       expectIsOk(resCopy);
 
-      const config = await bacService.getConfig();
+      const configRes = await bacService.getConfigEntry();
 
-      console.log(`config :>> `, config);
+      expectIsOk(configRes);
+      const config = configRes.res
 
-      expectIsOk(config)
+      expect(config.checksumValid).toBeTruthy() // fresh cache entry should show valid
+      expect(config.existentChecksum).toBeFalsy() // fresh cache entry
+
+      console.log(`config :>> `, config)
 
       const expectConfig = await resCopy.res.expectUtil.createConfig();
       expectConfig.expectText.equals(
-        // xfs.readFileSync(gitHttpRepoUrl.address, "utf8")
         await expectConfig.loadCoreConfigContents('skeleton')
-      ); // it's updated
+      );
     });
   });
   it("loadConfig", async () => {
@@ -47,13 +50,12 @@ describe("bac-service", () => {
       );
       expectIsOk(resCopy);
 
-      const config = await bacService.loadConfig();
+      const configRes = bacService.loadConfig();
 
-      const expectConfig = await resCopy.res.expectUtil.createConfig();
-      expectConfig.expectText.equals(
-        // xfs.readFileSync(gitHttpRepoUrl.address, "utf8")
-        await expectConfig.loadCoreConfigContents('skeleton.js')
-      ); // it's updated
+      expectIsOk(configRes);
+      const config = configRes.res
+
+      expect(config).toHaveProperty('projectSource', [])
     });
   });
 });

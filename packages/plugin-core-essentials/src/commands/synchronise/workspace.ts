@@ -5,6 +5,7 @@ import {
   Interfaces as _Interfaces,
   expectIsOk,
   fsUtils,
+  ok,
 } from "@business-as-code/core";
 
 export class SynchroniseWorkspace extends BaseCommand<
@@ -23,6 +24,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       exists: true,
       description: "Workspace name",
       required: true,
+    }),
+    force: Oclif.Flags.boolean({
+      required: false,
+      default: false,
     }),
   };
 
@@ -43,38 +48,86 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // NEED A WAY HERE TO LOAD FILES THROUGH THE CACHE MANAGER BUT AT ARBITRARY LOCATIONS. I.E. THE BAC.JS FILE IN WORKSPACE ROOT AND META DIRECTORY IN .BAC/META
 
+    const bacService = await context.serviceFactory('bac', {
+      context,
+      workspacePath: context.workspacePath,
+      workingPath: '.',
+    })
 
-    const config = await fsUtils.loadConfig(context.workspacePath);
+    const configCache = await bacService.getConfigEntry()
+    expectIsOk(configCache)
 
-    const res =
-      await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace(
-        {
-          common: {
-            context,
-            workspacePath: context.workspacePath,
-          },
-          options: [
-            {
-              provider: "git",
-              options: {
-                // workingPath: ".",
-                config,
-                // options: {
-                //   // a: 'a',
-                //   // name: context.cliOptions.flags.name,
-                //   // config,
-                //   // configPath: configPath.original,
-                //   // cliVersion: context.cliOptions.flags.cliVersion,
-                //   // cliRegistry: context.cliOptions.flags.cliRegistry,
-                //   // cliPath: context.cliOptions.flags.cliPath,
-                // }, // <!-- typed as any atm ¯\_(ツ)_/¯
-              },
+    if (!configCache.res.checksumValid || !configCache.res.existentChecksum || context.cliOptions.flags.force) {
+
+      const configRes = await bacService.loadConfig()
+      expectIsOk(configRes)
+      const config = configRes.res
+
+      const configureLifecycleRes =
+        await context.lifecycles.configureWorkspace.executeConfigureWorkspace(
+          {
+            common: {
+              context,
+              workspacePath: context.workspacePath,
             },
-          ],
-        }
-      );
+            options: {
+              config,
+            }
+                // provider: "git",
+                // options: {
+                //   config: configRes.res,
+                //   // workingPath: ".",
+                //   // config: configRes.res,
+                //   // options: {
+                //   //   // a: 'a',
+                //   //   // name: context.cliOptions.flags.name,
+                //   //   // config,
+                //   //   // configPath: configPath.original,
+                //   //   // cliVersion: context.cliOptions.flags.cliVersion,
+                //   //   // cliRegistry: context.cliOptions.flags.cliRegistry,
+                //   //   // cliPath: context.cliOptions.flags.cliPath,
+                //   // }, // <!-- typed as any atm ¯\_(ツ)_/¯
+                // },
+              // },
+            // ],
+          }
+        );
 
-    expectIsOk(res);
-    return res;
+
+
+
+      const synchroniseLifecycleRes =
+        await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace(
+          {
+            common: {
+              context,
+              workspacePath: context.workspacePath,
+            },
+            options: [
+              {
+                provider: "git",
+                options: {
+                  // workingPath: ".",
+                  config: configRes.res,
+                  // options: {
+                  //   // a: 'a',
+                  //   // name: context.cliOptions.flags.name,
+                  //   // config,
+                  //   // configPath: configPath.original,
+                  //   // cliVersion: context.cliOptions.flags.cliVersion,
+                  //   // cliRegistry: context.cliOptions.flags.cliRegistry,
+                  //   // cliPath: context.cliOptions.flags.cliPath,
+                  // }, // <!-- typed as any atm ¯\_(ツ)_/¯
+                },
+              },
+            ],
+          }
+        );
+
+      expectIsOk(synchroniseLifecycleRes);
+      return synchroniseLifecycleRes;
+    }
+
+    return ok(undefined)
   }
 }

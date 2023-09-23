@@ -30,7 +30,7 @@ export function expectIsOk<T extends Result<any, {error: Error}>>(
   res: T
 ): asserts res is Extract<T, { success: true }> {
   if (assertIsOk(res)) {
-    return;
+    return res.res;
   }
   // fail(new Error(`res is not successful`)) // can't use jest fail() - https://tinyurl.com/2hu8zcpo
   // throw new Error(`Expected res to be successful. '${JSON.stringify(res)}'`)

@@ -108,11 +108,12 @@ export class XfsCacheManager<WithContent extends boolean> {
     nextChecksum,
     cacheEntry,
   }: {
-    prevChecksum: CacheKey;
+    prevChecksum?: CacheKey;
     nextChecksum: CacheKey;
     cacheEntry: CacheEntry<WithContent>;
   }): Promise<Result<true, { error: Error }>> {
-    if (prevChecksum.globalVersion !== nextChecksum.globalVersion) {
+    // if (!prevChecksum) return fail(false);
+    if (prevChecksum?.globalVersion !== nextChecksum.globalVersion) {
       return fail({
         error: new Error(
           `Checksum miss: global keys do not match. This normally happens following a global cache invalidation. Existing: '${prevChecksum.toString()}', expected: '${nextChecksum.toString()}' when validating cache entry '${
