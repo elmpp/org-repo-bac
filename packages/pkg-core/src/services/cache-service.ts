@@ -7,6 +7,7 @@ import {
 import { BacError } from "@business-as-code/error";
 import assert from "assert";
 import {
+  CacheKey,
   FetchOptions,
   Result,
   ServiceInitialiseCommonOptions,
@@ -14,7 +15,9 @@ import {
   fail,
   ok,
 } from "../__types__";
-import { CacheEntry, XfsCacheManager } from "../xfs-cache-manager";
+import { CacheEntry, AddressCacheManager } from "../cache/address-cache-manager";
+import { XfsCacheManager } from "../cache/xfs-cache-manager";
+import { sanitise } from "../utils/fs-utils";
 
 declare global {
   namespace Bac {
@@ -27,20 +30,20 @@ declare global {
   }
 }
 
-export type CacheKey = {
-  /** the global cache buster. Should be supplied from constants.GLOBAL_CACHE_KEY */
-  globalVersion: number;
-  key: string;
-  toString(): string;
-};
+type Options = ServiceInitialiseCommonOptions & Parameters<(typeof XfsCacheManager)["initialise"]>[0];
 
-type Options = ServiceInitialiseCommonOptions & {
-  /** path to root of instance */
-  // workspacePath: AddressPathAbsolute;
+type GetEntry = {
+  sourceAddress: AddressDescriptorUnion;
+  contentPath?: AddressPathAbsolute;
+  checksum: CacheKey;
+  existentChecksum?: CacheKey;
+  checksumMatch: boolean;
+}
 
-  /** lives outside of the workspacePath */
-  rootPath: AddressPathAbsolute;
-};
+// type Options = ServiceInitialiseCommonOptions & {
+//   /** lives outside of the workspacePath */
+//   rootPath: AddressPathAbsolute;
+// };
 // type DoExecOptionsLite = Omit<
 //   Parameters<typeof execUtils.doExec>[0]["options"],
 //   "context" | "cwd"
@@ -51,13 +54,16 @@ type Options = ServiceInitialiseCommonOptions & {
 // > & {throwOnFail?: boolean}
 
 /**
- Provides programmatic way to interact with a Bac instance
+ The Cache service provides a namespaced fs storage manager for non-subtree'd content.
+ For use mostly within lifecycles where the content-specific methods can provide checksum
+ arguments etc
  */
 export class CacheService {
   static title = "cache" as const;
   options: Options;
-  // @ts-expect-error: set in initialise
-  protected cacheManager: XfsCacheManager;
+
+  // @ts-ignore: initialise set
+  protected cacheManager: AddressCacheManager<true>; // shame we can't make the service generic :(. It's used differently in BacService
 
   get ctor(): typeof CacheService {
     return this.constructor as unknown as typeof CacheService;
@@ -68,22 +74,36 @@ export class CacheService {
   }
 
   static async initialise(options: Options, prevInstance?: CacheService) {
+
     const ins = new CacheService(options);
     await ins.initialise(options);
-    ins.cacheManager = await XfsCacheManager.initialise({
-      contentBaseAddress: addr.pathUtils.join(
-        options.rootPath,
-        addr.parseAsType("content", "portablePathFilename")
-      ) as AddressPathAbsolute,
-      metaBaseAddress: addr.pathUtils.join(
-        options.rootPath,
-        addr.parseAsType("meta", "portablePathFilename")
-      ) as AddressPathAbsolute,
-      // outputsBaseAddress: addr.pathUtils.join(
-      //   options.rootPath,
-      //   addr.parseAsType("outputs", "portablePathFilename")
-      // ) as AddressPathAbsolute,
-    });
+    ins.cacheManager = await AddressCacheManager.initialise(
+      {
+        ...options,
+        metaBaseAddress: options.metaBaseAddress,
+        contentBaseAddress: options.contentBaseAddress,
+        createAttributes: (address) => {
+          return {
+            key: sanitise(address.addressNormalized),
+            namespace: sanitise(address.type),
+          }
+        },
+      }
+    );
+    // ins.cacheManager = await AddressCacheManager.initialise({
+    //   contentBaseAddress: addr.pathUtils.join(
+    //     options.rootPath,
+    //     addr.parseAsType("content", "portablePathFilename")
+    //   ) as AddressPathAbsolute,
+    //   metaBaseAddress: addr.pathUtils.join(
+    //     options.rootPath,
+    //     addr.parseAsType("meta", "portablePathFilename")
+    //   ) as AddressPathAbsolute,
+    //   // outputsBaseAddress: addr.pathUtils.join(
+    //   //   options.rootPath,
+    //   //   addr.parseAsType("outputs", "portablePathFilename")
+    //   // ) as AddressPathAbsolute,
+    // });
     return ins;
   }
 
@@ -93,199 +113,214 @@ export class CacheService {
 
   protected async initialise(options: Options) {}
 
-  protected getCacheManagerAttributes({
-    address,
-  }: {
-    address: AddressDescriptorUnion;
-  }): { key: string; namespace: string } {
-    return {
-      key: address.addressNormalized,
-      namespace: address.type,
-    };
+  async get(...options: Parameters<(AddressCacheManager<true>['get'])>): ReturnType<AddressCacheManager<true>['get']> {
+    return this.cacheManager.get(...options)
+  }
+  async has(...options: Parameters<(AddressCacheManager<true>['has'])>): ReturnType<AddressCacheManager<true>['has']> {
+    return this.cacheManager.has(...options)
   }
 
-  async has(address: AddressDescriptorUnion): Promise<boolean> {
-    const cacheKeyAttributes = this.getCacheManagerAttributes({ address });
-    return this.cacheManager.has(cacheKeyAttributes);
-  }
+  // protected getCacheManagerAttributes({
+  //   address,
+  // }: {
+  //   address: AddressDescriptorUnion;
+  // }): { key: string; namespace?: string } {
+  //   return this.options.createAttributes(address)
+  // }
 
-  async get(options: { address: AddressDescriptorUnion }): Promise<
-    Result<
-      | {
-          // releaseFs?: () => Promise<void>;
-          contentPath: AddressPathAbsolute;
-          checksum: CacheKey;
-        }
-      | undefined,
-      { error: BacError }
-    >
-  > {
-    const { address } = options;
-    if (!address.type) {
-      throw new Error(`address has no type: ${JSON.stringify(address)}`);
-    }
+  // async has(address: AddressDescriptorUnion): Promise<boolean | undefined> {
+  //   const cacheKeyAttributes = this.getCacheManagerAttributes({ address });
+  //   return this.cacheManager.has(cacheKeyAttributes);
+  // }
 
-    const cacheKeyAttributes = this.getCacheManagerAttributes({ address });
+  // async get(options: { address: AddressDescriptorUnion }): Promise<
+  //   Result<
+  //     | GetEntry
+  //     | undefined,
+  //     { error: BacError }
+  //   >
+  // > {
+  //   const { address } = options;
+  //   if (!address.type) {
+  //     throw new Error(`address has no type: ${JSON.stringify(address)}`);
+  //   }
 
-    const cacheEntry = await this.cacheManager.getCacheEntry(
-      cacheKeyAttributes
-    );
-    const meta = await this.cacheManager.getMeta(cacheKeyAttributes);
-    const hasEntry = await this.cacheManager.has(cacheKeyAttributes);
+  //   const cacheKeyAttributes = this.getCacheManagerAttributes({ address });
 
-    return ok(
-      hasEntry
-        ? {
-            contentPath: cacheEntry.content.main,
-            checksum: meta?.contentChecksum!,
-          }
-        : undefined
-    );
-  }
+  //   const cacheEntry = await this.cacheManager.getCacheEntry(
+  //     cacheKeyAttributes
+  //   );
+  //   const meta = await this.cacheManager.getMeta(cacheKeyAttributes);
+  //   const hasEntry = await this.cacheManager.has(cacheKeyAttributes);
 
-  async getWithFetch(options: {
-    // address: AddressDescriptorUnion;
-    address: AddressDescriptorUnion;
-    // address: AddressOtherCache;
-    // key: string;
-    // namespace?: string;
-    cacheOptions: FetchOptions["cacheOptions"];
-    // expectedChecksum: string;
-    createChecksum: (options: {
-      existentChecksum?: CacheKey;
-      contentPath: AddressPathAbsolute;
-    }) => Promise<CacheKey>;
-    onHit: (options: {
-      existentChecksum: CacheKey;
-      contentPath: AddressPathAbsolute;
-    }) => void;
-    /** content not found for key/namespace */
-    // onMiss: () => void,
-    onStale: (options: {
-      message: string;
-      existentChecksum: CacheKey;
-      contentPath: AddressPathAbsolute;
-    }) => void;
-    /** content found for key/namespace but checksum fail */
-    // onChecksumFail: (options: {existentChecksum: CacheKey}) => void,
-    /** existentChecksum denotes if content present already */
+  //   return ok(
+  //     hasEntry
+  //       ? {
+  //           sourceAddress: address,
+  //           contentPath: cacheEntry.content?.main,
+  //           checksum: meta?.contentChecksum!,
+  //         }
+  //       : undefined
+  //   );
+  // }
 
-    /** no content present at all */
-    onMiss: (options: { contentPath: AddressPathAbsolute }) => Promise<void>;
-  }): Promise<
-    Result<
-      {
-        // releaseFs?: () => Promise<void>;
-        contentPath: AddressPathAbsolute;
-        checksum: CacheKey;
-      },
-      { error: BacError }
-    >
-  > {
-    const { address, createChecksum, onHit, onMiss, onStale } = options;
-    if (!address.type) {
-      throw new Error(`address has no type: ${JSON.stringify(address)}`);
-    }
+  // /** all params required in order to compute checksum */
+  // async get(options: {
+  //   // address: AddressDescriptorUnion;
+  //   address: AddressDescriptorUnion;
+  //   // address: AddressOtherCache;
+  //   // key: string;
+  //   // namespace?: string;
+  //   cacheOptions: FetchOptions["cacheOptions"];
+  //   // expectedChecksum: string;
+  //   createChecksum: (options: {
+  //     existentChecksum?: CacheKey;
+  //     /** path to the content in the cache, if found */
+  //     contentPath?: AddressPathAbsolute;
+  //   }) => Promise<CacheKey>;
+  //   onHit: (options: {
+  //     existentChecksum: CacheKey;
+  //     /** path to the content in the cache, if found */
+  //     contentPath?: AddressPathAbsolute;
+  //   }) => void;
+  //   /** content not found for key/namespace */
+  //   // onMiss: () => void,
+  //   onStale: (options: {
+  //     message: string;
+  //     existentChecksum: CacheKey;
+  //     /** path to the content in the cache, if found */
+  //     contentPath?: AddressPathAbsolute;
+  //   }) => void;
+  //   /** content found for key/namespace but checksum fail */
+  //   // onChecksumFail: (options: {existentChecksum: CacheKey}) => void,
+  //   /** existentChecksum denotes if content present already */
 
-    const cacheKeyAttributes = this.getCacheManagerAttributes({ address });
+  //   /** we do not hold a record for this - i.e. no meta. Not called when options.contentBase not supplied */
+  //   onMiss: (options: {
+  //     /** path to the content in the cache, if found */
+  //     contentPath?: AddressPathAbsolute
+  //   }) => Promise<void>;
+  // }): Promise<
+  //   Result<
+  //   GetEntry,
+  //     { error: BacError }
+  //   >
+  // > {
+  //   const { address, createChecksum, onHit, onMiss, onStale } = options;
+  //   if (!address.type) {
+  //     throw new Error(`address has no type: ${JSON.stringify(address)}`);
+  //   }
 
-    const cacheEntry = await this.cacheManager.getCacheEntry(
-      cacheKeyAttributes
-    );
-    const meta = await this.cacheManager.getMeta(cacheKeyAttributes);
-    let checksum: CacheKey;
+  //   const cacheKeyAttributes = this.getCacheManagerAttributes({ address });
 
-    const hasEntry = await this.cacheManager.has(cacheKeyAttributes);
+  //   const cacheEntry = await this.cacheManager.getCacheEntry(
+  //     cacheKeyAttributes
+  //   );
+  //   const meta = await this.cacheManager.getMeta(cacheKeyAttributes);
+  //   let checksum: CacheKey;
+  //   let checksumMatch: boolean = false;
 
-    const updateCacheEntry = async (options: {
-      cacheEntry: CacheEntry;
-      checksum: CacheKey;
-    }) => {
-      await this.cacheManager.set({
-        ...cacheKeyAttributes,
-        sourceEntry: {
-          contentPath: cacheEntry.content.main,
-          meta: {
-            contentChecksum: checksum,
-          },
-        },
-      });
-    };
+  //   const hasEntry = await this.cacheManager.has(cacheKeyAttributes);
 
-    const doFetch = async () => {
-      await this.cacheManager.prime(cacheEntry);
+  //   const updateCacheEntry = async (options: {
+  //     cacheEntry: CacheEntry<boolean>;
+  //     checksum: CacheKey;
+  //   }) => {
+  //     await this.cacheManager.set({
+  //       ...cacheKeyAttributes,
+  //       sourceEntry: {
+  //         contentPath: cacheEntry.content?.main,
+  //         meta: {
+  //           contentChecksum: checksum,
+  //         },
+  //       },
+  //     });
+  //   };
 
-      if (!hasEntry) {
-        await onMiss({ contentPath: cacheEntry.content.main });
-        checksum = await createChecksum({
-          existentChecksum: undefined,
-          contentPath: cacheEntry.content.main,
-        });
+  //   const doFetch = async () => {
+  //     await this.cacheManager.prime(cacheEntry);
 
-        await updateCacheEntry({ cacheEntry, checksum });
-      } else {
-        assert(meta);
-        // how to do checksum checks?
+  //     if (!hasEntry) {
+  //       await onMiss({
+  //         contentPath:
+  //           cacheEntry.content?.main ?? (address as AddressPathAbsolute),
+  //       });
+  //       checksum = await createChecksum({
+  //         existentChecksum: undefined,
+  //         contentPath: cacheEntry.content?.main,
+  //       });
 
-        checksum = await createChecksum({
-          existentChecksum: meta.contentChecksum,
-          contentPath: cacheEntry.content.main,
-        });
-        const checksumMatchRes = await this.cacheManager.checksumMatch({
-          prevChecksum: meta.contentChecksum,
-          nextChecksum: checksum,
-          cacheEntry,
-        });
-        // const checksum = await createChecksum({existentChecksum})
+  //       await updateCacheEntry({
+  //         cacheEntry,
+  //         checksum
+  //       });
+  //     } else {
+  //       assert(meta);
+  //       // how to do checksum checks?
 
-        console.log(`checksumMatchRes :>> `, checksumMatchRes);
+  //       checksum = await createChecksum({
+  //         existentChecksum: meta.contentChecksum,
+  //         contentPath: cacheEntry.content?.main,
+  //       });
+  //       const checksumMatchRes = await this.cacheManager.checksumMatch({
+  //         prevChecksum: meta.contentChecksum,
+  //         nextChecksum: checksum,
+  //         cacheEntry,
+  //       });
+  //       // const checksum = await createChecksum({existentChecksum})
 
-        if (!assertIsOk(checksumMatchRes)) {
-          this.options.context.logger.debug(checksumMatchRes.res.error.message);
-          // await clearCacheEntry({cacheEntry})
-          // await addCacheEntry({cacheEntry})
-          await onStale({
-            message: checksumMatchRes.res.error.message,
-            existentChecksum: meta.contentChecksum,
-            contentPath: cacheEntry.content.main,
-          });
-        } else {
-          await onHit({
-            existentChecksum: meta.contentChecksum,
-            contentPath: cacheEntry.content.main,
-          });
-        }
+  //       // console.log(`checksumMatchRes :>> `, checksumMatchRes);
 
-        await updateCacheEntry({ cacheEntry, checksum: checksum });
-      }
-    };
+  //       if (!assertIsOk(checksumMatchRes)) {
+  //         this.options.context.logger.debug(checksumMatchRes.res.error.message);
+  //         // await clearCacheEntry({cacheEntry})
+  //         // await addCacheEntry({cacheEntry})
+  //         await onStale({
+  //           message: checksumMatchRes.res.error.message,
+  //           existentChecksum: meta.contentChecksum,
+  //           contentPath: cacheEntry.content?.main,
+  //         });
+  //       } else {
+  //         checksumMatch = true;
+  //         await onHit({
+  //           existentChecksum: meta.contentChecksum,
+  //           contentPath: cacheEntry.content?.main,
+  //         });
+  //       }
 
-    try {
-      await doFetch();
-    } catch (err) {
-      return fail({
-        error: err as BacError,
-      });
-    }
+  //       await updateCacheEntry({ cacheEntry, checksum: checksum });
+  //     }
+  //   };
 
-    return ok({
-      contentPath: cacheEntry.content.main,
-      checksum: checksum!,
-    });
+  //   try {
+  //     await doFetch();
+  //   } catch (err) {
+  //     return fail({
+  //       error: err as BacError,
+  //     });
+  //   }
 
-    // const possiblyStaleEntry = await this.cacheManager
+  //   return ok({
+  //     sourceAddress: address,
+  //     contentPath: cacheEntry.content?.main,
+  //     checksum: checksum!,
+  //     existentChecksum: meta?.contentChecksum,
+  //     checksumMatch,
+  //   });
 
-    // if (cacheEntry) {
-    //   return ok({ contentPath: cacheEntry.content.main, checksum: 'blah' });
-    // } else {
-    //   const error = new BacError(
-    //     MessageName.UNNAMED,
-    //     `Cache entry not found for key: '${key}', namespace: '${namespace}'`
-    //   );
-    //   this.options.context.logger.debug(error.message);
-    //   return fail({
-    //     error,
-    //   });
-    // }
-  }
+  //   // const possiblyStaleEntry = await this.cacheManager
+
+  //   // if (cacheEntry) {
+  //   //   return ok({ contentPath: cacheEntry.content.main, checksum: 'blah' });
+  //   // } else {
+  //   //   const error = new BacError(
+  //   //     MessageName.UNNAMED,
+  //   //     `Cache entry not found for key: '${key}', namespace: '${namespace}'`
+  //   //   );
+  //   //   this.options.context.logger.debug(error.message);
+  //   //   return fail({
+  //   //     error,
+  //   //   });
+  //   // }
+  // }
 }

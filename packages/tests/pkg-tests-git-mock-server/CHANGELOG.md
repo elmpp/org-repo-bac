@@ -1,5 +1,76 @@
 # git-http-mock-server
 
+## 0.0.0-latest-20230909081653
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230909081653
+
+## 0.0.0-bollards-20230909081602
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230909081602
+
+## 0.0.0-bollards-20230909073548
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230909073548
+
+## 0.0.0-latest-20230909073251
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230909073251
+
+## 0.0.0-bollards-20230909073201
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230909073201
+
+## 0.0.0-bollards-20230909072832
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230909072832
+
+## 0.0.0-latest-20230909072252
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230909072252
+
+## 0.0.0-bollards-20230909072202
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230909072202
+
+## 0.0.0-latest-20230909071930
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20230909071930
+
+## 0.0.0-bollards-20230909071818
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20230909071818
+
 ## 0.0.0-latest-20230902060501
 
 ### Patch Changes

@@ -30,7 +30,7 @@ describe("schematic-utils", () => {
 
         expectIsOk(res);
 
-        const expectStdout = res.res.expectUtil.createStdout();
+        const expectStdout = await res.res.expectUtil.createStdout();
         expectStdout.lineContainsString({ match: /FLUSH$/, occurrences: 2 });
         // expectStdout.lineContainsString({match: /DELETE package.json$/, occurrences: 1})
         // expectStdout.lineContainsString({match: /DELETE packages\/.gitkeep$/, occurrences: 1})
@@ -43,7 +43,7 @@ describe("schematic-utils", () => {
         // expectStdout.lineContainsString({match: /DELETE packages\/nested-folder\/another-file.txt$/, occurrences: 1})
         // expectStdout.lineContainsString({match: /DELETE packages\/nested-folder$/, occurrences: 0}) // although nested directories are deleted, they're not reported
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectFs = await res.res.expectUtil.createFs();
         expect(expectFs.existsSync("./package.json")).toBeFalsy();
         expect(expectFs.existsSync("./packages/.gitkeep")).toBeFalsy();
         expect(expectFs.existsSync("./packages")).toBeFalsy();

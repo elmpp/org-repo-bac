@@ -1,7 +1,7 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import {
+  Config,
   Context,
-  fsUtils,
   ok,
   ServiceMap,
   SynchroniseWorkspaceLifecycleBase,
@@ -35,28 +35,33 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
     workspacePath: AddressPathAbsolute;
     // workingPath: string;
     options: {
-      a: "a";
+      // a: "a";
       // name: string;
-      // config: Config;
+      config: Config;
       // configPath: string;
       // cliVersion: string;
       // cliRegistry: string;
       // cliPath?: string;
     };
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
-    return async ({ context, workspacePath, options: {} }) => {
-      const config = await fsUtils.loadConfig(workspacePath);
+    return async ({ context, workspacePath, options: { config } }) => {
+      // const config = await fsUtils.loadConfig(workspacePath);
 
-      console.log(`config :>> `, require('util').inspect(config, {showHidden: false, depth: undefined, colors: true}))
-
+      console.log(
+        `config :>> `,
+        require("util").inspect(config, {
+          showHidden: false,
+          depth: undefined,
+          colors: true,
+        })
+      );
 
       return ok({
         destinationPath: workspacePath,
-      })
+      });
 
       // is the configured config up to date
       // if ()
-
 
       // console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
       // console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)

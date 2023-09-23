@@ -16,7 +16,7 @@ describe("configure workspace", () => {
       );
 
       // @ts-ignore
-      let expectConfig = resCopy.res.expectUtil.createConfig();
+      let expectConfig = await resCopy.res.expectUtil.createConfig();
 
       const res = await testContext.command(
         [
@@ -42,8 +42,8 @@ describe("errors", () => {
   //     });
   //     expectIsFail(res);
   //     // console.log(`res :>> `, res.res.expectUtil.options)
-  //     const expectStdout = res.res.expectUtil.createStdout();
-  //     const expectStderr = res.res.expectUtil.createStderr();
+  //     const expectStdout = await res.res.expectUtil.createStdout();
+  //     const expectStderr = await res.res.expectUtil.createStderr();
   //     expectStderr.lineContainsString({
   //       match: "command does-not-exist not found",
   //       occurrences: 1,
@@ -69,8 +69,8 @@ describe("errors", () => {
   //       { logLevel: "debug" }
   //     );
   //     expectIsFail(res);
-  //     const expectStdout = res.res.expectUtil.createStdout();
-  //     const expectStderr = res.res.expectUtil.createStderr();
+  //     const expectStdout = await res.res.expectUtil.createStdout();
+  //     const expectStderr = await res.res.expectUtil.createStderr();
   //     expectStderr.lineContainsString({
   //       match: "Error: Nonexistent flag: --blah",
   //       occurrences: 1,
@@ -95,8 +95,8 @@ describe("errors", () => {
   //       { logLevel: "debug" }
   //     );
   //     expectIsFail(res);
-  //     const expectStdout = res.res.expectUtil.createStdout();
-  //     const expectStderr = res.res.expectUtil.createStderr();
+  //     const expectStdout = await res.res.expectUtil.createStdout();
+  //     const expectStderr = await res.res.expectUtil.createStderr();
   //     expectStderr.lineContainsString({
   //       match: `Error: command initialise:workspace:nonExistentArg not found`,
   //       occurrences: 1,
@@ -115,8 +115,8 @@ describe("errors", () => {
   //       { logLevel: "debug" }
   //     );
   //     expectIsFail(res);
-  //     const expectStdout = res.res.expectUtil.createStdout();
-  //     const expectStderr = res.res.expectUtil.createStderr();
+  //     const expectStdout = await res.res.expectUtil.createStdout();
+  //     const expectStderr = await res.res.expectUtil.createStderr();
   //     expectStderr.lineContainsString({
   //       match: `Missing required flag workspacePath`,
   //       occurrences: 1,

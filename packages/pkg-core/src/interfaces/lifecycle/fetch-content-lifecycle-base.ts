@@ -7,13 +7,15 @@ import {
   ContextCommand,
   FetchOptions,
   FetchResult,
-  LifecycleMappedReturnByMethod,
-  LifecycleOptionsByMethodKeyedByProviderArray,
+  LifecycleReturnByMethodArray,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
   LifecycleStaticInterface,
-  Result,
+  Result
 } from "../../__types__";
-import { AsyncHook } from "../../hooks";
+import { AsyncHook, TapFn } from "../../hooks";
 import { Config } from "../../validation";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
 /**
  Fetch is an auxilary lifecycle that isn't part of the other user-initiated types.
@@ -75,9 +77,9 @@ export class FetchContentLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeFetchContentHook = ins.beforeFetchContent();
-    const fetchContentHook = ins.fetchContent();
-    const afterFetchContentHook = ins.afterFetchContent();
+    const beforeFetchContentHook = ins.beforeFetchContent() as TapFn<'fetchContent'>;
+    const fetchContentHook = ins.fetchContent() as TapFn<'fetchContent'>;
+    const afterFetchContentHook = ins.afterFetchContent() as TapFn<'fetchContent'>;
 
     if (beforeFetchContentHook) {
       context.logger.debug(
@@ -105,22 +107,27 @@ export class FetchContentLifecycleBase<
     }
   }
 
-  async executeFetchContent(
-    options: LifecycleOptionsByMethodKeyedByProviderArray<"fetchContent">
+  async executeFetchContent(options: {
+    common: CommonExecuteOptions,
+    options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"fetchContent">
+  }
   ): Promise<
-    Result<LifecycleMappedReturnByMethod<"fetchContent">, { error: BacError }>
+    Result<LifecycleReturnByMethodArray<"fetchContent">, { error: BacError }>
   > {
+
+    const optionsWithCommon = mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'fetchContent'>(options)
+
     await FetchContentLifecycleBase.hooks.beforeFetchContent.mapAsync({
-      options,
+      options: optionsWithCommon,
     });
 
     const res = await FetchContentLifecycleBase.hooks.fetchContent.mapAsync({
-      options,
+      options: optionsWithCommon,
       strict: true,
     });
     assertIsResult(res);
     await FetchContentLifecycleBase.hooks.afterFetchContent.mapAsync({
-      options,
+      options: optionsWithCommon,
     });
     return res;
   }

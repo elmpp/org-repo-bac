@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-core-package-manager-pnpm",
-  "version": "0.0.0-latest-20230902060501",
+  "version": "0.0.0-latest-20230909081653",
   "description": "Core plugin package @business-as-code/plugin-core-package-manager-pnpm",
   "main": "src/index.ts",
   "files": [

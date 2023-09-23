@@ -2,10 +2,10 @@ import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { xfs } from "@business-as-code/fslib";
 import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as oclif from "@oclif/core";
-import crypto from 'crypto'
-import { Config } from "../validation";
-import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
-import { constants } from "../constants";
+// import crypto from 'crypto'
+// import { Config } from "../validation";
+// import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
+// import { constants } from "../constants";
 
 // import fs from 'fs/promises'
 
@@ -74,73 +74,87 @@ export async function loadModule(pathOrPluginOrConfig: string | oclif.Interfaces
 
 }
 
+export const resolveCoreConfig = (configFilename: string): AddressPathAbsolute => {
+  const configPath = addr.packageUtils.resolve({
+    address: addr.parsePackage(
+      `@business-as-code/core/etc/config/${configFilename}`
+    ),
+    // projectCwd: addr.parsePath(
+    //   context.oclifConfig.root
+    // ) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
+    projectCwd: addr.pathUtils.cwd, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
+    strict: true,
+  });
+  return configPath
+}
+
 export const tmpResolvableFolder = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath(`../etc/tmp`))
 
-/**
- * loads a config file via require. Has fallback behaviour whereby it's copied into the present checkout.
- * This is necessary when other workspace instances are being cliLinked back to this checkout and require()ing
- * their configs isn't possible
- */
-export function loadConfig(workspacePath: AddressPathAbsolute): Config {
-  // let configModule: any
-  // if (typeof configPath === 'string') {
-  //   configModule = require(configPath)
-  // }
-  // const requirePath = addr.pathUtils.join(base, addr.parsePath(constants.RC_FILENAME))
-  // const configModule = require(`../etc/resolvable-tmp/${constants.RC_FILENAME}`)
+// /**
+//  * loads a config file via require. Has fallback behaviour whereby it's copied into the present checkout.
+//  * This is necessary when other workspace instances are being cliLinked back to this checkout and require()ing
+//  * their configs isn't possible
+//  */
+// export function loadConfig(workspacePath: AddressPathAbsolute): Config {
+//   // let configModule: any
+//   // if (typeof configPath === 'string') {
+//   //   configModule = require(configPath)
+//   // }
+//   // const requirePath = addr.pathUtils.join(base, addr.parsePath(constants.RC_FILENAME))
+//   // const configModule = require(`../etc/resolvable-tmp/${constants.RC_FILENAME}`)
 
-  // console.log(`configModule :>> `, configModule)
+//   // console.log(`configModule :>> `, configModule)
 
-  // assert(configModule.config)
+//   // assert(configModule.config)
 
 
-  const importConfig = (configPath: AddressPathAbsolute) => {
+//   const importConfig = (configPath: AddressPathAbsolute) => {
 
-    const tmpFilename = addr.parsePath(`config-${crypto.randomBytes(16).toString('hex')}`)
-    const tmpFilepath = addr.pathUtils.join(tmpResolvableFolder, tmpFilename)
+//     const tmpFilename = addr.parsePath(`config-${crypto.randomBytes(16).toString('hex')}`)
+//     const tmpFilepath = addr.pathUtils.join(tmpResolvableFolder, tmpFilename)
 
-    // console.log(`tmpFilepath, ../etc/${tmpFilename.original} :>> `, tmpFilepath, )
+//     // console.log(`tmpFilepath, ../etc/${tmpFilename.original} :>> `, tmpFilepath, )
 
-    // const sourcePath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME))
-    xfs.copyFileSync(configPath.address, tmpFilepath.address)
+//     // const sourcePath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME))
+//     xfs.copyFileSync(configPath.address, tmpFilepath.address)
 
-    const configModule = require(`../etc/tmp/${tmpFilename.original}`)
-    return configModule
-    // // console.log(`configModule :>> `, configModule)
+//     const configModule = require(`../etc/tmp/${tmpFilename.original}`)
+//     return configModule
+//     // // console.log(`configModule :>> `, configModule)
 
-    // assert(configModule.config)
-    // return configModule.config
+//     // assert(configModule.config)
+//     // return configModule.config
 
-    // return fsUtils.loadConfig(this._tmpResolvablePath)
-  }
+//     // return fsUtils.loadConfig(this._tmpResolvablePath)
+//   }
 
-  const configPath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME)) as AddressPathAbsolute
+//   const configPath = addr.pathUtils.join(workspacePath, addr.parsePath(constants.RC_FILENAME)) as AddressPathAbsolute
 
-  const relativePath = addr.pathUtils.relative({destAddress: configPath, srcAddress: addr.parsePath(__filename) as AddressPathAbsolute})
-  try {
-    const configModule = require(relativePath.original)
-    // const configModule = require.resolve('constants.RC_FILENAME', {paths: [workspacePath.original]})
-    if (!configModule.config) {
-      throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not found in existent file '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`)
-    }
-    return configModule.config
-  }
-  catch {}
+//   const relativePath = addr.pathUtils.relative({destAddress: configPath, srcAddress: addr.parsePath(__filename) as AddressPathAbsolute})
+//   try {
+//     const configModule = require(relativePath.original)
+//     // const configModule = require.resolve('constants.RC_FILENAME', {paths: [workspacePath.original]})
+//     if (!configModule.config) {
+//       throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not found in existent file '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`)
+//     }
+//     return configModule.config
+//   }
+//   catch {}
 
-  try {
-    const configModule = importConfig(configPath)
-    if (!configModule.config) {
-      throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config imported from '${configPath.original} but config export not found inside'. Workspace path supplied: '${workspacePath.original}'`)
-    }
-    return configModule.config
-  }
-  catch (err) {
-    throw new BacErrorWrapper(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not importable()able at '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`, err as Error)
-  }
-}
+//   try {
+//     const configModule = importConfig(configPath)
+//     if (!configModule.config) {
+//       throw new BacError(MessageName.CONFIGURATION_CONTENT_ERROR, `Config imported from '${configPath.original} but config export not found inside'. Workspace path supplied: '${workspacePath.original}'`)
+//     }
+//     return configModule.config
+//   }
+//   catch (err) {
+//     throw new BacErrorWrapper(MessageName.CONFIGURATION_CONTENT_ERROR, `Config not importable()able at '${configPath.original}'. Workspace path supplied: '${workspacePath.original}'`, err as Error)
+//   }
+// }
 
 export const sanitise = (str: string): string => {
   // @ts-ignore
-  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\:]+/g, '_')
+  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\:.]+/g, '_')
   return res
 }

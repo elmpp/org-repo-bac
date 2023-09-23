@@ -332,7 +332,7 @@ importers:
       '@business-as-code/core': workspace:*
       '@business-as-code/error': workspace:*
       '@business-as-code/fslib': workspace:*
-      '@business-as-code/tests-git-server': workspace:0.0.0-bollards-20230901073049
+      '@business-as-code/tests-git-server': workspace:*
       '@oclif/core': 2.6.4
       '@oclif/test': ^2.3.9
       '@types/node': 18.14.2

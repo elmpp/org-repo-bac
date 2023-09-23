@@ -17,12 +17,13 @@ import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
-  configSchema,
   constants,
   fsUtils,
   formatUtils,
   Outputs,
   stringUtils,
+  BacService,
+  Context,
 } from "@business-as-code/core";
 import { assertIsError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
@@ -34,6 +35,7 @@ import expectMatchers from "expect/build/matchers";
 import fs from "fs";
 import path from "path";
 import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
+import { Config, validators } from "@business-as-code/core";
 
 // const REGEX_STRIP_ANSI_ESCAPE_CODES = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
 
@@ -47,7 +49,7 @@ type Options = {
   //  destinationPath: AddressPathAbsolute
   // /** The base path where this testing is happening. Will be same as TEST_CACHE_PATH */
   // enclosingPath: AddressPathAbsolute
-  //  context: Context
+  context: Context
   testEnvVars: TestEnvVars;
   tree: Tree;
   exitCode: number;
@@ -104,20 +106,27 @@ export class ExpectUtil {
     ); // i.e. not the cache path
   }
 
-  createStdout(): ExpectText {
+  async createStdout(): Promise<ExpectText> {
     return new ExpectText(this.options.outputs.stdout, this.options);
   }
-  createStderr(): ExpectText {
+  async createStderr(): Promise<ExpectText> {
     return new ExpectText(this.options.outputs.stderr, this.options);
   }
-  createText(text: string): ExpectText {
+  async createText(text: string): Promise<ExpectText> {
     return new ExpectText(text, this.options);
   }
-  createFs(): ExpectFs & Tree {
+  async createFs(): Promise<ExpectFs & Tree> {
     return ExpectFs.fromTree(this.options, this.options.tree);
   }
-  createConfig(): ExpectConfig {
-    return new ExpectConfig(this.createFs(), this.options);
+  async createConfig(): Promise<ExpectConfig> {
+    return new ExpectConfig(await this.createFs(), {
+      ...this.options,
+      bacService: await this.options.context.serviceFactory('bac', {
+        context: this.options.context,
+        workspacePath: this.options.testEnvVars.workspacePath,
+        workingPath: '.',
+      })
+    });
   }
   // createBootstrap(): ExpectBootstrap {
   //   return new ExpectBootstrap(this.options)
@@ -129,12 +138,12 @@ export class ExpectUtil {
 
 /** assertions on the workspace config */
 class ExpectConfig {
-  options: Options;
+  options: Options & {bacService: BacService};
   expectFs: ExpectFs;
   /** @internal - do not use!! */
   _tmpResolvablePath: AddressPathAbsolute;
 
-  constructor(expectFs: ExpectFs, options: Options) {
+  constructor(expectFs: ExpectFs, options: Options & {bacService: BacService}) {
     this.options = options;
     this.expectFs = expectFs;
     this._tmpResolvablePath = addr.pathUtils.join(fsUtils.tmpResolvableFolder, addr.parsePath(constants.RC_FILENAME)) as AddressPathAbsolute
@@ -155,9 +164,21 @@ class ExpectConfig {
   //   // return fsUtils.loadConfig(this._tmpResolvablePath)
   // }
 
+  async loadCoreConfigContents(configFilename: string): Promise<string> {
+    const configPath = fsUtils.resolveCoreConfig(configFilename)
+    const config = xfs.readFileSync(configPath.address, 'utf-8')
+    return config
+    // return validators.config.configSchema.parse(config);
+  }
+  // async loadCoreConfigContents(configFilename: string): Promise<Config> {
+  //   const configPath = fsUtils.resolveCoreConfig(configFilename)
+  //   const config = xfs.readFileSync(configPath.address, 'utf-8')
+  //   return validators.config.configSchema.parse(config);
+  // }
+
   async isValid(): Promise<ExpectConfig> {
-    const config = fsUtils.loadConfig(this.options.testEnvVars.workspacePath);
-    configSchema.parse(config);
+    const config = this.options.bacService.loadConfig();
+    validators.config.configSchema.parse(config);
     return this;
   }
 
@@ -200,11 +221,12 @@ class ExpectFs extends HostCreateLazyTree {
     return this.options.tree.exists(filePath) || fs.existsSync(filePathAbs);
   }
 
-  // debug() {
-  //   return {
-  //     files: schematicTestUtils.getFiles(this.options.tree),
-  //   }
-  // }
+  debug() {
+      const treeFiles: string[] = [];
+      this.options.tree.visit((p) => treeFiles.push(p));
+      console.log(`(treeFiles (not inc empty dirs)) :>> `, require('util').inspect((treeFiles), {showHidden: false, depth: undefined, colors: true}))
+      return treeFiles;
+  }
 }
 
 class ExpectText {

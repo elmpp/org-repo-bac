@@ -1,5 +1,4 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
-import { Context, ContextCommand, InferOkResult, Result } from ".";
+import { ContextCommand, InferOkResult, Result } from ".";
 import {
   IsEmptyObject,
   SafeGet,
@@ -7,7 +6,7 @@ import {
   UnionToIntersection,
   UnwrapPromise,
   ValueOf,
-} from "./util";
+} from "./lib";
 
 /** instance types of all loaded services */
 
@@ -34,13 +33,13 @@ import {
 //   [LName in keyof Bac.Lifecycles]: Bac.Lifecycles[LName]["staticType"];
 // };
 
-export type LifecycleInitialiseCommonOptions = {
-  context: Context;
-  /** lifecycle instances are recreated when targeting different directories */
-  workspacePath: AddressPathAbsolute;
-  /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
-  workingPath: string;
-};
+// export type LifecycleInitialiseCommonOptions = {
+//   context: Context;
+//   /** lifecycle instances are recreated when targeting different directories */
+//   workspacePath: AddressPathAbsolute;
+//   /** relative path that is joined to destinationPath. Useful for cwd() of clients, e.g. git, pwd */
+//   workingPath: string;
+// };
 
 // export type LifecycleInitialiseOptions<LName extends keyof Lifecycles> =
 //   Parameters<LifecyclesStatic[LName]["initialise"]>[0];
@@ -226,7 +225,7 @@ type LifecycleReturnsByProviderMap = {
   [ALMethod in _LifecycleAllMethods]: {
     [ALProvider in _LifecycleAllProviders]: {
       provider: ALProvider;
-      res: LifecycleMethodType<ALMethod, ALProvider> extends never
+      options: LifecycleMethodType<ALMethod, ALProvider> extends never
         ? never
         : LifecycleReturnType<LifecycleMethodType<ALMethod, ALProvider>>;
       _method?: ALMethod;
@@ -272,22 +271,22 @@ type LifecycleOptionsWithoutCommonByProviderMap = {
 // export type _LifecycleOptionsByMethodMinusComplex<T extends {provider: string, options: {context: Context}}> = Omit<T, 'options'> & {options: Omit<T['options'], 'context'>}
 
 /** Full mapped result. Returned from hook.map (when all options are called) */
-export type LifecycleMappedReturnByMethod<
+export type LifecycleReturnByMethodArray<
 LMethod extends LifecycleMethods = LifecycleMethods
 > = Array<Exclude<
 ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
 // ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
-{ res: never }
+{ options: never }
 >>;
 /** a singular result. Returned from hook.callBail (when first positive provider shortcircuits the other options) */
-export type LifecycleSingularReturnByMethod<
+export type LifecycleReturnByMethodSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
   ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
   // ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
-  { res: never }
+  { options: never }
 >;
-export type LifecycleSingularReturnByMethodAndProvider<
+export type LifecycleReturnByMethodAndProviderSingular<
   LMethod extends LifecycleMethods = LifecycleMethods,
   LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
 > = Extract<
@@ -296,13 +295,13 @@ export type LifecycleSingularReturnByMethodAndProvider<
 >;
 
 /** a union of method options that are keyed by provider. Suitable for calling Bail hook types - https://tinyurl.com/2deua67q */
-export type LifecycleOptionsByMethodKeyedByProvider<
+export type LifecycleOptionsByMethodKeyedByProviderSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
   ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
   { options: never }
 >;
-export type LifecycleOptionsByMethodKeyedByProviderWithoutCommon<
+export type LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Extract<Exclude<
   ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
@@ -380,7 +379,7 @@ export type LifecycleProvidersForAsByMethod<
 type LifecycleReturnType<
   T extends () => ((...args: any[]) => Result<unknown, any>) | undefined
   // T extends () => ((...args: any[]) => any) | undefined
-> = InferOkResult<UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>>;
+> = InferOkResult<UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>>['res'];
 // > = UnwrapPromise<ReturnType<NonNullable<ReturnType<T>>>>;
 type LifecycleOptionsType<
   T extends () => ((...args: any[]) => any) | undefined

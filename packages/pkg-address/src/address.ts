@@ -25,8 +25,6 @@ import {
 import { AddressTypeByGroup } from "./__types__/util";
 import { AddressUrlUtils, createAddressUrl } from "./address-url";
 
-type DD = AddressTypeByGroup<"url">
-
 // export const address = {
 //   parseAsType() {}  // <!---- used to replace struct-utils#parsePackageDescriptor etc
 // }

@@ -3,4 +3,5 @@
 export * from './config'
 export * from './config-project'
 export * from './config-project-source'
+export * from './config-synchronised'
 export * from './config-team'

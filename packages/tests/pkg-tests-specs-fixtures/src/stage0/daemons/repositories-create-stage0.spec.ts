@@ -8,22 +8,17 @@ describe("repositories-create", () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
         const assertForRepo = async (repo: string) => {
-          await testContext.runServiceCb({
-            serviceOptions: {
-              serviceName: "git",
-              cb: async ({ service }) => {
-                const gitUrl = `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/${repo}`;
-                const lsRemoteRes = await service.remoteList(gitUrl);
-
-                expectIsOk(lsRemoteRes);
-
-                expect(lsRemoteRes.res).toMatch("refs/heads/main");
-              },
-              initialiseOptions: {
-                workingPath: ".",
-              },
-            },
+          const service = await testContext.context.serviceFactory("git", {
+            context: testContext.context,
+            workingPath: ".",
           });
+
+          const gitUrl = `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/${repo}`;
+          const lsRemoteRes = await service.remoteList(gitUrl);
+
+          expectIsOk(lsRemoteRes);
+
+          expect(lsRemoteRes.res).toMatch("refs/heads/main");
         };
 
         await assertForRepo("repo1.git"); // only testing the git-server side of things. 1 repo only required
@@ -34,27 +29,25 @@ describe("repositories-create", () => {
     it("repositories available via git-ssh with private key", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        const assertForRepo = async (repo: string) => {
-          await testContext.runServiceCb({
-            serviceOptions: {
-              serviceName: "git",
-              cb: async ({ service }) => {
-                const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
-                const lsRemoteRes = await execUtils.promiseAwait(service.remoteList(gitUrl, {
-                  sshStrictHostCheckingDisable: true, // actually ignored when sshPrivateKeyPath=true
-                  sshPrivateKeyPath:
-                    testContext.testEnvVars.sshPrivateKeyPath.original,
-                }));
 
-                expectIsOk(lsRemoteRes);
-                // console.log(`lsRemoteRes :>> `, lsRemoteRes)
-                expect(lsRemoteRes.res).toMatch("refs/heads/main");
-              },
-              initialiseOptions: {
-                workingPath: ".",
-              },
-            },
+        const assertForRepo = async (repo: string) => {
+          const service = await testContext.context.serviceFactory("git", {
+            context: testContext.context,
+            workingPath: ".",
           });
+
+          const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
+          const lsRemoteRes = await execUtils.promiseAwait(
+            service.remoteList(gitUrl, {
+              sshStrictHostCheckingDisable: true, // actually ignored when sshPrivateKeyPath=true
+              sshPrivateKeyPath:
+                testContext.testEnvVars.sshPrivateKeyPath.original,
+            })
+          );
+
+          expectIsOk(lsRemoteRes);
+
+          expect(lsRemoteRes.res).toMatch("refs/heads/main");
         };
 
         await assertForRepo("repo1.git"); // only testing the git-server side of things. 1 repo only required
@@ -63,24 +56,22 @@ describe("repositories-create", () => {
     it("repositories not available via git-ssh without private key added", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
+
         const assertForRepo = async (repo: string) => {
-          await testContext.runServiceCb({
-            serviceOptions: {
-              serviceName: "git",
-              cb: async ({ service }) => {
-                const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
-                expect(() => execUtils.promiseAwait(
-                  service.remoteList(gitUrl, {
-                    sshStrictHostCheckingDisable: true,
-                    // sshPrivateKeyPath: testContext.testEnvVars.sshPrivateKeyPath.original, // should trigger an error
-                  })
-                )).rejects.toThrow(`Promise did not resolve within expected`);
-              },
-              initialiseOptions: {
-                workingPath: ".",
-              },
-            },
+          const service = await testContext.context.serviceFactory("git", {
+            context: testContext.context,
+            workingPath: ".",
           });
+
+          const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
+          expect(() =>
+                  execUtils.promiseAwait(
+                    service.remoteList(gitUrl, {
+                      sshStrictHostCheckingDisable: true,
+                      // sshPrivateKeyPath: testContext.testEnvVars.sshPrivateKeyPath.original, // should trigger an error
+                    })
+                  )
+                ).rejects.toThrow(`Promise did not resolve within expected`);
         };
 
         await assertForRepo("repo1.git");
@@ -91,27 +82,23 @@ describe("repositories-create", () => {
     it("repositories available via git-ssh without private key", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        const assertForRepo = async (repo: string) => {
-          await testContext.runServiceCb({
-            serviceOptions: {
-              serviceName: "git",
-              cb: async ({ service }) => {
-                const gitUrl = `ssh://localhost:${constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT}/${repo}`;
-                const lsRemoteRes = await service.remoteList(gitUrl, {
-                  sshStrictHostCheckingDisable: true,
-                  sshPrivateKeyPath:
-                    testContext.testEnvVars.sshPrivateKeyPath.original,
-                });
 
-                expectIsOk(lsRemoteRes);
-                // console.log(`lsRemoteRes :>> `, lsRemoteRes)
-                expect(lsRemoteRes.res).toMatch("refs/heads/main");
-              },
-              initialiseOptions: {
-                workingPath: ".",
-              },
-            },
+        const assertForRepo = async (repo: string) => {
+          const service = await testContext.context.serviceFactory("git", {
+            context: testContext.context,
+            workingPath: ".",
           });
+
+          const gitUrl = `ssh://localhost:${constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT}/${repo}`;
+          const lsRemoteRes = await service.remoteList(gitUrl, {
+            sshStrictHostCheckingDisable: true,
+            sshPrivateKeyPath:
+              testContext.testEnvVars.sshPrivateKeyPath.original,
+          });
+
+          expectIsOk(lsRemoteRes);
+          // console.log(`lsRemoteRes :>> `, lsRemoteRes)
+          expect(lsRemoteRes.res).toMatch("refs/heads/main");
         };
 
         await assertForRepo("repo1.git"); // only testing the git-server side of things. 1 repo only required

@@ -1,5 +1,5 @@
-import { AddressPathAbsolute, addr } from "@business-as-code/address";
-import { FetchOptions, assertIsOk, constants, expectIsOk } from "@business-as-code/core";
+import { addr } from "@business-as-code/address";
+import { FetchOptions, constants, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 import assert from "assert";
 
@@ -8,7 +8,7 @@ describe("fetch-content", () => {
   describe("git", () => {
     it("fetches and caches new content", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        defaultLogLevel: "debug",
+        // defaultLogLevel: "debug",
       });
       await persistentTestEnv.test({}, async (testContext) => {
         const sourceAddress = addr.parseUrl("ssh://localhost:2224/repo1.git");
@@ -30,19 +30,18 @@ describe("fetch-content", () => {
 
         const res =
           await testContext.context.lifecycles.fetchContent.executeFetchContent(
-            [
-              {
-                provider: "git",
-                options: {
-                  context: testContext.context,
-                  workspacePath: testContext.testEnvVars.workspacePath,
-                  // workspacePath: addr.parsePath(
-                  //   constants.CACHE_STORAGE_PATH
-                  // ) as AddressPathAbsolute,
+            {
+              common: {
+                context: testContext.context,
+                workspacePath: testContext.testEnvVars.workspacePath,
+              },
+              options: [
+                {
+                  provider: "git",
                   options: fetchOptions,
                 },
-              },
-            ]
+              ],
+            }
           );
 
         expectIsOk(res);
@@ -50,26 +49,24 @@ describe("fetch-content", () => {
         // const expectUtil = await testContext.createExpectUtil({workspacePath: testContext.testEnvVars.workspacePath})
         // const expectFs = expectUtil.createFs()
 
-        const cacheService = await testContext.context.serviceFactory('cache', {
+        const cacheService = await testContext.context.serviceFactory("cache", {
           context: testContext.context,
-          rootPath: testContext.testEnvVars.workspacePath,
+          workingPath: ".",
           workspacePath: testContext.testEnvVars.workspacePath,
-          workingPath: '.'
-        })
+        });
 
-        expect(await cacheService.has(sourceAddress)).toBeTruthy()
-        const cacheRes = await cacheService.get({address: sourceAddress})
+        expect(await cacheService.has(sourceAddress)).toBeTruthy();
+        const cacheRes = await cacheService.get({ address: sourceAddress });
 
-        expectIsOk(cacheRes)
-        assert(cacheRes.res)
-        const {checksum} = cacheRes.res
+        expectIsOk(cacheRes);
+        assert(cacheRes.res);
+        const { checksum } = cacheRes.res;
 
-        expect(checksum.globalVersion).toEqual(constants.GLOBAL_CACHE_KEY)
-        expect(checksum.key).toHaveLength(40)
+        expect(checksum.globalVersion).toEqual(constants.GLOBAL_CACHE_KEY);
+        expect(checksum.key).toHaveLength(40);
         // console.log(`contentPath, checksum :>> `, contentPath, checksum)
 
         // expect(await xfsCacheManager.has({key: }))
-
 
         // const assertForRepo = async (repo: string) => {
         //   await testContext.runServiceCb({

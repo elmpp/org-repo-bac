@@ -1,14 +1,10 @@
+import { BaseCommand, ContextCommand, Oclif } from "@business-as-code/core";
 import {
-  BaseCommand,
-  ContextCommand,
-  Oclif,
-  Result,
-  Interfaces as _Interfaces,
-  execUtils as _execUtils,
-  execUtils,
-} from "@business-as-code/core";
+  ArgsInfer,
+  BaseParseOutput,
+  FlagsInfer,
+} from "@business-as-code/core/commands/base-command";
 import * as oclif from "@oclif/core";
-import { FlagsInfer, ArgsInfer, BaseParseOutput } from "@business-as-code/core/commands/base-command";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 
 /** here purely to allow test-env to create a context */
@@ -38,7 +34,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   // @ts-ignore
   async execute(context: ContextCommand<typeof ContextTestCommand>) {
-    throw new Error(`Should not be ran!!`)
+    throw new Error(`Should not be ran!!`);
   }
 
   static async createContext<T extends typeof oclif.Command>(
@@ -70,17 +66,20 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     return context;
   }
 
-
   /**
    @internal
    */
-   async getContext(
-    parseOutput: ParserOutput<FlagsInfer<typeof ContextTestCommand>, FlagsInfer<typeof ContextTestCommand>, ArgsInfer<typeof ContextTestCommand>> &
+  async getContext(
+    parseOutput: ParserOutput<
+      FlagsInfer<typeof ContextTestCommand>,
+      FlagsInfer<typeof ContextTestCommand>,
+      ArgsInfer<typeof ContextTestCommand>
+    > &
       BaseParseOutput
   ): Promise<ContextCommand<typeof ContextTestCommand>> {
     await this.initialise({ parseOutput, config: this.config });
     const context = await this.setupContext({ parseOutput });
     await this.initialisePlugins({ context });
-    return context
+    return context;
   }
 }

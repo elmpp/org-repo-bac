@@ -8,10 +8,11 @@ import {
   MessageName,
 } from "@business-as-code/error";
 import {
-  LifecycleMappedReturnByMethod,
   LifecycleMethods,
+  LifecycleOptionsByMethodAndProvider,
   LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleSingularReturnByMethod,
+  LifecycleReturnByMethodArray,
+  LifecycleReturnByMethodSingular,
   Result,
   fail,
   ok,
@@ -19,12 +20,19 @@ import {
 
 // const dbg = debug('tapable')
 
+export type TapFn<LMethod extends LifecycleMethods> = (
+  options: LifecycleOptionsByMethodAndProvider<LMethod>
+) => Promise<
+  Result<LifecycleReturnByMethodSingular<LMethod>, { error: BacError }>
+>;
+
 /** A `hook` that can be `tap`ped for easy extensibility */
 export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
   protected _name: string; // to cover the after/before distinctness
   protected _lifecycleMethod: LMethod; // after/before should give the canonical hook name
   protected _args: string[];
-  taps: { nameOrProvider: string; fn: Function }[];
+  taps: { nameOrProvider: string; fn: TapFn<LMethod> }[];
+  // taps: { nameOrProvider: string; fn: Function }[];
   protected _async: boolean;
   // protected _fName: string | null
 
@@ -98,7 +106,7 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
    */
   tap(
     nameOrProvider: string,
-    fn: Function,
+    fn: TapFn<LMethod>,
     options?: { before?: string; after?: string }
   ) {
     if (process.env.NODE_ENV !== "production") {
@@ -145,7 +153,7 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
    */
   tapAsync(
     nameOrProvider: string,
-    fn: Function,
+    fn: TapFn<LMethod>,
     options?: { before?: string; after?: string }
   ) {
     this._async = true;
@@ -208,13 +216,14 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
     options: LifecycleOptionsByMethodKeyedByProviderArray<LMethod>;
     strict?: boolean;
   }): Promise<
-    Result<LifecycleSingularReturnByMethod<LMethod>, { error: BacError }>
+    Result<LifecycleReturnByMethodSingular<LMethod>, { error: BacError }>
   > {
     this._testArgs(options, false);
 
     // dbg('%s.callAsync%o', this.name, args)
 
-    let res: LifecycleSingularReturnByMethod<LMethod>;
+    // let res: Result<LifecycleReturnByMethodSingular<LMethod>, {error: BacError}>;
+    let res: LifecycleReturnByMethodSingular<LMethod>;
 
     // console.log(`options :>> `, options);
     // console.log(`options :>> `, options);
@@ -250,12 +259,11 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 
         try {
           const fnRes = await fn(anOptions.options);
-          if (fnRes) {
-            // @ts-ignore
+          if (fnRes.success) {
             res = {
               provider: nameOrProvider,
-              res: fnRes,
-            };
+              options: fnRes.res,
+            } as LifecycleReturnByMethodSingular<LMethod>;
           }
         } catch (err) {
           // this._handleError(nameOrProvider, error as Error);
@@ -303,13 +311,13 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
     options: LifecycleOptionsByMethodKeyedByProviderArray<LMethod>;
     strict?: boolean;
   }): Promise<
-    Result<LifecycleMappedReturnByMethod<LMethod>, { error: BacError }>
+    Result<LifecycleReturnByMethodArray<LMethod>, { error: BacError }>
   > {
     this._testArgs(options, false);
 
     // dbg('%s.callAsync%o', this.name, args)
 
-    let resMapped = [] as LifecycleMappedReturnByMethod<LMethod>;
+    let resMapped = [] as LifecycleReturnByMethodArray<LMethod>;
 
     // console.log(`options :>> `, options);
     // console.log(`options :>> `, options);
@@ -318,7 +326,11 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
     let anOptions: any;
 
     for (anOptions of options) {
-      let res: LifecycleSingularReturnByMethod<LMethod>;
+      let res: Result<
+        LifecycleReturnByMethodSingular<LMethod>,
+        { error: BacError }
+      >;
+      // let res: LifecycleReturnByMethodSingular<LMethod>;
 
       if (!anOptions.provider) {
         throw new Error(
@@ -348,11 +360,10 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
           // eslint-disable-next-line no-await-in-loop
           res = await fn(anOptions.options);
           if (res) {
-            // @ts-ignore
             resMapped.push({
               provider: nameOrProvider,
-              res,
-            });
+              options: res.res,
+            } as LifecycleReturnByMethodSingular<LMethod>);
             break;
           }
         } catch (err) {

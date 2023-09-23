@@ -3,16 +3,16 @@ import {
   Context,
   ContextCommand,
   LifecycleImplementedMethods,
-  LifecycleMappedReturnByMethod,
+  LifecycleReturnByMethodArray,
   LifecycleMethods,
   LifecycleOptionsByMethodAndProvider,
-  LifecycleOptionsByMethodKeyedByProvider,
+  LifecycleOptionsByMethodKeyedByProviderSingular,
   LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleOptionsByMethodKeyedByProviderWithoutCommon,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular,
   LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
   LifecycleProvidersForAsByMethod,
-  LifecycleSingularReturnByMethod,
-  LifecycleSingularReturnByMethodAndProvider,
+  LifecycleReturnByMethodSingular,
+  LifecycleReturnByMethodAndProviderSingular,
   // LifecycleMap,
   // LifecycleMethodOptions,
   // LifecycleMethodReturn,
@@ -193,16 +193,17 @@ describe("types", () => {
       it("can derive a union of lifecycle method return types with provider key", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceReturn =
-          LifecycleSingularReturnByMethod<"initialiseWorkspace">;
+          LifecycleReturnByMethodSingular<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceReturn>().toMatchTypeOf<
-          { provider: "core"; res: {} } | { provider: "git"; res: { b: "b" } }
+          | { provider: "core"; options: {} }
+          | { provider: "git"; options: { b: "b" } }
         >();
       });
       it("can derive a union of lifecycle option types with provider key without common options (context+workspacePath)", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByMethodKeyedByProviderWithoutCommon<"initialiseWorkspace">;
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<{
           provider: "core";
@@ -214,7 +215,7 @@ describe("types", () => {
         }>();
 
         type AllProviders =
-          LifecycleOptionsByMethodKeyedByProvider<LifecycleImplementedMethods>;
+          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>;
         type NonImplementers = Extract<AllProviders, { options: never }>;
         expectTypeOf<NonImplementers>().toBeNever();
 
@@ -256,11 +257,23 @@ describe("types", () => {
             options: any;
           }[]
         >();
+
+        type ConfigureWorkspaceOptions =
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"configureWorkspace">;
+        expectTypeOf<ConfigureWorkspaceOptions>().not.toBeAny();
+        expectTypeOf<ConfigureWorkspaceOptions>().toMatchTypeOf<
+          {
+            provider: "git";
+            options: {
+              address: string,
+            };
+          }[]
+        >();
       });
       it("can derive a union of lifecycle option types with provider key 1", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByMethodKeyedByProvider<"initialiseWorkspace">;
+          LifecycleOptionsByMethodKeyedByProviderSingular<"initialiseWorkspace">;
         expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
           | { provider: "core"; options: { options: any } }
@@ -268,7 +281,7 @@ describe("types", () => {
         >();
 
         type AllProviders =
-          LifecycleOptionsByMethodKeyedByProvider<LifecycleImplementedMethods>;
+          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>;
         type NonImplementers = Extract<AllProviders, { options: never }>;
         expectTypeOf<NonImplementers>().toBeNever();
 
@@ -289,7 +302,8 @@ describe("types", () => {
       });
       it("can derive a union of lifecycle option types with provider key 2", () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
-        type Options = LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">;
+        type Options =
+          LifecycleOptionsByMethodKeyedByProviderSingular<"runWorkspace">;
         expectTypeOf<Options>().not.toBeAny();
 
         // @ts-expect-error: no unused locals
@@ -331,13 +345,13 @@ describe("types", () => {
       it(`accepts LifecycleAllMethods`, () => {
         const anyLifecycleMethod: LifecycleMethods = "configureProject";
         // @ts-expect-error: no unused locals
-        type ReturnType = LifecycleSingularReturnByMethod<
+        type ReturnType = LifecycleReturnByMethodSingular<
           typeof anyLifecycleMethod
         >;
       });
       it("can derive a union of lifecycle option types with provider key 3", () => {
         type Options =
-          LifecycleOptionsByMethodKeyedByProvider<LifecycleImplementedMethods>; // used in the hooks; e.g. callLifecycleBailAsync
+          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>; // used in the hooks; e.g. callLifecycleBailAsync
         expectTypeOf<Options>().not.toBeAny();
         type OptionsProviders = Options["provider"];
 
@@ -346,7 +360,7 @@ describe("types", () => {
           .toMatchTypeOf<"packageManagerPnpm">;
       });
       it("can derive a union of lifecycle option types with provider key 4", () => {
-        type Options = LifecycleMappedReturnByMethod<"configureWorkspace">;
+        type Options = LifecycleReturnByMethodArray<"configureWorkspace">;
         expectTypeOf<Options>().not.toBeAny();
       });
       // it("can derive a union of lifecycle option types with the complex common properties removed", () => {
@@ -401,14 +415,14 @@ describe("types", () => {
           };
         }>();
 
-        type PackageManagerReturn = LifecycleSingularReturnByMethodAndProvider<
+        type PackageManagerReturn = LifecycleReturnByMethodAndProviderSingular<
           "runWorkspace",
           "packageManager"
         >;
         expectTypeOf<PackageManagerReturn>().toMatchTypeOf<{
           // note how options are same for both grouped option types
           provider: "packageManager";
-          res: unknown;
+          options: unknown;
           _method?: "runWorkspace" | undefined;
         }>();
       });

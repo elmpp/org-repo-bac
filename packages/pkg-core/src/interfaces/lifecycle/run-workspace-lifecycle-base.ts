@@ -1,16 +1,18 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { AsyncHook } from "../../hooks";
+import { AsyncHook, TapFn } from "../../hooks";
 // import { AsyncSeriesBailHook, AsyncSeriesHook, Hook } from "tapable";
 import {
-  assertIsResult,
   Context,
   ContextCommand,
-  LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleSingularReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
+  assertIsResult,
 } from "../../__types__";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
@@ -130,9 +132,9 @@ export class RunWorkspaceLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeRunWorkspaceHook = ins.beforeRunWorkspace();
-    const runWorkspaceHook = ins.runWorkspace();
-    const afterRunWorkspaceHook = ins.afterRunWorkspace();
+    const beforeRunWorkspaceHook = ins.beforeRunWorkspace() as TapFn<'runWorkspace'> as TapFn<'runWorkspace'>
+    const runWorkspaceHook = ins.runWorkspace() as TapFn<'runWorkspace'> as TapFn<'runWorkspace'>;
+    const afterRunWorkspaceHook = ins.afterRunWorkspace() as TapFn<'runWorkspace'> as TapFn<'runWorkspace'>;
 
     if (beforeRunWorkspaceHook) {
       context.logger.debug(
@@ -170,24 +172,32 @@ export class RunWorkspaceLifecycleBase<
 
   // async executeRunWorkspace(options: InferHookParams<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>): Promise<InferHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>> {
   async executeRunWorkspace(
-    options: LifecycleOptionsByMethodKeyedByProvider<"runWorkspace">[]
+    options: {
+      common: CommonExecuteOptions;
+      options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runWorkspace">;
+    }
     // options: LifecycleOptionsByMethodAndProvider<"runWorkspace", "core">
   ): Promise<
-    Result<LifecycleSingularReturnByMethod<"runWorkspace">, { error: BacError }>
+    Result<LifecycleReturnByMethodSingular<"runWorkspace">, { error: BacError }>
     // InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
   > {
+
+    const optionsWithCommon = mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'runWorkspace'>(options)
+
     await RunWorkspaceLifecycleBase.hooks.beforeRunWorkspace.callBailAsync({
-      options,
+      options: optionsWithCommon,
     });
     // type DDDD = InferAsyncHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
     const res =
       await RunWorkspaceLifecycleBase.hooks.runWorkspace.callBailAsync({
-        options,
+        options: optionsWithCommon,
         strict: true,
       });
+
     assertIsResult(res);
+
     await RunWorkspaceLifecycleBase.hooks.afterRunWorkspace.callBailAsync({
-      options,
+      options: optionsWithCommon,
     });
     return res;
   }

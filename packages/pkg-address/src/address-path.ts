@@ -169,9 +169,10 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
     resolve(...pathSegments: AddressPath[]): AddressPathAbsolute {
       return addressIns.parsePath(path.posix.resolve(...pathSegments.map((p) => p.address))) as AddressPathAbsolute
     },
-    join(...pathSegments: AddressPath[]): AddressPath {
-      const normal = pathSegments.pop()
-      let posixJoin = path.posix.join(...pathSegments.map((p) => p.addressNormalized), normal!.address)
+    join(...pathSegments: (AddressPath | undefined)[]): AddressPath {
+      const filteredSegments = pathSegments.filter(Boolean) as AddressPath[]
+      const normal = filteredSegments.pop()
+      let posixJoin = path.posix.join(...filteredSegments.map((p) => p.addressNormalized), normal!.address)
       if (posixJoin === '*') posixJoin = './*'
       return addressIns.parsePath(posixJoin)
     },

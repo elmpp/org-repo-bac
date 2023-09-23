@@ -3,11 +3,13 @@ import { BacError } from "@business-as-code/error";
 import { expectTypeOf } from "expect-type";
 import {
   Context,
-  LifecycleSingularReturnByMethod,
+  LifecycleReturnByMethodSingular,
+  ok,
   Result,
 } from "../../__types__";
 import { AsyncHook } from "../index";
 import { InferAsyncHookOptions, InferAsyncHookReturn } from "../__types__";
+import { ExecaReturnValue } from "execa";
 
 describe("Hook", () => {
   describe.only("callLifecycleBailAsync", () => {
@@ -30,12 +32,21 @@ describe("Hook", () => {
         "runWorkspace"
       >(["options"], "runWorkspace", "beforeRunWorkspace");
 
-      hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
+      hook.tapAsync("moon", async (_options) => {
         // return {
         //   provider: "moon",
         //   res: "blah",
         // };
-        return "blah";
+        return ok({
+          provider: 'moon' as const,
+          options: {
+            outputs: {
+              stdout: '',
+              stderr: '',
+            },
+            execa: {} as ExecaReturnValue
+          }
+        })
       });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
@@ -69,7 +80,7 @@ describe("Hook", () => {
         res: "blah",
       });
       type RunWorkspaceReturnTypeSing =
-        LifecycleSingularReturnByMethod<"runWorkspace">;
+        LifecycleReturnByMethodSingular<"runWorkspace">;
       expectTypeOf(res).toEqualTypeOf<
         Result<RunWorkspaceReturnTypeSing, { error: BacError }>
       >();
@@ -93,9 +104,22 @@ describe("Hook", () => {
         "runWorkspace"
       >(["options"], "runWorkspace", "beforeRunWorkspace");
 
-      hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
-        return "blah";
+      hook.tapAsync("moon", async (_options) => {
+        // return ok("blah");
+        return ok({
+          provider: 'moon' as const,
+          options: {
+            outputs: {
+              stdout: '',
+              stderr: '',
+            },
+            execa: {} as ExecaReturnValue
+          }
+        });
       });
+      // hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
+      //   return "blah";
+      // });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
 

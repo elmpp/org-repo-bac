@@ -1,6 +1,6 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { Context } from "./index";
-import { SetOptional, ValueOf } from "./util";
+import { SetOptional, ValueOf } from "./lib";
 
 /** instance types of all loaded services */
 export type ServiceMap = {

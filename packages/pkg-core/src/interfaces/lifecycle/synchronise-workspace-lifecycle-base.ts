@@ -1,17 +1,19 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../../hooks";
-import { Config } from "../../validation";
 import {
-  assertIsResult,
   Context,
   ContextCommand,
-  LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleSingularReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
+  assertIsResult,
 } from "../../__types__";
+import { AsyncHook, TapFn } from "../../hooks";
+import { Config } from "../../validation";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
 /**
  Synchronise acts on already-configured workspace (e.g. ProjectConfig)
@@ -70,9 +72,12 @@ export class SynchroniseWorkspaceLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeSynchroniseWorkspaceHook = ins.beforeSynchroniseWorkspace();
-    const synchroniseWorkspaceHook = ins.synchroniseWorkspace();
-    const afterSynchroniseWorkspaceHook = ins.afterSynchroniseWorkspace();
+    const beforeSynchroniseWorkspaceHook =
+      ins.beforeSynchroniseWorkspace() as TapFn<"synchroniseWorkspace">;
+    const synchroniseWorkspaceHook =
+      ins.synchroniseWorkspace() as TapFn<"synchroniseWorkspace">;
+    const afterSynchroniseWorkspaceHook =
+      ins.afterSynchroniseWorkspace() as TapFn<"synchroniseWorkspace">;
 
     if (beforeSynchroniseWorkspaceHook) {
       context.logger.debug(
@@ -103,25 +108,33 @@ export class SynchroniseWorkspaceLifecycleBase<
     }
   }
 
-  async executeSynchroniseWorkspace(
-    options: LifecycleOptionsByMethodKeyedByProviderArray<"synchroniseWorkspace">
-  ): Promise<
+  async executeSynchroniseWorkspace(options: {
+    common: CommonExecuteOptions;
+    options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"synchroniseWorkspace">;
+  }): Promise<
     Result<
-      LifecycleSingularReturnByMethod<"synchroniseWorkspace">,
+      LifecycleReturnByMethodSingular<"synchroniseWorkspace">,
       { error: BacError }
     >
   > {
+    const optionsWithCommon =
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"synchroniseWorkspace">(
+        options
+      );
+
     await SynchroniseWorkspaceLifecycleBase.hooks.beforeSynchroniseWorkspace.callBailAsync(
-      { options }
+      { options: optionsWithCommon }
     );
 
     const res =
       await SynchroniseWorkspaceLifecycleBase.hooks.synchroniseWorkspace.callBailAsync(
-        { options, strict: true }
+        { options: optionsWithCommon, strict: true }
       );
+
     assertIsResult(res);
+
     await SynchroniseWorkspaceLifecycleBase.hooks.afterSynchroniseWorkspace.callBailAsync(
-      { options }
+      { options: optionsWithCommon }
     );
     return res;
   }

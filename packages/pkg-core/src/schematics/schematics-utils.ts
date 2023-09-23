@@ -756,7 +756,7 @@ export function copy(
     schematicContext.logger.debug(
       `schematicUtils::copy: file ${fromPath} being copied from outside the tree. fromPath: '${fromPath}' toPath: '${toPath}'`
     );
-    console.log(`schematicContext.strategy :>> `, schematicContext.strategy);
+
     if (tree.exists(toPath)) {
       tree.overwrite(to, fs.readFileSync(from, { encoding: "utf8" }));
     } else {

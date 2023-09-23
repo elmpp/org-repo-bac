@@ -28,7 +28,7 @@ import { filter } from "rxjs/operators";
 import { fileURLToPath } from "url";
 import util from "util";
 import {
-  assertIsOk,
+  assertIsResult,
   Context,
   ContextCommand,
   Logger,
@@ -38,7 +38,7 @@ import {
   Result,
   ServiceInitialiseLiteOptions,
   ServiceMap,
-  ServiceStaticMap,
+  ServiceStaticMap
 } from "../__types__";
 import { constants } from "../constants";
 import {
@@ -90,9 +90,12 @@ export abstract class BaseCommand<
   static override baseFlags = {
     logLevel: oclif.Flags.custom<LogLevel>({
       summary: "Specify level for logging.",
+      env: 'BAC_LOG_LEVEL',
       options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
       helpGroup: "GLOBAL",
-      default: "info",
+      default: 'info',
+      // default: async () => process.env.BAC_LOG_LEVEL ?? 'info',
+      // default: "info",
       required: true,
     })(),
     json: oclif.Flags.boolean({
@@ -953,9 +956,10 @@ export abstract class BaseCommand<
 
     const res = await this.execute(context);
 
-    // console.log(`res :>> `, res);
+    assertIsResult(res)
+    if (!res.success) {
+      console.log(`failing res during command execution: '${this.ctor.name}' :>> `, require('util').inspect(res, {showHidden: false, depth: undefined, colors: true}))
 
-    if (!assertIsOk(res)) {
       const err = res.res.error;
       (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
       throw err; // will end up in this.catch()

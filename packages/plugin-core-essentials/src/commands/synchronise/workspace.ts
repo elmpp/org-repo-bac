@@ -4,6 +4,7 @@ import {
   Oclif,
   Interfaces as _Interfaces,
   expectIsOk,
+  fsUtils,
 } from "@business-as-code/core";
 
 export class SynchroniseWorkspace extends BaseCommand<
@@ -19,14 +20,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   static override flags = {
     workspacePath: Oclif.Flags.directory({
-  exists: true,
+      exists: true,
       description: "Workspace name",
       required: true,
     }),
   };
 
-  static override args = {
-  };
+  static override args = {};
 
   async execute(context: ContextCommand<typeof SynchroniseWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
@@ -41,25 +41,40 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // })
     // const configuredConfigAffected = moonService.
 
-    const res = await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace([{
-      provider: 'git',
-      options: {
-        context,
-        workspacePath: context.workspacePath,
-        // workingPath: ".",
-        options: {
-          a: 'a',
-          // name: context.cliOptions.flags.name,
-          // config,
-          // configPath: configPath.original,
-          // cliVersion: context.cliOptions.flags.cliVersion,
-          // cliRegistry: context.cliOptions.flags.cliRegistry,
-          // cliPath: context.cliOptions.flags.cliPath,
-        }, // <!-- typed as any atm ¯\_(ツ)_/¯
-      }
-    }]);
+    // NEED A WAY HERE TO LOAD FILES THROUGH THE CACHE MANAGER BUT AT ARBITRARY LOCATIONS. I.E. THE BAC.JS FILE IN WORKSPACE ROOT AND META DIRECTORY IN .BAC/META
 
-    expectIsOk(res)
-    return res.res.res;
+
+    const config = await fsUtils.loadConfig(context.workspacePath);
+
+    const res =
+      await context.lifecycles.synchroniseWorkspace.executeSynchroniseWorkspace(
+        {
+          common: {
+            context,
+            workspacePath: context.workspacePath,
+          },
+          options: [
+            {
+              provider: "git",
+              options: {
+                // workingPath: ".",
+                config,
+                // options: {
+                //   // a: 'a',
+                //   // name: context.cliOptions.flags.name,
+                //   // config,
+                //   // configPath: configPath.original,
+                //   // cliVersion: context.cliOptions.flags.cliVersion,
+                //   // cliRegistry: context.cliOptions.flags.cliRegistry,
+                //   // cliPath: context.cliOptions.flags.cliPath,
+                // }, // <!-- typed as any atm ¯\_(ツ)_/¯
+              },
+            },
+          ],
+        }
+      );
+
+    expectIsOk(res);
+    return res;
   }
 }

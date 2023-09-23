@@ -156,15 +156,16 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   strict: true,
     // })
 
-    const skeletonConfigPath = addr.packageUtils.resolve({
-      address: addr.parsePackage(
-        `@business-as-code/core/src/etc/config/skeleton.js`
-      ),
-      projectCwd: addr.parsePath(
-        context.oclifConfig.root
-      ) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
-      strict: true,
-    });
+    // const skeletonConfigPath = addr.packageUtils.resolve({
+    //   address: addr.parsePackage(
+    //     `@business-as-code/core/src/etc/config/skeleton.js`
+    //   ),
+    //   projectCwd: addr.parsePath(
+    //     context.oclifConfig.root
+    //   ) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
+    //   strict: true,
+    // });
+    const skeletonConfigPath = fsUtils.resolveCoreConfig('skeleton.js');
 
     const inputConfigPathWithDefault =
       context.cliOptions.flags.configPath ?? skeletonConfigPath;
@@ -265,25 +266,29 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     expectIsOk(configureRes)
 
-    // this is the outputs of the configure providers but in a LifecycleOptionsByMethodKeyedByProviderWithoutCommon format
-    const configuredConfig = configureRes.res.map((c) => {
-      expectIsOk(c.res)
-      return {
-        provider: c.provider,
-        options: {
-          ...c.res.res,
-        },
-      };
-    }) as LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'configureWorkspace'>;
-    await xfs.writeFileSync(
-      addr.pathUtils.join(
-        workspacePath,
-        addr.parsePath(constants.RC_FOLDER),
-        addr.parsePath(constants.RC_FILENAME)
-      ).address,
-      formatUtils.JSONStringify(configuredConfig, true),
-      "utf-8"
-    );
+    console.log(`configureRes :>> `, configureRes)
+
+
+
+    // // this is the outputs of the configure providers but in a LifecycleOptionsByMethodKeyedByProviderWithoutCommon format
+    // const configuredConfig = configureRes.res.map((c) => {
+    //   expectIsOk(c.res)
+    //   return {
+    //     provider: c.provider,
+    //     options: {
+    //       ...c.res.res,
+    //     },
+    //   };
+    // }) as LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'configureWorkspace'>;
+    // await xfs.writeFileSync(
+    //   addr.pathUtils.join(
+    //     workspacePath,
+    //     addr.parsePath(constants.RC_FOLDER),
+    //     addr.parsePath(constants.RC_CONFIGURED_FILENAME)
+    //   ).address,
+    //   formatUtils.JSONStringify(configuredConfig, true),
+    //   "utf-8"
+    // );
 
     context.logger.info(`initialise:workspace: lifecycle configure success`);
 

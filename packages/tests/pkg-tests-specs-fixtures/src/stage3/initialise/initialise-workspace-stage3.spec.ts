@@ -16,8 +16,8 @@ describe("initialise workspace", () => {
         expectIsFail(res);
         // console.log(`res :>> `, res.res.expectUtil.options)
 
-        const expectStdout = res.res.expectUtil.createStdout();
-        const expectStderr = res.res.expectUtil.createStderr();
+        const expectStdout = await res.res.expectUtil.createStdout();
+        const expectStderr = await res.res.expectUtil.createStderr();
         expectStderr.lineContainsString({
           match: "command does-not-exist not found",
           occurrences: 1,
@@ -45,8 +45,8 @@ describe("initialise workspace", () => {
 
         expectIsFail(res);
 
-        const expectStdout = res.res.expectUtil.createStdout();
-        const expectStderr = res.res.expectUtil.createStderr();
+        const expectStdout = await res.res.expectUtil.createStdout();
+        const expectStderr = await res.res.expectUtil.createStderr();
         expectStderr.lineContainsString({
           match: "Error: Nonexistent flag: --blah",
           occurrences: 1,
@@ -72,8 +72,8 @@ describe("initialise workspace", () => {
         );
 
         expectIsFail(res);
-        const expectStdout = res.res.expectUtil.createStdout();
-        const expectStderr = res.res.expectUtil.createStderr();
+        const expectStdout = await res.res.expectUtil.createStdout();
+        const expectStderr = await res.res.expectUtil.createStderr();
         expectStderr.lineContainsString({
           match: `Error: command initialise:workspace:nonExistentArg not found`,
           occurrences: 1,
@@ -93,8 +93,8 @@ describe("initialise workspace", () => {
         );
 
         expectIsFail(res);
-        const expectStdout = res.res.expectUtil.createStdout();
-        const expectStderr = res.res.expectUtil.createStderr();
+        const expectStdout = await res.res.expectUtil.createStdout();
+        const expectStderr = await res.res.expectUtil.createStderr();
         expectStderr.lineContainsString({
           match: `Missing required flag workspacePath`,
           occurrences: 1,

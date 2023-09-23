@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/tests-verdaccio",
   "private": true,
-  "version": "0.0.0-latest-20230902060501",
+  "version": "0.0.0-latest-20230909081653",
   "description": "Tool package @business-as-code/tests-verdaccio",
   "main": "src/index.ts",
   "files": [

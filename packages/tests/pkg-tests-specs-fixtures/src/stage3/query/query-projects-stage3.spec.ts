@@ -25,11 +25,11 @@ describe("query projects", () => {
 
       expectIsOk(res);
 
-      const expectStdout = res.res.expectUtil.createStdout();
+      const expectStdout = await res.res.expectUtil.createStdout();
 
       // it should be compatible with our moon projects validator
       expect(
-        validators.moonQueryProjects.safeParse(
+        validators.moon.queryProjects.safeParse(
           res.res.expectUtil.options.outputs.stdout
         )
       ).toBeTruthy();
@@ -56,7 +56,7 @@ describe("query projects", () => {
 
       expectIsOk(res);
 
-      const expectStdout = res.res.expectUtil.createStdout();
+      const expectStdout = await res.res.expectUtil.createStdout();
       expectStdout.lineContainsString({
         match: `plugin-core-essentials | packages/plugin-core-essentials | library | typescript`,
         occurrences: 1,
@@ -81,8 +81,8 @@ describe("errors", () => {
       );
 
       expectIsOk(res);
-      const expectStdout = res.res.expectUtil.createStdout();
-      const expectStderr = res.res.expectUtil.createStderr();
+      const expectStdout = await res.res.expectUtil.createStdout();
+      const expectStderr = await res.res.expectUtil.createStderr();
 
       expectStdout.asJson({}); // --json isn't turning off loggers. Any console.logs() ??
       expectStderr.lineContainsString({

@@ -23,7 +23,7 @@ describe("initialise workspace", () => {
 
     await (async function expectWorkspaceHasConfig() {
 
-      let expectConfig = res.res.expectUtil.createConfig();
+      let expectConfig = await res.res.expectUtil.createConfig();
 
       const cliCheckoutPath = addr.packageUtils.resolve({
         address: addr.parsePackage(`@business-as-code/cli`),
@@ -46,7 +46,7 @@ describe("initialise workspace", () => {
 
     await (async function expectManifestIsOk() {
 
-      const expectFs = res.res.expectUtil.createFs()
+      const expectFs = await res.res.expectUtil.createFs()
 
       expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'])
     })();
@@ -113,7 +113,7 @@ describe("initialise workspace", () => {
 
         await (async function expectManifestIsOk() {
 
-          const expectFs = resCopy.res.expectUtil.createFs()
+          const expectFs = await resCopy.res.expectUtil.createFs()
 
           expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], expect.stringMatching(/^link\:.*pkg-cli$/))
         })();
@@ -142,7 +142,7 @@ describe("initialise workspace", () => {
 
         await (async function expectManifestIsOk() {
 
-          const expectFs = resCopy.res.expectUtil.createFs()
+          const expectFs = await resCopy.res.expectUtil.createFs()
 
           expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'bollards')
         })();
@@ -163,7 +163,7 @@ describe("initialise workspace", () => {
             "--workspacePath",
             `${testContext.testEnvVars.workspacePath.original}`,
             "--configPath",
-            "packages/pkg-core/src/etc/config/git-http-unreachable.js",
+            "packages/pkg-core/etc/config/git-http-unreachable.js",
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
           ],
@@ -174,15 +174,15 @@ describe("initialise workspace", () => {
         await assertions.workspace.commonFiles(testContext, res); // initialise-workspace has completed and created files
         await assertions.workspace.config(testContext, res, 'git-http-unreachable.js'); // initialise-workspace has still copied the config
 
-        const expectStdout = res.res.expectUtil.createStdout()
-        const expectStderr = res.res.expectUtil.createStderr()
-        const expectFs = res.res.expectUtil.createFs()
+        const expectStdout = await res.res.expectUtil.createStdout()
+        const expectStderr = await res.res.expectUtil.createStderr()
+        const expectFs = await res.res.expectUtil.createFs()
 
         expectStderr.lineContainsString({match: `repository 'http://localhost:8174/thisrepodoesnotexist.git/' not found`, occurrences: 1})
         expectStdout.lineContainsString({match: `repository 'http://localhost:8174/thisrepodoesnotexist.git/' not found`, occurrences: 0})
         expect(expectFs.existsSync(`${constants.RC_FOLDER}/${constants.RC_FILENAME}`)).toBeFalsy() // hasn't written the configured config
 
-        // const expectFs = res.res.expectUtil.createFs();
+        // const expectFs = await res.res.expectUtil.createFs();
         // expect(res.res.expectUtil
         //   .createText(expectFs.readText(`${constants.RC_FOLDER}/${constants.RC_FILENAME}`)).asJson()
         // ).toEqual(expect.objectContaining([{

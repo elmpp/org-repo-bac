@@ -381,6 +381,7 @@ export class TestService {
     cliSource,
     watch = false,
     skipEarlier = false,
+    skipDaemons = false,
     skipPublish = false,
   }: {
     /** actual test file name match */
@@ -391,20 +392,23 @@ export class TestService {
     cliSource: "cliRegistry" | "cliLinked";
     watch?: boolean;
     skipEarlier?: boolean;
+    skipDaemons?: boolean;
     skipPublish?: boolean;
   }): Promise<Result<{}, { error: BacError }>> {
     const { context } = this.options;
 
-    try {
-      await this.ensureDaemons();
-    } catch (err) {
-      console.log(`err :>> `, err)
-      return {
-        success: false as const,
-        res: {
-          error: err as BacError,
-        },
-      };
+    if (!skipDaemons) {
+      try {
+        await this.ensureDaemons();
+      } catch (err) {
+        console.log(`err :>> `, err)
+        return {
+          success: false as const,
+          res: {
+            error: err as BacError,
+          },
+        };
+      }
     }
 
     if (cliSource === "cliRegistry" && !skipPublish) {
@@ -452,6 +456,7 @@ export class TestService {
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
+            BAC_LOG_LEVEL: this.options.context.cliOptions.flags.logLevel,
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
@@ -475,6 +480,7 @@ export class TestService {
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
+            BAC_LOG_LEVEL: this.options.context.cliOptions.flags.logLevel,
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
@@ -498,6 +504,7 @@ export class TestService {
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
+            BAC_LOG_LEVEL: this.options.context.cliOptions.flags.logLevel,
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
@@ -519,6 +526,7 @@ export class TestService {
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
+            BAC_LOG_LEVEL: this.options.context.cliOptions.flags.logLevel,
             FORCE_COLOR: "true",
           },
           stdin: "inherit",

@@ -1,14 +1,13 @@
 import { AddressPathAbsolute, addr } from "@business-as-code/address";
 import { constants } from "@business-as-code/core";
 import {
-  createExpectUtil,
   createPersistentTestEnv,
 } from "@business-as-code/tests-core";
 
 describe("verdaccio", () => {
   it("caches uplinked packages", async () => {
     const persistentTestEnv = await createPersistentTestEnv({
-      defaultLogLevel: "debug",
+      // defaultLogLevel: "debug",
     });
     await persistentTestEnv.test({}, async (testContext) => {
       if (testContext.testEnvVars.cliSourceActive !== "cliRegistry") {
@@ -21,10 +20,14 @@ describe("verdaccio", () => {
         constants.VERDACCIO_STORAGE_PATH
       ) as AddressPathAbsolute;
 
-      const expectUtil = createExpectUtil({
+      const expectUtil = await testContext.createExpectUtil({
         workspacePath: verdaccioStoragePath,
-        testEnvVars: testContext.testEnvVars,
-      });
+        // testEnvVars: testContext.testEnvVars,
+      })
+      // const expectUtil = createExpectUtil({
+      //   workspacePath: verdaccioStoragePath,
+      //   testEnvVars: testContext.testEnvVars,
+      // });
       const expectFs = expectUtil.createFs();
 
       // console.log(`verdaccioStoragePath :>> `, verdaccioStoragePath);

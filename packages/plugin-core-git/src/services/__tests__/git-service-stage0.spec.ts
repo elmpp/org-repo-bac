@@ -10,27 +10,22 @@ describe("git-service", () => {
     it.only("clone standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        const res = await testContext.runServiceCb({
-          serviceOptions: {
-            serviceName: "git",
-            cb: async ({ service }) => {
-              const res = await service.clone(
-                // `https://github.com/elmpp/bac-tester.git`,
-                `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
-                {}
-              );
-              expectIsOk(res)
-            },
-            initialiseOptions: {
-              workingPath: ".",
-            },
-          },
-          // originPath: testContext.envVars.workspacePath,
-        });
 
-        expectIsOk(res);
+        const service = await testContext.context.serviceFactory('git', {
+          context: testContext.context,
+          workingPath: ".",
+        })
+        const res = await service.clone(
+          // `https://github.com/elmpp/bac-tester.git`,
+          `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
+          {}
+        );
+        expectIsOk(res)
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectUtil = await testContext.createExpectUtil({workspacePath: testContext.testEnvVars.workspacePath})
+        const expectFs = expectUtil.createFs()
+
+        // const expectFs = await res.res.expectUtil.createFs();
         // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
         // expect(
         //   res.res.expectUtil
@@ -38,41 +33,46 @@ describe("git-service", () => {
         //     .lineContainsString({ match: `# bac-tester`, occurrences: 1 })
         // );
         expect(
-          res.res.expectUtil
+          expectUtil
             .createText(expectFs.readText("./package.json")).asJson()
         ).toHaveProperty('name', 'root-package');
         expect(
-          res.res.expectUtil
+          expectUtil
             .createText(expectFs.readText("./packages/my-package-1/package.json")).asJson()
         ).toHaveProperty('name', 'my-package-1');
 
-        await testContext.runServiceCb({
-          serviceOptions: {
-            serviceName: "git",
-            cb: async ({ service }) => {
-              const repo = service.getRepository();
-              expect(
-                repo.checkIsRepo(CheckRepoActions.IS_REPO_ROOT)
-              ).toBeTruthy();
-              // const currentDir = (await service.getRepository()).cwd()/
-              // console.log(`currentDir :>> `, currentDir)
-              // console.log(
-              //   `service.getWorkingDestinationPath :>> `,
-              //   service.getWorkingDestinationPath()
-              // );
-              // const logs = await repo.log();
-              // console.log(`logs :>> `, logs);
-              // expect((await service.getRepository()).log()).toBeTruthy()
-              // expect((await service.getRepository()).commit(CheckRepoActions.BARE)).toBeTruthy()
-              // await service.clone(`https://github.com/elmpp/bac-tester.git`, {bare: null});
-            },
-            initialiseOptions: {
-              workingPath: ".",
-            },
-          },
-          tree: res.res.expectUtil.options.tree,
-          // originPath: testContext.envVars.workspacePath,
-        });
+        const repo = service.getRepository();
+        expect(
+          repo.checkIsRepo(CheckRepoActions.IS_REPO_ROOT)
+        ).toBeTruthy();
+
+        // await testContext.runServiceCb({
+        //   serviceOptions: {
+        //     serviceName: "git",
+        //     cb: async ({ service }) => {
+        //       const repo = service.getRepository();
+        //       expect(
+        //         repo.checkIsRepo(CheckRepoActions.IS_REPO_ROOT)
+        //       ).toBeTruthy();
+        //       // const currentDir = (await service.getRepository()).cwd()/
+        //       // console.log(`currentDir :>> `, currentDir)
+        //       // console.log(
+        //       //   `service.getWorkingDestinationPath :>> `,
+        //       //   service.getWorkingDestinationPath()
+        //       // );
+        //       // const logs = await repo.log();
+        //       // console.log(`logs :>> `, logs);
+        //       // expect((await service.getRepository()).log()).toBeTruthy()
+        //       // expect((await service.getRepository()).commit(CheckRepoActions.BARE)).toBeTruthy()
+        //       // await service.clone(`https://github.com/elmpp/bac-tester.git`, {bare: null});
+        //     },
+        //     initialiseOptions: {
+        //       workingPath: ".",
+        //     },
+        //   },
+        //   tree: res.res.expectUtil.options.tree,
+        //   // originPath: testContext.envVars.workspacePath,
+        // });
       });
     });
     // it.only("clone bare", async () => {
@@ -117,39 +117,52 @@ describe("git-service", () => {
     it("initialise standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({});
       await persistentTestEnv.test({}, async (testContext) => {
-        const res = await testContext.runServiceCb({
-          serviceOptions: {
-            serviceName: "git",
-            cb: async ({ service }) => {
-              await service.init();
-            },
-            initialiseOptions: {
-              workingPath: ".",
-            },
-          },
-          // originPath: testContext.envVars.workspacePath,
-        });
 
-        expectIsOk(res);
+        const service = await testContext.context.serviceFactory('git', {
+          context: testContext.context,
+          workingPath: ".",
+        })
+        const res = await service.init();
+        expectIsOk(res)
 
-        // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
-
-        await testContext.runServiceCb({
-          serviceOptions: {
-            serviceName: "git",
-            cb: async ({ service }) => {
-              const repo = service.getRepository();
+        const repo = service.getRepository();
               expect(
                 repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)
               ).toBeTruthy();
-            },
-            initialiseOptions: {
-              workingPath: ".",
-            },
-          },
-          tree: res.res.expectUtil.options.tree,
-          // originPath: testContext.envVars.workspacePath,
-        });
+
+        // const res = await testContext.runServiceCb({
+        //   serviceOptions: {
+        //     serviceName: "git",
+        //     cb: async ({ service }) => {
+        //       await service.init();
+        //     },
+        //     initialiseOptions: {
+        //       workingPath: ".",
+        //     },
+        //   },
+        //   // originPath: testContext.envVars.workspacePath,
+        // });
+
+        // expectIsOk(res);
+
+        // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
+
+        // await testContext.runServiceCb({
+        //   serviceOptions: {
+        //     serviceName: "git",
+        //     cb: async ({ service }) => {
+        //       const repo = service.getRepository();
+        //       expect(
+        //         repo.checkIsRepo(service.CheckRepoActions.IS_REPO_ROOT)
+        //       ).toBeTruthy();
+        //     },
+        //     initialiseOptions: {
+        //       workingPath: ".",
+        //     },
+        //   },
+        //   tree: res.res.expectUtil.options.tree,
+        //   // originPath: testContext.envVars.workspacePath,
+        // });
       });
     });
   });

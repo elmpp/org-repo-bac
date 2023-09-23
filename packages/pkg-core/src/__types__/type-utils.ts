@@ -1,4 +1,4 @@
-import { UnwrapPromise } from "./util";
+import { UnwrapPromise } from "./lib";
 
 export function assertIsOk<R, E extends {error: Error}>(
 // export function assertIsOk<R, E extends Error | {error: Error}>(

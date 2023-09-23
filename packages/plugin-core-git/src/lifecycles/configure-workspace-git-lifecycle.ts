@@ -24,7 +24,7 @@ import { BacError } from "@business-as-code/error";
 //   }
 // }
 
-/** simple configure lifecycle. Atm, just passes along a git descriptor. Will provide callback semantics later */
+/** simple configure lifecycle. Atm, just passes along a git descriptor. Will provide callback semantics later for dynamic content traversal */
 export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleBase<
   typeof ConfigureWorkspaceGitLifecycle
 > {
@@ -53,7 +53,6 @@ export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleB
         context,
         workingPath: '.',
       })
-
 
       const remoteRes = await gitService.remoteList(address)
 

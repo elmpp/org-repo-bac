@@ -30,7 +30,7 @@ describe("git-clone", () => {
 
         expectIsOk(res);
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectFs = await res.res.expectUtil.createFs();
         // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
         expect(
           res.res.expectUtil

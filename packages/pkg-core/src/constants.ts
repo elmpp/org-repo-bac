@@ -1,5 +1,6 @@
 import dotenv from "dotenv-flow";
 
+
 const dotenvParsed = dotenv.config({
   silent: true,
 });
@@ -40,6 +41,7 @@ export const constants = {
     //   padding: 3,
     // },
 
+    GLOBAL_VERSION: require('@business-as-code/cli/package.json').version,
     GLOBAL_CACHE_KEY: 1,
     ENVIRONMENT_PREFIX: `bac_`,
     // CACHE_FOLDER_FILENAME: `.monotonous`,
@@ -49,7 +51,9 @@ export const constants = {
     WORKROOT_IDENT: `root`,
     DEFAULT_COMMITTER: "no reply <no-reply@bac.com>",
     RC_FILENAME: "bac.js",
+    RC_CONFIGURED_FILENAME: "bac.json",
     RC_FOLDER: ".bac",
+    RC_META_FOLDER: "meta",
     NPM_RC_FILENAME: ".npmrc",
     // DEFAULT_COMMITTER_NAME: 'no reply',
     // DEFAULT_COMMITTER_EMAIL: 'no-reply@bac.com',

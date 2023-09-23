@@ -4,7 +4,7 @@ import {
   AddressOtherCache,
 } from "@business-as-code/address";
 import { ServiceMap } from "./services";
-import { CacheKey } from "../services/cache-service";
+import { CacheKey } from "./util";
 
 /** constrain the options of the fetch lifecycle implementations - Yarn2 - https://github.com/yarnpkg/berry/blob/985bed20234cd03ce7565da1d2558036e9507d1b/packages/yarnpkg-core/sources/Fetcher.ts#L13*/
 export type FetchOptions = {

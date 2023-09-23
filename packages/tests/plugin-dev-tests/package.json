@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-dev-tests",
-  "version": "0.0.0-latest-20230902060501",
+  "version": "0.0.0-latest-20230909081653",
   "description": "Publishable plugin package @business-as-code/plugin-dev-tests",
   "main": "src/index.ts",
   "files": [

@@ -1,16 +1,18 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { AsyncHook } from "../../hooks";
+import { AsyncHook, TapFn } from "../../hooks";
 // import { AsyncSeriesBailHook, AsyncSeriesHook, Hook } from "tapable";
 import {
-  assertIsResult,
   Context,
   ContextCommand,
-  LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleSingularReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
+  assertIsResult,
 } from "../../__types__";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
@@ -130,9 +132,12 @@ export class RunProjectLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeRunProjectHook = ins.beforeRunProject();
-    const runProjectHook = ins.runProject();
-    const afterRunProjectHook = ins.afterRunProject();
+    const beforeRunProjectHook =
+      ins.beforeRunProject() as TapFn<"runProject"> as TapFn<"runProject">;
+    const runProjectHook =
+      ins.runProject() as TapFn<"runProject"> as TapFn<"runProject">;
+    const afterRunProjectHook =
+      ins.afterRunProject() as TapFn<"runProject"> as TapFn<"runProject">;
 
     if (beforeRunProjectHook) {
       context.logger.debug(
@@ -160,23 +165,34 @@ export class RunProjectLifecycleBase<
 
   // async executeRunProject(options: InferHookParams<typeof RunProjectLifecycleBase.hooks.runProject>): Promise<InferHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>> {
   async executeRunProject(
-    options: LifecycleOptionsByMethodKeyedByProvider<"runProject">[]
+    options: {
+      common: CommonExecuteOptions;
+      options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runProject">;
+    }
     // options: LifecycleOptionsByMethodAndProvider<"runProject", "core">
   ): Promise<
-    Result<LifecycleSingularReturnByMethod<"runProject">, { error: BacError }>
+    Result<LifecycleReturnByMethodSingular<"runProject">, { error: BacError }>
     // InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
   > {
+    // need to mix in the common attributes for lifecycles
+    const optionsWithCommon =
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runProject">(
+        options
+      );
+
     await RunProjectLifecycleBase.hooks.beforeRunProject.callBailAsync({
-      options,
+      options: optionsWithCommon,
     });
     // type DDDD = InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
     const res = await RunProjectLifecycleBase.hooks.runProject.callBailAsync({
-      options,
+      options: optionsWithCommon,
       strict: true,
     });
+
     assertIsResult(res);
+
     await RunProjectLifecycleBase.hooks.afterRunProject.callBailAsync({
-      options,
+      options: optionsWithCommon,
     });
     return res;
   }

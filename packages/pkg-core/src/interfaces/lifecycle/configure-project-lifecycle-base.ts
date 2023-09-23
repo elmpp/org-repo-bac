@@ -2,16 +2,18 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 import { Config } from "prettier";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../../hooks";
 import {
-  assertIsResult,
   Context,
   ContextCommand,
-  LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleSingularReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
+  assertIsResult,
 } from "../../__types__";
+import { AsyncHook, TapFn } from "../../hooks";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
 export class ConfigureProjectLifecycleBase<
   T extends LifecycleStaticInterface = typeof ConfigureProjectLifecycleBase<any>
@@ -65,9 +67,12 @@ export class ConfigureProjectLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeConfigureProjectHook = ins.beforeConfigureProject();
-    const configureProjectHook = ins.configureProject();
-    const afterConfigureProjectHook = ins.afterConfigureProject();
+    const beforeConfigureProjectHook =
+      ins.beforeConfigureProject() as TapFn<"configureProject">;
+    const configureProjectHook =
+      ins.configureProject() as TapFn<"configureProject">;
+    const afterConfigureProjectHook =
+      ins.afterConfigureProject() as TapFn<"configureProject">;
 
     if (beforeConfigureProjectHook) {
       context.logger.debug(
@@ -95,28 +100,34 @@ export class ConfigureProjectLifecycleBase<
     }
   }
 
-  async executeConfigureProject(
-    options: LifecycleOptionsByMethodKeyedByProviderArray<"configureProject">
-  ): Promise<
+  async executeConfigureProject(options: {
+    common: CommonExecuteOptions;
+    options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"configureProject">;
+  }): Promise<
     Result<
-      LifecycleSingularReturnByMethod<"configureProject">,
+      LifecycleReturnByMethodSingular<"configureProject">,
       { error: BacError }
     >
   > {
+    const optionsWithCommon =
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"configureProject">(
+        options
+      );
+
     await ConfigureProjectLifecycleBase.hooks.beforeConfigureProject.callBailAsync(
       {
-        options,
+        options: optionsWithCommon,
       }
     );
     const res =
       await ConfigureProjectLifecycleBase.hooks.configureProject.callBailAsync({
-        options,
+        options: optionsWithCommon,
         strict: true,
       });
     assertIsResult(res);
     await ConfigureProjectLifecycleBase.hooks.afterConfigureProject.callBailAsync(
       {
-        options,
+        options: optionsWithCommon,
       }
     );
     return res;

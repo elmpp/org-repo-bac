@@ -131,15 +131,16 @@ import { providerOptionsSchemaBuilder } from "../utils";
 
 
 
-const commonProjectSourceSchema = z.object({
-  // blah: z.number()
-  active: z.boolean().optional(),
-})
+// const commonProjectSourceSchema = z.object({
+//   // blah: z.number()
+//   active: z.boolean().optional(),
+// })
 
 // type DDD = z.infer<typeof commonProjectSourceSchema>
 // type BBBB = LifecycleOptionsByMethodKeyedByProvider<'configureWorkspace'>
 // type BFE = z.infer<typeof commonProjectSourceSchema>
-export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace', commonProjectSourceSchema)
+// export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace', commonProjectSourceSchema) // correct - configureWorkspace will receive our static/possibly dynamic project configs
+export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace') // correct - configureWorkspace will receive our static/possibly dynamic project configs
 // export const configProjectSourceConfigSchema = commonProjectSourceSchema
 export type ConfigProjectSourceConfig = Simplify<z.infer<typeof configProjectSourceConfigSchema>>
 

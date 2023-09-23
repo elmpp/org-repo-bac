@@ -8,7 +8,7 @@ export async function config(
   res: UnwrapPromise<ReturnType<TestContext["command"]>>,
   configFilename: string
 ) {
-  const expectConfig = res.res.expectUtil.createConfig();
+  const expectConfig = await res.res.expectUtil.createConfig();
 
   const cliCheckoutPath = addr.packageUtils.resolve({
     address: addr.parsePackage(`@business-as-code/cli`),
@@ -32,8 +32,8 @@ export async function commonFiles(
   testContext: TestContext,
   res: UnwrapPromise<ReturnType<TestContext["command"]>>
 ) {
-  const expectFs = res.res.expectUtil.createFs();
-  const expectConfig = res.res.expectUtil.createConfig();
+  const expectFs = await res.res.expectUtil.createFs();
+  const expectConfig = await res.res.expectUtil.createConfig();
 
   await expectConfig.isValid();
 

@@ -43,6 +43,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Skip Build And Snapshot",
       required: false,
     }),
+    skipDaemons: Oclif.Flags.boolean({
+      description: "Skip Build And Snapshot",
+      required: false,
+    }),
     // testMatch: Oclif.Flags.string({
     //   description: "Test it/describe name match",
     //   required: false,
@@ -79,6 +83,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       // testMatch: context.cliOptions.flags.testMatch,
       cliSource: context.cliOptions.flags.cliSource!,
       watch,
+      skipDaemons: context.cliOptions.flags.skipDaemons,
       skipEarlier: context.cliOptions.flags.skipEarlier,
       skipPublish: context.cliOptions.flags.skipPublish,
     })

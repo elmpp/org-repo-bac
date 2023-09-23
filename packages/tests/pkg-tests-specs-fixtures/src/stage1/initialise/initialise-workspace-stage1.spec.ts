@@ -20,11 +20,12 @@ describe("initialise workspace", () => {
   jest.setTimeout(40000);
 
   describe("initialise:workspace default skeleton config", () => {
-    it.only("cliRegistry", async () => {
+    it("cliRegistry", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         cliSource: "cliRegistry",
         cacheNamespaceFolder: "initialise:workspace default skeleton config",
       });
+
       await persistentTestEnv.test({}, async (testContext) => {
         // testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.checkoutPath)
         const res = await testContext.command(
@@ -41,7 +42,7 @@ describe("initialise workspace", () => {
             "--cliVersion",
             "bollards",
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsOk(res);
@@ -49,7 +50,7 @@ describe("initialise workspace", () => {
         await assertions.workspace.commonFiles(testContext, res);
         await assertions.workspace.config(testContext, res, "skeleton.js");
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectFs = await res.res.expectUtil.createFs();
         res.res.expectUtil
           .createText(expectFs.readText("./.npmrc"))
           .lineContainsString({
@@ -75,14 +76,14 @@ describe("initialise workspace", () => {
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsOk(res);
         await assertions.workspace.commonFiles(testContext, res);
         await assertions.workspace.config(testContext, res, "skeleton.js");
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectFs = await res.res.expectUtil.createFs();
         res.res.expectUtil
           .createText(expectFs.readText("./.npmrc"))
           .lineContainsString({
@@ -111,13 +112,13 @@ describe("initialise workspace", () => {
             "--workspacePath",
             `${testContext.testEnvVars.workspacePath.original}`,
             "--configPath",
-            "packages/pkg-core/src/etc/config/git-minimal-http.js",
+            "packages/pkg-core/etc/config/git-minimal-http.js",
             "--cliRegistry",
             "http://localhost:4873",
             "--cliVersion",
             "bollards",
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsOk(res);
@@ -128,7 +129,7 @@ describe("initialise workspace", () => {
           "git-minimal-http.js"
         );
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectFs = await res.res.expectUtil.createFs();
         // res.res.expectUtil
         //   .createText(expectFs.readText("./.npmrc"))
         //   .lineContainsString({ match: `@business-as-code:registry=http://localhost:4873`, occurrences: 1 }); // local npm registry set up
@@ -168,11 +169,11 @@ describe("initialise workspace", () => {
             "--workspacePath",
             `${testContext.testEnvVars.workspacePath.original}`,
             "--configPath",
-            "packages/pkg-core/src/etc/config/git-minimal-http.js",
+            "packages/pkg-core/etc/config/git-minimal-http.js",
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsOk(res);
@@ -183,7 +184,7 @@ describe("initialise workspace", () => {
           "git-minimal-http.js"
         );
 
-        const expectFs = res.res.expectUtil.createFs();
+        const expectFs = await res.res.expectUtil.createFs();
         // res.res.expectUtil
         //   .createText(expectFs.readText("./.npmrc"))
         //   .lineContainsString({ match: `@business-as-code:registry=https://registry.npmjs.org`, occurrences: 1 });
@@ -228,11 +229,11 @@ describe("initialise workspace", () => {
   //           "--workspacePath",
   //           `${testContext.testEnvVars.workspacePath.original}`,
   //           "--configPath",
-  //           "packages/pkg-core/src/etc/config/git-minimal-ssh-password.js",
+  //           "packages/pkg-core/etc/config/git-minimal-ssh-password.js",
   //           "--cliRegistry",
   //           "http://localhost:4873",
   //         ],
-  //         { logLevel: "debug" }
+          { logLevel: "debug" }
   //       );
 
   //       expectIsOk(res);
@@ -243,7 +244,7 @@ describe("initialise workspace", () => {
   //         "git-minimal-ssh-password.js"
   //       );
 
-  //       const expectFs = res.res.expectUtil.createFs();
+  //       const expectFs = await res.res.expectUtil.createFs();
   //       // res.res.expectUtil
   //       //   .createText(expectFs.readText("./.npmrc"))
   //       //   .lineContainsString({ match: `@business-as-code:registry=http://localhost:4873`, occurrences: 1 }); // local npm registry set up
@@ -283,11 +284,11 @@ describe("initialise workspace", () => {
   //           "--workspacePath",
   //           `${testContext.testEnvVars.workspacePath.original}`,
   //           "--configPath",
-  //           "packages/pkg-core/src/etc/config/git-minimal-ssh-password.js",
+  //           "packages/pkg-core/etc/config/git-minimal-ssh-password.js",
   //           "--cliPath",
   //           testContext.testEnvVars.checkoutCliPath.original,
   //         ],
-  //         { logLevel: "debug" }
+          { logLevel: "debug" }
   //       );
 
   //       expectIsOk(res);
@@ -298,7 +299,7 @@ describe("initialise workspace", () => {
   //         "git-minimal-ssh-password.js"
   //       );
 
-  //       const expectFs = res.res.expectUtil.createFs();
+  //       const expectFs = await res.res.expectUtil.createFs();
   //       // res.res.expectUtil
   //       //   .createText(expectFs.readText("./.npmrc"))
   //       //   .lineContainsString({ match: `@business-as-code:registry=https://registry.npmjs.org`, occurrences: 1 });

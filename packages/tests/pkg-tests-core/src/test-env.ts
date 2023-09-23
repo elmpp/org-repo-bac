@@ -1,24 +1,22 @@
 // import {oclifTest, oclifExpect} from './oclif'
 import { virtualFs } from "@angular-devkit/core";
 import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { HostCreateTree, Tree } from "@angular-devkit/schematics";
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { Tree } from "@angular-devkit/schematics";
+import { AddressPathAbsolute, addr } from "@business-as-code/address";
 import {
-  assertIsOk,
   BaseCommand,
-  consoleUtils,
-  constants,
   ContextCommand,
   LogLevel,
   Outputs,
   Result,
-  // ServiceOptions,
-  schematicUtils,
-  ServiceMap,
-  ServiceStaticMap,
-  XfsCacheManager,
+  assertIsOk,
+  consoleUtils,
+  constants,
   fsUtils,
 } from "@business-as-code/core";
+import {
+  XfsCacheManager
+} from "@business-as-code/core/src/cache/xfs-cache-manager";
 import {
   ArgsInfer,
   FlagsInfer,
@@ -31,6 +29,7 @@ import {
 import { xfs } from "@business-as-code/fslib";
 import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
+import { ContextTestCommand } from "./commands/context-test-command";
 import { ExpectUtil } from "./jest-utils";
 import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
 import { SchematicsRunCommand } from "./schematics/schematics-run-command";
@@ -38,19 +37,18 @@ import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,
 } from "./test-utils";
-import { ContextTestCommand } from "./commands/context-test-command";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
-type ServiceOptionsTestLite<SName extends keyof ServiceStaticMap> = Omit<
-  schematicUtils.ServiceOptions<SName>,
-  "initialiseOptions" | "context"
-> & {
-  initialiseOptions: Omit<
-    schematicUtils.ServiceOptions<SName>["initialiseOptions"],
-    "context" | "workspacePath"
-  >;
-};
+// type ServiceOptionsTestLite<SName extends keyof ServiceStaticMap> = Omit<
+//   schematicUtils.ServiceOptions<SName>,
+//   "initialiseOptions" | "context"
+// > & {
+//   initialiseOptions: Omit<
+//     schematicUtils.ServiceOptions<SName>["initialiseOptions"],
+//     "context" | "workspacePath"
+//   >;
+// };
 
 export type UnwrapPromise<T> = T extends PromiseLike<infer U>
   ? UnwrapPromise<U>
@@ -207,18 +205,21 @@ export type TestContext = {
       { exitCode: number; error: Error; expectUtil: ExpectUtil }
     >
   >;
-  /**
-   Allows a service task to be run directly
-   */
-  runServiceCb: <SName extends keyof ServiceMap>(options: {
-    serviceOptions: ServiceOptionsTestLite<SName>;
-    /** optional Source path for the Rule. Defaults to an empty() Source */
-    originPath?: AddressPathAbsolute;
-    /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
-    tree?: Tree;
-  }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, never>>;
+  // /**
+  //  Allows a service task to be run directly
+  //  */
+  // runServiceCb: <SName extends keyof ServiceMap>(options: {
+  //   serviceOptions: ServiceOptionsTestLite<SName>;
+  //   /** optional Source path for the Rule. Defaults to an empty() Source */
+  //   originPath?: AddressPathAbsolute;
+  //   /** optionally pass in an existing Tree. Useful for running assertions after a successful Schematic run */
+  //   tree?: Tree;
+  // }) => Promise<Result<{ exitCode: number; expectUtil: ExpectUtil }, never>>;
   context: ContextCommand<typeof ContextTestCommand>;
-  createExpectUtil: (options: {workspacePath: AddressPathAbsolute, outputs?: Outputs}) => Promise<ExpectUtil>;
+  createExpectUtil: (options: {
+    workspacePath: AddressPathAbsolute;
+    outputs?: Outputs;
+  }) => Promise<ExpectUtil>;
 };
 
 /**
@@ -283,7 +284,7 @@ async function doCreatePersistentTestEnvs(
     testName: string,
     testFileName: string
   ): [folderName: string, stage: `stage${number}`] => {
-    const matches = testFileName.match(/^.*-(stage[0-9]+)\..*$/);
+    const matches = testFileName.match(/^.*-(stage[0-9]+).*$/);
     if (!matches?.[1]) {
       throw new Error(`Test file must be suffixed with -stage[0-9].spec.ts`);
     }
@@ -337,7 +338,9 @@ async function doCreatePersistentTestEnvs(
   const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder
     ? fsUtils.sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
     : undefined;
-  const defaultLogLevel = createPersistentTestEnvVars.defaultLogLevel ?? "info";
+  const defaultLogLevel = (createPersistentTestEnvVars.defaultLogLevel ??
+    process.env.BAC_LOG_LEVEL ??
+    "info") as LogLevel;
 
   // const checkoutPath = addr.packageUtils.resolveRoot({
   //   address: addr.parsePackage('root'),
@@ -465,7 +468,7 @@ async function doCreateEphemeralTestEnvVars(
 
 async function createCacheManager(
   testEnvVars: PersistentTestEnvVars
-): Promise<XfsCacheManager> {
+): Promise<XfsCacheManager<true>> {
   return await XfsCacheManager.initialise({
     contentBaseAddress: addr.pathUtils.join(
       testEnvVars.cachePath,
@@ -758,6 +761,36 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
     // console.log(`testEnvVars :>> `, testEnvVars)
 
     async function createTestContext(): Promise<TestContext> {
+      const context = await (async () => {
+        const checkoutCliPath = getActiveCliPath();
+
+        const parseOutput: ParserOutput<
+          FlagsInfer<typeof ContextTestCommand>,
+          FlagsInfer<typeof ContextTestCommand>,
+          ArgsInfer<typeof ContextTestCommand>
+        > = {
+          flags: {
+            workspacePath: testEnvVars.workspacePath.original,
+            ["logLevel"]: testEnvVars.defaultLogLevel,
+            ["json"]: false,
+          },
+          args: {},
+          argv: [],
+          metadata: {} as any,
+          raw: {} as any,
+          nonExistentFlags: {} as any,
+        };
+
+        // @ts-ignore
+        return ContextTestCommand.createContext(
+          {
+            root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
+            // debug: 9,
+          },
+          parseOutput
+        );
+      })();
+
       return {
         setActiveWorkspacePaths: (workspacePaths: {
           workspace: AddressPathAbsolute;
@@ -784,7 +817,6 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               err as Error
             );
           }
-          console.log(`activeWorkspacePath :>> `, activeWorkspacePaths);
         },
         /** copies from the initialise tranche of tests */
         copy: async (
@@ -815,6 +847,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           const tree = createTree(testEnvVars.workspacePath.original);
           const expectUtil = new ExpectUtil({
             testEnvVars,
+            context,
             outputs: {
               stdout: "",
               stderr: "",
@@ -883,11 +916,11 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           oclifCore.settings.debug = true;
 
-          console.log(
-            `activeCliPaths.original, process.cwd() :>> `,
-            activeCheckoutPaths,
-            process.cwd()
-          );
+          // console.log(
+          //   `activeCliPaths.original, process.cwd() :>> `,
+          //   activeCheckoutPaths,
+          //   process.cwd()
+          // );
 
           /**  */
           await oclifCore
@@ -934,6 +967,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           const tree = createTree(testEnvVars.workspacePath.original);
           const expectUtil = new ExpectUtil({
             testEnvVars,
+            context,
             outputs,
             tree: tree as Tree,
             exitCode,
@@ -1012,6 +1046,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               const tree = createTree(testEnvVars.workspacePath.original);
               const expectUtil = new ExpectUtil({
                 testEnvVars,
+                context,
                 outputs,
                 tree: tree as Tree,
                 exitCode: 0,
@@ -1032,6 +1067,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           const tree = createTree(testEnvVars.workspacePath.original);
           const expectUtil = new ExpectUtil({
             testEnvVars,
+            context,
             outputs,
             tree: tree as Tree,
             exitCode: 0,
@@ -1095,139 +1131,116 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           //   },
           // };
         },
-        runServiceCb: async ({
-          serviceOptions: { cb, serviceName, initialiseOptions },
-          originPath,
-          tree,
-        }) => {
-          // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
+        // runServiceCb: async ({
+        //   serviceOptions: { cb, serviceName, initialiseOptions },
+        //   originPath,
+        //   tree,
+        // }) => {
+        //   // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
 
-          // process.chdir(cliPath.original);
-          // const argsWithAdditional = [...args, "--logLevel", logLevel];
+        //   // process.chdir(cliPath.original);
+        //   // const argsWithAdditional = [...args, "--logLevel", logLevel];
 
-          const checkoutCliPath = getActiveCliPath();
+        //   const checkoutCliPath = getActiveCliPath();
 
-          const parseOutput: ParserOutput<
-            FlagsInfer<typeof SchematicsRunCommand> & {
-              payload: {
-                originPath?: string;
-                tree?: Tree;
-                cb: (options: any) => Promise<void>;
-                serviceName: keyof ServiceMap;
-                initialiseOptions: any;
-              };
-            },
-            FlagsInfer<typeof SchematicsRunCommand> & {
-              payload: {
-                originPath?: string;
-                tree?: Tree;
-                cb: (options: any) => Promise<void>;
-                serviceName: keyof ServiceMap;
-                initialiseOptions: any;
-              };
-            },
-            ArgsInfer<typeof SchematicsRunCommand>
-          > = {
-            flags: {
-              workspacePath: testContext.testEnvVars.workspacePath.original,
-              // destinationPath: testContext.envVars.workspacePath.original,
-              schematicsAddress:
-                "@business-as-code/plugin-dev-tests#namespace=run-service-as-rule",
-              payload: {
-                initialiseOptions,
-                originPath: originPath?.original,
-                tree,
-                cb,
-                serviceName,
-              },
-              ["logLevel"]: testEnvVars.defaultLogLevel,
-              ["json"]: false,
-            },
-            args: {},
-            argv: [],
-            metadata: {} as any,
-            raw: {} as any,
-            nonExistentFlags: {} as any,
-          };
+        //   const parseOutput: ParserOutput<
+        //     FlagsInfer<typeof SchematicsRunCommand> & {
+        //       payload: {
+        //         originPath?: string;
+        //         tree?: Tree;
+        //         cb: (options: any) => Promise<void>;
+        //         serviceName: keyof ServiceMap;
+        //         initialiseOptions: any;
+        //       };
+        //     },
+        //     FlagsInfer<typeof SchematicsRunCommand> & {
+        //       payload: {
+        //         originPath?: string;
+        //         tree?: Tree;
+        //         cb: (options: any) => Promise<void>;
+        //         serviceName: keyof ServiceMap;
+        //         initialiseOptions: any;
+        //       };
+        //     },
+        //     ArgsInfer<typeof SchematicsRunCommand>
+        //   > = {
+        //     flags: {
+        //       workspacePath: testContext.testEnvVars.workspacePath.original,
+        //       // destinationPath: testContext.envVars.workspacePath.original,
+        //       schematicsAddress:
+        //         "@business-as-code/plugin-dev-tests#namespace=run-service-as-rule",
+        //       payload: {
+        //         initialiseOptions,
+        //         originPath: originPath?.original,
+        //         tree,
+        //         cb,
+        //         serviceName,
+        //       },
+        //       ["logLevel"]: testEnvVars.defaultLogLevel,
+        //       ["json"]: false,
+        //     },
+        //     args: {},
+        //     argv: [],
+        //     metadata: {} as any,
+        //     raw: {} as any,
+        //     nonExistentFlags: {} as any,
+        //   };
 
-          // let exitCode = 0;
-          // let error: Error | undefined;
+        //   // let exitCode = 0;
+        //   // let error: Error | undefined;
 
-          mockStdStart();
+        //   mockStdStart();
 
-          // running oclif commands programatically - https://tinyurl.com/29dj8vmc
-          const res = await SchematicsRunCommand.runDirect<any>(
-            {
-              root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
-              // debug: 9,
-            },
-            parseOutput
-          ).catch((err) => {
-            mockStdEnd();
-            console.log(`testKKKKKKKKKKKKKKK :>> `, err);
-            throw err; // for test purposes, our is Result<blah, never>
-          });
+        //   // running oclif commands programatically - https://tinyurl.com/29dj8vmc
+        //   const res = await SchematicsRunCommand.runDirect<any>(
+        //     {
+        //       root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
+        //       // debug: 9,
+        //     },
+        //     parseOutput
+        //   ).catch((err) => {
+        //     mockStdEnd();
+        //     console.log(`testKKKKKKKKKKKKKKK :>> `, err);
+        //     throw err; // for test purposes, our is Result<blah, never>
+        //   });
 
-          if (assertIsOk(res)) {
-            const expectUtil = createExpectUtil({
-              workspacePath: testEnvVars.workspacePath,
-              testEnvVars,
-              outputs: mockStdEnd(),
-            });
+        //   if (assertIsOk(res)) {
+        //     const expectUtil = createExpectUtil({
+        //       workspacePath: testEnvVars.workspacePath,
+        //       testEnvVars,
+        //       outputs: mockStdEnd(),
+        //     });
 
-            return {
-              success: true,
-              res: {
-                exitCode: 0,
-                expectUtil,
-              },
-            };
-          } else {
-            throw res.res.error; // for test purposes, our is Result<blah, never>
-          }
-        },
+        //     return {
+        //       success: true,
+        //       res: {
+        //         exitCode: 0,
+        //         expectUtil,
+        //       },
+        //     };
+        //   } else {
+        //     throw res.res.error; // for test purposes, our is Result<blah, never>
+        //   }
+        // },
         createExpectUtil: async (options: {
           workspacePath: AddressPathAbsolute;
           outputs?: Outputs;
         }) => {
           const tree = createTree(testEnvVars.workspacePath.original);
+
+          // console.log(`tree.getDir('content) :>> `, tree.getDir('content'))
+          // console.log(`tree :>> `, tree, testEnvVars.workspacePath)
+
           const expectUtil = new ExpectUtil({
             testEnvVars,
+            context,
             outputs: options.outputs,
             tree: tree as Tree,
             exitCode: 0,
           });
-          return expectUtil
+          return expectUtil;
         },
-        context: await (async () => {
-          const checkoutCliPath = getActiveCliPath();
-
-          const parseOutput: ParserOutput<
-            FlagsInfer<typeof ContextTestCommand>,
-            FlagsInfer<typeof ContextTestCommand>,
-            ArgsInfer<typeof ContextTestCommand>
-          > = {
-            flags: {
-              workspacePath: testEnvVars.workspacePath.original,
-              ["logLevel"]: testEnvVars.defaultLogLevel,
-              ["json"]: false,
-            },
-            args: {},
-            argv: [],
-            metadata: {} as any,
-            raw: {} as any,
-            nonExistentFlags: {} as any,
-          };
-
-          // @ts-ignore
-          return ContextTestCommand.createContext(
-            {
-              root: checkoutCliPath.cli.original, // schematics needs to run from the workspace base
-              // debug: 9,
-            },
-            parseOutput
-          );
-        })(),
+        context,
         // mockStdStart: () => {
         //   // docs - https://tinyurl.com/24tptzy8
         //   mockStd.stdout.print = true
@@ -1273,9 +1286,9 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
       await run(testContext);
     }
 
-    console.info(
-      `---- TEST COMPLETE. DestinationPath: '${testContext.testEnvVars.workspacePath.original}' ----`
-    );
+    // console.info(
+    //   `---- TEST COMPLETE. DestinationPath: '${testContext.testEnvVars.workspacePath.original}' ----`
+    // );
 
     // try {
     //   await run(testContext)
@@ -1311,32 +1324,33 @@ function mockStdEnd(): Outputs {
   };
 }
 
-export const createExpectUtil = ({
-  workspacePath,
-  outputs = { stderr: "", stdout: "" },
-  testEnvVars,
-}: {
-  workspacePath: AddressPathAbsolute;
-  outputs?: Outputs;
-  testEnvVars: TestEnvVars;
-}) => {
-  const nextTestEnvVars = {
-    ...testEnvVars,
-    workspacePath,
-  };
+// export const createExpectUtil = ({
+//   workspacePath,
+//   outputs = { stderr: "", stdout: "" },
+//   testEnvVars,
+// }: {
+//   workspacePath: AddressPathAbsolute;
+//   outputs?: Outputs;
+//   testEnvVars: TestEnvVars;
+// }) => {
+//   const nextTestEnvVars = {
+//     ...testEnvVars,
+//     workspacePath,
+//   };
 
-  const resultTree = new HostCreateTree(
-    new virtualFs.ScopedHost(
-      new NodeJsSyncHost(),
-      workspacePath as any // Path required,
-    )
-  );
-  // const outputs = mockStdEnd();
-  const expectUtil = new ExpectUtil({
-    outputs,
-    testEnvVars: nextTestEnvVars,
-    tree: resultTree,
-    exitCode: 0,
-  });
-  return expectUtil;
-};
+//   const resultTree = new HostCreateTree(
+//     new virtualFs.ScopedHost(
+//       new NodeJsSyncHost(),
+//       workspacePath as any // Path required,
+//     )
+//   );
+//   // const outputs = mockStdEnd();
+//   const expectUtil = new ExpectUtil({
+//     outputs,
+//     testEnvVars: nextTestEnvVars,
+//     context,
+//     tree: resultTree,
+//     exitCode: 0,
+//   });
+//   return expectUtil;
+// };

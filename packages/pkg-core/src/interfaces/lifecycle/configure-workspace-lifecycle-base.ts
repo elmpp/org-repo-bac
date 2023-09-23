@@ -1,15 +1,20 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../../hooks";
 import {
   Context,
   ContextCommand,
-  LifecycleMappedReturnByMethod,
-  LifecycleOptionsByMethodKeyedByProviderArray,
   LifecycleStaticInterface,
   Result,
+  expectIsOk,
+  ok,
 } from "../../__types__";
+import { constants } from "../../constants";
+import { AsyncHook, TapFn } from "../../hooks";
+import { Config } from "../../validation";
+import { ConfigSynchronised } from "../../validation/config";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
 /**
  the configure-workspace lifecycle acts upon a workspace's user configuration. It is responsible for
@@ -78,9 +83,12 @@ export class ConfigureWorkspaceLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeConfigureWorkspaceHook = ins.beforeConfigureWorkspace();
-    const configureWorkspaceHook = ins.configureWorkspace();
-    const afterConfigureWorkspaceHook = ins.afterConfigureWorkspace();
+    const beforeConfigureWorkspaceHook =
+      ins.beforeConfigureWorkspace() as TapFn<"configureWorkspace">;
+    const configureWorkspaceHook =
+      ins.configureWorkspace() as TapFn<"configureWorkspace">;
+    const afterConfigureWorkspaceHook =
+      ins.afterConfigureWorkspace() as TapFn<"configureWorkspace">;
 
     if (beforeConfigureWorkspaceHook) {
       context.logger.debug(
@@ -112,30 +120,72 @@ export class ConfigureWorkspaceLifecycleBase<
   }
 
   async executeConfigureWorkspace(
-    options: LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace">
+    options: {
+      common: CommonExecuteOptions;
+      options: {
+        config: Config;
+      };
+      // options: Config;
+    }
+    // options: LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace">
   ): Promise<
     Result<
-      LifecycleMappedReturnByMethod<"configureWorkspace">,
+      ConfigSynchronised,
+      // LifecycleMappedReturnByMethod<"configureWorkspace">,
       { error: BacError }
     >
   > {
+    const projectSource =
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"configureWorkspace">(
+        {
+          common: options.common,
+          options: options.options.config.projectSource,
+        }
+      );
+
+    // const configWithCommons = {
+    //   projectSource:
+    //     mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray({
+    //       common: {
+    //         context: options.context,
+    //         workspacePath: options.workspacePath,
+    //       },
+    //       options: options.options.config.projectSource,
+    //     }),
+    // };
+
     await ConfigureWorkspaceLifecycleBase.hooks.beforeConfigureWorkspace.mapAsync(
-      { options }
+      { options: projectSource }
     );
 
-    const res =
+    const projectsRes =
       await ConfigureWorkspaceLifecycleBase.hooks.configureWorkspace.mapAsync({
-        options,
+        options: projectSource,
+        // options: {
+        //   context: options.context,
+        //   workspacePath
+        //   ...options.options.projectSource,
+
+        // }
         strict: true,
       });
-    // console.log(`res :>> `, res);
+    // console.log(`res :>> `, projectsRes);
 
     // assertIsResult(res.res); // wrapped in provider
 
+    expectIsOk(projectsRes);
+
     await ConfigureWorkspaceLifecycleBase.hooks.afterConfigureWorkspace.mapAsync(
-      { options }
+      {
+        options: projectSource,
+      }
     );
-    return res;
+
+    // return res;
+    return ok({
+      version: constants.GLOBAL_VERSION,
+      projects: projectsRes.res,
+    });
   }
 
   protected beforeConfigureWorkspace():
@@ -169,6 +219,9 @@ export class ConfigureWorkspaceLifecycleBase<
         // workingPath: string;
         // config: Config;
         options: any;
+        // options: {
+        //   configuredConfig: ConfigProjectConfig;
+        // };
       }) => Promise<unknown | void>)
     | undefined {
     return;

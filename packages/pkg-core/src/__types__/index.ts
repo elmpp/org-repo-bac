@@ -30,6 +30,7 @@ export * from "./lifecycles";
 export * from "./moon";
 export * from "./services";
 export * from "./type-utils";
+export * from "./lib";
 export * from "./util";
 
 export type Outputs = {

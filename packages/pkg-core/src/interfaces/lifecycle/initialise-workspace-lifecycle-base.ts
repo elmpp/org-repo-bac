@@ -1,18 +1,20 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
-import { AsyncHook } from "../../hooks";
-import { Config } from "../../validation";
 import {
-  assertIsOk,
-  assertIsResult,
   Context,
   ContextCommand,
-  LifecycleOptionsByMethodKeyedByProvider,
-  LifecycleSingularReturnByMethod,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
+  assertIsOk,
+  assertIsResult,
 } from "../../__types__";
+import { AsyncHook, TapFn } from "../../hooks";
+import { Config } from "../../validation";
+import { CommonExecuteOptions } from "./__types__";
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
 export class InitialiseWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof InitialiseWorkspaceLifecycleBase<any>
@@ -78,9 +80,12 @@ export class InitialiseWorkspaceLifecycleBase<
   ) {
     const { context } = options;
     const ins = new this();
-    const beforeInitialiseWorkspaceHook = ins.beforeInitialiseWorkspace();
-    const initialiseWorkspaceHook = ins.initialiseWorkspace();
-    const afterInitialiseWorkspaceHook = ins.afterInitialiseWorkspace();
+    const beforeInitialiseWorkspaceHook =
+      ins.beforeInitialiseWorkspace() as TapFn<"initialiseWorkspace">;
+    const initialiseWorkspaceHook =
+      ins.initialiseWorkspace() as TapFn<"initialiseWorkspace">;
+    const afterInitialiseWorkspaceHook =
+      ins.afterInitialiseWorkspace() as TapFn<"initialiseWorkspace">;
 
     if (beforeInitialiseWorkspaceHook) {
       context.logger.debug(
@@ -111,36 +116,42 @@ export class InitialiseWorkspaceLifecycleBase<
     }
   }
 
-  async executeInitialiseWorkspace(
-    options: LifecycleOptionsByMethodKeyedByProvider<"initialiseWorkspace">[]
-  ): Promise<
+  async executeInitialiseWorkspace(options: {
+    common: CommonExecuteOptions;
+    options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"initialiseWorkspace">;
+  }): Promise<
     Result<
-      LifecycleSingularReturnByMethod<"initialiseWorkspace">,
+      LifecycleReturnByMethodSingular<"initialiseWorkspace">,
       { error: BacError }
     >
   > {
+    const optionsWithCommon =
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"initialiseWorkspace">(
+        options
+      );
+
     await InitialiseWorkspaceLifecycleBase.hooks.beforeInitialiseWorkspace.callBailAsync(
       {
-        options,
+        options: optionsWithCommon,
       }
     );
     const res =
       await InitialiseWorkspaceLifecycleBase.hooks.initialiseWorkspace.callBailAsync(
         {
-          options,
+          options: optionsWithCommon,
           strict: true,
         }
       );
 
     if (!assertIsOk(res)) {
-      return res
+      return res;
     }
 
-    assertIsResult(res.res.res); // wrapped in provider
+    assertIsResult(res); // wrapped in provider
 
     await InitialiseWorkspaceLifecycleBase.hooks.afterInitialiseWorkspace.callBailAsync(
       {
-        options,
+        options: optionsWithCommon,
       }
     );
     return res;

@@ -1,24 +1,20 @@
 import {
   AddressDescriptor,
-  AddressOtherCache,
   AddressPathAbsolute,
   AddressType,
   AddressUrlGit,
   addr,
 } from "@business-as-code/address";
 import {
-  CacheSourceEntry,
+  CacheKey,
   Context,
   FetchContentLifecycleBase,
   FetchOptions,
   FetchResult,
   Result,
-  assertIsOk,
   constants,
   expectIsOk,
-  ok,
 } from "@business-as-code/core";
-import { CacheKey } from "@business-as-code/core/services/cache-service";
 import { BacError } from "@business-as-code/error";
 
 // declare global {
@@ -83,7 +79,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         });
       }
 
-      const fetchRes = await cacheService.getWithFetch({
+      const fetchRes = await cacheService.get({
         address: applicableAddress,
         // namespace,
         cacheOptions,
@@ -108,22 +104,23 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         //   options.context.logger.debug(
         //     `Cache miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
         //   ),
-        onStale: async ({ contentPath, existentChecksum }) =>
-          {
-            options.context.logger.debug(
-              `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${applicableAddress.addressNormalized}'. Will be updated from source`
-            );
-            await this.updateFromNetwork({
-              ...options,
-              options: {
-                ...options.options,
-                address: applicableAddress,
-                cacheService,
-              },
-              destinationPath: contentPath,
-              existentChecksum,
-            });
-          },
+        onStale: async ({ contentPath, existentChecksum }) => {
+          options.context.logger.debug(
+            `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${
+              applicableAddress.addressNormalized
+            }'. Will be updated from source`
+          );
+          await this.updateFromNetwork({
+            ...options,
+            options: {
+              ...options.options,
+              address: applicableAddress,
+              cacheService,
+            },
+            destinationPath: contentPath,
+            existentChecksum,
+          });
+        },
         // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
         onMiss: async ({ contentPath }) => {
           options.context.logger.debug(
@@ -181,7 +178,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         cloneOpts
       );
 
-      expectIsOk(cloneRes)
+      expectIsOk(cloneRes);
     }
 
     await cloneFromSource();
@@ -222,13 +219,18 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         cloneOpts
       );
 
-      expectIsOk(cloneRes)
+      expectIsOk(cloneRes);
     }
 
     await updateFromSource();
   }
 
-  protected async createChecksum({existentChecksum, context, workspacePath, contentPath}: {
+  protected async createChecksum({
+    existentChecksum,
+    context,
+    workspacePath,
+    contentPath,
+  }: {
     context: Context;
     workspacePath: AddressPathAbsolute;
     // workingPath: string;
@@ -245,12 +247,12 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
       workingPath: ".",
     });
 
-    const res = await gitService.revParse('HEAD')
-    expectIsOk(res)
+    const res = await gitService.revParse("HEAD");
+    expectIsOk(res);
     return {
       globalVersion: constants.GLOBAL_CACHE_KEY,
       key: res.res,
-    }
+    };
 
     // if (existentChecksum) {
 
