@@ -45,9 +45,7 @@ export class BacService {
   // title = 'bac' as const
   options: Required<Options>;
   // @ts-expect-error: initialise impl
-  rcCacheManager: AddressCacheManager<false>;
-  // @ts-expect-error: initialise impl
-  rcFolderCacheManager: AddressCacheManager<true>;
+  cacheManager: AddressCacheManager;
 
   get ctor(): typeof BacService {
     return this.constructor as unknown as typeof BacService;
@@ -68,7 +66,7 @@ export class BacService {
   }
 
   protected async initialise(options: Options) {
-    this.rcCacheManager = await AddressCacheManager.initialise({
+    this.cacheManager = await AddressCacheManager.initialise({
       context: options.context,
       workspacePath: options.workspacePath,
       workingPath: ".",
@@ -76,30 +74,6 @@ export class BacService {
         options.workspacePath,
         addr.parseAsType(constants.RC_FOLDER, "portablePathFilename"),
         addr.parseAsType(constants.RC_META_FOLDER, "portablePathFilename")
-      ) as AddressPathAbsolute,
-      createAttributes: (address: AddressDescriptorUnion) => {
-        if (!assertIsAddressPathAbsolute(address)) {
-          throw new Error(`Can only store using local absolute addresses`);
-        }
-        const filename = addr.pathUtils.basename(address);
-        return {
-          key: fsUtils.sanitise(filename.original),
-        };
-      },
-    });
-    this.rcFolderCacheManager = await AddressCacheManager.initialise({
-      context: options.context,
-      workspacePath: options.workspacePath,
-      workingPath: ".",
-      metaBaseAddress: addr.pathUtils.join(
-        options.workspacePath,
-        addr.parseAsType(constants.RC_FOLDER, "portablePathFilename"),
-        addr.parseAsType(constants.RC_META_FOLDER, "portablePathFilename")
-      ) as AddressPathAbsolute,
-      contentBaseAddress: addr.pathUtils.join(
-        options.workspacePath,
-        addr.parseAsType(constants.RC_FOLDER, "portablePathFilename"),
-        addr.parseAsType(constants.RC_CONTENT_FOLDER, "portablePathFilename")
       ) as AddressPathAbsolute,
       createAttributes: (address: AddressDescriptorUnion) => {
         if (!assertIsAddressPathAbsolute(address)) {
@@ -119,22 +93,23 @@ export class BacService {
       addr.parsePath(constants.RC_FILENAME),
     ) as AddressPathAbsolute;
 
-    const res = await this.getForAddress(configPath, this.rcCacheManager);
+    const res = await this.getForAddress(configPath, this.cacheManager);
     return res;
   }
 
   async getConfiguredConfigEntry() {
+
     const configPath = addr.pathUtils.join(
       this.options.workspacePath,
       addr.parsePath(constants.RC_FOLDER),
       addr.parsePath(constants.RC_FILENAME),
     ) as AddressPathAbsolute;
 
-    const res = await this.getForAddress(configPath, this.rcFolderCacheManager);
+    const res = await this.getForAddress(configPath, this.cacheManager);
     return res;
   }
 
-  protected async getForAddress(address: AddressPathAbsolute, cacheManager: AddressCacheManager<true> | AddressCacheManager<false>) {
+  protected async getForAddress(address: AddressPathAbsolute, cacheManager: AddressCacheManager) {
     return cacheManager.get({
       address,
       cacheOptions: {},

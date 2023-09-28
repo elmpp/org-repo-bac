@@ -1,32 +1,19 @@
-import {
-  AddressDescriptorUnion,
-  AddressPathAbsolute,
-  addr,
-} from "@business-as-code/address";
-import { constants, expectIsOk, fsUtils } from "@business-as-code/core";
-import { xfs } from "@business-as-code/fslib";
+import { AddressPathAbsolute } from "@business-as-code/address";
+import { CacheKey, constants, expectIsOk, fsUtils } from "@business-as-code/core";
+import { AddressCacheManager } from "@business-as-code/core/src/cache/address-cache-manager";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 
 describe("cache-service", () => {
-  const doFetch = async (
-    sourceAddress: AddressPathAbsolute,
-    contentPath: AddressPathAbsolute
-  ): Promise<void> => {
-    // return xfs.readFilePromise(sourceAddress.address, "utf-8");
-    // await xfs.copyPromise(
-
-    await xfs.copyFilePromise(
-      sourceAddress.address,
-      // contentPath.address,
-      addr.pathUtils.join(contentPath, addr.pathUtils.basename(sourceAddress))
-        .address
-    );
-    // xfs.copyFilePromise(
-    //   sourceAddress.address + '/',
-    //   contentPath.address,
-    //   // addr.pathUtils.join(contentPath, addr.pathUtils.basename(sourceAddress))
-    //   //   .address
-    // );
+  const doFetch = async ({
+    // cacheService,
+    sourcePath,
+    destinationPath,
+  }: {
+    // cacheService: CacheService;
+    sourcePath: AddressPathAbsolute;
+    destinationPath: AddressPathAbsolute;
+  }): Promise<void> => {
+    return AddressCacheManager.copyContent({ sourcePath, destinationPath });
   };
 
   it("sets up folders with rootPath", async () => {});
@@ -120,10 +107,11 @@ describe("cache-service", () => {
   //   });
   // });
 
-  it.only("fetches and stores ok", async () => {
+  it("fetches and stores ok", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});
     await persistentTestEnv.test({}, async (testContext) => {
       const sourceAddress = fsUtils.resolveCoreConfig("skeleton.js");
+
       // console.log(`sourceAddress :>> `, sourceAddress)
       const key = "skeleton-js";
       // const namespace = sourceAddress.type;
@@ -139,73 +127,83 @@ describe("cache-service", () => {
         // ) as AddressPathAbsolute,
       });
 
+      const createChecksum = jest.fn().mockImplementationOnce(async () => {
+        return {
+          globalVersion: 1,
+          key,
+        };
+      });
+      const onHit = jest
+        .fn()
+        .mockImplementationOnce(
+          async ({ contentPath }: { contentPath: AddressPathAbsolute }) => {}
+        );
+      const onStale = jest
+        .fn()
+        .mockImplementationOnce(
+          async ({
+            contentPath,
+            existentChecksum,
+          }: {
+            contentPath: AddressPathAbsolute;
+            existentChecksum?: CacheKey;
+          }) =>
+            doFetch({ sourcePath: sourceAddress, destinationPath: contentPath })
+        );
+      const onMiss = jest
+        .fn()
+        .mockImplementationOnce(
+          async ({ contentPath }: { contentPath: AddressPathAbsolute }) =>
+            doFetch({ sourcePath: sourceAddress, destinationPath: contentPath })
+        );
+
       const fetchRes = await cacheService.get({
         address: sourceAddress,
-        // namespace,
         cacheOptions: {},
-        // expectedChecksum: "",
-        createChecksum: async ({ existentChecksum, contentPath }) => {
-          return {
-            globalVersion: 1,
-            key,
-          };
-        },
-        onHit: () => {},
-        onStale: async ({ contentPath, existentChecksum }) => {
-          return await doFetch(sourceAddress, contentPath);
-        },
-        // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
-        onMiss: async ({ contentPath }) => {
-          console.log(`contentPath :>> `, contentPath)
-          await doFetch(sourceAddress, contentPath);
-        },
+        createChecksum,
+        onHit,
+        onStale,
+        onMiss,
       });
 
-      // console.log(`fetchRes :>> `, fetchRes)
-
       expectIsOk(fetchRes);
-      const entry = fetchRes.res
+      const entry = fetchRes.res;
 
       expect(entry).toEqual(
         expect.objectContaining({
-          sourceAddress,
           contentPath: expect.objectContaining({
-            original: expect.stringMatching(
-              `${testContext.testEnvVars.workspacePath.original}/content`
-            ),
+            original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/portablePathPosixAbsolute/`),
           }),
-          contentPathRelative: expect.anything(),
-          metaPath: expect.anything(),
-          metaPathRelative: expect.anything(),
+          metaPath: expect.objectContaining({
+            original: expect.stringMatching(/.json$/),
+          }),
+          metaPathRelative: expect.objectContaining({
+            original: expect.stringMatching(/.json$/),
+          }),
           checksum: {
             globalVersion: 1,
             key,
           },
+          existentChecksum: undefined,
+          checksumValid: true, // we class empty as valid
         })
       );
 
-      const expectUtil = await testContext.createExpectUtil({
-        workspacePath: testContext.testEnvVars.workspacePath,
+      expect(onStale).toHaveBeenCalledTimes(0);
+      expect(onMiss).toHaveBeenCalledTimes(1);
+      expect(onMiss).toHaveBeenLastCalledWith({
+        contentPath: expect.objectContaining({
+          original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/portablePathPosixAbsolute/`),
+        }),
       });
-      const expectFs = await expectUtil.createFs();
-      expect(expectFs.existsSync(`${constants.RC_META_FOLDER}`)).toBeTruthy();
-
-      expect(
-        expectFs.existsSync(
-          `meta/${entry.metaPathRelative.original}`
-        )
-      ).toBeTruthy();
-      expect(
-        expectFs.readJson(
-          `meta/${entry.metaPathRelative.original}`
-        )
-      ).toEqual({
-        contentChecksum: { globalVersion: 1, key },
+      expect(onHit).toHaveBeenCalledTimes(0); // onHit only called when content exists and checksum passes
+      expect(createChecksum).toHaveBeenCalledTimes(1);
+      expect(createChecksum).toHaveBeenLastCalledWith({
+        existentChecksum: undefined,
+        contentPath: expect.objectContaining({
+          original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/portablePathPosixAbsolute/`),
+        }),
       });
-      expect(expectFs.existsSync(`${constants.RC_CONTENT_FOLDER}`)).toBeTruthy();
-      expect(
-        expectFs.existsSync(`${constants.RC_CONTENT_FOLDER}/${entry.contentPathRelative.original}`)
-      ).toBeTruthy();
     });
   });
 

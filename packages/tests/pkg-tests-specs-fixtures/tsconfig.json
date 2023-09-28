@@ -6,7 +6,7 @@
     "*.spec.*",
     "*.js",
     "*.ts"
-, "src/etc/config/.gitkeep"  ],
+, "etc/config/.gitkeep"  ],
   "references": [
     {
       "path": "../../pkg-address"

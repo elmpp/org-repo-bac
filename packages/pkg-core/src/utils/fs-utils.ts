@@ -155,6 +155,6 @@ export const tmpResolvableFolder = addr.pathUtils.resolve(addr.parsePath(__dirna
 
 export const sanitise = (str: string): string => {
   // @ts-ignore
-  const res = str.replaceAll(/['"~><]/g, '').replaceAll(/[\s;+/\\:.]+/g, '_')
+  const res = str.replaceAll(/['"~><,]/g, '').replaceAll(/[\s;+/\\:.]+/g, '_')
   return res
 }

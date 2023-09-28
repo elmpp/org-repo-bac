@@ -16,6 +16,7 @@ import {
   expectIsOk,
 } from "@business-as-code/core";
 import { BacError } from "@business-as-code/error";
+import { xfs } from "@business-as-code/fslib";
 
 // declare global {
 //   namespace Bac {
@@ -106,9 +107,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         //   ),
         onStale: async ({ contentPath, existentChecksum }) => {
           options.context.logger.debug(
-            `Cache checksum fail (prev: '${existentChecksum.toString()}'). Address: '${
-              applicableAddress.addressNormalized
-            }'. Will be updated from source`
+            `Cache checksum fail (prev: '${existentChecksum?.globalVersion}::${existentChecksum?.key}). Address: '${applicableAddress.addressNormalized}'. Will be updated from source`
           );
           await this.updateFromNetwork({
             ...options,
@@ -181,6 +180,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
       expectIsOk(cloneRes);
     }
 
+    await xfs.mkdirpPromise(destinationPath.address)
     await cloneFromSource();
   }
 
@@ -191,7 +191,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
     options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
     // where to add the content
     destinationPath: AddressPathAbsolute;
-    existentChecksum: CacheKey;
+    existentChecksum?: CacheKey;
   }): Promise<undefined> {
     const {
       destinationPath,

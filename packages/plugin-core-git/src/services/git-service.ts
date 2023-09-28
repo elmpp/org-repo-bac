@@ -13,6 +13,7 @@ import simpleGitFactory, {
   TaskOptions as OrigTaskOptions,
   SimpleGit,
 } from "simple-git";
+import { xfs } from "@business-as-code/fslib";
 
 declare global {
   namespace Bac {
@@ -183,6 +184,7 @@ export class GitService {
     options?: TaskOptions
   ): Promise<Result<undefined, { error: BacError }>> {
     const simpleGit = this.create(options);
+
     await simpleGit.clone(
       url,
       this.options.workspacePath.original,
@@ -250,8 +252,12 @@ export class GitService {
   }
 
   protected create(options: TaskOptions = {}) {
+    const baseDir = GitService.getWorkingDestinationPath(this.options)
+    if (!(xfs.existsSync)) {
+      throw new Error(`GitService#create: baseDir must already exist at '${baseDir.original}'`)
+    }
     const ins = simpleGitFactory({
-      baseDir: GitService.getWorkingDestinationPath(this.options).original,
+      baseDir: baseDir.original,
     });
     /**
      * ssh key authentication:

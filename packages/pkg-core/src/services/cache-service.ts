@@ -4,20 +4,10 @@ import {
   AddressPathAbsolute,
   addr,
 } from "@business-as-code/address";
-import { BacError } from "@business-as-code/error";
-import assert from "assert";
-import {
-  CacheKey,
-  FetchOptions,
-  Result,
-  ServiceInitialiseCommonOptions,
-  assertIsOk,
-  fail,
-  ok,
-} from "../__types__";
-import { CacheEntry, AddressCacheManager } from "../cache/address-cache-manager";
-import { XfsCacheManager } from "../cache/xfs-cache-manager";
+import { ServiceInitialiseCommonOptions } from "../__types__";
+import { AddressCacheManager } from "../cache/address-cache-manager";
 import { sanitise } from "../utils/fs-utils";
+import { constants } from "../constants";
 
 declare global {
   namespace Bac {
@@ -31,15 +21,17 @@ declare global {
 }
 
 // type Options = ServiceInitialiseCommonOptions & Parameters<(typeof XfsCacheManager)["initialise"]>[0];
-type Options = ServiceInitialiseCommonOptions & {rootPath: AddressPathAbsolute}
+type Options = ServiceInitialiseCommonOptions & {
+  rootPath: AddressPathAbsolute;
+};
 
-type GetEntry = {
-  sourceAddress: AddressDescriptorUnion;
-  contentPath?: AddressPathAbsolute;
-  checksum: CacheKey;
-  existentChecksum?: CacheKey;
-  checksumMatch: boolean;
-}
+// type GetEntry = {
+//   sourceAddress: AddressDescriptorUnion;
+//   contentPath?: AddressPathAbsolute;
+//   checksum: CacheKey;
+//   existentChecksum?: CacheKey;
+//   checksumMatch: boolean;
+// }
 
 // type Options = ServiceInitialiseCommonOptions & {
 //   /** lives outside of the workspacePath */
@@ -64,7 +56,7 @@ export class CacheService {
   options: Options;
 
   // @ts-ignore: initialise set
-  protected cacheManager: AddressCacheManager<true>; // shame we can't make the service generic :(. It's used differently in BacService
+  protected cacheManager: AddressCacheManager; // shame we can't make the service generic :(. It's used differently in BacService
 
   get ctor(): typeof CacheService {
     return this.constructor as unknown as typeof CacheService;
@@ -75,28 +67,21 @@ export class CacheService {
   }
 
   static async initialise(options: Options, prevInstance?: CacheService) {
-
     const ins = new CacheService(options);
     await ins.initialise(options);
-    ins.cacheManager = await AddressCacheManager.initialise(
-      {
-        ...options,
-        contentBaseAddress: addr.pathUtils.join(
-          options.rootPath,
-          addr.parseAsType("content", "portablePathFilename")
-        ) as AddressPathAbsolute,
-        metaBaseAddress: addr.pathUtils.join(
-          options.rootPath,
-          addr.parseAsType("meta", "portablePathFilename")
-        ) as AddressPathAbsolute,
-        createAttributes: (address) => {
-          return {
-            key: sanitise(address.addressNormalized),
-            namespace: sanitise(address.type),
-          }
-        },
-      }
-    );
+    ins.cacheManager = await AddressCacheManager.initialise({
+      ...options,
+      metaBaseAddress: addr.pathUtils.join(
+        options.rootPath,
+        addr.parseAsType("meta", "portablePathFilename")
+      ) as AddressPathAbsolute,
+      createAttributes: (address) => {
+        return {
+          key: sanitise(address.addressNormalized),
+          namespace: sanitise(address.type),
+        };
+      },
+    });
     // ins.cacheManager = await AddressCacheManager.initialise({
     //   contentBaseAddress: addr.pathUtils.join(
     //     options.rootPath,
@@ -120,11 +105,64 @@ export class CacheService {
 
   protected async initialise(options: Options) {}
 
-  async get(...options: Parameters<(AddressCacheManager<true>['get'])>): ReturnType<AddressCacheManager<true>['get']> {
-    return this.cacheManager.get(...options)
+  // async get(...options: Parameters<(AddressCacheManager['get'])>): ReturnType<AddressCacheManager['get']> {
+  //   return this.cacheManager.get(...options)
+  // }
+  async get({
+    /** address here is the sourceAddress, where content comes from. We'll always generate the namespaced location within rootPath */
+    address,
+    cacheOptions,
+    createChecksum,
+    onHit,
+    onMiss,
+    onStale,
+  }: Omit<Parameters<AddressCacheManager["get"]>[0], "address"> & {
+    address: AddressDescriptorUnion;
+  }): ReturnType<AddressCacheManager["get"]> {
+    // return this.cacheManager.get(...options)
+
+    const { absolute: contentPath, relative: contentPathRelative } =
+      await this.cacheManager.createContentPaths({
+        rootPath: this.options.rootPath,
+        address,
+      });
+    await this.cacheManager.primeContent({rootPath: this.options.rootPath, address})
+
+    const fetchRes = await this.cacheManager.get({
+      address: contentPath,
+      // namespace,
+      cacheOptions: {},
+      // expectedChecksum: "",
+      createChecksum,
+      onHit,
+      onStale,
+      onMiss,
+      // onHit: () => {},
+      // onStale: async ({ contentPath, existentChecksum }) => {
+      //   return await doFetch(sourceAddress, contentPath);
+      // },
+      // // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
+      // onMiss: async ({ contentPath }) => {
+      //   console.log(`contentPath :>> `, contentPath);
+      //   await doFetch(sourceAddress, contentPath);
+      // },
+    });
+
+    return fetchRes;
   }
-  async has(...options: Parameters<(AddressCacheManager<true>['has'])>): ReturnType<AddressCacheManager<true>['has']> {
-    return this.cacheManager.has(...options)
+  async has(address: AddressDescriptorUnion): Promise<boolean> {
+    const { absolute: contentPath, relative: contentPathRelative } =
+      await this.cacheManager.createContentPaths({
+        rootPath: this.options.rootPath,
+        address,
+      });
+    const hasMeta = await this.cacheManager.hasMeta(contentPath);
+    const hasContent = await this.cacheManager.hasContent(contentPath);
+
+// console.log(`address, contentPath :>> `, address, contentPath)
+    console.log(`hasMeta, hasContent :>> `, hasMeta, hasContent)
+
+    return hasMeta && hasContent; // leave any cache dir inconsistencies to the cacheManager
   }
 
   // protected getCacheManagerAttributes({

@@ -18,7 +18,7 @@ export async function config(
 
   const configPath = addr.packageUtils.resolve({
     address: addr.parsePackage(
-      `@business-as-code/core/src/etc/config/${configFilename}`
+      `@business-as-code/core/etc/config/${configFilename}`
     ),
     projectCwd: cliCheckoutPath,
     strict: true,
@@ -37,11 +37,11 @@ export async function commonFiles(
 
   await expectConfig.isValid();
 
-  res.res.expectUtil
-    .createText(expectFs.readText("./BOLLOCKS.md"))
+  ;(await res.res.expectUtil
+    .createText(expectFs.readText("./BOLLOCKS.md")))
     .lineContainsString({ match: `PANTS`, occurrences: 1 }); // coming from second schematic synchronise-workspace
-  res.res.expectUtil
-    .createText(expectFs.readText("./package.json"))
+  ;(await res.res.expectUtil
+    .createText(expectFs.readText("./package.json")))
     .lineContainsString({
       match: `"name": "my-new-workspace"`,
       occurrences: 1,

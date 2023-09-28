@@ -28,7 +28,7 @@ describe("fetch-content", () => {
           destinationAddress: testContext.testEnvVars.workspacePath,
         };
 
-        const res =
+        const fetchLifecycleRes =
           await testContext.context.lifecycles.fetchContent.executeFetchContent(
             {
               common: {
@@ -44,26 +44,106 @@ describe("fetch-content", () => {
             }
           );
 
-        expectIsOk(res);
+        expectIsOk(fetchLifecycleRes);
+
+        // console.log(`fetchLifecycleRes :>> `, require('util').inspect(fetchLifecycleRes, {showHidden: false, depth: undefined, colors: true}))
+
+
+        expect(fetchLifecycleRes.res[0]).toEqual(
+          {
+            provider: 'git',
+            options: expect.objectContaining({
+              contentPath: expect.objectContaining({
+                original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`),
+              }),
+              metaPath: expect.objectContaining({
+                original: expect.stringMatching(/.json$/),
+              }),
+              metaPathRelative: expect.objectContaining({
+                original: expect.stringMatching(/.json$/),
+              }),
+              checksum: {
+                globalVersion: 1,
+                key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+              },
+              existentChecksum: undefined,
+              checksumValid: true, // we class empty as valid
+            })
+          }
+        );
 
         // const expectUtil = await testContext.createExpectUtil({workspacePath: testContext.testEnvVars.workspacePath})
         // const expectFs = expectUtil.createFs()
+
+        // console.log(`fetchLifecycleRes :>> `, require('util').inspect(fetchLifecycleRes, {showHidden: false, depth: undefined, colors: true}))
+
 
         const cacheService = await testContext.context.serviceFactory("cache", {
           context: testContext.context,
           workingPath: ".",
           workspacePath: testContext.testEnvVars.workspacePath,
+          rootPath: testContext.testEnvVars.workspacePath,
         });
-
         expect(await cacheService.has(sourceAddress)).toBeTruthy();
-        const cacheRes = await cacheService.get({ address: sourceAddress });
 
-        expectIsOk(cacheRes);
-        assert(cacheRes.res);
-        const { checksum } = cacheRes.res;
 
-        expect(checksum.globalVersion).toEqual(constants.GLOBAL_CACHE_KEY);
-        expect(checksum.key).toHaveLength(40);
+        const fetchLifecycleCachedRes =
+          await testContext.context.lifecycles.fetchContent.executeFetchContent(
+            {
+              common: {
+                context: testContext.context,
+                workspacePath: testContext.testEnvVars.workspacePath,
+              },
+              options: [
+                {
+                  provider: "git",
+                  options: fetchOptions,
+                },
+              ],
+            }
+          );
+
+        expectIsOk(fetchLifecycleCachedRes);
+
+        // console.log(`fetchLifecycleCachedRes :>> `, require('util').inspect(fetchLifecycleCachedRes, {showHidden: false, depth: undefined, colors: true}))
+
+        expect(fetchLifecycleCachedRes.res[0]).toEqual(
+          {
+            provider: 'git',
+            options: expect.objectContaining({
+              contentPath: expect.objectContaining({
+                original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`),
+              }),
+              metaPath: expect.objectContaining({
+                original: expect.stringMatching(/.json$/),
+              }),
+              metaPathRelative: expect.objectContaining({
+                original: expect.stringMatching(/.json$/),
+              }),
+              checksum: {
+                globalVersion: 1,
+                key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+              },
+              existentChecksum: {
+                globalVersion: 1,
+                key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+              },
+              checksumValid: true, // match
+            })
+          },
+        );
+
+        // const cacheRes = await cacheService.get({
+        //   contentPath: sourceAddress
+        // });
+
+        // expectIsOk(cacheRes);
+        // assert(cacheRes.res);
+        // const { checksum } = cacheRes.res;
+
+        // expect(checksum.globalVersion).toEqual(constants.GLOBAL_CACHE_KEY);
+        // expect(checksum.key).toHaveLength(40);
+
         // console.log(`contentPath, checksum :>> `, contentPath, checksum)
 
         // expect(await xfsCacheManager.has({key: }))

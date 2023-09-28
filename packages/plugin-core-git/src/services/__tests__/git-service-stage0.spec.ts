@@ -23,7 +23,7 @@ describe("git-service", () => {
         expectIsOk(res)
 
         const expectUtil = await testContext.createExpectUtil({workspacePath: testContext.testEnvVars.workspacePath})
-        const expectFs = expectUtil.createFs()
+        const expectFs = await expectUtil.createFs()
 
         // const expectFs = await res.res.expectUtil.createFs();
         // expect(res.res.tree.readText("./README.md")).toMatch(`# bac-tester`);
@@ -33,12 +33,11 @@ describe("git-service", () => {
         //     .lineContainsString({ match: `# bac-tester`, occurrences: 1 })
         // );
         expect(
-          expectUtil
-            .createText(expectFs.readText("./package.json")).asJson()
+          (await expectUtil.createText(expectFs.readText("./package.json"))).asJson()
         ).toHaveProperty('name', 'root-package');
         expect(
-          expectUtil
-            .createText(expectFs.readText("./packages/my-package-1/package.json")).asJson()
+          (await expectUtil
+            .createText(expectFs.readText("./packages/my-package-1/package.json"))).asJson()
         ).toHaveProperty('name', 'my-package-1');
 
         const repo = service.getRepository();

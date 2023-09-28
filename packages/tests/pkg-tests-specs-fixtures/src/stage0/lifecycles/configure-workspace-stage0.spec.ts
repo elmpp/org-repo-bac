@@ -54,7 +54,8 @@ describe("configure workspace", () => {
         workingPath: '.',
       })
 
-      const config = await bacService.loadConfig();
+      const configRes = await bacService.loadConfig();
+      expectIsOk(configRes)
 
       const res =
         await testContext.context.lifecycles.configureWorkspace.executeConfigureWorkspace(
@@ -64,7 +65,7 @@ describe("configure workspace", () => {
               workspacePath: testContext.testEnvVars.workspacePath,
             },
             options: {
-              config,
+              config: configRes.res,
             },
           }
         );

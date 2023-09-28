@@ -1,5 +1,5 @@
 import { moonQueryProjects } from './moon-query-projects'
-import * as configValidators from './config'
+import * as config from './config'
 
 export type {
   Config,
@@ -9,7 +9,7 @@ export const validators = {
   moon: {
     queryProjects: moonQueryProjects,
   },
-  config: configValidators,
+  config,
 }
 
 // export * from './config'

@@ -51,8 +51,8 @@ describe("initialise workspace", () => {
         await assertions.workspace.config(testContext, res, "skeleton.js");
 
         const expectFs = await res.res.expectUtil.createFs();
-        res.res.expectUtil
-          .createText(expectFs.readText("./.npmrc"))
+        (await res.res.expectUtil
+          .createText(expectFs.readText("./.npmrc")))
           .lineContainsString({
             match: `@business-as-code:registry=http://localhost:4873`,
             occurrences: 1,
@@ -84,8 +84,8 @@ describe("initialise workspace", () => {
         await assertions.workspace.config(testContext, res, "skeleton.js");
 
         const expectFs = await res.res.expectUtil.createFs();
-        res.res.expectUtil
-          .createText(expectFs.readText("./.npmrc"))
+        (await res.res.expectUtil
+          .createText(await expectFs.readText("./.npmrc")))
           .lineContainsString({
             match: `@business-as-code:registry=https://registry.npmjs.org`,
             occurrences: 1,
@@ -95,7 +95,7 @@ describe("initialise workspace", () => {
   });
 
   describe("initialise:workspace git-minimal-http relative config", () => {
-    it("cliRegistry", async () => {
+    it.only("cliRegistry", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         cliSource: "cliRegistry",
         cacheNamespaceFolder:
@@ -134,12 +134,12 @@ describe("initialise workspace", () => {
         //   .createText(expectFs.readText("./.npmrc"))
         //   .lineContainsString({ match: `@business-as-code:registry=http://localhost:4873`, occurrences: 1 }); // local npm registry set up
         expect(
-          res.res.expectUtil
+          (await res.res.expectUtil
             .createText(
               expectFs.readText(
                 `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
               )
-            )
+            ))
             .asJson()
         ).toEqual(
           expect.objectContaining([
@@ -189,12 +189,12 @@ describe("initialise workspace", () => {
         //   .createText(expectFs.readText("./.npmrc"))
         //   .lineContainsString({ match: `@business-as-code:registry=https://registry.npmjs.org`, occurrences: 1 });
         expect(
-          res.res.expectUtil
+          (await res.res.expectUtil
             .createText(
               expectFs.readText(
                 `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
               )
-            )
+            ))
             .asJson()
         ).toEqual(
           expect.objectContaining([

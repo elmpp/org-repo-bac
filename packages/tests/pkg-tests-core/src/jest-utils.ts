@@ -24,6 +24,7 @@ import {
   stringUtils,
   BacService,
   Context,
+  expectIsOk,
 } from "@business-as-code/core";
 import { assertIsError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
@@ -177,8 +178,12 @@ class ExpectConfig {
   // }
 
   async isValid(): Promise<ExpectConfig> {
-    const config = this.options.bacService.loadConfig();
-    validators.config.configSchema.parse(config);
+    const configRes = await this.options.bacService.loadConfig();
+    expectIsOk(configRes)
+    const parseRes = validators.config.configSchema.safeParse(configRes.res);
+    if (!parseRes.success) {
+      throw parseRes.error
+    }
     return this;
   }
 

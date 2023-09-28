@@ -7,19 +7,17 @@ import {
   assertIsAddressPathRelative,
 } from "@business-as-code/address";
 import {
-  fsUtils,
   BaseCommand,
-  ContextCommand,
-  Oclif,
-  Interfaces as _Interfaces,
   Config,
-  configSchema,
+  ContextCommand,
   expectIsOk,
-  constants,
-  formatUtils,
-  LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  fsUtils,
+  Oclif,
   ok,
+  validators,
+  Interfaces as _Interfaces,
 } from "@business-as-code/core";
+import { configSchema } from "@business-as-code/core/src/validation/config";
 import {
   BacError,
   BacErrorWrapper,
@@ -158,14 +156,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // const skeletonConfigPath = addr.packageUtils.resolve({
     //   address: addr.parsePackage(
-    //     `@business-as-code/core/src/etc/config/skeleton.js`
+    //     `@business-as-code/core/etc/config/skeleton.js`
     //   ),
     //   projectCwd: addr.parsePath(
     //     context.oclifConfig.root
     //   ) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
     //   strict: true,
     // });
-    const skeletonConfigPath = fsUtils.resolveCoreConfig('skeleton.js');
+    const skeletonConfigPath = fsUtils.resolveCoreConfig("skeleton.js");
 
     const inputConfigPathWithDefault =
       context.cliOptions.flags.configPath ?? skeletonConfigPath;
@@ -179,19 +177,20 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
     const configRaw = module.config;
+console.log(`configRaw :>> `, configRaw)
+    const configParseRes = configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
+    // const configParseRes = validators.config.configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
 
-    const config = configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
-
-    if (config.success === false) {
+    if (configParseRes.success === false) {
       throw new BacErrorWrapper(
         MessageName.CONFIGURATION_INVALID_ERROR,
-        `Configuration file found but has validation errors. ${config.error.message}. Path: '${configPath.original}'`,
-        config.error
+        `Configuration file found but has validation errors. ${configParseRes.error.message}. Path: '${configPath.original}'`,
+        configParseRes.error
       );
     }
 
     return {
-      config: config.data,
+      config: configParseRes.data,
       path: configPath,
     };
   }
@@ -222,13 +221,15 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     const { path: configPath } = await this.getConfig(context);
 
     const initialiseRes =
-      await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace([
-        {
-          provider: "core",
-          options: {
-            context,
-            workspacePath,
-            // workingPath: ".",
+      await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace({
+        common: {
+          context,
+          workspacePath,
+          // workingPath: ".",
+        },
+        options: [
+          {
+            provider: "core",
             options: {
               name: context.cliOptions.flags.name,
               configPath: configPath.original,
@@ -240,35 +241,51 @@ hello friend from oclif! (./src/commands/hello/index.ts)
               // }, // <!-- typed as any atm ¯\_(ツ)_/¯
             },
           },
-        },
-      ]);
+        ],
+      });
 
     // return initialiseRes.res
     expectIsOk(initialiseRes);
 
+    const bacService = await context.serviceFactory("bac", {
+      context,
+      workspacePath,
+      workingPath: ".",
+    });
+
     context.logger.info(`initialise:workspace: lifecycle initialise success`);
 
-    const configWithoutCommon = fsUtils.loadConfig(workspacePath);
-    const config = configWithoutCommon.projectSource.map((c) => ({
-      ...c,
-      options: {
-        options: {
-          ...c.options,
-        },
-        context,
-        workspacePath: workspacePath as AddressPathAbsolute,
-      },
-    }));
+    const configWithoutCommonRes = await bacService.loadConfig();
+    expectIsOk(configWithoutCommonRes);
+
+    // const config = mapLifecycleOptionsByMethodKeyedByProviderWithoutCommon({common: {
+    //   context,
+    //   workspacePath,
+    // }, options: configWithoutCommonRes.res})
+    // const config = configWithoutCommonRes.res.projectSource.map((c) => ({
+    //   ...c,
+    //   options: {
+    //     options: {
+    //       ...c.options,
+    //     },
+    //     context,
+    //     workspacePath: workspacePath as AddressPathAbsolute,
+    //   },
+    // }));
 
     const configureRes =
-      await context.lifecycles.configureWorkspace.executeConfigureWorkspace(
-        config
-      );
-    expectIsOk(configureRes)
+      await context.lifecycles.configureWorkspace.executeConfigureWorkspace({
+        common: {
+          context,
+          workspacePath,
+        },
+        options: {
+          config: configWithoutCommonRes.res,
+        },
+      });
+    expectIsOk(configureRes);
 
-    console.log(`configureRes :>> `, configureRes)
-
-
+    console.log(`configureRes :>> `, configureRes);
 
     // // this is the outputs of the configure providers but in a LifecycleOptionsByMethodKeyedByProviderWithoutCommon format
     // const configuredConfig = configureRes.res.map((c) => {

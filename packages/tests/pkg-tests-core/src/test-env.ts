@@ -14,9 +14,9 @@ import {
   constants,
   fsUtils,
 } from "@business-as-code/core";
-import {
-  XfsCacheManager
-} from "@business-as-code/core/src/cache/xfs-cache-manager";
+// import {
+//   XfsCacheManager
+// } from "@business-as-code/core/src/cache/xfs-cache-manager";
 import {
   ArgsInfer,
   FlagsInfer,
@@ -105,7 +105,7 @@ type CreatePersistentTestEnvVars = {
   // /** the base path where content will be created (i.e. contain the various destinationPaths). Defaults to basePath/tests */
   // testsPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   /** skips (+clears) cache namespace for the current test file. (remember we strongly encourage single 'makeTestEnv = await setupMakeTestEnv' per test file) */
-  cacheRenewNamespace?: boolean;
+  // cacheRenewNamespace?: boolean;
   // /** overrides the cache location for all tests (normally taken from processNamespace/test name). Can only be an augmented key of Stage1Content */
   cacheNamespaceFolder?: keyof Stage1Content;
   /** test must declare the cliSource it produces. Mandatory for stage1 tests */
@@ -135,7 +135,7 @@ type PersistentTestEnvVars = {
   /** the git-server key-gens an sshKey each time it starts up - public */
   sshPublicKeyPath: AddressPathAbsolute;
 
-  cacheRenewNamespace: boolean;
+  // cacheRenewNamespace: boolean;
   cacheNamespaceFolder?: string;
 
   stage: `stage${number}`;
@@ -331,8 +331,8 @@ async function doCreatePersistentTestEnvs(
   // const fixturesPath =
   //   createPersistentTestEnvVars.fixturesPath?.({basePath}) ??
   //   (addr.pathUtils.join(basePath, addr.parsePPath('fixtures') as AddressPathRelative) as AddressPathAbsolute)
-  const cacheRenewNamespace =
-    createPersistentTestEnvVars.cacheRenewNamespace ?? false;
+  // const cacheRenewNamespace =
+  //   createPersistentTestEnvVars.cacheRenewNamespace ?? false;
   // const cacheRenewNamespace =
   //   truthyFalsy(process.env.TEST_ENV_CACHE_RENEW) ?? createPersistentTestEnvVars.cacheRenewNamespace ?? false
   const cacheNamespaceFolder = createPersistentTestEnvVars.cacheNamespaceFolder
@@ -382,7 +382,7 @@ async function doCreatePersistentTestEnvs(
     cachePath,
     fixturesPath: testsFixturesRoot,
     testsPath,
-    cacheRenewNamespace,
+    // cacheRenewNamespace,
     cacheNamespaceFolder,
     stage,
     sshPrivateKeyPath: addr.pathUtils.join(
@@ -466,24 +466,24 @@ async function doCreateEphemeralTestEnvVars(
   };
 }
 
-async function createCacheManager(
-  testEnvVars: PersistentTestEnvVars
-): Promise<XfsCacheManager<true>> {
-  return await XfsCacheManager.initialise({
-    contentBaseAddress: addr.pathUtils.join(
-      testEnvVars.cachePath,
-      addr.parseAsType("content", "portablePathFilename")
-    ) as AddressPathAbsolute,
-    metaBaseAddress: addr.pathUtils.join(
-      testEnvVars.cachePath,
-      addr.parseAsType("meta", "portablePathFilename")
-    ) as AddressPathAbsolute,
-  });
-}
+// async function createCacheManager(
+//   testEnvVars: PersistentTestEnvVars
+// ): Promise<XfsCacheManager<true>> {
+//   return await XfsCacheManager.initialise({
+//     contentBaseAddress: addr.pathUtils.join(
+//       testEnvVars.cachePath,
+//       addr.parseAsType("content", "portablePathFilename")
+//     ) as AddressPathAbsolute,
+//     metaBaseAddress: addr.pathUtils.join(
+//       testEnvVars.cachePath,
+//       addr.parseAsType("meta", "portablePathFilename")
+//     ) as AddressPathAbsolute,
+//   });
+// }
 
-function getCacheNamespace(options: { cacheNamespaceFolder?: string }): string {
-  return options.cacheNamespaceFolder ?? getCurrentTestFilenameSanitised();
-}
+// function getCacheNamespace(options: { cacheNamespaceFolder?: string }): string {
+//   return options.cacheNamespaceFolder ?? getCurrentTestFilenameSanitised();
+// }
 
 export async function createPersistentTestEnv(
   createPersistentTestEnvVars: CreatePersistentTestEnvVars
@@ -495,38 +495,38 @@ export async function createPersistentTestEnv(
   // /** do some checks that we're still set up correctly */
   // await validateTestEnvVars(persistentTestEnvVars)
 
-  const cacheManager = await createCacheManager(persistentTestEnvVars);
+  // const cacheManager = await createCacheManager(persistentTestEnvVars);
 
   /** clear any cache at top level. This must be done at this top level  */
-  if (persistentTestEnvVars.cacheRenewNamespace) {
-    const namespaceExists = await cacheManager.hasNamespace({
-      namespace: getCacheNamespace(persistentTestEnvVars),
-    });
-    const cacheEntry = await cacheManager.getCacheEntry({
-      namespace: getCacheNamespace(persistentTestEnvVars),
-      key: "dummy",
-    });
+  // if (persistentTestEnvVars.cacheRenewNamespace) {
+  //   const namespaceExists = await cacheManager.hasNamespace({
+  //     namespace: getCacheNamespace(persistentTestEnvVars),
+  //   });
+  //   const cacheEntry = await cacheManager.getCacheEntry({
+  //     namespace: getCacheNamespace(persistentTestEnvVars),
+  //     key: "dummy",
+  //   });
 
-    // console.log(`getCacheNamespace(persistentTestEnvVars) :>> `, getCacheNamespace(persistentTestEnvVars))
-    // console.log(`cacheEntry :>> `, cacheEntry)
+  //   // console.log(`getCacheNamespace(persistentTestEnvVars) :>> `, getCacheNamespace(persistentTestEnvVars))
+  //   // console.log(`cacheEntry :>> `, cacheEntry)
 
-    if (namespaceExists) {
-      console.log(
-        `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY. DELETING EXISTING NAMESPACE. Content directory: '${cacheEntry.content._namespaceBase.original}'`
-      );
-      await cacheManager.removeNamespace({
-        namespace: getCacheNamespace(persistentTestEnvVars),
-      });
-      // await xfs.removePromise(contentCachePath.address)
-    } else {
-      console.log(
-        `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY (NONE EXISTENT). Content directory: '${cacheEntry.content._namespaceBase.original}'`
-      );
-    }
-    await cacheManager.removeNamespace({
-      namespace: getCacheNamespace(persistentTestEnvVars),
-    });
-  }
+  //   if (namespaceExists) {
+  //     console.log(
+  //       `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY. DELETING EXISTING NAMESPACE. Content directory: '${cacheEntry.content._namespaceBase.original}'`
+  //     );
+  //     await cacheManager.removeNamespace({
+  //       namespace: getCacheNamespace(persistentTestEnvVars),
+  //     });
+  //     // await xfs.removePromise(contentCachePath.address)
+  //   } else {
+  //     console.log(
+  //       `== MNT0003: makeTestEnv#setup: NAMESPACE CACHE SKIPPED EXPLICITLY (NONE EXISTENT). Content directory: '${cacheEntry.content._namespaceBase.original}'`
+  //     );
+  //   }
+  //   await cacheManager.removeNamespace({
+  //     namespace: getCacheNamespace(persistentTestEnvVars),
+  //   });
+  // }
 
   return {
     test: await createTestEnv(persistentTestEnvVars),

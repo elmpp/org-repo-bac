@@ -33,7 +33,7 @@ describe("initialise workspace", () => {
 
       const configPath = addr.packageUtils.resolve({
         address: addr.parsePackage(
-          `@business-as-code/core/src/etc/config/${configFilename}`
+          `@business-as-code/core/etc/config/${configFilename}`
         ),
         projectCwd: cliCheckoutPath,
         strict: true,

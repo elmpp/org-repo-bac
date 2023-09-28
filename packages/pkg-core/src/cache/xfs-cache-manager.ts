@@ -100,6 +100,8 @@ export class XfsCacheManager<WithContent extends boolean> {
       await xfs.mkdirpPromise(options.metaBaseAddress.address);
     }
 
+
+
     return new XfsCacheManager(options);
   }
 
