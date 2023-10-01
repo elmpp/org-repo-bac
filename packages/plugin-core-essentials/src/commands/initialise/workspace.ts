@@ -25,7 +25,7 @@ import {
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 
-export class InitialiseWorkspace extends BaseCommand<
+export default class InitialiseWorkspace extends BaseCommand<
   typeof InitialiseWorkspace
 > {
   static override description = "Creates an empty workspace";

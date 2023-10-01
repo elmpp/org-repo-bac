@@ -10,7 +10,7 @@ import {
 import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 
-export class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
+export default class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
   static override description = "Creates the tests git repositories";
 
   //   static override examples = [

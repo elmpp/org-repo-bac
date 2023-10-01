@@ -6,7 +6,7 @@ import {
   execUtils as _execUtils,
 } from "@business-as-code/core";
 
-export class ReleaseSnapshot extends BaseCommand<typeof ReleaseSnapshot> {
+export default class ReleaseSnapshot extends BaseCommand<typeof ReleaseSnapshot> {
   static override description = "Creates a local snapshot release, including build";
 
   static override examples = [

@@ -9,7 +9,7 @@ module.exports = {
     // ...Object.valuestsjPreset.transform.map(t => require.resolve('ts-jest')), // https://tinyurl.com/yyc4pzyb
     // Object.fromEntries(Object.entries(obj).map(([key, val]) => [key, iteratee(val, key)] as [string, string]))
     // '^.+\\.tsx?$': require.resolve('ts-jest')
-    '^.+\\.(t|j)sx?$': ['@swc/jest'],
+    // '^.+\\.(t|j)sx?$': ['@swc/jest'],
   },
   /** some deps are pure esmodules that swc/jest doesn't understand */
   transformIgnorePatterns: [

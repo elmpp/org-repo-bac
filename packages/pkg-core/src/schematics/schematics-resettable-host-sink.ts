@@ -8,8 +8,11 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
   // export class SchematicResettableHostSink extends HostSink {
 
   constructor(
-    protected override _host: SchematicResettableScopedNodeJsSyncHost,
-    protected override _force = false
+    protected _host: SchematicResettableScopedNodeJsSyncHost,
+    protected _force = false
+    /** NOT SUPPORTED BY RUN YET IT SEEMS */
+    // protected override _host: SchematicResettableScopedNodeJsSyncHost,
+    // protected override _force = false
   ) {
     super(_host, _force);
   }
@@ -179,8 +182,7 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
   //   return EMPTY;
   // }
 
-  // @ts-ignore
-  _done() {
+  override _done() {
     // Really commit everything to the actual filesystem.
     return concatObservables(
       observableFrom([...this._filesToDelete.values()]).pipe(

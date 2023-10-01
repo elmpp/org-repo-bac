@@ -7,7 +7,7 @@ import {
 } from "@business-as-code/core";
 
 /** probably should fold this into the snapshot command */
-export class ChangesetsPublish extends BaseCommand<typeof ChangesetsPublish> {
+export default class ChangesetsPublish extends BaseCommand<typeof ChangesetsPublish> {
   static override description = "Creates an empty workspace";
 
   static override examples = [

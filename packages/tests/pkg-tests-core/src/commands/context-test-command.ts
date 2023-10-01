@@ -8,7 +8,7 @@ import * as oclif from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 
 /** here purely to allow test-env to create a context */
-export class ContextTestCommand extends BaseCommand<typeof ContextTestCommand> {
+export default class ContextTestCommand extends BaseCommand<typeof ContextTestCommand> {
   static override description = "Creates a context";
 
   static override examples = [

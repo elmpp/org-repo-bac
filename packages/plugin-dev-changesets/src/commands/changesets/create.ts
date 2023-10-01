@@ -6,7 +6,7 @@ import {
 } from "@business-as-code/core";
 
 /** produces a changeset file. This is normally done as part of the PR process via its cli but we produce our own */
-export class ChangesetsCreate extends BaseCommand<typeof ChangesetsCreate> {
+export default class ChangesetsCreate extends BaseCommand<typeof ChangesetsCreate> {
   static override description = "Creates an empty workspace";
 
   static override examples = [

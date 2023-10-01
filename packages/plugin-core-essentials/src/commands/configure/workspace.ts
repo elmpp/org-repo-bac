@@ -11,7 +11,7 @@ import {
 import { JSONStringify } from "@business-as-code/core/utils/format-utils";
 import { xfs } from "@business-as-code/fslib";
 
-export class ConfigureWorkspace extends BaseCommand<typeof ConfigureWorkspace> {
+export default class ConfigureWorkspace extends BaseCommand<typeof ConfigureWorkspace> {
   static override description = "Performs the configuration expansion";
 
   static override examples = [

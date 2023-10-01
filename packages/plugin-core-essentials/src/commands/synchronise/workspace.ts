@@ -8,7 +8,7 @@ import {
   ok,
 } from "@business-as-code/core";
 
-export class SynchroniseWorkspace extends BaseCommand<
+export default class SynchroniseWorkspace extends BaseCommand<
   typeof SynchroniseWorkspace
 > {
   static override description = "Ensures workspace state matches the FS";

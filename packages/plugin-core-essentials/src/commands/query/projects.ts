@@ -6,7 +6,7 @@ import {
   ok,
 } from "@business-as-code/core";
 
-export class QueryProjects extends BaseCommand<typeof QueryProjects> {
+export default class QueryProjects extends BaseCommand<typeof QueryProjects> {
   static override description = "Retrieve details of the workspace projects";
 
   static override examples = [
