@@ -77,7 +77,7 @@
   "ts-node": {
     "files": true,
     // "debug": true,
-    // "swc": true,
+    "swc": true,
     // "transpileOnly": true, // not required with "swc: true"
     // "moduleTypes": {
     //   // "webpack.config.ts": "cjs",
