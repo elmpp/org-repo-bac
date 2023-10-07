@@ -1,8 +1,9 @@
 import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 
 describe("configure workspace", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   it("skeleton workspace produces empty rc", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});

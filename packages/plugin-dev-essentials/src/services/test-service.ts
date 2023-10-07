@@ -72,7 +72,7 @@ export class TestService {
         packageManagerService.run({
           command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
           options: {
-            stdio: 'inherit',
+            stdio: "inherit",
           },
         })
       );
@@ -94,7 +94,7 @@ export class TestService {
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
           options: {
-            stdio: 'inherit',
+            stdio: "inherit",
           },
         })
       );
@@ -115,7 +115,7 @@ export class TestService {
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
           options: {
-            stdio: 'inherit',
+            stdio: "inherit",
           },
         })
       );
@@ -136,7 +136,7 @@ export class TestService {
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:startBackground`,
           options: {
-            stdio: 'inherit',
+            stdio: "inherit",
           },
         })
       );
@@ -157,7 +157,7 @@ export class TestService {
         packageManagerService.run({
           command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
           options: {
-            stdio: 'inherit',
+            stdio: "inherit",
           },
         })
       );
@@ -376,7 +376,7 @@ export class TestService {
 
   async test({
     testFileMatch,
-    // testMatch,
+    testNameMatch,
     stage,
     cliSource,
     watch = false,
@@ -401,7 +401,7 @@ export class TestService {
       try {
         await this.ensureDaemons();
       } catch (err) {
-        console.log(`err :>> `, err)
+        console.log(`err :>> `, err);
         return {
           success: false as const,
           res: {
@@ -414,7 +414,7 @@ export class TestService {
     if (cliSource === "cliRegistry" && !skipPublish) {
       const publishRes = await this.buildAndPublishSnapshot();
       if (!assertIsOk(publishRes)) {
-        return publishRes
+        return publishRes;
       }
     }
 
@@ -427,19 +427,20 @@ export class TestService {
     );
 
     async function runIf(cb: () => {}, aStage: `stage${number}`) {
-      const stageNumberCurrent = parseInt(stage.at(-1)!)
-      const stageNumberIntended = parseInt(aStage.at(-1)!)
+      const stageNumberCurrent = parseInt(stage.at(-1)!);
+      const stageNumberIntended = parseInt(aStage.at(-1)!);
 
-      // console.log(`stageNumberCurrent, stageNumberIntended :>> `, stageNumberCurrent, stageNumberIntended, stage, aStage, stage.at(-1), aStage.at(-1))
-
-      if (skipEarlier && (stageNumberIntended < stageNumberCurrent)) {
+      // if (skipEarlier && stageNumberIntended < stageNumberCurrent) {
+      if (skipEarlier) {
         context.logger.info(
           `SKIPPING ${aStage.toUpperCase()} TESTS (due to --skipEarlier) - ${cliSource}`
         );
-        return
+        return;
       }
-
-      return await cb()
+      if (stageNumberIntended > stageNumberCurrent) {
+        return;
+      }
+      return await cb();
     }
 
     await runIf(async () => {
@@ -448,9 +449,9 @@ export class TestService {
       );
 
       const stage0Res = await packageManagerService.run({
-        command: `jest ${
+        command: `dev:test ${
           testFileMatch && stage === "stage0"
-            ? ` '${testFileMatch}.*stage0'`
+            ? ` '${testFileMatch}-stage0'`
             : ` 'stage0'`
         } ${stage === "stage0" ? ` --watch` : ``}`,
         options: {
@@ -460,7 +461,7 @@ export class TestService {
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
-          logLevel: 'debug', // always
+          logLevel: "debug", // always
         },
       });
       expectIsOk(stage0Res);
@@ -472,9 +473,9 @@ export class TestService {
       );
 
       const stage1Res = await packageManagerService.run({
-        command: `jest ${
+        command: `dev:test ${
           testFileMatch && stage === "stage1"
-            ? ` '${testFileMatch}.*stage1'`
+            ? ` '${testFileMatch}-stage1'`
             : ` 'stage1'`
         } ${stage === "stage1" ? ` --watch` : ``}`,
         options: {
@@ -484,7 +485,7 @@ export class TestService {
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
-          logLevel: 'debug', // always
+          logLevel: "debug", // always
         },
       });
       expectIsOk(stage1Res);
@@ -496,9 +497,9 @@ export class TestService {
       );
 
       const stage2Res = await packageManagerService.run({
-        command: `jest ${
+        command: `dev:test ${
           testFileMatch && stage === "stage2"
-            ? ` '${testFileMatch}.*stage2'`
+            ? ` '${testFileMatch}-stage2'`
             : ` 'stage2'`
         } ${stage === "stage2" ? ` --watch` : ``}`,
         options: {
@@ -508,21 +509,23 @@ export class TestService {
             FORCE_COLOR: "true",
           },
           stdin: "inherit",
-          logLevel: 'debug', // always
+          logLevel: "debug", // always
         },
       });
       expectIsOk(stage2Res);
     }, "stage2");
 
-    if (!["stage0", "stage1", "stage2"].includes(stage)) {
+    // if (!["stage0", "stage1", "stage2"].includes(stage)) {
       context.logger.info(
         `RUNNING ${stage.toUpperCase()} TESTS - ${cliSource} - testFileMatch: '${testFileMatch}'`
       );
 
       const stageXRes = await packageManagerService.run({
-        command: `jest ${
-          testFileMatch ? ` '${testFileMatch}.*${stage}'` : ` '${stage}'`
-        } --config jest.config.js${watch ? ` --watch` : ``}`,
+        command: `dev:test ${
+          testFileMatch ? ` '${testFileMatch}-${stage}'` : ` '${stage}'`
+        }${testNameMatch ? ` -t '${testNameMatch}'` : ``}${
+          watch ? ` --watch` : ``
+        }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -535,7 +538,7 @@ export class TestService {
       });
 
       expectIsOk(stageXRes);
-    }
+    // }
 
     return {
       success: true,

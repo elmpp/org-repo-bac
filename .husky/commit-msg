@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 pwd
-# bun commitlint --edit ${1} // GH issue - https://tinyurl.com/ypm2492r
+# bun --bun commitlint --edit ${1} // GH issue - https://tinyurl.com/ypm2492r + https://github.com/moonrepo/moon/issues/1103 !!
 pnpm commitlint --edit ${1}

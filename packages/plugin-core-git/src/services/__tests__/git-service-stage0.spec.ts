@@ -1,14 +1,15 @@
 import { constants, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 import { CheckRepoActions } from "simple-git";
 
 describe("git-service", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   /** @online-only */
   describe("cloning", () => {
-    it.only("clone standard", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+    it("clone standard", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service cloning clone standard'});
       await persistentTestEnv.test({}, async (testContext) => {
 
         const service = await testContext.context.serviceFactory('git', {
@@ -114,7 +115,7 @@ describe("git-service", () => {
   });
   describe("initialising repo", () => {
     it("initialise standard", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service initialising repo initialise standard'});
       await persistentTestEnv.test({}, async (testContext) => {
 
         const service = await testContext.context.serviceFactory('git', {

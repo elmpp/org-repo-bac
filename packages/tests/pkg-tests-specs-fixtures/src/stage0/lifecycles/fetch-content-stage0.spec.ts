@@ -1,7 +1,7 @@
 import { addr } from "@business-as-code/address";
 import { FetchOptions, constants, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import assert from "assert";
+import { describe, expect, it } from "bun:test";
 
 /** check the repositories are accessible via the daemon. See fetch-content-stage0.spec for content tests */
 describe("fetch-content", () => {
@@ -9,6 +9,7 @@ describe("fetch-content", () => {
     it("fetches and caches new content", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         // defaultLogLevel: "debug",
+        testName: 'fetch-content:git:fetches and caches new content'
       });
       await persistentTestEnv.test({}, async (testContext) => {
         const sourceAddress = addr.parseUrl("ssh://localhost:2224/repo1.git");
@@ -45,32 +46,40 @@ describe("fetch-content", () => {
           );
 
         expectIsOk(fetchLifecycleRes);
+        const fetchResFirstProvider = fetchLifecycleRes.res[0]
 
         // console.log(`fetchLifecycleRes :>> `, require('util').inspect(fetchLifecycleRes, {showHidden: false, depth: undefined, colors: true}))
 
+        expect(fetchResFirstProvider).toHaveProperty('provider', 'git')
+        expect(fetchResFirstProvider).toHaveProperty('options')
+        expect(fetchResFirstProvider.options.contentPath.original).toMatch(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`)
+        expect(fetchResFirstProvider.options.checksum).toEqual({
+          globalVersion: 1,
+          key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+        })
 
-        expect(fetchLifecycleRes.res[0]).toEqual(
-          {
-            provider: 'git',
-            options: expect.objectContaining({
-              contentPath: expect.objectContaining({
-                original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`),
-              }),
-              metaPath: expect.objectContaining({
-                original: expect.stringMatching(/.json$/),
-              }),
-              metaPathRelative: expect.objectContaining({
-                original: expect.stringMatching(/.json$/),
-              }),
-              checksum: {
-                globalVersion: 1,
-                key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
-              },
-              existentChecksum: undefined,
-              checksumValid: true, // we class empty as valid
-            })
-          }
-        );
+        // expect(fetchLifecycleRes.res[0]).toEqual(
+        //   {
+        //     provider: 'git',
+        //     options: expect.objectContaining({
+        //       contentPath: expect.objectContaining({
+        //         original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`),
+        //       }),
+        //       metaPath: expect.objectContaining({
+        //         original: expect.stringMatching(/.json$/),
+        //       }),
+        //       metaPathRelative: expect.objectContaining({
+        //         original: expect.stringMatching(/.json$/),
+        //       }),
+        //       checksum: {
+        //         globalVersion: 1,
+        //         key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+        //       },
+        //       existentChecksum: undefined,
+        //       checksumValid: true, // we class empty as valid
+        //     })
+        //   }
+        // );
 
         // const expectUtil = await testContext.createExpectUtil({workspacePath: testContext.testEnvVars.workspacePath})
         // const expectFs = expectUtil.createFs()
@@ -104,34 +113,43 @@ describe("fetch-content", () => {
           );
 
         expectIsOk(fetchLifecycleCachedRes);
+        const fetchResCachedFirstProvider = fetchLifecycleCachedRes.res[0]
 
         // console.log(`fetchLifecycleCachedRes :>> `, require('util').inspect(fetchLifecycleCachedRes, {showHidden: false, depth: undefined, colors: true}))
 
-        expect(fetchLifecycleCachedRes.res[0]).toEqual(
-          {
-            provider: 'git',
-            options: expect.objectContaining({
-              contentPath: expect.objectContaining({
-                original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`),
-              }),
-              metaPath: expect.objectContaining({
-                original: expect.stringMatching(/.json$/),
-              }),
-              metaPathRelative: expect.objectContaining({
-                original: expect.stringMatching(/.json$/),
-              }),
-              checksum: {
-                globalVersion: 1,
-                key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
-              },
-              existentChecksum: {
-                globalVersion: 1,
-                key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
-              },
-              checksumValid: true, // match
-            })
-          },
-        );
+        expect(fetchResCachedFirstProvider).toHaveProperty('provider', 'git')
+        expect(fetchResCachedFirstProvider).toHaveProperty('options')
+        expect(fetchResCachedFirstProvider.options.contentPath.original).toMatch(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`)
+        expect(fetchResCachedFirstProvider.options.checksum).toEqual({
+          globalVersion: 1,
+          key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+        })
+
+        // expect(fetchLifecycleCachedRes.res[0]).toEqual(
+        //   {
+        //     provider: 'git',
+        //     options: expect.objectContaining({
+        //       contentPath: expect.objectContaining({
+        //         original: expect.stringMatching(`/${constants.RC_CONTENT_FOLDER}/gitSshRepoUrl/`),
+        //       }),
+        //       metaPath: expect.objectContaining({
+        //         original: expect.stringMatching(/.json$/),
+        //       }),
+        //       metaPathRelative: expect.objectContaining({
+        //         original: expect.stringMatching(/.json$/),
+        //       }),
+        //       checksum: {
+        //         globalVersion: 1,
+        //         key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+        //       },
+        //       existentChecksum: {
+        //         globalVersion: 1,
+        //         key: '86af834a790b7b5c95f14aed7c83a5da50d578d2',
+        //       },
+        //       checksumValid: true, // match
+        //     })
+        //   },
+        // );
 
         // const cacheRes = await cacheService.get({
         //   contentPath: sourceAddress

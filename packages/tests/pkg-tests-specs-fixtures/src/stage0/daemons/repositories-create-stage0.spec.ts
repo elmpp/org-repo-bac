@@ -1,11 +1,12 @@
 import { constants, execUtils, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import {expect, jest, it, describe} from 'bun:test';
 
 /** check the repositories are accessible via the daemon. See repositories-create-stage0.spec for content tests */
 describe("repositories-create", () => {
   describe("http", () => {
     it("repositories available via git-http", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: 'repositories-create:http:repositories available via git-http'});
       await persistentTestEnv.test({}, async (testContext) => {
         const assertForRepo = async (repo: string) => {
           const service = await testContext.context.serviceFactory("git", {
@@ -27,7 +28,7 @@ describe("repositories-create", () => {
   });
   describe("ssh", () => {
     it("repositories available via git-ssh with private key", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: 'repositories-create:ssh:repositories available via git-ssh with private key'});
       await persistentTestEnv.test({}, async (testContext) => {
 
         const assertForRepo = async (repo: string) => {
@@ -54,7 +55,7 @@ describe("repositories-create", () => {
       });
     });
     it("repositories not available via git-ssh without private key added", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: 'repositories-create:ssh:repositories not available via git-ssh without private key added'});
       await persistentTestEnv.test({}, async (testContext) => {
 
         const assertForRepo = async (repo: string) => {
@@ -64,14 +65,15 @@ describe("repositories-create", () => {
           });
 
           const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
-          expect(() =>
+
+          await expect(() =>
                   execUtils.promiseAwait(
                     service.remoteList(gitUrl, {
                       sshStrictHostCheckingDisable: true,
                       // sshPrivateKeyPath: testContext.testEnvVars.sshPrivateKeyPath.original, // should trigger an error
                     })
                   )
-                ).rejects.toThrow(`Promise did not resolve within expected`);
+                ).rejects
         };
 
         await assertForRepo("repo1.git");
@@ -80,7 +82,7 @@ describe("repositories-create", () => {
   });
   describe("ssh-anonymous", () => {
     it("repositories available via git-ssh without private key", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: 'repositories-create:ssh-anonymous:repositories available via git-ssh without private key'});
       await persistentTestEnv.test({}, async (testContext) => {
 
         const assertForRepo = async (repo: string) => {

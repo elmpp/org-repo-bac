@@ -1,8 +1,9 @@
 import { expectIsFail } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 
 describe("initialise workspace", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   describe("errors", () => {
     it("nonexistent command is handled and added to stderr", async () => {

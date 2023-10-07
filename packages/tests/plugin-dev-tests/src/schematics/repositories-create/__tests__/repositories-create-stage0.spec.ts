@@ -1,12 +1,15 @@
 import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 import assert from "assert";
 
 describe("repositories-create", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   it("create normal", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `repositories-create : create normal`,
+    });
     await persistentTestEnv.test({}, async (testContext) => {
       const res = await testContext.runSchematic({
         parseOutput: {

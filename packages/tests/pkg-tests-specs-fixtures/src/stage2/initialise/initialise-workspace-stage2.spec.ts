@@ -11,7 +11,7 @@ import { assertions } from "../../assertions";
  * Checks content produced in stage1
  */
 describe("initialise workspace", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   async function assertCommon({testContext, configFilename, res}: {
     testContext: TestContext,

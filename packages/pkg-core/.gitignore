@@ -1,1 +1,3 @@
-etc/tmp
+etc/tmp/**
+**/dist
+packages/pkg-core/src/etc/tmp

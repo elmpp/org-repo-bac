@@ -4,6 +4,7 @@ import {
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 
 describe("schematic-utils", () => {
   describe("external", () => {

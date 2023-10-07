@@ -1,5 +1,7 @@
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
+import { describe, expect, it, jest } from 'bun:test';
+import { ExecaReturnValue } from "execa";
 import { expectTypeOf } from "expect-type";
 import {
   Context,
@@ -7,9 +9,8 @@ import {
   ok,
   Result,
 } from "../../__types__";
-import { AsyncHook } from "../index";
 import { InferAsyncHookOptions, InferAsyncHookReturn } from "../__types__";
-import { ExecaReturnValue } from "execa";
+import { AsyncHook } from "../index";
 
 describe("Hook", () => {
   describe.only("callLifecycleBailAsync", () => {

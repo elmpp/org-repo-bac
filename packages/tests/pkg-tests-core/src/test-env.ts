@@ -13,6 +13,7 @@ import {
   consoleUtils,
   constants,
   fsUtils,
+  Oclif,
 } from "@business-as-code/core";
 // import {
 //   XfsCacheManager
@@ -27,12 +28,12 @@ import {
   MessageName,
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
-import * as oclifCore from "@oclif/core";
+// import * as oclifCore from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-import { ContextTestCommand } from "./commands/context-test-command";
+import ContextTestCommand from "./commands/context-test-command";
 import { ExpectUtil } from "./jest-utils";
 import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
-import { SchematicsRunCommand } from "./schematics/schematics-run-command";
+import SchematicsRunCommand from "./schematics/schematics-run-command";
 import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,
@@ -106,6 +107,8 @@ type CreatePersistentTestEnvVars = {
   // testsPath?: (options: {basePath: AddressPathAbsolute}) => AddressPathAbsolute
   /** skips (+clears) cache namespace for the current test file. (remember we strongly encourage single 'makeTestEnv = await setupMakeTestEnv' per test file) */
   // cacheRenewNamespace?: boolean;
+  /** unfortunately, Bun does not have expect.getState() so we need to supply this :( */
+  testName: string
   // /** overrides the cache location for all tests (normally taken from processNamespace/test name). Can only be an augmented key of Stage1Content */
   cacheNamespaceFolder?: keyof Stage1Content;
   /** test must declare the cliSource it produces. Mandatory for stage1 tests */
@@ -138,6 +141,8 @@ type PersistentTestEnvVars = {
   // cacheRenewNamespace: boolean;
   cacheNamespaceFolder?: string;
 
+  testName: string; // sanitised string identifying the test
+
   stage: `stage${number}`;
   cliSource: "cliRegistry" | "cliLinked" | undefined;
   cliSourceActive: "cliRegistry" | "cliLinked";
@@ -150,7 +155,7 @@ type EphemeralTestEnvVars = {
   // stage: `stage${number}`;
 
   /** test output goes into this folder */
-  folderName: string;
+  // folderName: string;
 
   /** deletes and skips cache for this specific test */
   cacheRenewTest: boolean;
@@ -274,7 +279,12 @@ async function doCreatePersistentTestEnvs(
   // console.log(`checkoutPath :>> `, checkoutPath)
   // throw new Error()
 
+  if (!createPersistentTestEnvVars.testName) {
+    throw new Error(`testName is required!!`)
+  }
+
   const testFilename = getCurrentTestFilenameSanitised();
+  const testName = fsUtils.sanitise(createPersistentTestEnvVars.testName);
 
   // if (!!testFilename.match(/-stage[0-9]$/)) {
   //   throw new Error(`All testEnv tests must live within a test file with filename /[^/s]+-stage[0-9]$/. This is used for grouping when running + defines the basePath for outputted content`)
@@ -294,8 +304,9 @@ async function doCreatePersistentTestEnvs(
   const [_folderName, stage] = getStageAndFolderName(
     createPersistentTestEnvVars.cacheNamespaceFolder
       ? fsUtils.sanitise(createPersistentTestEnvVars.cacheNamespaceFolder)
-      : getCurrentTestNameSanitised(),
-    testFilename
+      // : getCurrentTestNameSanitised(),
+      : testName,
+    testFilename,
   );
 
   // const basePath =
@@ -382,6 +393,7 @@ async function doCreatePersistentTestEnvs(
     cachePath,
     fixturesPath: testsFixturesRoot,
     testsPath,
+    testName,
     // cacheRenewNamespace,
     cacheNamespaceFolder,
     stage,
@@ -424,7 +436,7 @@ async function doCreateEphemeralTestEnvVars(
 ): Promise<EphemeralTestEnvVars> {
   const folderNameSanitised = persistentTestEnvVars.cacheNamespaceFolder
     ? fsUtils.sanitise(persistentTestEnvVars.cacheNamespaceFolder)
-    : getCurrentTestNameSanitised();
+    : persistentTestEnvVars.testName;
   // const processNamespace = createEphemeralTestEnvVars.processNamespace
   //   ? fsUtils.sanitise(createEphemeralTestEnvVars.processNamespace)
   //   : getCurrentTestNameSanitised();
@@ -461,7 +473,7 @@ async function doCreateEphemeralTestEnvVars(
 
   return {
     workspacePath,
-    folderName: folderNameSanitised,
+    // folderName: folderNameSanitised,
     cacheRenewTest,
   };
 }
@@ -564,7 +576,8 @@ async function setupFolders(
 ): Promise<void> {
   const doTestFolders = async () => {
     const testsFolderName =
-      testEnvVars.folderName ?? getCurrentTestNameSanitised(false);
+      // testEnvVars.folderName ?? getCurrentTestNameSanitised(false);
+      testEnvVars.testName;
     if (!testsFolderName) {
       throw new Error(`testsFolderName not found`);
     }
@@ -689,6 +702,11 @@ function validateTestEnv({
   testEnvVars: TestEnvVars;
   createEphemeralTestEnvVars: CreateEphemeralTestEnvVars;
 }) {
+  if (!testEnvVars.testName) {
+    throw new Error(
+      `testName is required!!`
+    );
+  }
   // we expect the cliSource to be present in the environment
   if (
     !["cliRegistry", "cliLinked"].includes(process.env.BAC_TEST_CLISOURCE ?? "")
@@ -703,9 +721,9 @@ function validateTestEnv({
     );
   }
   if (testEnvVars.cacheNamespaceFolder) {
-    if (testEnvVars.cacheNamespaceFolder !== testEnvVars.folderName) {
+    if (testEnvVars.cacheNamespaceFolder !== testEnvVars.testName) {
       throw new Error(
-        `FolderName has not been set from the supplied cacheNamespaceFolder. Supplied: '${testEnvVars.cacheNamespaceFolder}', folderName: '${testEnvVars.folderName}'`
+        `FolderName has not been set from the supplied cacheNamespaceFolder. Supplied: '${testEnvVars.cacheNamespaceFolder}', folderName: '${testEnvVars.testName}'`
       );
     }
     if (testEnvVars.cacheNamespaceFolder.match(/['"]/)) {
@@ -715,9 +733,9 @@ function validateTestEnv({
     }
   }
 
-  if (testEnvVars.folderName.match(/['"]/)) {
+  if (testEnvVars.testName.match(/['"]/)) {
     throw new Error(
-      `folderName still contains quote characters. Has it been ran through fsUtils.sanitise()?. Supplied: '${testEnvVars.folderName}'`
+      `folderName still contains quote characters. Has it been ran through fsUtils.sanitise()?. Supplied: '${testEnvVars.testName}'`
     );
   }
 
@@ -914,7 +932,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           let error = undefined;
           mockStdStart();
 
-          oclifCore.settings.debug = true;
+          Oclif.settings.debug = true;
 
           // console.log(
           //   `activeCliPaths.original, process.cwd() :>> `,
@@ -923,7 +941,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           // );
 
           /**  */
-          await oclifCore
+          await Oclif
             .run(argsWithAdditional, {
               root: activeCheckoutPaths.cli.original, // needs to be location with the Oclif package.json definitions
               debug: {
@@ -935,7 +953,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
               }[logLevel],
               // debug: 9,
             }) // @oclif/core source - https://tinyurl.com/2qnt23kr
-            .then((...flushArgs: any[]) => oclifCore.flush(...flushArgs))
+            .then((...flushArgs: any[]) => Oclif.flush(...flushArgs))
             .catch((anError) => {
               // TO DEBUG STUFF HERE, RUN WITH `DEBUG=* !!`
 

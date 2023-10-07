@@ -1,5 +1,6 @@
 import { constants, expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 import { assertions } from "../../assertions";
 
 declare global {
@@ -17,13 +18,14 @@ declare global {
  * tests being E2E or dev
  */
 describe("initialise workspace", () => {
-  jest.setTimeout(40000);
+  // jest.setTimeout(40000);
 
   describe("initialise:workspace default skeleton config", () => {
     it("cliRegistry", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        cliSource: "cliRegistry",
+        testName: "initialise:workspace default skeleton config",
         cacheNamespaceFolder: "initialise:workspace default skeleton config",
+        cliSource: "cliRegistry",
       });
 
       await persistentTestEnv.test({}, async (testContext) => {
@@ -41,7 +43,7 @@ describe("initialise workspace", () => {
             "http://localhost:4873",
             "--cliVersion",
             "bollards",
-          ],
+          ]
           // { logLevel: "debug" }
         );
 
@@ -51,18 +53,19 @@ describe("initialise workspace", () => {
         await assertions.workspace.config(testContext, res, "skeleton.js");
 
         const expectFs = await res.res.expectUtil.createFs();
-        (await res.res.expectUtil
-          .createText(expectFs.readText("./.npmrc")))
-          .lineContainsString({
-            match: `@business-as-code:registry=http://localhost:4873`,
-            occurrences: 1,
-          }); // local npm registry set up
+        (
+          await res.res.expectUtil.createText(expectFs.readText("./.npmrc"))
+        ).lineContainsString({
+          match: `@business-as-code:registry=http://localhost:4873`,
+          occurrences: 1,
+        }); // local npm registry set up
       });
     });
     it("cliLinked", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        cliSource: "cliLinked",
+        testName: "initialise:workspace default skeleton config",
         cacheNamespaceFolder: "initialise:workspace default skeleton config",
+        cliSource: "cliLinked",
       });
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
@@ -75,7 +78,7 @@ describe("initialise workspace", () => {
             `${testContext.testEnvVars.workspacePath.original}`,
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
-          ],
+          ]
           // { logLevel: "debug" }
         );
 
@@ -84,22 +87,25 @@ describe("initialise workspace", () => {
         await assertions.workspace.config(testContext, res, "skeleton.js");
 
         const expectFs = await res.res.expectUtil.createFs();
-        (await res.res.expectUtil
-          .createText(await expectFs.readText("./.npmrc")))
-          .lineContainsString({
-            match: `@business-as-code:registry=https://registry.npmjs.org`,
-            occurrences: 1,
-          });
+        (
+          await res.res.expectUtil.createText(
+            await expectFs.readText("./.npmrc")
+          )
+        ).lineContainsString({
+          match: `@business-as-code:registry=https://registry.npmjs.org`,
+          occurrences: 1,
+        });
       });
     });
   });
 
   describe("initialise:workspace git-minimal-http relative config", () => {
-    it.only("cliRegistry", async () => {
+    it("cliRegistry", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        cliSource: "cliRegistry",
+        testName: "initialise:workspace git-minimal-http relative config",
         cacheNamespaceFolder:
           "initialise:workspace git-minimal-http relative config",
+        cliSource: "cliRegistry",
       });
       await persistentTestEnv.test({}, async (testContext) => {
         // testContext.setActiveWorkspaceCliPath(testContext.testEnvVars.checkoutPath)
@@ -117,7 +123,7 @@ describe("initialise workspace", () => {
             "http://localhost:4873",
             "--cliVersion",
             "bollards",
-          ],
+          ]
           // { logLevel: "debug" }
         );
 
@@ -133,31 +139,49 @@ describe("initialise workspace", () => {
         // res.res.expectUtil
         //   .createText(expectFs.readText("./.npmrc"))
         //   .lineContainsString({ match: `@business-as-code:registry=http://localhost:4873`, occurrences: 1 }); // local npm registry set up
+
         expect(
-          (await res.res.expectUtil
-            .createText(
+          (
+            await res.res.expectUtil.createText(
               expectFs.readText(
                 `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
               )
-            ))
-            .asJson()
-        ).toEqual(
-          expect.objectContaining([
-            {
-              provider: "git",
-              options: {
-                address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
-              },
+            )
+          ).asJson()
+        ).toEqual([
+          {
+            provider: "git",
+            options: {
+              address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
             },
-          ])
-        );
+          },
+        ]);
+        // expect(
+        //   (
+        //     await res.res.expectUtil.createText(
+        //       expectFs.readText(
+        //         `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
+        //       )
+        //     )
+        //   ).asJson()
+        // ).toEqual(
+        //   expect.objectContaining([
+        //     {
+        //       provider: "git",
+        //       options: {
+        //         address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
+        //       },
+        //     },
+        //   ])
+        // );
       });
     });
     it("cliLinked", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        cliSource: "cliLinked",
+        testName: "initialise:workspace git-minimal-http relative config",
         cacheNamespaceFolder:
           "initialise:workspace git-minimal-http relative config",
+        cliSource: "cliLinked",
       });
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
@@ -172,7 +196,7 @@ describe("initialise workspace", () => {
             "packages/pkg-core/etc/config/git-minimal-http.js",
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
-          ],
+          ]
           // { logLevel: "debug" }
         );
 
@@ -189,23 +213,37 @@ describe("initialise workspace", () => {
         //   .createText(expectFs.readText("./.npmrc"))
         //   .lineContainsString({ match: `@business-as-code:registry=https://registry.npmjs.org`, occurrences: 1 });
         expect(
-          (await res.res.expectUtil
-            .createText(
+          (
+            await res.res.expectUtil.createText(
               expectFs.readText(
                 `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
               )
-            ))
-            .asJson()
-        ).toEqual(
-          expect.objectContaining([
-            {
-              provider: "git",
-              options: {
-                address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
-              },
-            },
-          ])
-        );
+            )
+          ).asJson()
+        ).toEqual({
+          provider: "git",
+          options: {
+            address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
+          },
+        });
+        // expect(
+        //   (
+        //     await res.res.expectUtil.createText(
+        //       expectFs.readText(
+        //         `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
+        //       )
+        //     )
+        //   ).asJson()
+        // ).toEqual(
+        //   expect.objectContaining([
+        //     {
+        //       provider: "git",
+        //       options: {
+        //         address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
+        //       },
+        //     },
+        //   ])
+        // );
       });
     });
   });
@@ -233,7 +271,9 @@ describe("initialise workspace", () => {
   //           "--cliRegistry",
   //           "http://localhost:4873",
   //         ],
-          { logLevel: "debug" }
+  // {
+  //   logLevel: "debug";
+  // }
   //       );
 
   //       expectIsOk(res);
@@ -288,7 +328,9 @@ describe("initialise workspace", () => {
   //           "--cliPath",
   //           testContext.testEnvVars.checkoutCliPath.original,
   //         ],
-          { logLevel: "debug" }
+  // {
+  //   logLevel: "debug";
+  // }
   //       );
 
   //       expectIsOk(res);

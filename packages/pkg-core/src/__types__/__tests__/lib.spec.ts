@@ -1,3 +1,4 @@
+import { describe, it } from 'bun:test';
 import { expectTypeOf } from "expect-type";
 import { IncludeMatchingProperties, NullishToOptional, Simplify } from "../lib";
 import { InferOkResult, Result, ok } from "../type-utils";

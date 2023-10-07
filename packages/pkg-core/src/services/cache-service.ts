@@ -7,7 +7,6 @@ import {
 import { ServiceInitialiseCommonOptions } from "../__types__";
 import { AddressCacheManager } from "../cache/address-cache-manager";
 import { sanitise } from "../utils/fs-utils";
-import { constants } from "../constants";
 
 declare global {
   namespace Bac {
@@ -160,8 +159,6 @@ export class CacheService {
     const hasContent = await this.cacheManager.hasContent(contentPath);
 
 // console.log(`address, contentPath :>> `, address, contentPath)
-    console.log(`hasMeta, hasContent :>> `, hasMeta, hasContent)
-
     return hasMeta && hasContent; // leave any cache dir inconsistencies to the cacheManager
   }
 

@@ -4,7 +4,7 @@ import {
   BaseParseOutput,
   FlagsInfer,
 } from "@business-as-code/core/commands/base-command";
-import * as oclif from "@oclif/core";
+// import * as oclif from "@oclif/core";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 
 /** here purely to allow test-env to create a context */
@@ -37,14 +37,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     throw new Error(`Should not be ran!!`);
   }
 
-  static async createContext<T extends typeof oclif.Command>(
+  static async createContext<T extends typeof Oclif.Command>(
     this: new (...args: any[]) => T,
     // this: new (config: Config, parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>) => T,
     // argv?: string[] | undefined,
-    opts: oclif.Interfaces.LoadOptions,
+    opts: Oclif.Interfaces.LoadOptions,
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
   ): Promise<ContextCommand<typeof ContextTestCommand>> {
-    const config = await oclif.Config.load(
+    const config = await Oclif.Config.load(
       opts || require.main?.filename || __dirname
     );
     const cmd = new this([] as any[], config);

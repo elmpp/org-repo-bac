@@ -1,8 +1,10 @@
 import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
+import {describe, test} from 'bun:test'
 
 describe("git-clone", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   /** @online-only */
   describe('remote cloning', () => {

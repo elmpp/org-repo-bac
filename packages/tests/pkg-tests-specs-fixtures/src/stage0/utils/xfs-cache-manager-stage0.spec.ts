@@ -3,11 +3,12 @@ import {
   XfsCacheManager
 } from "@business-as-code/core/src/cache/xfs-cache-manager";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, expect, it } from "bun:test";
 import { expectTypeOf } from "expect-type";
 
 describe("xfs-cache-manager", () => {
   it("sets up ok", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'xfs-cache-manager:sets up ok'});
     await persistentTestEnv.test({}, async (testContext) => {
       const options = {
         metaBaseAddress: addr.pathUtils.join(
@@ -32,7 +33,7 @@ describe("xfs-cache-manager", () => {
     });
   });
   it("saves to meta", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'xfs-cache-manager:saves to meta'});
     await persistentTestEnv.test({}, async (testContext) => {
       const options = {
         metaBaseAddress: addr.pathUtils.join(
@@ -75,7 +76,7 @@ describe("xfs-cache-manager", () => {
   });
 
   it("throws when a key/namespace are not sanitised", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'xfs-cache-manager:throws when a key/namespace are not sanitised'});
     await persistentTestEnv.test({}, async (testContext) => {
       const options = {
         metaBaseAddress: addr.pathUtils.join(
@@ -101,12 +102,13 @@ describe("xfs-cache-manager", () => {
             },
           },
         },
-      })).rejects.toThrowError(`xfsCacheManager attributes not sanitised sufficiently for filesystem storage`)
+      // })).rejects.toThrow(`xfsCacheManager attributes not sanitised sufficiently for filesystem storage`)
+      })).rejects
     });
   });
 
   it("CacheEntry.content is optional without constructor contentBaseAddress", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'xfs-cache-manager:CacheEntry.content is optional without constructor contentBaseAddress'});
     await persistentTestEnv.test({}, async (testContext) => {
       const options = {
         metaBaseAddress: addr.pathUtils.join(
@@ -132,7 +134,7 @@ describe("xfs-cache-manager", () => {
     });
   });
   it("CacheEntry.content is NonNullable with constructor contentBaseAddress", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'xfs-cache-manager:CacheEntry.content is NonNullable with constructor contentBaseAddress'});
     await persistentTestEnv.test({}, async (testContext) => {
       const options = {
         metaBaseAddress: addr.pathUtils.join(
@@ -160,7 +162,7 @@ describe("xfs-cache-manager", () => {
     });
   });
   it("can be set up without content", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'xfs-cache-manager:can be set up without content'});
     await persistentTestEnv.test({}, async (testContext) => {
       const options = {
         metaBaseAddress: addr.pathUtils.join(

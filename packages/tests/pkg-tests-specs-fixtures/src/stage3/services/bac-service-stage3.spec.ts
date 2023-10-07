@@ -1,11 +1,12 @@
 import { expectIsOk } from "@business-as-code/core";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 
 describe("bac-service", () => {
-  jest.setTimeout(10000);
+  // // jest.setTimeout(10000);
 
   it.only("getConfigEntry", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'bac-service getConfigEntry'});
     await persistentTestEnv.test({}, async (testContext) => {
       const bacService = await testContext.context.serviceFactory("bac", {
         context: testContext.context,
@@ -38,7 +39,7 @@ describe("bac-service", () => {
     });
   });
   it("loadConfig", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({testName: 'bac-service loadConfig'});
     await persistentTestEnv.test({}, async (testContext) => {
       const bacService = await testContext.context.serviceFactory("bac", {
         context: testContext.context,

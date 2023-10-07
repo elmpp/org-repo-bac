@@ -31,6 +31,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Test file match",
       required: false,
     }),
+    testNameMatch: Oclif.Flags.string({
+      description: "Test name match",
+      required: false,
+    }),
     watch: Oclif.Flags.boolean({
       description: "Watch",
       required: false,
@@ -47,10 +51,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description: "Skip Build And Snapshot",
       required: false,
     }),
-    // testMatch: Oclif.Flags.string({
-    //   description: "Test it/describe name match",
-    //   required: false,
-    // }),
     cliSource: Oclif.Flags.custom<"cliRegistry" | "cliLinked">({
       summary: "Method of cli sourcing",
       options: ["cliRegistry", "cliLinked"],
@@ -80,7 +80,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     return await testService.test({
       stage: context.cliOptions.flags.stage as `stage${number}`,
       testFileMatch: context.cliOptions.flags.testFileMatch,
-      // testMatch: context.cliOptions.flags.testMatch,
+      testNameMatch: context.cliOptions.flags.testNameMatch,
       cliSource: context.cliOptions.flags.cliSource!,
       watch,
       skipDaemons: context.cliOptions.flags.skipDaemons,

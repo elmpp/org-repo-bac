@@ -26,6 +26,7 @@ import { fsUtils } from "../utils";
 import { BacError } from "@business-as-code/error";
 import assert, { strict } from "assert";
 import { constants } from "../constants";
+import { MD4, MD5 } from "bun";
 // export { CacheEntry };
 
 type CacheEntry = {
@@ -92,17 +93,30 @@ export class AddressCacheManager {
     return ins;
   }
 
-
+  // /** using a contentPath, should be able to guess a namespace/key if within the rootPath */
+  // protected async getCacheEntry(
+  //   contentPath: AddressDescriptorUnion
+  /** using a contentPath, should be able to guess a namespace/key if within the rootPath */
   protected async getCacheEntry(
-    address: AddressDescriptorUnion
+    contentPath: AddressPathAbsolute
   ): Promise<CacheEntry> {
-    const cacheKeyAttributes = this.options.createAttributes(address);
+
+    // const theoreticalContentPath = addr.pathUtils.join(this.options.metaBaseAddress)
+
+    // const cacheKeyAttributes = this.options.createAttributes(contentPath);
+    const cacheKeyAttributes: {key: string; namespace?: string} = {
+      key: fsUtils.sanitise(addr.pathUtils.basename(contentPath).addressNormalized + `_${Bun.hash(contentPath.addressNormalized)}`.substring(0, 5)),
+      // namespace: 'lets just have flat meta files based on fs location of the meta' // ignore
+    }
+
     this.validateAttributes(cacheKeyAttributes);
 
     const { key, namespace } = cacheKeyAttributes;
 
     // const key = fsUtils.sanitise(unsanitisedKey);
     // const namespace = fsUtils.sanitise(unsanitisedNamespace);
+
+    // console.log(`cacheKeyAttributes, address :>> `, cacheKeyAttributes, contentPath)
 
     /** for xfs, these locations are deterministic; i.e. they won't be the result of a save (like for a db) */
     return {
@@ -267,18 +281,24 @@ export class AddressCacheManager {
       contentPath: AddressPathAbsolute; // where it should be
     }) => Promise<void>;
   }): Promise<Result<GetEntry, { error: BacError }>> {
+
     const { address: contentPath, createChecksum, onHit, onMiss, onStale } = options;
     if (!contentPath.type) {
       throw new Error(`address has no type: ${JSON.stringify(contentPath)}`);
     }
 
     // const cacheKeyAttributes = this.options.createAttributes(address);
+// console.log(`contentPath :>> `, contentPath)
 
+    // const cacheEntry = await this.getCacheEntry(contentPath);
+
+    // await this.primeMeta(cacheEntry);
     const cacheEntry = await this.getCacheEntry(contentPath);
 
     await this.primeMeta(cacheEntry);
 
     const meta = await this.getMeta(cacheEntry);
+
     let checksum: CacheKey;
     let checksumValid: boolean = false;
 
@@ -289,6 +309,7 @@ export class AddressCacheManager {
       cacheEntry: CacheEntry;
       checksum: CacheKey;
     }) => {
+
       await this.set({
         // ...cacheKeyAttributes,
         cacheEntry,
@@ -435,7 +456,10 @@ export class AddressCacheManager {
 
   // ----------------------
 
-  async hasMeta(address: AddressDescriptorUnion) {
+  // async hasMeta(address: AddressDescriptorUnion) {
+  //   return this._hasMeta(await this.getCacheEntry(address))
+  // }
+  async hasMeta(address: AddressPathAbsolute) {
     return this._hasMeta(await this.getCacheEntry(address))
   }
   async hasContent(address: AddressPathAbsolute) {
@@ -448,7 +472,7 @@ export class AddressCacheManager {
     // const hasContent =
     //   cacheEntry.content &&
     //   (await xfs.existsPromise(cacheEntry.content.address));
-    const hasMeta = await xfs.existsPromise(cacheEntry.meta.main.address);
+    const hasMeta = !!(await xfs.existsPromise(cacheEntry.meta.main.address));
 
     // if (
     //   Boolean(hasContent) !== Boolean(hasMeta) // XOR
@@ -465,7 +489,8 @@ export class AddressCacheManager {
   }
 
   protected async _hasContent(contentPath: AddressPathAbsolute) {
-    return await xfs.existsPromise(contentPath.address);
+    const res = await xfs.existsPromise(contentPath.address)
+    return !!(await xfs.existsPromise(contentPath.address));
   }
 
   // protected async hasNamespace({ namespace }: { namespace: string }) {
@@ -945,12 +970,18 @@ export class AddressCacheManager {
     /** destinationPath here must be the full absolute path to the desired place, be it a directory or a file */
     destinationPath: AddressPathAbsolute;
   }) {
-    if (!(await xfs.existsPromise(sourcePath.address))) {
+    // if (!(await xfs.existsPromise(sourcePath.address))) {
+    //   throw new Error(
+    //     `Unable to copy non-existent content from '${sourcePath.original}' -> '${destinationPath.original}'`
+    //   );
+    // }
+    const sourceStat = await xfs.lstatPromise(sourcePath.address);
+    if (!sourceStat) {
       throw new Error(
         `Unable to copy non-existent content from '${sourcePath.original}' -> '${destinationPath.original}'`
       );
     }
-    const sourceStat = await xfs.lstatPromise(sourcePath.address);
+
     const sourcePathWildcarded = sourceStat.isDirectory()
       ? (`${sourcePath.address}/*` as PortablePath)
       : sourcePath.address;

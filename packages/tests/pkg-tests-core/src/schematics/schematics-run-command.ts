@@ -10,7 +10,7 @@ import { MessageName } from "@business-as-code/error";
 /**
  Generic command to run any schematic. Allows testing without standing up dedicated command
  */
-export class SchematicsRunCommand extends BaseCommand<
+export default class SchematicsRunCommand extends BaseCommand<
   typeof SchematicsRunCommand
 > {
   static override description = "Runs arbitrary schematic";

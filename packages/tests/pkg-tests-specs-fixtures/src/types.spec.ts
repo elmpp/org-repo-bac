@@ -3,16 +3,16 @@ import {
   Context,
   ContextCommand,
   LifecycleImplementedMethods,
-  LifecycleReturnByMethodArray,
   LifecycleMethods,
   LifecycleOptionsByMethodAndProvider,
-  LifecycleOptionsByMethodKeyedByProviderSingular,
   LifecycleOptionsByMethodKeyedByProviderArray,
-  LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular,
+  LifecycleOptionsByMethodKeyedByProviderSingular,
   LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
+  LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular,
   LifecycleProvidersForAsByMethod,
-  LifecycleReturnByMethodSingular,
   LifecycleReturnByMethodAndProviderSingular,
+  LifecycleReturnByMethodArray,
+  LifecycleReturnByMethodSingular,
   // LifecycleMap,
   // LifecycleMethodOptions,
   // LifecycleMethodReturn,
@@ -33,6 +33,7 @@ import {
   FlagsInfer,
 } from "@business-as-code/core/commands/base-command";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
+import { describe, it } from 'bun:test';
 import { expectTypeOf } from "expect-type";
 
 describe("types", () => {

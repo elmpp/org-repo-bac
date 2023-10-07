@@ -22,7 +22,6 @@
     "@business-as-code/tests-core": "workspace:*",
     "@oclif/core": "2.6.4",
     "@oclif/test": "^2.3.9",
-    "@types/jest": "^29.4.0",
     "@types/node": "^18.15.3",
     "expect-type": "^0.15.0"
   }

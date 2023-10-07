@@ -7,7 +7,7 @@ import {
 } from "@business-as-code/tests-core";
 
 describe("synchronise workspace", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(

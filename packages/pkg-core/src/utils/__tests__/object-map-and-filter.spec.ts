@@ -1,7 +1,8 @@
-import { addr, AddressPackageIdent } from "@business-as-code/address"
-import { expectTypeOf } from "expect-type"
-import { ValueOf } from "../../__types__"
-import { objectMapAndFilter, objectMapAndFilterPromise } from "../object-utils"
+import { addr, AddressPackageIdent } from "@business-as-code/address";
+import { describe, expect, it } from 'bun:test';
+import { expectTypeOf } from "expect-type";
+import { ValueOf } from "../../__types__";
+import { objectMapAndFilter, objectMapAndFilterPromise } from "../object-utils";
 
 
 const mockNormalStateObject = {

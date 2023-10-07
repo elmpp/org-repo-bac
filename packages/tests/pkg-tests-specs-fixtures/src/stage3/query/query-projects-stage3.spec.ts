@@ -1,9 +1,10 @@
 import { expectIsOk, validators } from "@business-as-code/core";
 
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 
 describe("query projects", () => {
-  jest.setTimeout(25000);
+  // jest.setTimeout(25000);
 
   it("produces valid json projects response with --json", async () => {
     const persistentTestEnv = await createPersistentTestEnv({});

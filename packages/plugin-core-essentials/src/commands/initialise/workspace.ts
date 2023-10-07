@@ -17,7 +17,7 @@ import {
   validators,
   Interfaces as _Interfaces,
 } from "@business-as-code/core";
-import { configSchema } from "@business-as-code/core/src/validation/config";
+// import { configSchema } from "@business-as-code/core/src/validation/config";
 import {
   BacError,
   BacErrorWrapper,
@@ -177,8 +177,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       );
     }
     const configRaw = module.config;
-console.log(`configRaw :>> `, configRaw)
-    const configParseRes = configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
+// console.log(`configRaw :>> `, configRaw, configSchema)
+
+    const configParseRes = validators.config.configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
     // const configParseRes = validators.config.configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
 
     if (configParseRes.success === false) {

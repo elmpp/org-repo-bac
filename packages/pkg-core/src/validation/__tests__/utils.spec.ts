@@ -1,6 +1,7 @@
+import { describe, it } from 'bun:test';
+import { expectTypeOf } from "expect-type";
 import { z } from "zod";
 import { providerOptionsSchemaBuilder, providerReturnOptionsSchemaBuilderArray, providerReturnOptionsSchemaBuilderSingular } from "../utils";
-import { expectTypeOf } from "expect-type";
 
 describe("validation utils", () => {
   it("providerOptionsSchemaBuilder", () => {

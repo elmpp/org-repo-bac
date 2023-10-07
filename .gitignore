@@ -174,3 +174,6 @@ pkg-core/etc
 # env files
 .env*
 !.env
+
+
+packages/pkg-core/src/etc/tmp

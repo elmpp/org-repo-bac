@@ -17,26 +17,26 @@ import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Tree } from "@angular-devkit/schematics";
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import {
-  constants,
-  fsUtils,
-  formatUtils,
-  Outputs,
-  stringUtils,
   BacService,
+  constants,
   Context,
   expectIsOk,
+  formatUtils,
+  fsUtils,
+  Outputs,
+  stringUtils,
 } from "@business-as-code/core";
 import { assertIsError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
+import assert from "assert";
 import os from "os";
 import { TestEnvVars } from "./test-env";
-import assert from "assert";
 // @ts-ignore
-import expectMatchers from "expect/build/matchers";
+import { validators } from "@business-as-code/core";
+import { expect } from 'bun:test';
 import fs from "fs";
 import path from "path";
 import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
-import { Config, validators } from "@business-as-code/core";
 
 // const REGEX_STRIP_ANSI_ESCAPE_CODES = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
 
@@ -555,55 +555,55 @@ class ExpectText {
   // }
 }
 
-type JestSyncExpectationResult = {
-  pass: boolean;
-  message: () => string;
-};
-(globalThis as any)?.expect &&
-  expect.extend({
-    arrayContainingObjectProperty<P extends string | string[]>(
-      received: any[],
-      propertyPath: P,
-      value: any | any[]
-    ): JestSyncExpectationResult {
-      if (!Array.isArray(value)) value = [];
+// type JestSyncExpectationResult = {
+//   pass: boolean;
+//   message: () => string;
+// };
+// (globalThis as any)?.expect &&
+//   expect.extend({
+//     arrayContainingObjectProperty<P extends string | string[]>(
+//       received: any[],
+//       propertyPath: P,
+//       value: any | any[]
+//     ): JestSyncExpectationResult {
+//       if (!Array.isArray(value)) value = [];
 
-      const doMatchForValue = (value: any) => {
-        return received.some((aReceived) => {
-          const match = expectMatchers.toHaveProperty(
-            aReceived,
-            propertyPath,
-            value
-          ) as JestSyncExpectationResult;
-          return match.pass;
-        });
-      };
+//       const doMatchForValue = (value: any) => {
+//         return received.some((aReceived) => {
+//           const match = expectMatchers.toHaveProperty(
+//             aReceived,
+//             propertyPath,
+//             value
+//           ) as JestSyncExpectationResult;
+//           return match.pass;
+//         });
+//       };
 
-      for (const aValue of value) {
-        if (!doMatchForValue(aValue))
-          return {
-            pass: false,
-            message: () =>
-              `Array does not contain object with property: '${propertyPath}' and value: '${aValue}'`,
-          };
-      }
+//       for (const aValue of value) {
+//         if (!doMatchForValue(aValue))
+//           return {
+//             pass: false,
+//             message: () =>
+//               `Array does not contain object with property: '${propertyPath}' and value: '${aValue}'`,
+//           };
+//       }
 
-      return {
-        pass: true,
-        message: () =>
-          `Array matches for all values with property '${propertyPath}'`,
-      };
-    },
-  });
+//       return {
+//         pass: true,
+//         message: () =>
+//           `Array matches for all values with property '${propertyPath}'`,
+//       };
+//     },
+//   });
 
-declare global {
-  namespace jest {
-    // @ts-ignore
-    interface Matchers<R> {
-      arrayContainingObjectProperty<P extends string | string[]>(
-        propertyPath: P,
-        value: any
-      ): R;
-    }
-  }
-}
+// declare global {
+//   namespace jest {
+//     // @ts-ignore
+//     interface Matchers<R> {
+//       arrayContainingObjectProperty<P extends string | string[]>(
+//         propertyPath: P,
+//         value: any
+//       ): R;
+//     }
+//   }
+// }

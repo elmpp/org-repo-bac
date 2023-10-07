@@ -23,7 +23,8 @@ function getProjectsFromMoon(selector: (options: {name: string, projectType: str
 
 	type MoonProjectQueryResponse = {projects: {alias: string, type: string}[]}
 
-	const moonProjectQueryResponseJson = execSync('pnpm moon query projects --json', {shell: true as any, encoding: 'utf8'})
+	// const moonProjectQueryResponseJson = execSync('pnpm moon query projects --json', {shell: true as any, encoding: 'utf8'})
+	const moonProjectQueryResponseJson = execSync('bun moon query projects --json', {shell: true as any, encoding: 'utf8'})
 	// console.log(`moonProjectQueryResponseJson :>> `, moonProjectQueryResponseJson)
 
 	let moonProjectQueryResponse: MoonProjectQueryResponse

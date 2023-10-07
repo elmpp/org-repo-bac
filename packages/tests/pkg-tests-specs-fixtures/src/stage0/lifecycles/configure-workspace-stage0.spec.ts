@@ -1,4 +1,4 @@
-import { AddressPathAbsolute, addr } from "@business-as-code/address";
+import { addr } from "@business-as-code/address";
 import {
   constants,
   expectIsOk,
@@ -10,10 +10,11 @@ import {
   TestContext,
   createPersistentTestEnv,
 } from "@business-as-code/tests-core";
+import { describe, expect, it } from 'bun:test';
 
 /** simply turns /bac.js -> /.bac/bac.json */
 describe("configure workspace", () => {
-  jest.setTimeout(10000);
+  // jest.setTimeout(10000);
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(
@@ -43,6 +44,7 @@ describe("configure workspace", () => {
 
   it("git-minimal-http", async () => {
     const persistentTestEnv = await createPersistentTestEnv({
+      testName: `configure workspace: git-minimal-http`
       // defaultLogLevel: "debug",
     });
     await persistentTestEnv.test({}, async (testContext) => {
@@ -57,7 +59,7 @@ describe("configure workspace", () => {
       const configRes = await bacService.loadConfig();
       expectIsOk(configRes)
 
-      const res =
+      const configureWorkspaceLifecycleRes =
         await testContext.context.lifecycles.configureWorkspace.executeConfigureWorkspace(
           {
             common: {
@@ -70,11 +72,12 @@ describe("configure workspace", () => {
           }
         );
       // console.log(`res :>> `, res)
-      expectIsOk(res);
+      expectIsOk(configureWorkspaceLifecycleRes);
+      const syncedWorkspaceConfig = configureWorkspaceLifecycleRes.res
 
       // the output of configure-workspace should be a ConfigSynchronised. This should be validatable
       const validRes = validators.config.configSynchronisedSchema.safeParse(
-        res.res
+        configureWorkspaceLifecycleRes.res
       );
 
       // console.log(`res.res :>> `, require('util').inspect(res.res, {showHidden: false, depth: undefined, colors: true}))
@@ -92,19 +95,27 @@ describe("configure workspace", () => {
       //   })
       // );
 
-      expect(res.res).toEqual(
-        expect.objectContaining({
-          projects: expect.arrayContaining([
-            {
-              provider: "git",
-              options: expect.objectContaining({
-                address: "http://localhost:8174/repo1.git",
-              }),
-            },
-          ]),
-          version: expect.stringMatching(/.*/)
-        })
-      );
+      expect(syncedWorkspaceConfig.version).toMatch(/.*/)
+      expect(syncedWorkspaceConfig.projects[0]).toEqual({
+        provider: "git",
+        options: {
+          address: "http://localhost:8174/repo1.git",
+        },
+      })
+
+      // expect(configureWorkspaceLifecycleRes.res).toEqual(
+      //   expect.objectContaining({
+      //     projects: expect.arrayContaining([
+      //       {
+      //         provider: "git",
+      //         options: expect.objectContaining({
+      //           address: "http://localhost:8174/repo1.git",
+      //         }),
+      //       },
+      //     ]),
+      //     version: expect.stringMatching(/.*/)
+      //   })
+      // );
 
       // const sourceAddress = addr.parseUrl("ssh://localhost:2224/repo1.git");
 

@@ -2,11 +2,12 @@
 // import { formatUtils } from "@business-as-code/core";
 // import { xfs } from "@business-as-code/fslib";
 // import { createPersistentTestEnv } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 export {}
 
 /** are we creating our packages correctly */
 describe("workspaces-smoke-test", () => {
-  jest.setTimeout(30000);
+  // jest.setTimeout(30000);
 
   // publishable packages should include specific attributes
   it("publishable packages correct", async () => {
