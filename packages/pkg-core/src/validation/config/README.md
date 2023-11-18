@@ -1,4 +1,5 @@
 data structures for incoming configuration.
 
 Config === /bac.js
-ConfigProjectSourceConfig = /.bac/bac.json
+ConfigConfigured = /.bac/bac.json
+<!-- ConfigProjectSourceConfig = /.bac/bac.json -->

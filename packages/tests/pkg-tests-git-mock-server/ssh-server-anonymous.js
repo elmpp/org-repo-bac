@@ -17,8 +17,8 @@ var config = {
 }
 
 const keyPaths = {
-  pub: path.join(__dirname, 'id_rsa.pub'),
-  prv: path.join(__dirname, 'id_rsa'),
+  pub: path.join(config.root, 'id_rsa.pub'),
+  prv: path.join(config.root, 'id_rsa'),
 }
 
 // https://github.com/mscdex/ssh2#password-and-public-key-authentication-and-non-interactive-exec-command-execution
@@ -33,7 +33,7 @@ function checkValue(input, allowed) {
   return (!autoReject && isMatch);
 }
 
-// console.log(`config :>> `, config)
+console.log(`config :>> `, config)
 // console.log(`keyPaths :>> `, keyPaths)
 
 new Promise((resolve, reject) => {
@@ -47,17 +47,24 @@ new Promise((resolve, reject) => {
     let pubKey = fs.readFileSync(keyPaths.pub)
     return resolve({key, pubKey})
   } catch (err) {
-    console.warn(`REGENERATING KEYPAIR TO '${JSON.stringify(keyPaths)}. SHOULD ONLY HAPPEN FIRST EVER RUN!'`)
     try {
-      // Note: PEM is to workaround https://github.com/mscdex/ssh2/issues/746
-      let proc = spawnSync('ssh-keygen', ['-m', 'PEM', '-C', '"git-ssh-mock-server@localhost"', '-N', '""', '-f', 'id_rsa', '-t', 'ed25519'], { // FIXES https://tinyurl.com/24lqexhx
-      // let proc = spawnSync('ssh-keygen', ['-m', 'PEM', '-C', '"git-ssh-mock-server@localhost"', '-N', '""', '-f', 'id_rsa'], {
-        cwd: __dirname,
-        shell: true
-      })
-      console.log(proc.stdout.toString('utf8'))
-      let key = fs.readFileSync(path.join(__dirname, 'id_rsa'))
-      let pubKey = fs.readFileSync(path.join(__dirname, 'id_rsa.pub'))
+      if (!fs.existsSync(path.join(config.root, 'id_rsa'))) {
+        console.warn(`REGENERATING KEYPAIR TO '${JSON.stringify(keyPaths)}. SHOULD ONLY HAPPEN FIRST EVER RUN! ssh-server-anonymous'`)
+        // Note: PEM is to workaround https://github.com/mscdex/ssh2/issues/746
+        let proc = spawnSync('ssh-keygen', ['-m', 'PEM', '-C', '"git-ssh-mock-server@localhost"', '-N', '""', '-f', 'id_rsa', '-t', 'ed25519'], { // FIXES https://tinyurl.com/24lqexhx
+        // let proc = spawnSync('ssh-keygen', ['-m', 'PEM', '-C', '"git-ssh-mock-server@localhost"', '-N', '""', '-f', 'id_rsa', '-t', 'ed25519'], { // FIXES https://tinyurl.com/24lqexhx
+        // let proc = spawnSync('ssh-keygen', ['-m', 'PEM', '-C', '"git-ssh-mock-server@localhost"', '-N', '""', '-f', 'id_rsa', '-t', 'rsa'], {
+        // let proc = spawnSync('ssh-keygen', ['-m', 'PEM', '-C', '"git-ssh-mock-server@localhost"', '-N', '""', '-f', 'id_rsa'], {
+          cwd: config.root,
+          shell: true,
+          stdio: 'inherit',
+        })
+        // console.log(proc.stdout.toString('utf8'))
+        console.log(`fs.existsSync(path.join(config.root, 'id_rsa')) :>> `, fs.existsSync(path.join(config.root, 'id_rsa')))
+      }
+
+      let key = fs.readFileSync(path.join(config.root, 'id_rsa'))
+      let pubKey = fs.readFileSync(path.join(config.root, 'id_rsa.pub'))
       return resolve({key, pubKey})
     } catch (err) {
       reject(err)
@@ -66,7 +73,7 @@ new Promise((resolve, reject) => {
 })
 .then(keypair => {
   if (process.argv[2] === 'exportKeys') {
-    console.error(`Not supported. Do 'ssh-add /packages/tests/pkg-tests-git-mock-server/id_rsa' / 'ssh-add -d /packages/tests/pkg-tests-git-mock-server/id_rsa'`)
+    console.error(`Not supported. Do 'ssh-add ${config.root}/id_rsa' / 'ssh-add -d ${config.root}/id_rsa'`)
     process.exit(1)
     // fs.writeFileSync(path.join(process.cwd(), 'id_rsa'), keypair.key, { mode: 0o600, flag: 'wx' })
     // fs.writeFileSync(path.join(process.cwd(), 'id_rsa.pub'), keypair.pubKey, { mode: 0o600, flag: 'wx' })
@@ -76,8 +83,8 @@ new Promise((resolve, reject) => {
   // console.log(`keypair :>> `, keypair)
   var pubKey = ssh2.utils.parseKey(keypair.pubKey)
 
-  console.log(`public key:  :>> `, keypair.pubKey.toString() )
-  console.log(`parsed pubKey :>> `, pubKey)
+  console.log(`public key anonymous  :>> `, keypair.pubKey.toString() )
+  // console.log(`parsed pubKey anonymous :>> `, pubKey)
 
   // var pubKey = ssh2.utils.genPublicKey(ssh2.utils.parseKey(keypair.pubKey))
   var f = fixturez(config.root, {root: process.cwd(), glob: config.glob})
@@ -206,11 +213,25 @@ new Promise((resolve, reject) => {
       // })
     }
   // ).listen(process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || 2222, '127.0.0.1', function () {
-  ).listen({
-    port: process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT,
-    host: '127.0.0.1',
-    debug: console.log,
-  }, function () {
-    console.log('Listening on port ' + this.address().port)
-  })
+    )
+    .listen(
+      parseInt(process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT ||
+        constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT, 10),
+      // "127.0.0.1",
+      function () {
+        // console.log(`this :>> `, this) WORK OUT WHY THE RUNNING PROCESS ISN'T OPENING PORT 2224 (SEE 'THIS' OUTPUT)
+        console.log(
+          "Listening on port " + process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT ||
+            constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT
+        );
+      }
+    );
+    // bun incompatible with node net:Server - https://github.com/oven-sh/bun/issues/4540
+    // ).listen({
+    //   port: process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT,
+    //   host: '127.0.0.1',
+    //   debug: console.log,
+    // }, function () {
+    //   console.log('Listening on port ' + process.env.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT || constants.GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT)
+    // })
 })

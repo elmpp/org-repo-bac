@@ -12,7 +12,7 @@ import {
 import { constants } from "../../constants";
 import { AsyncHook, TapFn } from "../../hooks";
 import { Config } from "../../validation";
-import { ConfigSynchronised } from "../../validation/config";
+import { ConfigConfigured } from "../../validation/config";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
@@ -130,7 +130,7 @@ export class ConfigureWorkspaceLifecycleBase<
     // options: LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace">
   ): Promise<
     Result<
-      ConfigSynchronised,
+      ConfigConfigured,
       // LifecycleMappedReturnByMethod<"configureWorkspace">,
       { error: BacError }
     >

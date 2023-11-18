@@ -17,7 +17,7 @@ import {
 } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 // import { Lifecycles } from "../lifecycles";
-import { LifecycleStaticInterface } from "./lifecycles";
+import { LifecycleProvidersForAsByMethod, LifecycleStaticInterface } from "./lifecycles";
 import {
   ServiceInitialiseLiteOptions,
   ServiceMap,
@@ -68,6 +68,7 @@ export type ContextCommand<T extends typeof Command> = {
   // logger: (msg: string, level?: LogLevel) => void;
   /** @internal */
   oclifConfig: Interfaces.Config;
+  detectedPackageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
   /**
    This is the process' absolute path, and is dependent upon cli --workspacePath option or process.cwd()
    Note that this will differ from values in services etc
@@ -102,6 +103,7 @@ export type Context = {
   logger: Logger;
   /** @internal */
   oclifConfig: Interfaces.Config;
+  detectedPackageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
   /**
    This is the process' absolute path, and is dependent upon cli --workspacePath option or process.cwd()
    Note that this will differ from values in services etc

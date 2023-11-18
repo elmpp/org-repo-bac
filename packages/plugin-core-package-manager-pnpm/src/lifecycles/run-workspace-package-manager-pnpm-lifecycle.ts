@@ -32,6 +32,8 @@ export class RunWorkspacePackageManagerPnpmLifecycle extends RunWorkspaceLifecyc
       workspacePath,
       options: { command, filter, execOptions = {} },
     }) => {
+
+      throw new Error(`need to make this only run when workspace is pnpm`)
       const packageManagerService = await context.serviceFactory(
         "packageManager",
         {

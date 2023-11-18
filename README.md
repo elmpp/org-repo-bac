@@ -33,6 +33,10 @@ Debugging Packages/Listing
  - pnpm ls -r --depth 1; pnpm view @business-as-code/cli --registry http://localhost:4873/; pnpm view @business-as-code/cli@bollards --registry http://localhost:4873/
  - verdaccio can be used in offline mode - comment out the `proxy: npmjs` lines of `.packages/{"@*/*", "**"}`
 
+Package Managers
+
+ - Rerunning bun comprehensively: `bun install --force` / `find . -type d -name node_modules | xargs rm -rf; rm bun.lockb; bun install;`
+
 ## Test commands
 
  Run tests by stage
@@ -44,6 +48,13 @@ Debugging Packages/Listing
   - p --filter @business-as-code/tests-verdaccio run verdaccio:isRunning && p --filter @business-as-code/tests-git-server run gitServerHttp:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning && p --filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning; echo $? // debug the running daemons
   - pnpm --filter @business-as-code/tests-git-server run gitServerHttp:stopBackground; pnpm --filter @business-as-code/tests-git-server run gitServerHttp:startBackground // start the githttp server directly, for example
   - git ls-remote http://localhost:8174/repo1.git // test the running githttp server directly
+  - debugging daemons:
+    - stop daemons: bun dev:runCli test daemon stop --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug
+    - check ports running: lsof -i :8174 -sTCP:LISTEN; echo $?; lsof -i :2222 -sTCP:LISTEN; echo $?; lsof -i :2223 -sTCP:LISTEN; echo $?; lsof -i :2224 -sTCP:LISTEN; echo $?; lsof -i :4873 -sTCP:LISTEN; echo $?; (git http, git, ssh, sshanonymous, verdaccio)
+
+  To get ssh server running:
+   - `ssh-keygen -R \[localhost\]:2222; ssh-keygen -R \[localhost\]:2223; ssh-keygen -R \[localhost\]:2224; ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
+   - `git clone ssh://git-ssh-mock-server@localhost:2222/repo1.git`
 
 ## Build commands
 

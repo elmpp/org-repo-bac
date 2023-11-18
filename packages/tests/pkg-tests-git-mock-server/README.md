@@ -3,13 +3,13 @@ TODO - GET THIS WORKING AND PUSH BACK OR FORK
 GIT SERVER:
 
  - `git clone ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git` // note the username
- - `p run dev:mockGitServerSsh`. Dumps a keypair into /packages/tests/pkg-tests-git-mock-server/id_rsa*. Need to `ssh-add /packages/tests/pkg-tests-git-mock-server/id_rsa.pub`
+ - `p run dev:mockGitServerSsh`. Dumps a keypair into /Users/matt/dev/tmp/bac-tests/repositories/id_rsa*. Need to `ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
  - `p run dev:mockGitServerSshAnonymous`. Should allow cloning without authentication
 
-HTTP SERVER:
+HTTP SERVER
 
  - `git clone http://localhost:8174/bare-repo1.git` // note the `.git` suffix
- - `p run dev:mockGitServerSsh`. Dumps a keypair into /packages/tests/pkg-tests-git-mock-server/id_rsa*. Need to `ssh-add /packages/tests/pkg-tests-git-mock-server/id_rsa.pub`
+ - `p run dev:mockGitServerSsh`. Dumps a keypair into /Users/matt/dev/tmp/bac-tests/repositories/id_rsa*. Need to `ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
  - `p run dev:mockGitServerSshAnonymous`. Should allow cloning without authentication
 
 
@@ -151,7 +151,8 @@ This key can be used to authenticate with the server as well!
 1. Run `GIT_SSH_MOCK_SERVER_PUBKEY=true git-ssh-mock-server`
 2. Try cloning (e.g. `git clone ssh://localhost:2222/imaginatively-named-repo.git`). It shouldn't work.
 2. Run `git-ssh-mock-server exportKeys` which will copy the key files to `./id_rsa` and `./id_rsa.pub` in the working directory with the correct file permissions (`600`).
-3. Run `ssh-add ./id_rsa`
+<!-- 3. Run `ssh-add ./id_rsa` -->
+3. Run `ssh-keygen -R \[localhost\]:2222; ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
 4. Now try cloning. It works!
 5. To clear the key from the ssh-agent, use `ssh-add -d ./id_rsa`
 

@@ -74,11 +74,21 @@ export default function (options: Schema): Rule {
           serviceName: "packageManager",
           cb: async ({ service }) => {
             // console.log(`optionseeeee :>> `, require('util').inspect(options, {showHidden: false, depth: undefined, colors: true}))
+
+            // link the cli
+            if (options.cliPath) {
+              expectIsOk(await service.link({path: options.cliPath, pkg: '@business-as-code/cli', save: true}))
+            }
+            else {
+              expectIsOk(await service.add({pkg: '@business-as-code/cli@workspace:*'}))
+            }
+
             const res = await service.install({logLevel: 'debug'})
             expectIsOk(res)
           },
           initialiseOptions: {
             workingPath: '.',
+            packageManager: options.packageManager,
           },
           context: options._bacContext,
         },

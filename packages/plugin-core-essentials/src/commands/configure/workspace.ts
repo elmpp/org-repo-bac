@@ -93,6 +93,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
       console.log(`res.res :>> `, configureLifecycleRes.res, configuredCacheEntry.res.contentPath.address)
 
+      await bacService.setConfiguredConfigEntry(configureLifecycleRes.res)
+
       // return ok(res);
     }
 

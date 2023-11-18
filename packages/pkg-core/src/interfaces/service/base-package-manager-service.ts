@@ -1,4 +1,4 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { addr, AddressPackageStringified, AddressPathAbsolute } from "@business-as-code/address";
 import { constants } from "../../constants";
 import { DoExecOptionsLite, execUtils } from "../../utils";
 import { ServiceInitialiseCommonOptions } from "../../__types__";
@@ -25,13 +25,14 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
   async login(options?: DoExecOptionsLite) {
     const cwd = addr.packageUtils.resolveRoot({
       address: addr.parsePackage(
-        `@business-as-code/plugin-core-package-manager-pnpm`
+        `@business-as-code/plugin-core-package-manager-${this.cliName}`
+        // `@business-as-code/plugin-core-package-manager-pnpm`
       ),
       projectCwd: addr.parsePath(__filename) as AddressPathAbsolute,
       strict: true,
     })
 
-    return this.run({
+    return this.exec({
       command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"${
         this.getNpmRcFilePath().original
       }\"`,
@@ -45,16 +46,20 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
     });
   }
 
-  async install(options?: DoExecOptionsLite) {
-    // const cwd = addr.packageUtils.resolveRoot({
-    //   address: addr.parsePackage(
-    //     `@business-as-code/plugin-core-package-manager-pnpm`
-    //   ),
-    //   projectCwd: addr.parsePath(__filename) as AddressPathAbsolute,
-    //   strict: true,
-    // })
+  async add(options: {
+    pkg: string;
+    development?: boolean;
+    options?: DoExecOptionsLite;
+  }) {
+    return this.exec({
+      command: `add ${options.development ? '-d ' : ''}${options.pkg}`,
+      // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
+      options: options.options,
+    });
+  }
 
-    return this.run({
+  async install(options?: DoExecOptionsLite) {
+    return this.exec({
       command: `install`,
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
       options: {
@@ -63,15 +68,21 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
     });
   }
 
-  async run(options: {
+  abstract run(options: {
+    command: string;
+    pkg?: AddressPackageStringified;
+    options?: DoExecOptionsLite;
+  }): ReturnType<typeof execUtils.doExec>;
+
+  protected async exec(options: {
     command: string;
     options?: DoExecOptionsLite;
   }): ReturnType<typeof execUtils.doExec>;
-  async run(options: {
+  protected async exec(options: {
     command: string;
     options: DoExecOptionsLite;
   }): ReturnType<typeof execUtils.doExec>;
-  async run(options: {
+  protected async exec(options: {
     command: string;
     options?: DoExecOptionsLite;
   }): Promise<any> {

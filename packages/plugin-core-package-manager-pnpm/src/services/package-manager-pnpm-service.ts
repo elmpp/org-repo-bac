@@ -1,5 +1,7 @@
+import { AddressPackageStringified } from "@business-as-code/address";
 import {
   BasePackageManagerService,
+  DoExecOptionsLite,
   LifecycleProvidersForAsByMethod,
   ServiceInitialiseCommonOptions,
   execUtils as _execUtils,
@@ -42,9 +44,13 @@ export class PackageManagerPnpmService extends BasePackageManagerService<Options
   /** whether the service has initialised on a local repo. Prerequisite for most operations. See  */
 
   static async initialise(options: Options) {
-    // default to pnpm
+
+    const packageManager = options.packageManager ?? options.context.detectedPackageManager
+
     if (
-      (options.packageManager ?? "packageManagerPnpm") !== "packageManagerPnpm"
+      // default to pnpm
+      // (options.packageManager ?? "packageManagerPnpm") !== "packageManagerPnpm"
+      (packageManager) !== "packageManagerPnpm"
     ) {
       return;
     }
@@ -69,8 +75,21 @@ export class PackageManagerPnpmService extends BasePackageManagerService<Options
   // }
 
   async link({ path }: { path: string }) {
-    return this.run({
+    return this.exec({
       command: `link ${path}`,
+    });
+  }
+
+  async run(options: {
+    command: string;
+    pkg?: AddressPackageStringified,
+    options?: DoExecOptionsLite;
+  }) {
+
+    /** probably not needed but helps with tests */
+    return this.exec({
+      command: `run${options.pkg ? ` --filter=${options.pkg}` : ''} ${options.command}`,
+      options: options.options,
     });
   }
 }

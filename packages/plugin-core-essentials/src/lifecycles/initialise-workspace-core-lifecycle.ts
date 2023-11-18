@@ -3,6 +3,7 @@ import {
   assertIsOk,
   Context,
   InitialiseWorkspaceLifecycleBase,
+  LifecycleProvidersForAsByMethod,
   ServiceMap,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
@@ -42,12 +43,13 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
       cliVersion: string;
       cliRegistry: string;
       cliPath?: string;
+      packageManager: LifecycleProvidersForAsByMethod<"packageManager">,
     };
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
     return async ({
       context,
       workspacePath,
-      options: { name, configPath, cliVersion, cliRegistry, cliPath },
+      options: { name, configPath, cliVersion, cliRegistry, cliPath, packageManager },
     }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
         const workspacePathParent = addr.pathUtils.dirname(workspacePath);
@@ -76,6 +78,7 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
           cliVersion,
           cliRegistry,
           cliPath,
+          packageManager,
 
           // ...context.cliOptions.flags,
           // name: context.cliOptions.flags.name,

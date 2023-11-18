@@ -1,5 +1,6 @@
+import { AddressPackageStringified } from "@business-as-code/address";
 import {
-  BasePackageManagerService, LifecycleProvidersForAsByMethod,
+  BasePackageManagerService, DoExecOptionsLite, LifecycleProvidersForAsByMethod,
   ServiceInitialiseCommonOptions,
   execUtils as _execUtils,
 } from "@business-as-code/core";
@@ -43,7 +44,9 @@ export class PackageManagerYarnService extends BasePackageManagerService<Options
   /** whether the service has initialised on a local repo. Prerequisite for most operations. See  */
 
   static async initialise(options: Options) {
-    if (options.packageManager !== "packageManagerYarn") {
+    const packageManager = options.packageManager ?? options.context.detectedPackageManager
+
+    if (packageManager !== "packageManagerYarn") {
       return;
     }
 
@@ -63,9 +66,21 @@ export class PackageManagerYarnService extends BasePackageManagerService<Options
   }
 
   async link({path}: {path: string}) {
-    return this.run({
+    return this.exec({
       command: `link ${path}`,
     });
   }
 
+  async run(options: {
+    command: string;
+    pkg?: AddressPackageStringified,
+    options?: DoExecOptionsLite;
+  }) {
+
+    /** probably not needed but helps with tests */
+    return this.exec({
+      command: `run${options.pkg ? ` --filter=${options.pkg}` : ''} ${options.command}`,
+      options: options.options,
+    });
+  }
 }

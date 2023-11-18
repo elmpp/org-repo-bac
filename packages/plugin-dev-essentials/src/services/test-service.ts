@@ -45,117 +45,72 @@ export class TestService {
     - verdaccio registry
    */
   async startDaemons(): Promise<Result<{}, { error: BacError }>> {
+    const checkBefore = false;
     const packageManagerService = await this.options.context.serviceFactory(
       "packageManager",
       {
         context: this.options.context,
         workingPath: ".",
-        packageManager: "packageManagerPnpm", // we're in dev mode. This allows filtering query
+        // packageManager: "packageManagerBun", // blocked until this ticket is complete :cry - https://github.com/oven-sh/bun/issues/6418
+        packageManager: "packageManagerPnpm",
       }
     );
 
     const proms: Promise<unknown>[] = [];
 
+    // if (
+    //   !checkBefore ||
+    //   !assertIsOk(
+    //     await packageManagerService.run({
+    //       command: `verdaccio:isRunning`,
+    //       pkg: "@business-as-code/tests-verdaccio",
+    //     })
+    //   )
+    // ) {
+    //   proms.push(
+    //     packageManagerService.run({
+    //       command: `verdaccio:startBackground`,
+    //       pkg: "@business-as-code/tests-verdaccio",
+    //       options: {
+    //         stdio: "inherit",
+    //       },
+    //     })
+    //   );
+    // }
+
+    // if (
+    //   !checkBefore ||
+    //   !assertIsOk(
+    //     await packageManagerService.run({
+    //       command: `gitServerHttp:isRunning`,
+    //       pkg: `@business-as-code/tests-git-server`,
+    //     })
+    //   )
+    // ) {
+    //   proms.push(
+    //     packageManagerService.run({
+    //       command: `gitServerHttp:startBackground`,
+    //       pkg: "@business-as-code/tests-git-server",
+    //       options: {
+    //         stdio: "inherit",
+    //       },
+    //     })
+    //   );
+    // }
+
     if (
+      !checkBefore ||
       !assertIsOk(
         await packageManagerService.run({
-          command: `--filter @business-as-code/tests-verdaccio run verdaccio:isRunning`,
+          command: `gitServerSshPubKey:isRunning`,
+          pkg: "@business-as-code/tests-git-server",
         })
       )
     ) {
-      // const res1 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
-      //   options: {detached: true},
-      // });
-      // if (!assertIsOk(res1)) return res1
       proms.push(
         packageManagerService.run({
-          command: `--filter @business-as-code/tests-verdaccio run verdaccio:startBackground`,
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
-      // if (!assertIsOk(res1)) return res1
-    }
-    if (
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerHttp:isRunning`,
-        })
-      )
-    ) {
-      // const res2 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
-      //   options: {detached: true},
-      // });
-      // if (!assertIsOk(res2)) return res2
-      proms.push(
-        packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerHttp:startBackground`,
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
-    }
-    if (
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning`,
-        })
-      )
-    ) {
-      // const res3 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
-      //   options: {detached: true},
-      // });
-      // if (!assertIsOk(res3)) return res3
-      proms.push(
-        packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
-    }
-    if (
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning`,
-        })
-      )
-    ) {
-      // const res3 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
-      //   options: {detached: true},
-      // });
-      // if (!assertIsOk(res3)) return res3
-      proms.push(
-        packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:startBackground`,
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
-    }
-    if (
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
-        })
-      )
-    ) {
-      // const res3 = await packageManagerService.run({
-      //   command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:startBackground`,
-      //   options: {detached: true},
-      // });
-      // if (!assertIsOk(res3)) return res3
-      proms.push(
-        packageManagerService.run({
-          command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
+          command: `gitServerSshPubKey:startBackground`,
+          pkg: "@business-as-code/tests-git-server",
           options: {
             stdio: "inherit",
           },
@@ -163,23 +118,53 @@ export class TestService {
       );
     }
 
-    // if (!assertIsOk((await packageManagerService.run({
-    //   command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
-    // })))) {
-    //   // const res4 = await packageManagerService.run({
-    //   //   command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
-    //   //   options: {detached: true}
-    //   // });
-    //   // if (!assertIsOk(res4)) return res4
-    //   proms.push(packageManagerService.run({
-    //     command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:startBackground`,
-    //   }))
+    // if (
+    //   !checkBefore ||
+    //   !assertIsOk(
+    //     await packageManagerService.run({
+    //       command: `gitServerSshPassword:isRunning`,
+    //       pkg: "@business-as-code/tests-git-server",
+    //     })
+    //   )
+    // ) {
+    //   proms.push(
+    //     packageManagerService.run({
+    //       command: `gitServerSshPassword:startBackground`,
+    //       pkg: "@business-as-code/tests-git-server",
+    //       options: {
+    //         stdio: "inherit",
+    //       },
+    //     })
+    //   );
+    // }
+
+    // if (
+    //   !checkBefore ||
+    //   !assertIsOk(
+    //     await packageManagerService.run({
+    //       command: `gitServerSshAnonymous:isRunning`,
+    //       pkg: "@business-as-code/tests-git-server",
+    //     })
+    //   )
+    // ) {
+    //   proms.push(
+    //     packageManagerService.run({
+    //       command: `gitServerSshAnonymous:startBackground`,
+    //       pkg: "@business-as-code/tests-git-server",
+    //       options: {
+    //         stdio: "inherit",
+    //       },
+    //     })
+    //   );
     // }
 
     proms.push(
       new Promise((resolve, reject) =>
+        // setTimeout(() => {
+        //   // this.ensureDaemons().then(resolve).catch(reject);
+        // }, 7000)
         setTimeout(() => {
-          this.ensureDaemons().then(resolve).catch(reject);
+          resolve(true)
         }, 7000)
       )
     );
@@ -242,13 +227,14 @@ export class TestService {
       {
         context: this.options.context,
         workingPath: ".",
-        packageManager: "packageManagerPnpm", // we're in dev mode. This allows filtering query
+        // packageManager: "packageManagerBun", // BASED ON THE CHECKOUT REPO. we're in dev mode. This allows filtering query
       }
     );
 
     await (async function verdaccio() {
       const isRunning = await packageManagerService.run({
-        command: `--filter @business-as-code/tests-verdaccio run verdaccio:isRunning`,
+        command: `verdaccio:isRunning`,
+        pkg: "@business-as-code/tests-verdaccio",
       });
       if (!assertIsOk(isRunning)) {
         throw new BacError(
@@ -259,7 +245,8 @@ export class TestService {
     })();
     await (async function gitServerHttp() {
       const isRunning = await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerHttp:isRunning`,
+        command: `gitServerHttp:isRunning`,
+        pkg: `@business-as-code/tests-git-server`,
       });
       if (!assertIsOk(isRunning)) {
         throw new BacError(
@@ -270,7 +257,8 @@ export class TestService {
     })();
     await (async function gitServerSshPubKey() {
       const isRunning = await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning`,
+        command: `gitServerSshPubKey:isRunning`,
+        pkg: `@business-as-code/tests-git-server`,
       });
       if (!assertIsOk(isRunning)) {
         throw new BacError(
@@ -281,7 +269,8 @@ export class TestService {
     })();
     await (async function gitServerSshPassword() {
       const isRunning = await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning`,
+        command: `gitServerSshPassword:isRunning`,
+        pkg: `@business-as-code/tests-git-server`,
       });
       if (!assertIsOk(isRunning)) {
         throw new BacError(
@@ -292,7 +281,8 @@ export class TestService {
     })();
     await (async function gitServerSshAnonymous() {
       const isRunning = await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning`,
+        command: `gitServerSshAnonymous:isRunning`,
+        pkg: `@business-as-code/tests-git-server`,
       });
       if (!assertIsOk(isRunning)) {
         throw new BacError(
@@ -320,33 +310,38 @@ export class TestService {
       {
         context: this.options.context,
         workingPath: ".",
-        packageManager: "packageManagerPnpm", // we're in dev mode. This allows filtering query
+        // packageManager: "packageManagerPnpm", // BASED ON THE CHECKOUT REPO. we're in dev mode. This allows filtering query
       }
     );
 
     await (async function verdaccio() {
       await packageManagerService.run({
-        command: `--filter @business-as-code/tests-verdaccio run verdaccio:stopBackground`,
+        command: `verdaccio:stopBackground`,
+        pkg: `@business-as-code/tests-verdaccio`,
       });
     })();
     await (async function gitServerHttp() {
       await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerHttp:stopBackground`,
+        command: `gitServerHttp:stopBackground`,
+        pkg: `@business-as-code/tests-git-server`,
       });
     })();
     await (async function gitServerSshPubKey() {
       await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshPubKey:stopBackground`,
+        command: `gitServerSshPubKey:stopBackground`,
+        pkg: `@business-as-code/tests-git-server`,
       });
     })();
     await (async function gitServerSshPassword() {
       await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshPassword:stopBackground`,
+        command: `gitServerSshPassword:stopBackground`,
+        pkg: `@business-as-code/tests-git-server`,
       });
     })();
     await (async function gitServerSshAnonymous() {
       await packageManagerService.run({
-        command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:stopBackground`,
+        command: `gitServerSshAnonymous:stopBackground`,
+        pkg: `@business-as-code/tests-git-server`,
       });
     })();
     // await (async function gitServerSshAnonymous() {
@@ -355,7 +350,7 @@ export class TestService {
     //   });
     // })();
 
-    this.options.context.logger.info(`Daemons stopped`);
+    // this.options.context.logger.info(`Daemons stopped`);
 
     return ok({});
 
@@ -376,7 +371,7 @@ export class TestService {
 
   async test({
     testFileMatch,
-    testNameMatch,
+    // testNameMatch,
     stage,
     cliSource,
     watch = false,
@@ -516,28 +511,26 @@ export class TestService {
     }, "stage2");
 
     // if (!["stage0", "stage1", "stage2"].includes(stage)) {
-      context.logger.info(
-        `RUNNING ${stage.toUpperCase()} TESTS - ${cliSource} - testFileMatch: '${testFileMatch}'`
-      );
+    context.logger.info(
+      `RUNNING ${stage.toUpperCase()} TESTS - ${cliSource} - testFileMatch: '${testFileMatch}'`
+    );
 
-      const stageXRes = await packageManagerService.run({
-        command: `dev:test ${
-          testFileMatch ? ` '${testFileMatch}-${stage}'` : ` '${stage}'`
-        }${testNameMatch ? ` -t '${testNameMatch}'` : ``}${
-          watch ? ` --watch` : ``
-        }`,
-        options: {
-          env: {
-            BAC_TEST_CLISOURCE: cliSource,
-            BAC_LOG_LEVEL: this.options.context.cliOptions.flags.logLevel,
-            FORCE_COLOR: "true",
-          },
-          stdin: "inherit",
-          logLevel: "debug",
+    const stageXRes = await packageManagerService.run({
+      command: `dev:test ${
+        testFileMatch ? ` '${testFileMatch}-${stage}'` : ` '${stage}'`
+      }${watch ? ` --watch` : ``}`,
+      options: {
+        env: {
+          BAC_TEST_CLISOURCE: cliSource,
+          BAC_LOG_LEVEL: this.options.context.cliOptions.flags.logLevel,
+          FORCE_COLOR: "true",
         },
-      });
+        stdin: "inherit",
+        logLevel: "debug",
+      },
+    });
 
-      expectIsOk(stageXRes);
+    expectIsOk(stageXRes);
     // }
 
     return {

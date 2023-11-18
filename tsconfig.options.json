@@ -79,7 +79,7 @@
   "ts-node": {
     "files": true,
     // "debug": true,
-    "swc": true,
+    // "swc": true, // not compatible when installed via bun
     // "transpileOnly": true, // not required with "swc: true"
     // "moduleTypes": {
     //   // "webpack.config.ts": "cjs",

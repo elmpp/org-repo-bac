@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/cli",
-  "version": "0.0.0-latest-20230909081653",
+  "version": "0.0.0-latest-20231029192408",
   "description": "Tool package @business-as-code/cli",
   "main": "src/index.ts",
   "files": [
@@ -33,6 +33,7 @@
     "@business-as-code/core": "workspace:*",
     "@business-as-code/plugin-core-essentials": "workspace:*",
     "@business-as-code/plugin-core-git": "workspace:*",
+    "@business-as-code/plugin-core-package-manager-bun": "workspace:*",
     "@business-as-code/plugin-core-package-manager-pnpm": "workspace:*",
     "@business-as-code/plugin-core-package-manager-yarn": "workspace:*",
     "@oclif/command": "^1.8.22",
@@ -61,6 +62,7 @@
       "@oclif/plugin-help",
       "@business-as-code/plugin-core-essentials",
       "@business-as-code/plugin-core-git",
+      "@business-as-code/plugin-core-package-manager-bun",
       "@business-as-code/plugin-core-package-manager-pnpm",
       "@business-as-code/plugin-core-package-manager-yarn"
     ],

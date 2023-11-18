@@ -6,30 +6,32 @@ import { describe, it, jest, expect } from "bun:test";
 describe("release-snapshot", () => {
   // jest.setTimeout(30000);
 
-  it.only("builds; creates changeset and publishes to local registry", async () => {
+  it("builds; creates changeset and publishes to local registry", async () => {
     const persistentTestEnv = await createPersistentTestEnv({
+      testName: `release-snapshot:builds; creates changeset and publishes to local registry`,
     });
-    await persistentTestEnv.test({
-      workspacePath: ({checkoutPath}) => checkoutPath, // this is required when pointing a command at a different location like below. It creates the tree etc
-    }, async (testContext) => {
+    await persistentTestEnv.test(
+      {
+        workspacePath: ({ checkoutPath }) => checkoutPath, // this is required when pointing a command at a different location like below. It creates the tree etc
+      },
+      async (testContext) => {
+        const res = await testContext.command(
+          [
+            "release",
+            "snapshot",
+            "--registry",
+            "http://localhost:4873",
+            "--workspacePath",
+            // testContext.testEnvVars.workspacePath.original,
+            `${testContext.testEnvVars.checkoutPath.original}`,
+            "--message",
+            `Making a release`,
+          ],
+          { logLevel: "debug" }
+        );
 
-      const res = await testContext.command(
-        [
-          "release",
-          "snapshot",
-          "--registry",
-          "http://localhost:4873",
-          "--workspacePath",
-          // testContext.testEnvVars.workspacePath.original,
-          `${testContext.testEnvVars.checkoutPath.original}`,
-          "--message",
-          `Making a release`,
-
-        ],
-        { logLevel: "debug" }
-      );
-
-      expectIsOk(res);
-    });
+        expectIsOk(res);
+      }
+    );
   });
 });

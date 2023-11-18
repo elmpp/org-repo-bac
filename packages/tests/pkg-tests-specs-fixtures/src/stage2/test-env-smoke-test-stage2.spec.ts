@@ -10,7 +10,9 @@ describe("test-env-smoke-test", () => {
 
   // when publishing, the /src should be restored
   it("collections.json remain as /src", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `test-env-smoke-test:collections.json remain as /src`,
+    });
     await persistentTestEnv.test({}, async (testContext) => {
       const collectionJsonPath = addr.pathUtils.join(
         testContext.testEnvVars.checkoutPath,
@@ -35,7 +37,9 @@ describe("test-env-smoke-test", () => {
 
   describe("daemons are running ok", () => {
     it("git-ssh repositories are visible", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({
+        testName: `daemons are running ok:git-ssh repositories are visible`,
+      });
       await persistentTestEnv.test({}, async (testContext) => {
 
         // const gitService = await testContext.testEnvVars

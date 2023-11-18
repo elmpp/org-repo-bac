@@ -78,7 +78,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       BaseParseOutput
   ): Promise<ContextCommand<typeof ContextTestCommand>> {
     await this.initialise({ parseOutput, config: this.config });
-    const context = await this.setupContext({ parseOutput });
+    const context = await this.createContext({ parseOutput });
     await this.initialisePlugins({ context });
     return context;
   }

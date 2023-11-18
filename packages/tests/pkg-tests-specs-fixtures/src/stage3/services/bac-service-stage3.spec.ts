@@ -15,7 +15,7 @@ describe("bac-service", () => {
       });
 
       const resCopy = await testContext.copy(
-        "initialise:workspace default skeleton config",
+        "initialise:workspace default skeleton config bun",
         testContext.testEnvVars.workspacePath
       );
       expectIsOk(resCopy);
@@ -48,7 +48,7 @@ describe("bac-service", () => {
       });
 
       const resCopy = await testContext.copy(
-        "initialise:workspace default skeleton config",
+        "initialise:workspace default skeleton config bun",
         testContext.testEnvVars.workspacePath
       );
       expectIsOk(resCopy);

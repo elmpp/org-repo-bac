@@ -16,7 +16,6 @@
   "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@business-as-code/cli": "<%= cliPath ? `link:` + cliPath : cliVersion %>",
     "@moonrepo/cli": "*"
   },
   "devDependencies": {

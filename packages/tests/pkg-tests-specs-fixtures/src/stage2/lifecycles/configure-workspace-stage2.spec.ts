@@ -18,7 +18,7 @@ describe("configure workspace", () => {
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(
-      "initialise:workspace default skeleton config",
+      "initialise:workspace default skeleton config bun",
       testContext.testEnvVars.workspacePath
     );
 
@@ -73,10 +73,10 @@ describe("configure workspace", () => {
         );
       // console.log(`res :>> `, res)
       expectIsOk(configureWorkspaceLifecycleRes);
-      const syncedWorkspaceConfig = configureWorkspaceLifecycleRes.res
+      const configuredWorkspaceConfig = configureWorkspaceLifecycleRes.res
 
       // the output of configure-workspace should be a ConfigSynchronised. This should be validatable
-      const validRes = validators.config.configSynchronisedSchema.safeParse(
+      const validRes = validators.config.configConfiguredSchema.safeParse(
         configureWorkspaceLifecycleRes.res
       );
 
@@ -95,8 +95,8 @@ describe("configure workspace", () => {
       //   })
       // );
 
-      expect(syncedWorkspaceConfig.version).toMatch(/.*/)
-      expect(syncedWorkspaceConfig.projects[0]).toEqual({
+      expect(configuredWorkspaceConfig.version).toMatch(/.*/)
+      expect(configuredWorkspaceConfig.projects[0]).toEqual({
         provider: "git",
         options: {
           address: "http://localhost:8174/repo1.git",

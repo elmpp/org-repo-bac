@@ -12,7 +12,7 @@ describe("configure workspace", () => {
       testContext.setActiveWorkspacePaths({workspace: testContext.testEnvVars.workspacePath});
 
       const resCopy = await testContext.copy(
-        "initialise:workspace default skeleton config",
+        "initialise:workspace default skeleton config bun",
         testContext.testEnvVars.workspacePath
       );
 

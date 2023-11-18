@@ -15,9 +15,10 @@ import crypto from "crypto";
 import { fail, ok, Result, ServiceInitialiseCommonOptions } from "../__types__";
 import { AddressCacheManager } from "../cache/address-cache-manager";
 import { constants } from "../constants";
-import { execUtils, fsUtils, hashUtils } from "../utils";
+import { execUtils, formatUtils, fsUtils, hashUtils } from "../utils";
 import { tmpResolvableFolder } from "../utils/fs-utils";
 import { Config } from "../validation";
+import { ConfigConfigured } from "../validation/config";
 
 declare global {
   namespace Bac {
@@ -44,7 +45,6 @@ export class BacService {
   static title = "bac" as const;
   // title = 'bac' as const
   options: Required<Options>;
-  // @ts-expect-error: initialise impl
   cacheManager: AddressCacheManager;
 
   get ctor(): typeof BacService {
@@ -107,6 +107,21 @@ export class BacService {
 
     const res = await this.getForAddress(configPath, this.cacheManager);
     return res;
+  }
+
+  async setConfiguredConfigEntry(configuredConfig: ConfigConfigured) {
+
+    const configPath = addr.pathUtils.join(
+      this.options.workspacePath,
+      addr.parsePath(constants.RC_FOLDER),
+      addr.parsePath(constants.RC_CONFIGURED_FILENAME),
+    ) as AddressPathAbsolute;
+
+    await xfs.writeFileSync(
+      configPath.address,
+      formatUtils.JSONStringify(configuredConfig, true),
+      "utf-8"
+    );
   }
 
   protected async getForAddress(address: AddressPathAbsolute, cacheManager: AddressCacheManager) {

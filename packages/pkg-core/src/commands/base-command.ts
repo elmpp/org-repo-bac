@@ -26,8 +26,9 @@ import * as ansiColors from "ansi-colors";
 import { EOL } from "os";
 import { filter } from "rxjs/operators";
 import { fileURLToPath } from "url";
-import util from "util";
+import * as util from "util";
 import {
+  assertIsOk,
   assertIsResult,
   Context,
   ContextCommand,
@@ -52,7 +53,7 @@ import {
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 import { BacService, CacheService, ExecService, MoonService } from "../services";
 import { SchematicsService } from "../services/schematics-service";
-import { objectUtils } from "../utils";
+import { fsUtils, objectUtils } from "../utils";
 import { findUp, loadModule } from "../utils/fs-utils";
 
 // export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
@@ -623,7 +624,7 @@ export abstract class BaseCommand<
       return objectUtils.deepMerge(
         acc,
         staticPluginServices
-      ) as ServiceStaticMap;
+      );
 
       // return {
       //   ...acc,
@@ -667,12 +668,18 @@ export abstract class BaseCommand<
           ...initialiseOptionsLite.context,
           workspacePath: deriveNextWorkspacePath(),
         };
+
+        const initialiseOptions = {
+          workspacePath: originalWorkspacePath, // we DO allow passing through of workspacePath
+          ...initialiseOptionsLite,
+          context: nextContext,
+        }
+
+        /** bit naughty but we need to infer */
+
+
         const serviceIns = (await staticService.initialise(
-          {
-            workspacePath: originalWorkspacePath, // we DO allow passing through of workspacePath
-            ...initialiseOptionsLite,
-            context: nextContext,
-          } as any // weird union static type
+          initialiseOptions as any
         )) as ServiceMap[SName][number];
 
         (function validateService() {
@@ -951,13 +958,14 @@ export abstract class BaseCommand<
     // console.log(`parseOutput :>> `, parseOutput)
 
     await this.initialise({ parseOutput, config: this.config });
-    const context = (this.context = await this.setupContext({ parseOutput }));
+    const context = (this.context = await this.createContext({ parseOutput }));
     await this.initialisePlugins({ context });
 
     const res = await this.execute(context);
 
     assertIsResult(res)
-    if (!res.success) {
+    // if (!res.success) {
+    if (!assertIsOk(res)) {
       console.log(`failing res during command execution: '${this.ctor.name}' :>> `, require('util').inspect(res, {showHidden: false, depth: undefined, colors: true}))
 
       const err = res.res.error;
@@ -976,13 +984,13 @@ export abstract class BaseCommand<
       BaseParseOutput
   ): Promise<Result<unknown, any>> {
     await this.initialise({ parseOutput, config: this.config });
-    const context = (this.context = await this.setupContext({ parseOutput }));
+    const context = (this.context = await this.createContext({ parseOutput }));
     await this.initialisePlugins({ context });
     const res = await this.execute(context);
     return res;
   }
 
-  protected async setupContext({
+  protected async createContext({
     parseOutput,
   }: {
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
@@ -1011,19 +1019,13 @@ export abstract class BaseCommand<
       workspacePath,
     });
 
-    const context = {
+    const contextCommand: ContextCommand<T> = {
       oclifConfig,
       cliOptions: parseOutput,
       logger: this.logger,
       serviceFactory,
-      workspacePath: await this.getWorkspacePath(
-        parseOutput.flags["workspacePath"]
-      ),
+      workspacePath,
       toJSON: () => "__complex__",
-    };
-
-    const contextCommand: ContextCommand<T> = {
-      ...context,
       // lifecycles: setupLifecycles({context}),
       lifecycles: {
         initialiseWorkspace: new InitialiseWorkspaceLifecycleBase<any>(),
@@ -1034,6 +1036,7 @@ export abstract class BaseCommand<
         runWorkspace: new RunWorkspaceLifecycleBase<any>(),
         synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
       },
+      detectedPackageManager: await fsUtils.detectPackageManager({workspacePath: workspacePath}),
     };
     return contextCommand;
   }

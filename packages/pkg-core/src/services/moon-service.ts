@@ -84,7 +84,7 @@ export class MoonService {
       command: `query projects${options?.query ? ` '${options.query}'` : ""}${
         options?.affected ? " --affected" : ""
       }`,
-      options: { json: true },
+      options: { json: true, logLevel: 'info' },
     });
     // console.log(`res :>> `, res.res)
 

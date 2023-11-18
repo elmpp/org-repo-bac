@@ -11,7 +11,7 @@ describe("synchronise workspace", () => {
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(
-      "initialise:workspace default skeleton config",
+      "initialise:workspace default skeleton config bun",
       testContext.testEnvVars.workspacePath
     );
 

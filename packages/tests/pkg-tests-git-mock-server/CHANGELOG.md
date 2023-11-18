@@ -1,5 +1,391 @@
 # git-http-mock-server
 
+## 0.0.0-latest-20231029192408
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029192408
+
+## 0.0.0-latest-20231029192133
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029192133
+
+## 0.0.0-latest-20231029191445
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029191445
+
+## 0.0.0-latest-20231029191417
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029191417
+
+## 0.0.0-latest-20231029163247
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029163247
+
+## 0.0.0-latest-20231029102832
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102832
+
+## 0.0.0-latest-20231029102631
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102631
+
+## 0.0.0-latest-20231029102604
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102604
+
+## 0.0.0-latest-20231029102556
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102556
+
+## 0.0.0-latest-20231029102546
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102546
+
+## 0.0.0-latest-20231029102534
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102534
+
+## 0.0.0-latest-20231029102524
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102524
+
+## 0.0.0-latest-20231029102517
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102517
+
+## 0.0.0-latest-20231029102506
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102506
+
+## 0.0.0-latest-20231029102457
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102457
+
+## 0.0.0-latest-20231029102448
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102448
+
+## 0.0.0-latest-20231029102440
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102440
+
+## 0.0.0-latest-20231029102432
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102432
+
+## 0.0.0-latest-20231029102422
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102422
+
+## 0.0.0-latest-20231029102412
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102412
+
+## 0.0.0-latest-20231029102402
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102402
+
+## 0.0.0-latest-20231029102353
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102353
+
+## 0.0.0-latest-20231029102343
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102343
+
+## 0.0.0-latest-20231029102333
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102333
+
+## 0.0.0-latest-20231029102324
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102324
+
+## 0.0.0-latest-20231029102313
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102313
+
+## 0.0.0-latest-20231029102304
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102304
+
+## 0.0.0-latest-20231029102255
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102255
+
+## 0.0.0-latest-20231029102249
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102249
+
+## 0.0.0-latest-20231029102240
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102240
+
+## 0.0.0-latest-20231029102231
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102231
+
+## 0.0.0-latest-20231029102221
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102221
+
+## 0.0.0-latest-20231029102212
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102212
+
+## 0.0.0-latest-20231029102203
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102203
+
+## 0.0.0-latest-20231029102154
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102154
+
+## 0.0.0-latest-20231029102145
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102145
+
+## 0.0.0-latest-20231029102135
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102135
+
+## 0.0.0-latest-20231029102125
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102125
+
+## 0.0.0-latest-20231029102115
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102115
+
+## 0.0.0-latest-20231029102106
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102106
+
+## 0.0.0-latest-20231029102055
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102055
+
+## 0.0.0-latest-20231029102046
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102046
+
+## 0.0.0-latest-20231029102038
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102038
+
+## 0.0.0-latest-20231029102028
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029102028
+
+## 0.0.0-latest-20231029100756
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029100756
+
+## 0.0.0-latest-20231029095805
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095805
+
+## 0.0.0-latest-20231029095436
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095436
+
+## 0.0.0-latest-20231029095205
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095205
+
+## 0.0.0-latest-20231029095133
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095133
+
+## 0.0.0-latest-20231029095130
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095130
+
+## 0.0.0-latest-20231029095126
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095126
+
+## 0.0.0-latest-20231029095121
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095121
+
+## 0.0.0-latest-20231029095117
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095117
+
+## 0.0.0-latest-20231029095113
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095113
+
+## 0.0.0-latest-20231029095108
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231029095108
+
 ## 0.0.0-latest-20230909081653
 
 ### Patch Changes

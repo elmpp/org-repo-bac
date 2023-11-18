@@ -94,6 +94,9 @@ describe("types", () => {
             | {
                 title: "packageManagerYarn";
               }
+            | {
+                title: "packageManagerBun";
+              }
           ]
         >();
       });
@@ -174,10 +177,8 @@ describe("types", () => {
       // });
 
       it("DEBUG", () => {
-        // @ts-expect-error:
-        type ALLKeys = Simplify<keyof Bac.Lifecycles>;
-        // @ts-expect-error:
-        type ALLMethodsImplemented = LifecycleImplementedMethods;
+        type _ALLKeys = Simplify<keyof Bac.Lifecycles>;
+        type _ALLMethodsImplemented = LifecycleImplementedMethods;
         // type ALLMethodsRegardless = LifecycleMethods;
       });
 
@@ -307,10 +308,8 @@ describe("types", () => {
           LifecycleOptionsByMethodKeyedByProviderSingular<"runWorkspace">;
         expectTypeOf<Options>().not.toBeAny();
 
-        // @ts-expect-error: no unused locals
-        type MoonOptions = Extract<Options, { provider: "moon" }>;
-        // @ts-expect-error: no unused locals
-        type MoonOptionsOptions = Extract<
+        type _MoonOptions = Extract<Options, { provider: "moon" }>;
+        type _MoonOptionsOptions = Extract<
           Options,
           { provider: "moon" }
         >["options"];
@@ -318,8 +317,7 @@ describe("types", () => {
           Options,
           { provider: "moon" }
         >["options"]["options"];
-        // @ts-expect-error: no unused locals
-        type NodeOptions = Extract<Options, { provider: "node" }>;
+        type _NodeOptions = Extract<Options, { provider: "node" }>;
         // type NodeOptionsOptions = Extract<Options, {provider: 'node'}>['options']
         type NodeOptionsOptionsOptions = Extract<
           Options,
@@ -345,8 +343,7 @@ describe("types", () => {
       });
       it(`accepts LifecycleAllMethods`, () => {
         const anyLifecycleMethod: LifecycleMethods = "configureProject";
-        // @ts-expect-error: no unused locals
-        type ReturnType = LifecycleReturnByMethodSingular<
+        type _ReturnType = LifecycleReturnByMethodSingular<
           typeof anyLifecycleMethod
         >;
       });
@@ -431,7 +428,7 @@ describe("types", () => {
         type PackageManagerProviders =
           LifecycleProvidersForAsByMethod<"packageManager">;
         expectTypeOf<PackageManagerProviders>().toMatchTypeOf<
-          "packageManagerPnpm" | "packageManagerYarn"
+          "packageManagerPnpm" | "packageManagerYarn" | "packageManagerBun"
         >();
       });
       it("find particular lifecycle method return", () => {

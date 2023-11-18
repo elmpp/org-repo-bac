@@ -17,7 +17,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   static override flags = {
     workspacePath: Oclif.Flags.directory({
-  exists: true,
+      exists: true,
       description: "Workspace name",
       required: false,
     }),
@@ -27,7 +27,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     action: Oclif.Args.string({
       description: "Absolute/Relative path",
       required: true,
-      options: ["start", "stop"],
+      options: ["start", "stop", "restart"],
     }),
   };
 
@@ -38,10 +38,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     });
 
     switch (context.cliOptions.args.action) {
-      case "start":
-        return testService.startDaemons();
       case "stop":
         return testService.stopDaemons();
+      case "start":
+        return testService.startDaemons();
+      case "restart":
+        await testService.stopDaemons();
+        console.warn(`\n\n\nDaemons stopped------- Gonna start 'em up\n\n\n`)
+        return testService.startDaemons();
       default:
         throw new Error();
     }

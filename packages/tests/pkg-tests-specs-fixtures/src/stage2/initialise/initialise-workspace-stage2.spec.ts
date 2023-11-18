@@ -6,6 +6,7 @@ import {
   TestContext,
 } from "@business-as-code/tests-core";
 import { assertions } from "../../assertions";
+import { describe, it, jest, expect } from "bun:test";
 
 /**
  * Checks content produced in stage1
@@ -52,9 +53,11 @@ describe("initialise workspace", () => {
     })();
   }
 
-  describe("initialise:workspace default skeleton config", () => {
+  describe("initialise:workspace default skeleton config bun", () => {
     it("is produced ok", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({
+        testName: `initialise:workspace default skeleton config bun:is produced ok`,
+      });
 
       await persistentTestEnv.test({}, async (testContext) => {
         testContext.setActiveWorkspacePaths({
@@ -62,18 +65,20 @@ describe("initialise workspace", () => {
         });
 
         const resCopy = await testContext.copy(
-          "initialise:workspace default skeleton config",
+          "initialise:workspace default skeleton config bun",
           testContext.testEnvVars.workspacePath
         );
 
-        assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+        await assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
       });
     });
   });
 
-  describe("initialise:workspace git-minimal-http relative config", () => {
+  describe("initialise:workspace git-minimal-http relative config bun", () => {
     it("is produced ok", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({
+        testName: `initialise:workspace git-minimal-http relative config bun:is produced ok`,
+      });
 
       await persistentTestEnv.test({}, async (testContext) => {
         testContext.setActiveWorkspacePaths({
@@ -81,78 +86,87 @@ describe("initialise workspace", () => {
         });
 
         const resCopy = await testContext.copy(
-          "initialise:workspace git-minimal-http relative config",
+          "initialise:workspace git-minimal-http relative config bun",
           testContext.testEnvVars.workspacePath
         );
 
-        assertCommon({testContext, res: resCopy, configFilename: "git-minimal-http.js" as Filename})
+        await assertCommon({testContext, res: resCopy, configFilename: "git-minimal-http.js" as Filename})
       });
     });
   });
 
   describe("stage1 content is produced according to current 'cliSource'", () => {
-    it("cliLinked", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
-
-      await persistentTestEnv.test({}, async (testContext) => {
-
-        if (testContext.testEnvVars.cliSourceActive !== 'cliLinked') {
-          return
-        }
-
-        testContext.setActiveWorkspacePaths({
-          workspace: testContext.testEnvVars.workspacePath,
+    describe("bun", () => {
+      it("cliLinked", async () => {
+        const persistentTestEnv = await createPersistentTestEnv({
+          testName: `stage1 content is produced according to current 'cliSource':cliLinked`,
         });
 
-        const resCopy = await testContext.copy(
-          "initialise:workspace git-minimal-http relative config",
-          testContext.testEnvVars.workspacePath
-        );
+        await persistentTestEnv.test({}, async (testContext) => {
 
-        assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+          if (testContext.testEnvVars.cliSourceActive !== 'cliLinked') {
+            return
+          }
 
-        await (async function expectManifestIsOk() {
+          testContext.setActiveWorkspacePaths({
+            workspace: testContext.testEnvVars.workspacePath,
+          });
 
-          const expectFs = await resCopy.res.expectUtil.createFs()
+          const resCopy = await testContext.copy(
+            "initialise:workspace git-minimal-http relative config bun",
+            testContext.testEnvVars.workspacePath
+          );
 
-          expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], expect.stringMatching(/^link\:.*pkg-cli$/))
-        })();
+          await assertCommon({testContext, res: resCopy, configFilename: "git-minimal-http.js" as Filename})
+
+          await (async function expectManifestIsOk() {
+
+            const expectFs = await resCopy.res.expectUtil.createFs()
+
+            expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], `link:@business-as-code/cli`)
+            // expect(expectFs.readJson('package.json')).toHaveProperty('dependencies.@business-as-code/cli.link:@business-as-code/cli')
+          })();
+        });
       });
-    });
 
-    it("cliRegistry", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
-
-      await persistentTestEnv.test({}, async (testContext) => {
-
-        if (testContext.testEnvVars.cliSourceActive !== 'cliRegistry') {
-          return
-        }
-
-        testContext.setActiveWorkspacePaths({
-          workspace: testContext.testEnvVars.workspacePath,
+      it("cliRegistry", async () => {
+        const persistentTestEnv = await createPersistentTestEnv({
+          testName: `stage1 content is produced according to current 'cliSource':cliRegistry`,
         });
 
-        const resCopy = await testContext.copy(
-          "initialise:workspace default skeleton config",
-          testContext.testEnvVars.workspacePath
-        );
+        await persistentTestEnv.test({}, async (testContext) => {
 
-        assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+          if (testContext.testEnvVars.cliSourceActive !== 'cliRegistry') {
+            return
+          }
 
-        await (async function expectManifestIsOk() {
+          testContext.setActiveWorkspacePaths({
+            workspace: testContext.testEnvVars.workspacePath,
+          });
 
-          const expectFs = await resCopy.res.expectUtil.createFs()
+          const resCopy = await testContext.copy(
+            "initialise:workspace default skeleton config bun",
+            testContext.testEnvVars.workspacePath
+          );
 
-          expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'bollards')
-        })();
+          await assertCommon({testContext, res: resCopy, configFilename: "skeleton.js" as Filename})
+
+          await (async function expectManifestIsOk() {
+
+            const expectFs = await resCopy.res.expectUtil.createFs()
+
+            expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'bollards')
+          })();
+        });
       });
-    });
+    })
   });
 
   describe('errors', () => {
     it('initialise:workspace git-http unreachable config fails and prevents configure', async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({
+        testName: `errors:initialise:workspace git-http unreachable config fails and prevents configure`,
+      });
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
           [
@@ -166,8 +180,10 @@ describe("initialise workspace", () => {
             "packages/pkg-core/etc/config/git-http-unreachable.js",
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
+            "--packageManager",
+            "packageManagerBun",
           ],
-          { logLevel: "debug" }
+          { logLevel: "info" }
         );
 
         expectIsFail(res) // the configure-workspace git lifecycle provider should trigger a fail

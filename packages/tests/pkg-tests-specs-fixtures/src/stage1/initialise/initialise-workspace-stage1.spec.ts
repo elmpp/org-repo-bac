@@ -5,8 +5,8 @@ import { assertions } from "../../assertions";
 
 declare global {
   interface Stage1Content {
-    "initialise:workspace default skeleton config": true;
-    "initialise:workspace git-minimal-http relative config": true;
+    "initialise:workspace default skeleton config bun": true;
+    "initialise:workspace git-minimal-http relative config bun": true;
     // 'initialise:workspace git-minimal-ssh-password relative config': true,
   }
 }
@@ -20,11 +20,11 @@ declare global {
 describe("initialise workspace", () => {
   // jest.setTimeout(40000);
 
-  describe("initialise:workspace default skeleton config", () => {
+  describe("initialise:workspace default skeleton config bun", () => {
     it("cliRegistry", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        testName: "initialise:workspace default skeleton config",
-        cacheNamespaceFolder: "initialise:workspace default skeleton config",
+        testName: "initialise:workspace default skeleton config bun",
+        cacheNamespaceFolder: "initialise:workspace default skeleton config bun",
         cliSource: "cliRegistry",
       });
 
@@ -43,6 +43,8 @@ describe("initialise workspace", () => {
             "http://localhost:4873",
             "--cliVersion",
             "bollards",
+            "--packageManager",
+            "packageManagerBun",
           ]
           // { logLevel: "debug" }
         );
@@ -63,8 +65,8 @@ describe("initialise workspace", () => {
     });
     it("cliLinked", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        testName: "initialise:workspace default skeleton config",
-        cacheNamespaceFolder: "initialise:workspace default skeleton config",
+        testName: "initialise:workspace default skeleton config bun",
+        cacheNamespaceFolder: "initialise:workspace default skeleton config bun",
         cliSource: "cliLinked",
       });
       await persistentTestEnv.test({}, async (testContext) => {
@@ -78,6 +80,8 @@ describe("initialise workspace", () => {
             `${testContext.testEnvVars.workspacePath.original}`,
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
+            "--packageManager",
+            "packageManagerBun",
           ]
           // { logLevel: "debug" }
         );
@@ -99,12 +103,12 @@ describe("initialise workspace", () => {
     });
   });
 
-  describe("initialise:workspace git-minimal-http relative config", () => {
+  describe("initialise:workspace git-minimal-http relative config bun", () => {
     it("cliRegistry", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        testName: "initialise:workspace git-minimal-http relative config",
+        testName: "initialise:workspace git-minimal-http relative config bun",
         cacheNamespaceFolder:
-          "initialise:workspace git-minimal-http relative config",
+          "initialise:workspace git-minimal-http relative config bun",
         cliSource: "cliRegistry",
       });
       await persistentTestEnv.test({}, async (testContext) => {
@@ -123,6 +127,8 @@ describe("initialise workspace", () => {
             "http://localhost:4873",
             "--cliVersion",
             "bollards",
+            "--packageManager",
+            "packageManagerBun",
           ]
           // { logLevel: "debug" }
         );
@@ -176,11 +182,12 @@ describe("initialise workspace", () => {
         // );
       });
     });
+
     it("cliLinked", async () => {
       const persistentTestEnv = await createPersistentTestEnv({
-        testName: "initialise:workspace git-minimal-http relative config",
+        testName: "initialise:workspace git-minimal-http relative config bun",
         cacheNamespaceFolder:
-          "initialise:workspace git-minimal-http relative config",
+          "initialise:workspace git-minimal-http relative config bun",
         cliSource: "cliLinked",
       });
       await persistentTestEnv.test({}, async (testContext) => {
@@ -196,6 +203,8 @@ describe("initialise workspace", () => {
             "packages/pkg-core/etc/config/git-minimal-http.js",
             "--cliPath",
             testContext.testEnvVars.checkoutCliPath.original,
+            "--packageManager",
+            "packageManagerBun",
           ]
           // { logLevel: "debug" }
         );
@@ -216,15 +225,20 @@ describe("initialise workspace", () => {
           (
             await res.res.expectUtil.createText(
               expectFs.readText(
-                `${constants.RC_FOLDER}/${constants.RC_FILENAME}`
+                `${constants.RC_FOLDER}/${constants.RC_CONFIGURED_FILENAME}`
               )
             )
           ).asJson()
-        ).toEqual({
-          provider: "git",
-          options: {
-            address: `http://localhost:${constants.GIT_HTTP_MOCK_SERVER_PORT}/repo1.git`,
-          },
+        ).toMatchObject({
+          // "version": "0.0.0-latest-20230909081653",
+          "projects": [
+            {
+              "provider": "git",
+              "options": {
+                "address": "http://localhost:8174/repo1.git"
+              }
+            }
+          ]
         });
         // expect(
         //   (

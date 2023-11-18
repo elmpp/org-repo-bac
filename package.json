@@ -8,9 +8,10 @@
     "prepare": "husky install;",
     "test": "moon run :test",
     "///dev:runCli": "TS_NODE_DEBUG=false ts-node --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
-    "dev:run": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json",
+    "dev:run": "TS_NODE_DEBUG=true ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json",
     "//dev:runCli": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "dev:runCli": "bun packages/pkg-cli/src/bin/run.ts",
+    "dev:runCliNode": "TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "dev:runCliWatch": "bun --watch packages/pkg-cli/src/bin/run.ts",
     "///dev:runCliWatch": "TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "//dev:runCliWatchIgnoreAll": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
@@ -22,7 +23,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@business-as-code/cli": "workspace:*"
+    "@business-as-code/cli": "workspace:*",
+    "@moonrepo/cli": "file:///Users/matt/dev/tmp/bac-tests/local-npm-packages/@moonrepo/cli/cli-1.15.4.tgz"
   },
   "devDependencies": {
     "@changesets/cli": "^2.26.1",
@@ -30,7 +32,6 @@
     "@commitlint/config-conventional": "^17.4.4",
     "@commitlint/prompt-cli": "^17.4.4",
     "@commitlint/types": "^17.4.4",
-    "@moonrepo/cli": "^1.10.0",
     "@swc/cli": "^0.1.62",
     "@swc/core": "^1.3.37",
     "@swc/helpers": "^0.5.2",
@@ -47,27 +48,18 @@
     "typescript": "5.1.6"
   },
   "trustedDependencies": [
-    "@moonrepo/cli"
+    "@moonrepo/cli",
+    "ssh2",
+    "verdaccio"
   ],
-  "packageManager": "pnpm@7.30.0",
   "engines": {
-    "node": "18.14.2"
+    "node": "v20.9.0"
   },
   "workspaces": [
     "packages/*",
     "apps/*",
     "packages/tests/*"
   ],
-  "pnpm": {
-    "patchedDependencies": {
-      "@oclif/core@2.6.4": "patches/@oclif__core@2.6.4.patch"
-    },
-    "resolutions": {
-      "@types/globby": "^8.0.0",
-      "globby": "11.1.10",
-      "ts-node": "10.9.1"
-    }
-  },
   "angularCompilerOptions": {
     "strictTemplates": true
   }

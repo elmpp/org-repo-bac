@@ -28,10 +28,14 @@
       "type": "string",
       "description": "Allows BaC to be linked from a local version via package manager link (dev use)",
     },
+    "packageManager": {
+      "type": "string",
+      "description": "The package manager to be used",
+    },
     "_bacContext": {
       "type": "object",
       "description": "Ubiquitous bac context"
     }
   },
-  "required": ["name", "configPath", "cliVersion", "_bacContext"]
+  "required": ["name", "configPath", "cliVersion", "packageManager", "_bacContext"]
 }

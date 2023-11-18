@@ -5,5 +5,6 @@ export interface Schema {
   cliVersion: string
   cliRegistry: string
   cliPath?: string
+  packageManager: LifecycleProvidersForAsByMethod<"packageManager">
   _bacContext: import('@business-as-code/core').Context
 }

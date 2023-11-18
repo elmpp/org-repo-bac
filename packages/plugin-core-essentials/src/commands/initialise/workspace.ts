@@ -16,6 +16,7 @@ import {
   ok,
   validators,
   Interfaces as _Interfaces,
+  LifecycleProvidersForAsByMethod,
 } from "@business-as-code/core";
 // import { configSchema } from "@business-as-code/core/src/validation/config";
 import {
@@ -25,6 +26,7 @@ import {
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 
+const identity = <T extends any>(value: T) => value
 export default class InitialiseWorkspace extends BaseCommand<
   typeof InitialiseWorkspace
 > {
@@ -73,6 +75,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       description:
         "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
       required: false,
+    }),
+    packageManager: Oclif.Flags.string({
+      description:
+        "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
+      options: identity<LifecycleProvidersForAsByMethod<"packageManager">[]>(['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn']),
+      required: false,
+      default: 'packageManagerPnpm',
     }),
   };
 
@@ -237,6 +246,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
               cliVersion: context.cliOptions.flags.cliVersion,
               cliRegistry: context.cliOptions.flags.cliRegistry,
               cliPath: context.cliOptions.flags.cliPath,
+              packageManager: context.cliOptions.flags.packageManager,
               // options: {
               //   a: 'a',
               // }, // <!-- typed as any atm ¯\_(ツ)_/¯
@@ -287,6 +297,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     expectIsOk(configureRes);
 
     console.log(`configureRes :>> `, configureRes);
+
+    await bacService.setConfiguredConfigEntry(configureRes.res)
 
     // // this is the outputs of the configure providers but in a LifecycleOptionsByMethodKeyedByProviderWithoutCommon format
     // const configuredConfig = configureRes.res.map((c) => {

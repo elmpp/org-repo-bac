@@ -14,4 +14,4 @@ var config = {
 }
 
 var server = http.createServer(cors(factory(config)))
-server.listen(process.env.GIT_HTTP_MOCK_SERVER_PORT || 8174)
+server.listen(parseInt(process.env.GIT_HTTP_MOCK_SERVER_PORT || `8174`, 10))

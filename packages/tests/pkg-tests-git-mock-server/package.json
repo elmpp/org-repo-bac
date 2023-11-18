@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/tests-git-server",
   "private": true,
-  "version": "0.0.0-latest-20230909081653",
+  "version": "0.0.0-latest-20231029192408",
   "description": "Clone and push to git repository test fixtures over HTTP.",
   "main": "index.js",
   "exports": "./index.js",
@@ -11,18 +11,29 @@
   },
   "scripts": {
     "//gitServerHttp:isRunning": "pgrep -f 'http-daemon.js'",
-    "gitServerHttp:isRunning": "node ./http-daemon.js isRunning || lsof -i 4tcp:8174 -sTCP:LISTEN",
-    "gitServerHttp:startBackground": "pnpm run -w dev:run $(pwd)/./http-daemon.js start",
-    "gitServerHttp:stopBackground": "node ./http-daemon.js stop || kill-port 8174 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerHttp:isRunning",
-    "gitServerSshPubKey:isRunning": "node ./ssh-daemon.js isRunning || lsof -i 4tcp:2222 -sTCP:LISTEN",
+    "///gitServerHttp:isRunning": "node ./http-daemon.js isRunning || lsof -i 4tcp:8174 -sTCP:LISTEN",
+    "gitServerHttp:isRunning": "lsof -i 4tcp:8174 -sTCP:LISTEN",
+    "gitServerHttp:startBackground": "node ./http-daemon.js start",
+    "//gitServerHttp:stopBackground": "node ./http-daemon.js stop || kill-port 8174 || true; ! pnpm run gitServerHttp:isRunning",
+    "gitServerHttp:stopBackground": "kill-port 8174 || true",
+    "//gitServerSshPubKey:isRunning": "node ./ssh-daemon.js isRunning || lsof -i 4tcp:2222 -sTCP:LISTEN",
+    "///gitServerSshPubKey:isRunning": "node ./ssh-daemon.js isRunning",
+    "gitServerSshPubKey:isRunning": "lsof -i 4tcp:2222 -sTCP:LISTEN",
     "gitServerSshPubKey:startBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js start",
-    "gitServerSshPubKey:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js stop || kill-port 2222 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshPubKey:isRunning",
-    "gitServerSshPassword:isRunning": "node ./ssh-daemon-password.js isRunning || lsof -i 4tcp:2223 -sTCP:LISTEN",
+    "//gitServerSshPubKey:stopBackground": "GIT_SSH_MOCK_SERVER_PUBKEY=true node ./ssh-daemon.js stop || kill-port 2222 || true; ! pnpm run gitServerSshPubKey:isRunning",
+    "gitServerSshPubKey:stopBackground": "kill-port 2222 || true",
+    "//gitServerSshPassword:isRunning": "node ./ssh-daemon-password.js isRunning || lsof -i 4tcp:2223 -sTCP:LISTEN",
+    "///gitServerSshPassword:isRunning": "node ./ssh-daemon-password.js isRunning",
+    "gitServerSshPassword:isRunning": "lsof -i 4tcp:2223 -sTCP:LISTEN",
     "gitServerSshPassword:startBackground": "GIT_SSH_MOCK_SERVER_PASSWORD=password node ./ssh-daemon-password.js start",
-    "gitServerSshPassword:stopBackground": "GIT_SSH_MOCK_SERVER_PASSWORD=password node ./ssh-daemon-password.js stop || kill-port 2223 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshPassword:isRunning",
-    "gitServerSshAnonymous:isRunning": "node ./ssh-daemon-anonymous.js isRunning || lsof -i 4tcp:2224 -sTCP:LISTEN",
+    "//gitServerSshPassword:stopBackground": "GIT_SSH_MOCK_SERVER_PASSWORD=password node ./ssh-daemon-password.js stop || kill-port 2223 || true; ! pnpm run gitServerSshPassword:isRunning",
+    "gitServerSshPassword:stopBackground": "kill-port 2223 || true",
+    "//gitServerSshAnonymous:isRunning": "node ./ssh-daemon-anonymous.js isRunning || lsof -i 4tcp:2224 -sTCP:LISTEN",
+    "///gitServerSshAnonymous:isRunning": "node ./ssh-daemon-anonymous.js isRunning",
+    "gitServerSshAnonymous:isRunning": "lsof -i 4tcp:2224 -sTCP:LISTEN",
     "gitServerSshAnonymous:startBackground": "node ./ssh-daemon-anonymous.js start",
-    "gitServerSshAnonymous:stopBackground": "node ./ssh-daemon-anonymous.js stop || kill-port 2224 || true; ! pnpm --filter @business-as-code/tests-git-server run gitServerSshAnonymous:isRunning"
+    "//gitServerSshAnonymous:stopBackground": "node ./ssh-daemon-anonymous.js stop || kill-port 2224 || true; ! pnpm run gitServerSshAnonymous:isRunning",
+    "gitServerSshAnonymous:stopBackground": "kill-port 2224 || true"
   },
   "repository": {
     "type": "git",
@@ -51,10 +62,13 @@
     "micro-cors": "^0.1.1",
     "minimisted": "^2.0.1",
     "ssh-keygen": "^0.4.2",
-    "ssh2": "^1.11.0",
+    "ssh2": "file:///Users/matt/dev/tmp/bac-tests/local-npm-packages/ssh2/ssh2-1.14.0.tgz",
     "tree-kill": "^1.2.2"
   },
   "devDependencies": {
     "kill-port": "1.6.1"
-  }
+  },
+  "trustedDependencies": [
+    "ssh2"
+  ]
 }

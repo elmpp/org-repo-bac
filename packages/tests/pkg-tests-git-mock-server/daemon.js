@@ -15,7 +15,9 @@ module.exports = function (cmdName, target) {
       case 'start': {
         require('daemonize-process')({stdio: 'inherit'})
         let server = spawn(
-          'pnpm run -w dev:run', args,
+          // `${process.env.npm_node_execpath} run`, args,
+          'pnpm -w dev:run', args,
+          // 'bun run', args,
           {
             shell: true,
             stdio: 'inherit',
@@ -28,7 +30,20 @@ module.exports = function (cmdName, target) {
           String(process.pid),
           'utf8'
         )
-        process.on('exit', server.kill)
+        process.on('exit', () => {
+          try {
+            fs.unlinkSync(path.join(process.cwd(), `${cmdName}.pid`))
+          }
+          catch (err) {}
+          server.kill()
+        })
+        server.on('close', (...opts) => {
+          // console.log(`opts :>> `, opts)
+          console.info(`daemonised process ${args.join(' ')} closed`)
+        })
+        server.on('error', (err) => {
+          console.error(err)
+        })
         return
       }
       case 'stop': {
@@ -41,16 +56,15 @@ module.exports = function (cmdName, target) {
         } catch (err) {
           console.log(`No ${cmdName}.pid file`)
           process.exit(1)
-          return
         }
         pid = parseInt(pid)
         console.log('killing', pid)
         kill(pid, (err) => {
+          fs.unlinkSync(path.join(process.cwd(), `${cmdName}.pid`))
           if (err) {
             console.log(err)
             process.exit(1)
           } else {
-            fs.unlinkSync(path.join(process.cwd(), `${cmdName}.pid`))
             process.exit(0)
           }
         })

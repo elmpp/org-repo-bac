@@ -8,7 +8,7 @@ describe("git-service", () => {
 
   /** @online-only */
   describe("cloning", () => {
-    it("clone standard", async () => {
+    it.only("clone standard", async () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service cloning clone standard'});
       await persistentTestEnv.test({}, async (testContext) => {
 

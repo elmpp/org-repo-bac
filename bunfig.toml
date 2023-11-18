@@ -1,3 +1,7 @@
 
 [test]
 preload = ["./test-setup.ts"]
+
+[install]
+# we need to go through verdaccio until this is fixed - https://tinyurl.com/ylk9raqg
+# registry = "localhost:4873"
