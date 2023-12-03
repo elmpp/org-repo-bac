@@ -49,6 +49,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       context,
       workspacePath: context.workspacePath,
       workingPath: ".",
+      packageManager: context.detectedPackageManager!,
     });
 
     const configCache = await bacService.getConfigEntry();
@@ -59,19 +60,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       const configRes = await bacService.loadConfig()
       expectIsOk(configRes)
       const config = configRes.res
-
-      // const config = fsUtils.loadConfig(context.workspacePath);
-      // const lifecycleOptions: LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace"> =
-      //   config.projectSource.map((ps) => ({
-      //     ...ps,
-      //     options: {
-      //       workspacePath: context.workspacePath,
-      //       context,
-      //       options: {
-      //         ...ps.options,
-      //       },
-      //     },
-      //   }));
 
       const configureLifecycleRes =
         await context.lifecycles.configureWorkspace.executeConfigureWorkspace({
@@ -87,15 +75,15 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
       expectIsOk(configureLifecycleRes)
 
-      const configuredCacheEntry = await bacService.getConfiguredConfigEntry()
-      expectIsOk(configuredCacheEntry)
-      // await xfs.writeFilePromise(configuredCacheEntry.res.contentPath.address, JSONStringify(configureLifecycleRes.res))
-
-      console.log(`res.res :>> `, configureLifecycleRes.res, configuredCacheEntry.res.contentPath.address)
-
       await bacService.setConfiguredConfigEntry(configureLifecycleRes.res)
 
-      // return ok(res);
+      const configuredCacheEntry = await bacService.getConfiguredConfigEntry()
+      expectIsOk(configuredCacheEntry)
+
+      await bacService.setConfiguredConfigEntry(configureLifecycleRes.res)
+    }
+    else {
+      context.logger.debug(`configure-workspace: cache hit`)
     }
 
     return ok(undefined)

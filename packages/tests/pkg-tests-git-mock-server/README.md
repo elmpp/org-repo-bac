@@ -121,9 +121,9 @@ Same thing for SSH:
 - `GIT_HTTP_MOCK_SERVER_ROUTE` default is `/`
 - `GIT_HTTP_MOCK_SERVER_ROOT` default is `process.cwd()`
 - `GIT_HTTP_MOCK_SERVER_ALLOW_ORIGIN` default is `*` (used for CORS)
-- `GIT_SSH_MOCK_SERVER_PORT` default is 2222
+- `GIT_SSH_PUBKEY_MOCK_SERVER_PORT` default is 2222
 - `GIT_SSH_MOCK_SERVER_ROUTE` default is `/`
-- `GIT_SSH_MOCK_SERVER_ROOT` default is `process.cwd()`
+- `GIT_SSH_PUBKEY_MOCK_SERVER_ROOT` default is `process.cwd()`
 - `GIT_SSH_MOCK_SERVER_PASSWORD` activate Password Authentication and use this password (leave blank to allow anonymous SSH access.)
 - `GIT_SSH_MOCK_SERVER_PUBKEY` activate PubKey Authentication using the self-generated keypair (leave blank to allow anonymous SSH access.)
 

@@ -9,7 +9,7 @@ import { assertions } from "../../assertions";
 import { describe, it, jest, expect } from "bun:test";
 
 /**
- * Checks content produced in stage1
+ * Checks content produced in stage2
  */
 describe("initialise workspace", () => {
   // jest.setTimeout(25000);
@@ -42,14 +42,18 @@ describe("initialise workspace", () => {
 
       expectConfig.expectText.equals(
         xfs.readFileSync(configPath.address, "utf8")
-      ); // the stage1 data is good
+      ); // the stage2 data is good
     })();
 
     await (async function expectManifestIsOk() {
 
       const expectFs = await res.res.expectUtil.createFs()
 
-      expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'])
+      // expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'])
+      expect(expectFs.readJson('package.json')).toHaveProperty('name', 'my-new-workspace')
+      expect(expectFs.readJson('package.json')).toHaveProperty('dependencies')
+      expect((expectFs.readJson('package.json') as any).dependencies).toHaveProperty('@business-as-code/cli', 'link:@business-as-code/cli') // cliLinked; bun;
+      // expect((expectFs.readJson('package.json') as any).dependencies).toHaveProperty('@business-as-code/cli')
     })();
   }
 
@@ -123,8 +127,10 @@ describe("initialise workspace", () => {
 
             const expectFs = await resCopy.res.expectUtil.createFs()
 
-            expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], `link:@business-as-code/cli`)
+            // expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], `link:@business-as-code/cli`)
             // expect(expectFs.readJson('package.json')).toHaveProperty('dependencies.@business-as-code/cli.link:@business-as-code/cli')
+            expect(expectFs.readJson('package.json')).toHaveProperty('dependencies')
+            expect((expectFs.readJson('package.json') as any).dependencies).toHaveProperty('@business-as-code/cli', `link:@business-as-code/cli`)
           })();
         });
       });
@@ -155,7 +161,9 @@ describe("initialise workspace", () => {
 
             const expectFs = await resCopy.res.expectUtil.createFs()
 
-            expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'bollards')
+            // expect(expectFs.readJson('package.json')).toHaveProperty(['dependencies', '@business-as-code/cli'], 'bollards')
+            expect(expectFs.readJson('package.json')).toHaveProperty('dependencies')
+            expect((expectFs.readJson('package.json') as any).dependencies).toHaveProperty('@business-as-code/cli', `bollards`)
           })();
         });
       });
@@ -163,7 +171,7 @@ describe("initialise workspace", () => {
   });
 
   describe('errors', () => {
-    it('initialise:workspace git-http unreachable config fails and prevents configure', async () => {
+    it.only('initialise:workspace git-http unreachable config fails and prevents configure', async () => {
       const persistentTestEnv = await createPersistentTestEnv({
         testName: `errors:initialise:workspace git-http unreachable config fails and prevents configure`,
       });

@@ -58,45 +58,45 @@ export class TestService {
 
     const proms: Promise<unknown>[] = [];
 
-    // if (
-    //   !checkBefore ||
-    //   !assertIsOk(
-    //     await packageManagerService.run({
-    //       command: `verdaccio:isRunning`,
-    //       pkg: "@business-as-code/tests-verdaccio",
-    //     })
-    //   )
-    // ) {
-    //   proms.push(
-    //     packageManagerService.run({
-    //       command: `verdaccio:startBackground`,
-    //       pkg: "@business-as-code/tests-verdaccio",
-    //       options: {
-    //         stdio: "inherit",
-    //       },
-    //     })
-    //   );
-    // }
+    if (
+      !checkBefore ||
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `verdaccio:isRunning`,
+          pkg: "@business-as-code/tests-verdaccio",
+        })
+      )
+    ) {
+      proms.push(
+        packageManagerService.run({
+          command: `verdaccio:startBackground`,
+          pkg: "@business-as-code/tests-verdaccio",
+          options: {
+            stdio: "inherit",
+          },
+        })
+      );
+    }
 
-    // if (
-    //   !checkBefore ||
-    //   !assertIsOk(
-    //     await packageManagerService.run({
-    //       command: `gitServerHttp:isRunning`,
-    //       pkg: `@business-as-code/tests-git-server`,
-    //     })
-    //   )
-    // ) {
-    //   proms.push(
-    //     packageManagerService.run({
-    //       command: `gitServerHttp:startBackground`,
-    //       pkg: "@business-as-code/tests-git-server",
-    //       options: {
-    //         stdio: "inherit",
-    //       },
-    //     })
-    //   );
-    // }
+    if (
+      !checkBefore ||
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `gitServerHttp:isRunning`,
+          pkg: `@business-as-code/tests-git-server`,
+        })
+      )
+    ) {
+      proms.push(
+        packageManagerService.run({
+          command: `gitServerHttp:startBackground`,
+          pkg: "@business-as-code/tests-git-server",
+          options: {
+            stdio: "inherit",
+          },
+        })
+      );
+    }
 
     if (
       !checkBefore ||
@@ -118,6 +118,7 @@ export class TestService {
       );
     }
 
+    // github does not support password authentication currently + hard to test
     // if (
     //   !checkBefore ||
     //   !assertIsOk(
@@ -138,33 +139,30 @@ export class TestService {
     //   );
     // }
 
-    // if (
-    //   !checkBefore ||
-    //   !assertIsOk(
-    //     await packageManagerService.run({
-    //       command: `gitServerSshAnonymous:isRunning`,
-    //       pkg: "@business-as-code/tests-git-server",
-    //     })
-    //   )
-    // ) {
-    //   proms.push(
-    //     packageManagerService.run({
-    //       command: `gitServerSshAnonymous:startBackground`,
-    //       pkg: "@business-as-code/tests-git-server",
-    //       options: {
-    //         stdio: "inherit",
-    //       },
-    //     })
-    //   );
-    // }
+    if (
+      !checkBefore ||
+      !assertIsOk(
+        await packageManagerService.run({
+          command: `gitServerSshAnonymous:isRunning`,
+          pkg: "@business-as-code/tests-git-server",
+        })
+      )
+    ) {
+      proms.push(
+        packageManagerService.run({
+          command: `gitServerSshAnonymous:startBackground`,
+          pkg: "@business-as-code/tests-git-server",
+          options: {
+            stdio: "inherit",
+          },
+        })
+      );
+    }
 
     proms.push(
       new Promise((resolve, reject) =>
-        // setTimeout(() => {
-        //   // this.ensureDaemons().then(resolve).catch(reject);
-        // }, 7000)
         setTimeout(() => {
-          resolve(true)
+          this.ensureDaemons().then(resolve).catch(reject);
         }, 7000)
       )
     );
@@ -267,18 +265,19 @@ export class TestService {
         );
       }
     })();
-    await (async function gitServerSshPassword() {
-      const isRunning = await packageManagerService.run({
-        command: `gitServerSshPassword:isRunning`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-      if (!assertIsOk(isRunning)) {
-        throw new BacError(
-          MessageName.UNNAMED,
-          `Git ssh password server not running. Do you need to start the daemons?`
-        );
-      }
-    })();
+    // github does not support password authentication currently + hard to test
+    // await (async function gitServerSshPassword() {
+    //   const isRunning = await packageManagerService.run({
+    //     command: `gitServerSshPassword:isRunning`,
+    //     pkg: `@business-as-code/tests-git-server`,
+    //   });
+    //   if (!assertIsOk(isRunning)) {
+    //     throw new BacError(
+    //       MessageName.UNNAMED,
+    //       `Git ssh password server not running. Do you need to start the daemons?`
+    //     );
+    //   }
+    // })();
     await (async function gitServerSshAnonymous() {
       const isRunning = await packageManagerService.run({
         command: `gitServerSshAnonymous:isRunning`,
@@ -332,12 +331,13 @@ export class TestService {
         pkg: `@business-as-code/tests-git-server`,
       });
     })();
-    await (async function gitServerSshPassword() {
-      await packageManagerService.run({
-        command: `gitServerSshPassword:stopBackground`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-    })();
+    // github does not support password authentication currently + hard to test
+    // await (async function gitServerSshPassword() {
+    //   await packageManagerService.run({
+    //     command: `gitServerSshPassword:stopBackground`,
+    //     pkg: `@business-as-code/tests-git-server`,
+    //   });
+    // })();
     await (async function gitServerSshAnonymous() {
       await packageManagerService.run({
         command: `gitServerSshAnonymous:stopBackground`,
@@ -428,7 +428,7 @@ export class TestService {
       // if (skipEarlier && stageNumberIntended < stageNumberCurrent) {
       if (skipEarlier) {
         context.logger.info(
-          `SKIPPING ${aStage.toUpperCase()} TESTS (due to --skipEarlier) - ${cliSource}`
+          `🛑 SKIPPING ${aStage.toUpperCase()} TESTS (due to --skipEarlier) - ${cliSource}`
         );
         return;
       }
@@ -440,7 +440,7 @@ export class TestService {
 
     await runIf(async () => {
       context.logger.info(
-        `RUNNING STAGE0 TESTS (non content-dependent test-env tests) - ${cliSource}`
+        `🟢 RUNNING STAGE0 TESTS (non content-dependent test-env tests) - ${cliSource}`
       );
 
       const stage0Res = await packageManagerService.run({
@@ -464,7 +464,7 @@ export class TestService {
 
     await runIf(async () => {
       context.logger.info(
-        `RUNNING STAGE1 TESTS (content-creating test-env tests) - ${cliSource}`
+        `🟢 RUNNING STAGE1 TESTS (content-creating test-env tests) - ${cliSource}`
       );
 
       const stage1Res = await packageManagerService.run({
@@ -488,7 +488,7 @@ export class TestService {
 
     await runIf(async () => {
       context.logger.info(
-        `RUNNING STAGE2 TESTS (content-validating test-env tests) - ${cliSource}`
+        `🟢 RUNNING STAGE2 TESTS (content-validating test-env tests) - ${cliSource}`
       );
 
       const stage2Res = await packageManagerService.run({
@@ -512,7 +512,7 @@ export class TestService {
 
     // if (!["stage0", "stage1", "stage2"].includes(stage)) {
     context.logger.info(
-      `RUNNING ${stage.toUpperCase()} TESTS - ${cliSource} - testFileMatch: '${testFileMatch}'`
+      `🟢 RUNNING ${stage.toUpperCase()} TESTS - ${cliSource} - testFileMatch: '${testFileMatch}'`
     );
 
     const stageXRes = await packageManagerService.run({

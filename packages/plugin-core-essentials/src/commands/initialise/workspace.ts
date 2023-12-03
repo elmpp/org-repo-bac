@@ -76,13 +76,23 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
       required: false,
     }),
-    packageManager: Oclif.Flags.string({
-      description:
-        "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
-      options: identity<LifecycleProvidersForAsByMethod<"packageManager">[]>(['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn']),
-      required: false,
-      default: 'packageManagerPnpm',
-    }),
+    packageManager: Oclif.Flags.custom<LifecycleProvidersForAsByMethod<"packageManager">>({
+      summary: "Package manager for the workspace",
+      // env: 'BAC_LOG_LEVEL',
+      options: ['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn'] satisfies LifecycleProvidersForAsByMethod<"packageManager">[],
+      // helpGroup: "GLOBAL",
+      // default: 'info',
+      // default: async () => process.env.BAC_LOG_LEVEL ?? 'info',
+      // default: "info",
+      required: true,
+    })(),
+    // packageManager: Oclif.Flags.string({
+    //   description:
+    //     "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
+    //   options: identity<LifecycleProvidersForAsByMethod<"packageManager">[]>(['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn']),
+    //   required: true,
+    //   // default: 'packageManagerBun',
+    // }),
   };
 
   static override args = {
@@ -246,7 +256,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
               cliVersion: context.cliOptions.flags.cliVersion,
               cliRegistry: context.cliOptions.flags.cliRegistry,
               cliPath: context.cliOptions.flags.cliPath,
-              packageManager: context.cliOptions.flags.packageManager,
+              packageManager: context.cliOptions.flags.packageManager!,
               // options: {
               //   a: 'a',
               // }, // <!-- typed as any atm ¯\_(ツ)_/¯
@@ -262,6 +272,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       context,
       workspacePath,
       workingPath: ".",
+      packageManager: context.cliOptions.flags.packageManager!,
     });
 
     context.logger.info(`initialise:workspace: lifecycle initialise success`);
@@ -295,8 +306,6 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         },
       });
     expectIsOk(configureRes);
-
-    console.log(`configureRes :>> `, configureRes);
 
     await bacService.setConfiguredConfigEntry(configureRes.res)
 

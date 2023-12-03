@@ -1,4 +1,5 @@
 import { createPersistentTestEnv } from '@business-as-code/tests-core'
+import { describe, it, jest, expect } from "bun:test";
 
 /** simply ensures the testEnv core util is operating properly */
 describe('test-env', () => {
@@ -18,7 +19,9 @@ describe('test-env', () => {
   // })
   it('picks up paths from moon', async () => {
 
-    const persistentTestEnv = await createPersistentTestEnv({})
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `test-env: picks up paths from moon`
+    })
     await persistentTestEnv.test({},
     async (testContext) => {
 

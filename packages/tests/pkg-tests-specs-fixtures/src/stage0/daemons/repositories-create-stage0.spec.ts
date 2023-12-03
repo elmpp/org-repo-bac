@@ -37,7 +37,7 @@ describe("repositories-create", () => {
             workingPath: ".",
           });
 
-          const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
+          const gitUrl = `ssh://localhost:${constants.GIT_SSH_PUBKEY_MOCK_SERVER_PORT}/${repo}`;
           const lsRemoteRes = await execUtils.promiseAwait(
             service.remoteList(gitUrl, {
               sshStrictHostCheckingDisable: true, // actually ignored when sshPrivateKeyPath=true
@@ -64,7 +64,7 @@ describe("repositories-create", () => {
             workingPath: ".",
           });
 
-          const gitUrl = `ssh://localhost:${constants.GIT_SSH_MOCK_SERVER_PORT}/${repo}`;
+          const gitUrl = `ssh://localhost:${constants.GIT_SSH_PUBKEY_MOCK_SERVER_PORT}/${repo}`;
 
           await expect(() =>
                   execUtils.promiseAwait(

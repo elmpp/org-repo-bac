@@ -52,7 +52,6 @@ export class PackageManagerBunService extends BasePackageManagerService<Options>
     const packageManager =
       options.packageManager ?? options.context.detectedPackageManager;
 
-    // default to bun
     if (packageManager !== "packageManagerBun") {
       return;
     }
@@ -85,9 +84,6 @@ export class PackageManagerBunService extends BasePackageManagerService<Options>
     pkg: AddressPackageStringified;
     save?: boolean;
   }) {
-
-    console.log(`:>> linking here ${pkg}, ${path}`);
-
 
     /** probably not needed but helps with tests */
     await this.exec({

@@ -1,5 +1,126 @@
 # @business-as-code/fslib
 
+## 0.0.0-latest-20231119110156
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110150
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110110
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110103
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110057
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110052
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110046
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231119110039
+
+### Patch Changes
+
+- Making a release
+- Making a release
+
+## 0.0.0-latest-20231118203006
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118203002
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202958
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202953
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202949
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202945
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202940
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202936
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202931
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202927
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202922
+
+### Patch Changes
+
+- Making a release
+
+## 0.0.0-latest-20231118202917
+
+### Patch Changes
+
+- Making a release
+
 ## 0.0.0-latest-20231029192408
 
 ### Patch Changes

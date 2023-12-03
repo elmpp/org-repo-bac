@@ -12,7 +12,7 @@ import {
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import crypto from "crypto";
-import { fail, ok, Result, ServiceInitialiseCommonOptions } from "../__types__";
+import { fail, LifecycleProvidersForAsByMethod, ok, Result, ServiceInitialiseCommonOptions, ServiceMap } from "../__types__";
 import { AddressCacheManager } from "../cache/address-cache-manager";
 import { constants } from "../constants";
 import { execUtils, formatUtils, fsUtils, hashUtils } from "../utils";
@@ -31,7 +31,9 @@ declare global {
   }
 }
 
-type Options = ServiceInitialiseCommonOptions & {};
+type Options = ServiceInitialiseCommonOptions & {
+  packageManager: LifecycleProvidersForAsByMethod<"packageManager">,
+};
 type DoExecOptionsLite = Omit<
   Parameters<typeof execUtils.doExec>[0]["options"],
   "context" | "cwd"
@@ -45,7 +47,10 @@ export class BacService {
   static title = "bac" as const;
   // title = 'bac' as const
   options: Required<Options>;
+  // @ts-expect-error: initialise
   cacheManager: AddressCacheManager;
+  // @ts-expect-error: initialise
+  packageManagerService: ServiceMap['packageManager'][0];
 
   get ctor(): typeof BacService {
     return this.constructor as unknown as typeof BacService;
@@ -85,6 +90,11 @@ export class BacService {
         };
       },
     });
+    this.packageManagerService = await options.context.serviceFactory('packageManager', {
+      context: options.context,
+      workingPath: '.',
+      packageManager: options.packageManager,
+    })
   }
 
   async getConfigEntry() {
@@ -102,7 +112,7 @@ export class BacService {
     const configPath = addr.pathUtils.join(
       this.options.workspacePath,
       addr.parsePath(constants.RC_FOLDER),
-      addr.parsePath(constants.RC_FILENAME),
+      addr.parsePath(constants.RC_CONFIGURED_FILENAME),
     ) as AddressPathAbsolute;
 
     const res = await this.getForAddress(configPath, this.cacheManager);
@@ -200,7 +210,6 @@ export class BacService {
       this.options.workspacePath,
       addr.parsePath(constants.RC_FILENAME)
     ) as AddressPathAbsolute;
-
     return this.loadForAddress<Config>(configPath, "config");
 
   }
@@ -218,7 +227,7 @@ export class BacService {
     options?: DoExecOptionsLite;
   }): Promise<any> {
     const args = {
-      command: `pnpm bac ${options.command}`,
+      command: `bac ${options.command}`,
       options: {
         shell: true,
         ...(options.options ?? {}),
@@ -230,7 +239,8 @@ export class BacService {
       },
     };
 
-    return execUtils.doExec(args);
+    // return execUtils.doExec(args);
+    return this.packageManagerService.run(args)
   }
 }
 

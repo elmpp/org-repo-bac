@@ -8,7 +8,7 @@ const project = path.join(__dirname, '../..', 'tsconfig.json')
 // In dev mode -> use ts-node and dev plugins
 process.env.NODE_ENV = 'development'
 
-if (typeof Bun !== "undefined") {
+if (typeof Bun === "undefined") {
   require('ts-node').register({project}) // hopefully should be swc
 }
 

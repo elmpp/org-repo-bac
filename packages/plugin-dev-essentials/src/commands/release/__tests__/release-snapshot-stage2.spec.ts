@@ -27,7 +27,7 @@ describe("release-snapshot", () => {
             "--message",
             `Making a release`,
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsOk(res);

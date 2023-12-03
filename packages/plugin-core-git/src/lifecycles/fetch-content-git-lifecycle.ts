@@ -170,6 +170,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
       );
 
       const cloneOpts: Parameters<typeof gitService.clone>[1] = {
+        sshStrictHostCheckingDisable: true, // let's disable this for now
         // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
       };
       const cloneRes = await gitService.clone(

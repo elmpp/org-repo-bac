@@ -69,6 +69,7 @@ export default function (options: Schema): Rule {
 
     // nextTaskHandles.push(schematicContext.addTask(new NodePackageInstallTask({workingDirectory: '.',  quiet: false, hideOutput: false, packageManager: 'pnpm'}), nextTaskHandles));
 
+
     nextTaskHandles.push(schematicContext.addTask(schematicUtils.wrapServiceAsTask({
         serviceOptions: {
           serviceName: "packageManager",
@@ -83,7 +84,7 @@ export default function (options: Schema): Rule {
               expectIsOk(await service.add({pkg: '@business-as-code/cli@workspace:*'}))
             }
 
-            const res = await service.install({logLevel: 'debug'})
+            const res = await service.install({logLevel: 'info'})
             expectIsOk(res)
           },
           initialiseOptions: {
@@ -107,6 +108,7 @@ export default function (options: Schema): Rule {
         },
         initialiseOptions: {
           workingPath: '.',
+          packageManager: options.packageManager,
         },
         context: options._bacContext,
       },

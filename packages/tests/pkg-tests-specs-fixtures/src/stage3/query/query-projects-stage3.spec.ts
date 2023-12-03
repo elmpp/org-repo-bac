@@ -7,8 +7,12 @@ describe("query projects", () => {
   // jest.setTimeout(25000);
 
   it("produces valid json projects response with --json", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `query projects: produces valid json projects response with --json`
+    });
     await persistentTestEnv.test({}, async (testContext) => {
+
+
       const res = await testContext.command(
         [
           "query",
@@ -18,11 +22,9 @@ describe("query projects", () => {
           "--json",
         ],
         {
-          logLevel: "debug",
+          logLevel: "error",
         }
       );
-
-      // console.log(`res :>> `, res)
 
       expectIsOk(res);
 
@@ -37,11 +39,13 @@ describe("query projects", () => {
 
       const projectJson = expectStdout.asJson({ json5: false });
 
-      expect(projectJson).toHaveProperty(["projects"]);
+      expect(projectJson).toHaveProperty("projects");
     });
   });
   it("produces valid string projects response without --json (and regardless of the logLevel)", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `query projects: produces valid string projects response without --json (and regardless of the logLevel)`
+    });
     await persistentTestEnv.test({}, async (testContext) => {
       const res = await testContext.command(
         [
@@ -68,7 +72,9 @@ describe("query projects", () => {
 
 describe("errors", () => {
   it("--json suppresses logger output, as suggested with --logLevel=debug", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `query projects: errors: --json suppresses logger output, as suggested with --logLevel=debug`
+    });
     await persistentTestEnv.test({}, async (testContext) => {
       const res = await testContext.command(
         [
@@ -78,7 +84,7 @@ describe("errors", () => {
           testContext.testEnvVars.checkoutPath.original,
           "--json",
         ],
-        { logLevel: "debug" }
+        // { logLevel: "debug" }
       );
 
       expectIsOk(res);

@@ -63,30 +63,30 @@ Extra = unknown,
 
   static fromError<Extra = undefined>(
     err: string | Error,
-    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra }
+    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra, messagePrefix?: string }
   ): BacError<MessageName.UNNAMED, Extra>;
   static fromError<Extra = undefined>(
     err: string,
-    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra }
+    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra, messagePrefix?: string }
   ): BacError<MessageName.UNNAMED, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     err: BacError,
-    options?: { reportCode?: Code; extra?: Extra }
+    options?: { reportCode?: Code; extra?: Extra, messagePrefix?: string }
   ): BacError<Code, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     err: BacErrorWrapper,
-    options?: { reportCode?: Code; extra?: Extra }
+    options?: { reportCode?: Code; extra?: Extra, messagePrefix?: string }
   ): BacErrorWrapper<Code, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     err: Error,
-    options?: { reportCode?: Code; extra?: Extra }
+    options?: { reportCode?: Code; extra?: Extra, messagePrefix?: string }
   ): BacError<Code, Extra>;
   static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
     errParam: BacError | BacErrorWrapper | Error | string,
-    options: { reportCode?: Code; extra?: Extra } = {}
+    options: { reportCode?: Code; extra?: Extra, messagePrefix?: string } = {}
   ): BacError<Code, Extra> | BacErrorWrapper<Code, Extra> {
 
-    const { reportCode, extra } = options;
+    const { reportCode, extra, messagePrefix } = options;
     let err = errParam
 
     if (typeof err === 'string') {
@@ -102,9 +102,10 @@ Extra = unknown,
       // console.log(`err :>> `, Object.keys(err))
       return err;
     }
+    const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err) : err.message
     const nextErr = new BacError<Code, Extra>(
       reportCode ?? (MessageName.UNNAMED as Code),
-      err.message,
+      nextMessage,
       { extra }
     );
     // @ts-ignore

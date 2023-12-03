@@ -1,4 +1,5 @@
 import { logLevelMatching } from "../index";
+import { describe, it, jest, expect } from "bun:test";
 
 describe('index', () => {
   it('logLevelMatching', () => {

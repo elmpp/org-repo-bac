@@ -32,6 +32,7 @@ import {
   assertIsResult,
   Context,
   ContextCommand,
+  LifecycleProvidersForAsByMethod,
   Logger,
   LogLevel,
   logLevelMatching,
@@ -55,6 +56,7 @@ import { BacService, CacheService, ExecService, MoonService } from "../services"
 import { SchematicsService } from "../services/schematics-service";
 import { fsUtils, objectUtils } from "../utils";
 import { findUp, loadModule } from "../utils/fs-utils";
+import debugLoggerModule from 'debug'
 
 // export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
@@ -175,6 +177,8 @@ export abstract class BaseCommand<
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }) {
     this.logger = this.createLogger(options);
+    this.addDebugLogger({logger: this.logger, ...options})
+
     // console.log(`this.logger :>> `, this.logger)
   }
 
@@ -282,6 +286,17 @@ export abstract class BaseCommand<
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
       // stream_1.stderr.write((0, util_1.format)(message, ...args) + "\n");
+    }
+  }
+
+  /** many libraries rely directly on the debug logger module - https://tinyurl.com/ymvxgb7a */
+  protected addDebugLogger(options: {logger: Logger, config: oclif.Config;
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;}) {
+      // debugLoggerModule.log = options.logger.log
+    // debugLoggerModule.log = console.log.bind(console)
+    debugLoggerModule.log = options.logger.debug.bind(options.logger)
+    if (logLevelMatching(options.parseOutput.flags["logLevel"], "debug", options.parseOutput.flags.json)) {
+      debugLoggerModule.enable('*') // perhaps be more selective here?
     }
   }
 
@@ -804,6 +819,7 @@ export abstract class BaseCommand<
       args: string[];
       cwd: string;
       logLevel: LogLevel;
+      packageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
     };
   }) {
     // const logger = process.stderr.write; // reference does not seem to work
@@ -829,7 +845,7 @@ export abstract class BaseCommand<
             " "
           )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
             extra.cwd
-          }; pnpm bac-test ${extra.args.join(" ")}'` + EOL
+          }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'` + EOL
         );
       }
 

@@ -126,6 +126,7 @@ export class ExpectUtil {
         context: this.options.context,
         workspacePath: this.options.testEnvVars.workspacePath,
         workingPath: '.',
+        packageManager: this.options.context.detectedPackageManager!,
       })
     });
   }

@@ -5,6 +5,7 @@ import {
   TestContext,
   createPersistentTestEnv,
 } from "@business-as-code/tests-core";
+import { describe, it, jest, expect } from "bun:test";
 
 describe("synchronise workspace", () => {
   // jest.setTimeout(25000);
@@ -46,8 +47,10 @@ describe("synchronise workspace", () => {
     })();
   }
 
-  it("updating the config will trigger the configure lifecycle and update projects", async () => {
-    const persistentTestEnv = await createPersistentTestEnv({});
+  it.only("updating the config will trigger the configure lifecycle and update projects", async () => {
+    const persistentTestEnv = await createPersistentTestEnv({
+      testName: `synchronise workspace: updating the config will trigger the configure lifecycle and update projects`,
+    });
     await persistentTestEnv.test({}, async (testContext) => {
       testContext.setActiveWorkspacePaths({
         workspace: testContext.testEnvVars.workspacePath,

@@ -28,7 +28,7 @@ export default class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoC
       description: "Repositories name",
       exists: true,
       required: false,
-      default: constants.GIT_SSH_MOCK_SERVER_ROOT,
+      default: constants.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT,
     }),
     workspacePath: Oclif.Flags.directory({
       exists: true,

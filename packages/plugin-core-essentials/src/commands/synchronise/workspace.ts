@@ -52,6 +52,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       context,
       workspacePath: context.workspacePath,
       workingPath: '.',
+      packageManager: context.detectedPackageManager!,
     })
 
     const configCache = await bacService.getConfigEntry()

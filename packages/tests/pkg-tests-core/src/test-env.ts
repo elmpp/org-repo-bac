@@ -14,6 +14,7 @@ import {
   constants,
   fsUtils,
   Oclif,
+  logLevelMatching,
 } from "@business-as-code/core";
 // import {
 //   XfsCacheManager
@@ -38,6 +39,7 @@ import {
   getCurrentTestFilenameSanitised,
   getCurrentTestNameSanitised,
 } from "./test-utils";
+import { detectPackageManager } from "@business-as-code/core/utils/fs-utils";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -202,6 +204,7 @@ export type TestContext = {
       FlagsInfer<typeof SchematicsRunCommand>,
       ArgsInfer<typeof SchematicsRunCommand>
     >;
+    options?: { logLevel?: LogLevel },
     // schematicAddress: string,
     // workspacePath: string,
   }) => Promise<
@@ -210,6 +213,8 @@ export type TestContext = {
       { exitCode: number; error: Error; expectUtil: ExpectUtil }
     >
   >;
+  mockStdStart: typeof mockStdStart,
+  mockStdEnd: typeof mockStdEnd,
   // /**
   //  Allows a service task to be run directly
   //  */
@@ -398,10 +403,11 @@ async function doCreatePersistentTestEnvs(
     cacheNamespaceFolder,
     stage,
     sshPrivateKeyPath: addr.pathUtils.join(
-      addr.pathUtils.resolve(
-        addr.parsePath(__dirname) as AddressPathAbsolute,
-        addr.parsePath("../../pkg-tests-git-mock-server")
-      ),
+      addr.parsePath(constants.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT) as AddressPathAbsolute,
+      // addr.pathUtils.resolve(
+      //   addr.parsePath(__dirname) as AddressPathAbsolute,
+      //   addr.parsePath("../../pkg-tests-git-mock-server")
+      // ),
       addr.parsePath("id_rsa")
     ) as AddressPathAbsolute,
     sshPublicKeyPath: addr.pathUtils.join(
@@ -909,6 +915,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           const argsWithAdditional =
             args[0] === "help" ? args : [...args, "--logLevel", logLevel];
+
+
           // console.log(`argsWithAdditional :>> `, argsWithAdditional)
           // console.log(
           //   `argsWithAdditional, cliPath.original, process.cwd() :>> `,
@@ -930,7 +938,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           let exitCode = 0;
           let error = undefined;
-          mockStdStart();
+          mockStdStart({print: logLevelMatching(logLevel, "debug", false)});
 
           Oclif.settings.debug = true;
 
@@ -964,6 +972,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
                   args: argsWithAdditional,
                   logLevel,
                   cwd: activeCheckoutPaths.cli.original, // this is what Oclif would have done
+                  // packageManager: '',
                   // cwd: process.cwd(),
                   // argv: process.argv,
                   // cwd: checkoutCliPath.original,
@@ -1031,8 +1040,11 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           //   stderr: '',
           // }
         },
-        runSchematic: async ({ parseOutput }) => {
+        // command: async (args: string[], options = {}) => {
+        runSchematic: async ({ parseOutput, options = {} }) => {
           // runSchematic: async ({args, flags, schematicAddress, workspacePath, logLevel = 'info'}) => {
+
+          const { logLevel = testEnvVars.defaultLogLevel } = options;
 
           // process.chdir(cliPath.original);
           // const argsWithAdditional = [...args, "--logLevel", logLevel];
@@ -1041,7 +1053,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
 
           const checkoutCliPath = getActiveCliPath();
 
-          mockStdStart();
+          mockStdStart({print: logLevelMatching(logLevel, "debug", false)});
 
           // running oclif commands programatically - https://tinyurl.com/29dj8vmc
           const res = await SchematicsRunCommand.runDirect<any>(
@@ -1149,6 +1161,8 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
           //   },
           // };
         },
+        mockStdStart,
+        mockStdEnd,
         // runServiceCb: async ({
         //   serviceOptions: { cb, serviceName, initialiseOptions },
         //   originPath,
@@ -1317,10 +1331,13 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
   };
 }
 
-function mockStdStart() {
+function mockStdStart({print}: {print: boolean}) {
   // docs - https://tinyurl.com/24tptzy8
-  consoleUtils.stdout.print = true;
-  consoleUtils.stderr.print = true;
+  if (print) {
+    consoleUtils.stdout.print = true;
+    consoleUtils.stderr.print = true;
+  }
+
   // consoleUtils.stdout.stripColor = false
   // consoleUtils.stderr.stripColor = false
 

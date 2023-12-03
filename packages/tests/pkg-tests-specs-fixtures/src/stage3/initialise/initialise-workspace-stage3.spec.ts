@@ -7,11 +7,11 @@ describe("initialise workspace", () => {
 
   describe("errors", () => {
     it("nonexistent command is handled and added to stderr", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: `initialise workspace: nonexistent command is handled and added to stderr`});
 
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(["does-not-exist"], {
-          logLevel: "debug",
+          // logLevel: "debug",
         });
 
         expectIsFail(res);
@@ -30,7 +30,7 @@ describe("initialise workspace", () => {
       });
     });
     it("incorrect command flags", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: `initialise workspace: incorrect command flags`});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
           [
@@ -41,7 +41,7 @@ describe("initialise workspace", () => {
             "--workspacePath",
             `${testContext.testEnvVars.workspacePath.original}`,
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsFail(res);
@@ -59,7 +59,7 @@ describe("initialise workspace", () => {
       });
     });
     it("incorrect command args", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+      const persistentTestEnv = await createPersistentTestEnv({testName: `initialise workspace: incorrect command args`});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
           [
@@ -69,7 +69,7 @@ describe("initialise workspace", () => {
             "--workspacePath",
             `${testContext.testEnvVars.workspacePath.original}`,
           ],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsFail(res);
@@ -85,12 +85,12 @@ describe("initialise workspace", () => {
         }); // we handle caught errors via BaseCommand.handleError
       });
     });
-    it("--workspacePath is required", async () => {
-      const persistentTestEnv = await createPersistentTestEnv({});
+    it.only("--workspacePath is required", async () => {
+      const persistentTestEnv = await createPersistentTestEnv({testName: `initialise workspace: --workspacePath is required`});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(
           ["initialise", "workspace", "--name", "something"],
-          { logLevel: "debug" }
+          // { logLevel: "debug" }
         );
 
         expectIsFail(res);

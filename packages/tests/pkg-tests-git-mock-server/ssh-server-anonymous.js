@@ -10,8 +10,8 @@ var fixturez = require('fixturez')
 var ssh2 = require('ssh2')
 
 var config = {
-  // root: path.resolve(process.cwd(), process.env.GIT_SSH_MOCK_SERVER_ROOT || '.'),
-  root: path.resolve(process.cwd(), constants.GIT_SSH_MOCK_SERVER_ROOT),
+  // root: path.resolve(process.cwd(), process.env.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT || '.'),
+  root: path.resolve(process.cwd(), constants.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT),
   glob: '*',
   route: process.env.GIT_SSH_MOCK_SERVER_ROUTE || '/'
 }
@@ -33,7 +33,7 @@ function checkValue(input, allowed) {
   return (!autoReject && isMatch);
 }
 
-console.log(`config :>> `, config)
+// console.log(`config :>> `, config)
 // console.log(`keyPaths :>> `, keyPaths)
 
 new Promise((resolve, reject) => {

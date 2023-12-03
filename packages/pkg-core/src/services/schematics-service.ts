@@ -695,10 +695,11 @@ export class SchematicsService {
       // } else {
       //   message = `Error: ${err instanceof Error ? err.message : err}`;
       // }
-      console.log(`schematicsService:runSchematic err :>> `, err);
       const error = BacErrorWrapper.fromError(err as Error, {
         reportCode: MessageName.SCHEMATICS_ERROR,
+        extra: optionsAsCommand(schematicMapEntry),
       });
+      console.log(`schematicsService:runSchematic err :>> `, error);
 
       // console.log(`error.message :>> 1 `, error.message)
 
@@ -900,7 +901,8 @@ export class SchematicsService {
         if (!this.runCache.error) {
           // Flush the log queue and clean the error state.
           this.runCache.loggingQueue.forEach((log) =>
-            this.options.context.logger.info(log)
+            this.options.context.logger.debug(log)
+            // this.options.context.logger.info(log)
           );
         }
         this.runCache.loggingQueue = [];

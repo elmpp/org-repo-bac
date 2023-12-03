@@ -1,5 +1,227 @@
 # @business-as-code/plugin-core-git
 
+## 0.0.0-latest-20231119110156
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110156
+  - @business-as-code/core@0.0.0-latest-20231119110156
+  - @business-as-code/error@0.0.0-latest-20231119110156
+  - @business-as-code/fslib@0.0.0-latest-20231119110156
+
+## 0.0.0-latest-20231119110150
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110150
+  - @business-as-code/core@0.0.0-latest-20231119110150
+  - @business-as-code/error@0.0.0-latest-20231119110150
+  - @business-as-code/fslib@0.0.0-latest-20231119110150
+
+## 0.0.0-latest-20231119110110
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110110
+  - @business-as-code/core@0.0.0-latest-20231119110110
+  - @business-as-code/error@0.0.0-latest-20231119110110
+  - @business-as-code/fslib@0.0.0-latest-20231119110110
+
+## 0.0.0-latest-20231119110103
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110103
+  - @business-as-code/core@0.0.0-latest-20231119110103
+  - @business-as-code/error@0.0.0-latest-20231119110103
+  - @business-as-code/fslib@0.0.0-latest-20231119110103
+
+## 0.0.0-latest-20231119110057
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110057
+  - @business-as-code/core@0.0.0-latest-20231119110057
+  - @business-as-code/error@0.0.0-latest-20231119110057
+  - @business-as-code/fslib@0.0.0-latest-20231119110057
+
+## 0.0.0-latest-20231119110052
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110052
+  - @business-as-code/core@0.0.0-latest-20231119110052
+  - @business-as-code/error@0.0.0-latest-20231119110052
+  - @business-as-code/fslib@0.0.0-latest-20231119110052
+
+## 0.0.0-latest-20231119110046
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110046
+  - @business-as-code/core@0.0.0-latest-20231119110046
+  - @business-as-code/error@0.0.0-latest-20231119110046
+  - @business-as-code/fslib@0.0.0-latest-20231119110046
+
+## 0.0.0-latest-20231119110039
+
+### Patch Changes
+
+- Making a release
+- Making a release
+- Updated dependencies
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231119110039
+  - @business-as-code/core@0.0.0-latest-20231119110039
+  - @business-as-code/error@0.0.0-latest-20231119110039
+  - @business-as-code/fslib@0.0.0-latest-20231119110039
+
+## 0.0.0-latest-20231118203006
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118203006
+  - @business-as-code/core@0.0.0-latest-20231118203006
+  - @business-as-code/error@0.0.0-latest-20231118203006
+  - @business-as-code/fslib@0.0.0-latest-20231118203006
+
+## 0.0.0-latest-20231118203002
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118203002
+  - @business-as-code/core@0.0.0-latest-20231118203002
+  - @business-as-code/error@0.0.0-latest-20231118203002
+  - @business-as-code/fslib@0.0.0-latest-20231118203002
+
+## 0.0.0-latest-20231118202958
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202958
+  - @business-as-code/core@0.0.0-latest-20231118202958
+  - @business-as-code/error@0.0.0-latest-20231118202958
+  - @business-as-code/fslib@0.0.0-latest-20231118202958
+
+## 0.0.0-latest-20231118202953
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202953
+  - @business-as-code/core@0.0.0-latest-20231118202953
+  - @business-as-code/error@0.0.0-latest-20231118202953
+  - @business-as-code/fslib@0.0.0-latest-20231118202953
+
+## 0.0.0-latest-20231118202949
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202949
+  - @business-as-code/core@0.0.0-latest-20231118202949
+  - @business-as-code/error@0.0.0-latest-20231118202949
+  - @business-as-code/fslib@0.0.0-latest-20231118202949
+
+## 0.0.0-latest-20231118202945
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202945
+  - @business-as-code/core@0.0.0-latest-20231118202945
+  - @business-as-code/error@0.0.0-latest-20231118202945
+  - @business-as-code/fslib@0.0.0-latest-20231118202945
+
+## 0.0.0-latest-20231118202940
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202940
+  - @business-as-code/core@0.0.0-latest-20231118202940
+  - @business-as-code/error@0.0.0-latest-20231118202940
+  - @business-as-code/fslib@0.0.0-latest-20231118202940
+
+## 0.0.0-latest-20231118202936
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202936
+  - @business-as-code/core@0.0.0-latest-20231118202936
+  - @business-as-code/error@0.0.0-latest-20231118202936
+  - @business-as-code/fslib@0.0.0-latest-20231118202936
+
+## 0.0.0-latest-20231118202931
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202931
+  - @business-as-code/core@0.0.0-latest-20231118202931
+  - @business-as-code/error@0.0.0-latest-20231118202931
+  - @business-as-code/fslib@0.0.0-latest-20231118202931
+
+## 0.0.0-latest-20231118202927
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202927
+  - @business-as-code/core@0.0.0-latest-20231118202927
+  - @business-as-code/error@0.0.0-latest-20231118202927
+  - @business-as-code/fslib@0.0.0-latest-20231118202927
+
+## 0.0.0-latest-20231118202922
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202922
+  - @business-as-code/core@0.0.0-latest-20231118202922
+  - @business-as-code/error@0.0.0-latest-20231118202922
+  - @business-as-code/fslib@0.0.0-latest-20231118202922
+
+## 0.0.0-latest-20231118202917
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-latest-20231118202917
+  - @business-as-code/core@0.0.0-latest-20231118202917
+  - @business-as-code/error@0.0.0-latest-20231118202917
+  - @business-as-code/fslib@0.0.0-latest-20231118202917
+
 ## 0.0.0-latest-20231029192408
 
 ### Patch Changes

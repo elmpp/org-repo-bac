@@ -8,7 +8,7 @@
     "prepare": "husky install;",
     "test": "moon run :test",
     "///dev:runCli": "TS_NODE_DEBUG=false ts-node --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
-    "dev:run": "TS_NODE_DEBUG=true ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json",
+    "dev:run": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json",
     "//dev:runCli": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "dev:runCli": "bun packages/pkg-cli/src/bin/run.ts",
     "dev:runCliNode": "TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
@@ -60,6 +60,9 @@
     "apps/*",
     "packages/tests/*"
   ],
+  "resolutions": {
+    "debug": "4.3.4"
+  },
   "angularCompilerOptions": {
     "strictTemplates": true
   }

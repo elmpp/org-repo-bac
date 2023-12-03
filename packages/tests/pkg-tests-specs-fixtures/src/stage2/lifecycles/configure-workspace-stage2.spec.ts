@@ -54,6 +54,7 @@ describe("configure workspace", () => {
         context: testContext.context,
         workspacePath: testContext.testEnvVars.workspacePath,
         workingPath: '.',
+        packageManager: 'packageManagerBun',
       })
 
       const configRes = await bacService.loadConfig();

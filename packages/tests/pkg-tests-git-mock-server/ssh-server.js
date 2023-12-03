@@ -10,8 +10,8 @@ var fixturez = require('fixturez')
 var ssh2 = require('ssh2')
 
 var config = {
-  // root: path.resolve(process.cwd(), process.env.GIT_SSH_MOCK_SERVER_ROOT || '.'),
-  root: path.resolve(process.cwd(), constants.GIT_SSH_MOCK_SERVER_ROOT),
+  // root: path.resolve(process.cwd(), process.env.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT || '.'),
+  root: path.resolve(process.cwd(), constants.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT),
   glob: '*',
   route: process.env.GIT_SSH_MOCK_SERVER_ROUTE || '/'
 }
@@ -33,8 +33,8 @@ function checkValue(input, allowed) {
   return (!autoReject && isMatch);
 }
 
-console.log(`config :>> `, config)
-console.log(`keyPaths :>> `, keyPaths)
+// console.log(`config :>> `, config)
+// console.log(`keyPaths :>> `, keyPaths)
 
 new Promise((resolve, reject) => {
   try {
@@ -214,19 +214,19 @@ new Promise((resolve, reject) => {
       //   // process.exit(1)
       // })
     }
-  // ).listen(process.env.GIT_SSH_MOCK_SERVER_PORT || 2222, '127.0.0.1', function () {
+  // ).listen(process.env.GIT_SSH_PUBKEY_MOCK_SERVER_PORT || 2222, '127.0.0.1', function () {
   )).listen(
-    parseInt(process.env.GIT_SSH_MOCK_SERVER_PORT || constants.GIT_SSH_MOCK_SERVER_PORT, 10),
+    parseInt(process.env.GIT_SSH_PUBKEY_MOCK_SERVER_PORT || constants.GIT_SSH_PUBKEY_MOCK_SERVER_PORT, 10),
     '127.0.0.1',
     function () {
-      console.log("Listening on port " + process.env.GIT_SSH_MOCK_SERVER_PORT || constants.GIT_SSH_MOCK_SERVER_PORT)
+      console.log("Listening on port " + process.env.GIT_SSH_PUBKEY_MOCK_SERVER_PORT || constants.GIT_SSH_PUBKEY_MOCK_SERVER_PORT)
     })
   // bun incompatible with node net:Server - https://github.com/oven-sh/bun/issues/4540
   // )).listen({
-  //   port: process.env.GIT_SSH_MOCK_SERVER_PORT || constants.GIT_SSH_MOCK_SERVER_PORT,
+  //   port: process.env.GIT_SSH_PUBKEY_MOCK_SERVER_PORT || constants.GIT_SSH_PUBKEY_MOCK_SERVER_PORT,
   //   host: '127.0.0.1',
   //   // debug: console.log,
   // }, function () {
-  //   console.log('Listening on port ' + process.env.GIT_SSH_MOCK_SERVER_PORT || constants.GIT_SSH_MOCK_SERVER_PORT)
+  //   console.log('Listening on port ' + process.env.GIT_SSH_PUBKEY_MOCK_SERVER_PORT || constants.GIT_SSH_PUBKEY_MOCK_SERVER_PORT)
   // })
 })
