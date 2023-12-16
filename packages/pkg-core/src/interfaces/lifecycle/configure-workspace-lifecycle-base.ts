@@ -35,22 +35,13 @@ export class ConfigureWorkspaceLifecycleBase<
   }
 
   static hooks = {
-    beforeConfigureWorkspace: new AsyncHook<{}, void, "configureWorkspace">(
+    beforeConfigureWorkspace: new AsyncHook<"configureWorkspace">(
       ["options"],
       "configureWorkspace",
       "beforeConfigureWorkspace"
     ),
     /** configure workspace should coordinate configures at the project level */
     configureWorkspace: new AsyncHook<
-      {},
-      Result<
-        {
-          destinationPath: AddressPathAbsolute;
-        },
-        {
-          error: BacError;
-        }
-      >,
       "configureWorkspace"
     >(["options"], "configureWorkspace", "configureWorkspace"),
     // configureWorkspace: new AsyncSeriesBailHook<
@@ -69,7 +60,7 @@ export class ConfigureWorkspaceLifecycleBase<
     //     }
     //   >
     // >(["options"]),
-    afterConfigureWorkspace: new AsyncHook<{}, void, "configureWorkspace">(
+    afterConfigureWorkspace: new AsyncHook<"configureWorkspace">(
       ["options"],
       "configureWorkspace",
       "afterConfigureWorkspace"

@@ -158,7 +158,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         },
       });
 
-      // console.log(`fetchRes :>> `, require('util').inspect(fetchRes, {showHidden: false, depth: undefined, colors: true}))
+      // console.log(`fetchRes :>> `, require('util')SubrepoServicespect(fetchRes, {showHidden: false, depth: undefined, colors: true}))
 
       // expectIsOk(fetchRes);
       return fetchRes;
@@ -201,7 +201,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
       );
 
       expectIsOk(cloneRes);
-    }
+    }SubrepoService
 
     await xfs.mkdirpPromise(destinationPath.address)
     await cloneFromSource();
@@ -242,7 +242,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         address.addressNormalized,
         cloneOpts
       );
-
+SubrepoService
       expectIsOk(cloneRes);
     }
 

@@ -63,24 +63,15 @@ export class RunProjectLifecycleBase<
   }
 
   static hooks = {
-    beforeRunProject: new AsyncHook<{}, void, "runProject">(
+    beforeRunProject: new AsyncHook<"runProject">(
       ["options"],
       "runProject",
       "beforeRunProject"
     ),
     runProject: new AsyncHook<
-      {},
-      Result<
-        {
-          destinationPath: AddressPathAbsolute;
-        },
-        {
-          error: BacError;
-        }
-      >,
       "runProject"
     >(["options"], "runProject", "runProject"),
-    afterRunProject: new AsyncHook<{}, void, "runProject">(
+    afterRunProject: new AsyncHook<"runProject">(
       ["options"],
       "runProject",
       "afterRunProject"

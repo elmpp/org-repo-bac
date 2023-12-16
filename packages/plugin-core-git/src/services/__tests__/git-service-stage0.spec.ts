@@ -10,7 +10,7 @@ describe("git-service", () => {
 
   async function assertCommon({testContext, res, service}: {
     testContext: TestContext,
-    service: ServiceMap['git'][0],
+    service: ServiceMap['SubrepoService'][0],
     res: Result<unknown, {error: Error}>
   }
   ) {
@@ -39,7 +39,7 @@ describe("git-service", () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service cloning clone http'});
       await persistentTestEnv.test({}, async (testContext) => {
 
-        const service = await testContext.context.serviceFactory('git', {
+        const service = await testContext.context.serviceFactory('SubrepoService', {
           context: testContext.context,
           workingPath: ".",
         })
@@ -56,7 +56,7 @@ describe("git-service", () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service cloning clone ssh'});
       await persistentTestEnv.test({}, async (testContext) => {
 
-        const service = await testContext.context.serviceFactory('git', {
+        const service = await testContext.context.serviceFactory('SubrepoService', {
           context: testContext.context,
           workingPath: ".",
         })
@@ -71,7 +71,7 @@ describe("git-service", () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service cloning clone pubkey'});
       await persistentTestEnv.test({}, async (testContext) => {
 
-        const service = await testContext.context.serviceFactory('git', {
+        const service = await testContext.context.serviceFactory('SubrepoService', {
           context: testContext.context,
           workingPath: ".",
         })
@@ -125,7 +125,7 @@ describe("git-service", () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service remote list'});
       await persistentTestEnv.test({}, async (testContext) => {
 
-        const service = await testContext.context.serviceFactory('git', {
+        const service = await testContext.context.serviceFactory('SubrepoService', {
           context: testContext.context,
           workingPath: ".",
         })
@@ -156,7 +156,7 @@ describe("git-service", () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: 'git-service initialising repo initialise standard'});
       await persistentTestEnv.test({}, async (testContext) => {
 
-        const service = await testContext.context.serviceFactory('git', {
+        const service = await testContext.context.serviceFactory('SubrepoService', {
           context: testContext.context,
           workingPath: ".",
         })

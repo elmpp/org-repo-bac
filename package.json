@@ -10,12 +10,12 @@
     "///dev:runCli": "TS_NODE_DEBUG=false ts-node --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "dev:run": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json",
     "//dev:runCli": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
-    "dev:runCli": "bun packages/pkg-cli/src/bin/run.ts",
-    "dev:runCliNode": "TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
-    "dev:runCliWatch": "bun --watch packages/pkg-cli/src/bin/run.ts",
+    "dev:runCli": "NODE_ENV=development bun packages/pkg-cli/src/bin/run.ts",
+    "dev:runCliNode": "NODE_ENV=development TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
+    "dev:runCliWatch": "NODE_ENV=development bun --watch packages/pkg-cli/src/bin/run.ts",
     "///dev:runCliWatch": "TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "//dev:runCliWatchIgnoreAll": "TS_NODE_DEBUG=false ts-node-dev --ignore-watch='.*' --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
-    "dev:runTask": "moon run --concurrency 1",
+    "dev:runTask": "NODE_ENV=development moon run --concurrency 1",
     "dev:test": "bun test --timeout 20000",
     "dev:testWatch": "bun test --timeout 20000 --watch"
   },
@@ -45,7 +45,7 @@
     "ts-node-dev": "^2.0.0",
     "tsconfig-moon": "^1.2.2",
     "tslib": "^2.5.0",
-    "typescript": "5.1.6"
+    "typescript": "5.3.3"
   },
   "trustedDependencies": [
     "@moonrepo/cli",

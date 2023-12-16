@@ -444,11 +444,11 @@ export class TestService {
       );
 
       const stage0Res = await packageManagerService.run({
-        command: `dev:test ${
+        command: `${stage === "stage0" ? `dev:testWatch` : `dev:test`} ${
           testFileMatch && stage === "stage0"
             ? ` '${testFileMatch}-stage0'`
             : ` 'stage0'`
-        } ${stage === "stage0" ? ` --watch` : ``}`,
+        }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -468,11 +468,11 @@ export class TestService {
       );
 
       const stage1Res = await packageManagerService.run({
-        command: `dev:test ${
+        command: `${stage === "stage1" ? `dev:testWatch` : `dev:test`} ${
           testFileMatch && stage === "stage1"
             ? ` '${testFileMatch}-stage1'`
             : ` 'stage1'`
-        } ${stage === "stage1" ? ` --watch` : ``}`,
+        }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -492,11 +492,11 @@ export class TestService {
       );
 
       const stage2Res = await packageManagerService.run({
-        command: `dev:test ${
+        command: `${stage === "stage2" ? `dev:testWatch` : `dev:test`} ${
           testFileMatch && stage === "stage2"
             ? ` '${testFileMatch}-stage2'`
             : ` 'stage2'`
-        } ${stage === "stage2" ? ` --watch` : ``}`,
+        }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -516,9 +516,9 @@ export class TestService {
     );
 
     const stageXRes = await packageManagerService.run({
-      command: `dev:test ${
+      command: `${watch ? `dev:testWatch` : `dev:test`} ${
         testFileMatch ? ` '${testFileMatch}-${stage}'` : ` '${stage}'`
-      }${watch ? ` --watch` : ``}`,
+      }`,
       options: {
         env: {
           BAC_TEST_CLISOURCE: cliSource,

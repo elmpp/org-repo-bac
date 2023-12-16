@@ -27,7 +27,7 @@ export type TapFn<LMethod extends LifecycleMethods> = (
 >;
 
 /** A `hook` that can be `tap`ped for easy extensibility */
-export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
+export class Hook<LMethod extends LifecycleMethods> {
   protected _name: string; // to cover the after/before distinctness
   protected _lifecycleMethod: LMethod; // after/before should give the canonical hook name
   protected _args: string[];
@@ -205,8 +205,9 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
   // }
 
   /**
-   * calls taps according to the args.provider and accepts an array of args which will be cycled over
-   * completes when a provider returns a result
+   * Completes when a provider returns a result
+   * Calls taps according to the args.provider
+   * Accepts an array of args which will be cycled over
    * @throws as soon as a tap throws
    */
   async callBailAsync({
@@ -301,7 +302,10 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
   }
 
   /**
-   * await all taps in parallel
+   * Await all taps in parallel
+   * Calls taps according to the args.provider
+   * Accepts an array of args which will be cycled over
+   *
    * @throws as soon as a tap throws
    */
   async mapAsync({
@@ -482,10 +486,8 @@ export class Hook<TArgs, R, LMethod extends LifecycleMethods> {
 
 /** Same as Hook but marks the Hook async from the start */
 export class AsyncHook<
-  TArgs extends Record<string, unknown>,
-  R,
   LMethod extends LifecycleMethods
-> extends Hook<TArgs, R, LMethod> {
+> extends Hook<LMethod> {
   // export class AsyncHook<TArgs, R, LMethod extends LifecycleImplementedMethods> extends Hook<TArgs, R, LMethod> {
   // export class AsyncHook<TArgs, R, LMethod extends LifecycleImplementedMethods> extends Hook<TArgs, R, LMethod> {
   constructor(args: string[] = [], method: LMethod, name: string) {

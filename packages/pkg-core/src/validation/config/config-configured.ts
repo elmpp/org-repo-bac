@@ -10,4 +10,3 @@ export const configConfiguredSchema = z.object({
 export type ConfigConfiguredSchema = z.infer<typeof configConfiguredSchema>;
 
 export type ConfigConfigured = z.infer<typeof configConfiguredSchema>;
-

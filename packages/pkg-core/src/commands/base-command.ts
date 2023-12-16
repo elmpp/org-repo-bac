@@ -49,7 +49,7 @@ import {
   InitialiseWorkspaceLifecycleBase,
   RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
-  SynchroniseWorkspaceLifecycleBase,
+  // SynchroniseWorkspaceLifecycleBase,
 } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 import { BacService, CacheService, ExecService, MoonService } from "../services";
@@ -636,10 +636,11 @@ export abstract class BaseCommand<
       }
 
       // return Object.assign({}, acc, staticPluginServices);
-      return objectUtils.deepMerge(
+      const res = objectUtils.deepMerge(
         acc,
         staticPluginServices
       );
+      return res
 
       // return {
       //   ...acc,
@@ -1050,7 +1051,7 @@ export abstract class BaseCommand<
         fetchContent: new FetchContentLifecycleBase<any>(),
         runProject: new RunProjectLifecycleBase<any>(),
         runWorkspace: new RunWorkspaceLifecycleBase<any>(),
-        synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
+        // synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
       },
       detectedPackageManager: await fsUtils.detectPackageManager({workspacePath: workspacePath}),
     };

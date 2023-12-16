@@ -273,46 +273,46 @@ type LifecycleOptionsWithoutCommonByProviderMap = {
 /** Full mapped result. Returned from hook.map (when all options are called) */
 export type LifecycleReturnByMethodArray<
 LMethod extends LifecycleMethods = LifecycleMethods
-> = Array<Exclude<
+> = Omit<Exclude<
 ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
 // ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
 { options: never }
->>;
+>, '_method'>[];
 /** a singular result. Returned from hook.callBail (when first positive provider shortcircuits the other options) */
 export type LifecycleReturnByMethodSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Exclude<
+> = Omit<Exclude<
   ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
   // ValueOf<LifecycleReturnsByProviderMap[LMethod]>,
   { options: never }
->;
+>, '_method'>;
 export type LifecycleReturnByMethodAndProviderSingular<
   LMethod extends LifecycleMethods = LifecycleMethods,
   LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
-> = Extract<
+> = Omit<Extract<
   Exclude<ValueOf<LifecycleReturnsByProviderMap[LMethod]>, { options: never }>,
   { provider: LProvider }
->;
+>, '_method'>;
 
 /** a union of method options that are keyed by provider. Suitable for calling Bail hook types - https://tinyurl.com/2deua67q */
 export type LifecycleOptionsByMethodKeyedByProviderSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Exclude<
+> = Omit<Exclude<
   ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
   { options: never }
->;
+>, '_method'>;
 export type LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Extract<Exclude<
+> = Omit<Extract<Exclude<
   ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
   { options: never }
->, {options: any}>;
+>, {options: any}>, '_method'>;
 export type LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Extract<Exclude<
+> = Omit<Extract<Exclude<
   ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
   { options: never }
->, {options: any}>[];
+>, {options: any}>, '_method'>[];
 export type LifecycleOptionsByMethodKeyedByProviderArray<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
@@ -320,15 +320,15 @@ export type LifecycleOptionsByMethodKeyedByProviderArray<
   { options: never }
 > extends never
   ? never
-  : Exclude<
+  : Omit<Exclude<
       ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
       { options: never }
-    >[];
+    >, '_method'>[];
 /** a specific options object for a provider method. Suitable for lifecycles with a single provider */
 export type LifecycleOptionsByMethodAndProvider<
   LMethod extends LifecycleMethods = LifecycleMethods,
   LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
-> = SafeGet<
+> = Omit<SafeGet<
   Extract<
     Exclude<
       ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
@@ -337,7 +337,7 @@ export type LifecycleOptionsByMethodAndProvider<
     { provider: LProvider }
   >,
   "options"
->;
+>, '_method'>;
 export type LifecycleMethods = _LifecycleAllMethods;
 export type LifecycleProviders = _LifecycleAllProviders;
 export type LifecycleImplementedMethods = NonNullable<

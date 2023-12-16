@@ -64,7 +64,9 @@ type Options = {
 };
 // export type Options<WithContent extends boolean> = WithContent extends true ? OptionsBase : Omit<OptionsBase, 'contentBaseAddress'>;
 
-// type D = Options<false>
+/**
+ XfsCacheManager is a lower level cache manager implementation. It appears unused ATM!!!
+ */
 export class XfsCacheManager<WithContent extends boolean> {
   options: Options;
 

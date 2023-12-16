@@ -1,7 +1,7 @@
 {
-  "name": "@business-as-code/plugin-core-git",
+  "name": "@business-as-code/plugin-core-subrepo",
   "version": "0.0.0-latest-20231119110156",
-  "description": "Core plugin package @business-as-code/plugin-core-git",
+  "description": "Core plugin package @business-as-code/plugin-core-subrepo",
   "main": "src/index.ts",
   "files": [
     "dist",
@@ -20,8 +20,7 @@
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",
     "@business-as-code/error": "workspace:*",
-    "@business-as-code/fslib": "workspace:*",
-    "simple-git": "^3.17.0"
+    "@business-as-code/fslib": "workspace:*"
   },
   "devDependencies": {
     "@business-as-code/plugin-dev-essentials": "workspace:*",

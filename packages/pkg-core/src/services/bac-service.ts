@@ -13,7 +13,7 @@ import {
 import { xfs } from "@business-as-code/fslib";
 import crypto from "crypto";
 import { fail, LifecycleProvidersForAsByMethod, ok, Result, ServiceInitialiseCommonOptions, ServiceMap } from "../__types__";
-import { AddressCacheManager } from "../cache/address-cache-manager";
+import { AddressAbsoluteCacheManager } from "@business-as-code/core/src/cache/address-absolute-cache-manager";
 import { constants } from "../constants";
 import { execUtils, formatUtils, fsUtils, hashUtils } from "../utils";
 import { tmpResolvableFolder } from "../utils/fs-utils";
@@ -48,7 +48,7 @@ export class BacService {
   // title = 'bac' as const
   options: Required<Options>;
   // @ts-expect-error: initialise
-  cacheManager: AddressCacheManager;
+  cacheManager: AddressAbsoluteCacheManager;
   // @ts-expect-error: initialise
   packageManagerService: ServiceMap['packageManager'][0];
 
@@ -71,7 +71,7 @@ export class BacService {
   }
 
   protected async initialise(options: Options) {
-    this.cacheManager = await AddressCacheManager.initialise({
+    this.cacheManager = await AddressAbsoluteCacheManager.initialise({
       context: options.context,
       workspacePath: options.workspacePath,
       workingPath: ".",
@@ -134,7 +134,7 @@ export class BacService {
     );
   }
 
-  protected async getForAddress(address: AddressPathAbsolute, cacheManager: AddressCacheManager) {
+  protected async getForAddress(address: AddressPathAbsolute, cacheManager: AddressAbsoluteCacheManager) {
     return cacheManager.get({
       address,
       cacheOptions: {},

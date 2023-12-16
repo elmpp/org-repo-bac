@@ -1,4 +1,4 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
 // const {
 //   execa,
@@ -27,6 +27,8 @@ import {
   Outputs,
   Result
 } from "../__types__";
+import pathKey from 'path-key'
+import { constants } from "../constants";
 
 // export interface ExecOptions
 //   extends Omit<import("child_process").SpawnOptions, "stdio" | "env" | "cwd"> {
@@ -135,10 +137,16 @@ export async function doExec({
 
   // console.log(`context.cliOptions.flags["log-level"] :>> `, context.cliOptions.flags["log-level"])
 
+  const PATH_KEY = pathKey()
+  const applicablePath = spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY]
+
   const defaultedEnvs = {
     FORCE_COLOR: "true",
     ...(spawnOptions.env ?? {}),
+    ...(options.shell && applicablePath ? {PATH: `${applicablePath}:${addr.parsePath(constants.EXEC_STORAGE_PATH).addressNormalized}`} : {}),
   };
+
+  // console.log(`defaultedEnvs :>> `, defaultedEnvs)
 
   /** Execa options - https://tinyurl.com/2qndy7hr */
   const execaOptions: ExecaOptions = {
@@ -194,6 +202,7 @@ export async function doExec({
       .map(([key, val]) => `${key}='${val}'`)
       .join(` `);
     if (options.shell) {
+
     }
     return `(cd ${options.cwd}; ${envs} ${command};)`;
   };

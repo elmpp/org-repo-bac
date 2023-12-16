@@ -16,8 +16,8 @@ module.exports = function (cmdName, target) {
         require('daemonize-process')({stdio: 'inherit'})
         let server = spawn(
           // `${process.env.npm_node_execpath} run`, args,
-          'pnpm -w dev:run', args,
-          // 'bun run', args,
+          'pnpm -w dev:run', args, // required before crypto ticket fixed
+          // 'bun run --bun', args, // still not working grrr. Need to check that GH issue fix
           {
             shell: true,
             stdio: 'inherit',

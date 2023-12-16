@@ -806,7 +806,7 @@ export function copy(
 
 export function debugRule(
   options: Pick<
-    schematicUtils.ServiceOptionsLite<"git">,
+    schematicUtils.ServiceOptionsLite<"SubrepoService">,
     "initialiseOptions" | "context"
   > & { withRealFs?: boolean }
 ): Rule {
@@ -851,7 +851,7 @@ export function debugRule(
 
     const withGitRule = wrapServiceAsRule({
       serviceOptions: {
-        serviceName: "git",
+        serviceName: "SubrepoService",
         cb: async ({ service }) => {
           const repo = service.getRepository(false);
           if (repo) {

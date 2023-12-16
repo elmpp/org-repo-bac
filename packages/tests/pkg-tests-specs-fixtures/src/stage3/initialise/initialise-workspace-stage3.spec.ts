@@ -85,7 +85,7 @@ describe("initialise workspace", () => {
         }); // we handle caught errors via BaseCommand.handleError
       });
     });
-    it.only("--workspacePath is required", async () => {
+    it("--workspacePath is required", async () => {
       const persistentTestEnv = await createPersistentTestEnv({testName: `initialise workspace: --workspacePath is required`});
       await persistentTestEnv.test({}, async (testContext) => {
         const res = await testContext.command(

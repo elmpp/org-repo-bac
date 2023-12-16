@@ -1,4 +1,4 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { AddressDescriptorUnion, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
 import {
@@ -10,10 +10,10 @@ import {
   LifecycleReturnByMethodArray,
   LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
   LifecycleStaticInterface,
-  Result
+  Result,
+  ServiceMap
 } from "../../__types__";
 import { AsyncHook, TapFn } from "../../hooks";
-import { Config } from "../../validation";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
@@ -38,34 +38,12 @@ export class FetchContentLifecycleBase<
 
   static hooks = {
     beforeFetchContent: new AsyncHook<
-      {
-        config?: Config;
-        // unknown;
-      },
-      void,
       "fetchContent"
     >(["options"], "fetchContent", "beforeFetchContent"),
     fetchContent: new AsyncHook<
-      {
-        config?: Config;
-        // unknown;
-      },
-      Result<
-        {
-          destinationPath: AddressPathAbsolute;
-        },
-        {
-          error: BacError;
-        }
-      >,
       "fetchContent"
     >(["options"], "fetchContent", "fetchContent"),
     afterFetchContent: new AsyncHook<
-      {
-        config?: Config;
-        // unknown;
-      },
-      void,
       "fetchContent"
     >(["options"], "fetchContent", "afterFetchContent"),
   };
@@ -108,7 +86,7 @@ export class FetchContentLifecycleBase<
   }
 
   async executeFetchContent(options: {
-    common: CommonExecuteOptions,
+    common: CommonExecuteOptions & {cacheService: ServiceMap['cache'][0]},
     options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"fetchContent">
   }
   ): Promise<
@@ -137,7 +115,11 @@ export class FetchContentLifecycleBase<
         context: Context;
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
-        options: FetchOptions;
+        // options: FetchOptions;
+        cacheService: ServiceMap['cache'][0],
+        options: {
+          address: string, // for compatibility with ConfigConfigured which is serialised
+        };
       }) => Promise<unknown | void>)
     | void {}
 
@@ -146,7 +128,11 @@ export class FetchContentLifecycleBase<
         context: Context;
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
-        options: FetchOptions;
+        // options: FetchOptions;
+        cacheService: ServiceMap['cache'][0],
+        options: {
+          address: string, // for compatibility with ConfigConfigured which is serialised
+        };
       }) => Promise<Result<FetchResult, {error: BacError}> | void>)
     | void {}
 
@@ -155,7 +141,11 @@ export class FetchContentLifecycleBase<
         context: Context;
         workspacePath: AddressPathAbsolute;
         // workingPath: string;
-        options: FetchOptions;
+        // options: FetchOptions;
+        cacheService: ServiceMap['cache'][0],
+        options: {
+          address: string, // for compatibility with ConfigConfigured which is serialised
+        };
       }) => Promise<unknown | void>)
     | void {}
 }

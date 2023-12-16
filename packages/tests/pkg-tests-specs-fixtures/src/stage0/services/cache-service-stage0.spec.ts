@@ -1,6 +1,7 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { CacheKey, constants, expectIsOk, fsUtils } from "@business-as-code/core";
 import { AddressCacheManager } from "@business-as-code/core/src/cache/address-cache-manager";
+import { AddressAbsoluteCacheManager } from "@business-as-code/core/src/cache/address-absolute-cache-manager";
 import { bunMatchers, createPersistentTestEnv } from "@business-as-code/tests-core";
 import { expect, test, describe, it, jest } from "bun:test"
 
@@ -14,7 +15,7 @@ describe("cache-service", () => {
     sourcePath: AddressPathAbsolute;
     destinationPath: AddressPathAbsolute;
   }): Promise<void> => {
-    return AddressCacheManager.copyContent({ sourcePath, destinationPath });
+    return AddressAbsoluteCacheManager.copyContent({ sourcePath, destinationPath });
   };
 
   it("sets up folders with rootPath", async () => {});
@@ -125,7 +126,17 @@ describe("cache-service", () => {
       const key = "skeleton-js";
       // const namespace = sourceAddress.type;
 
-      const cacheService = await testContext.context.serviceFactory("cache", {
+      // const cacheService = await testContext.context.serviceFactory("cache", {
+      //   context: testContext.context,
+      //   workingPath: ".",
+      //   workspacePath: testContext.testEnvVars.workspacePath, // basically ignored within cacheservice
+      //   rootPath: testContext.testEnvVars.workspacePath,
+      //   // metaBaseAddress: addr.pathUtils.join(
+      //   //   testContext.testEnvVars.workspacePath,
+      //   //   addr.parseAsType("meta", "portablePathFilename")
+      //   // ) as AddressPathAbsolute,
+      // });
+      const cacheManager = await AddressCacheManager.initialise({
         context: testContext.context,
         workingPath: ".",
         workspacePath: testContext.testEnvVars.workspacePath, // basically ignored within cacheservice
@@ -166,7 +177,7 @@ describe("cache-service", () => {
             doFetch({ sourcePath: sourceAddress, destinationPath: contentPath })
         );
 // console.log(`sourceAddress :>> `, sourceAddress)
-      const fetchRes = await cacheService.get({
+      const fetchRes = await cacheManager.get({
         address: sourceAddress,
         cacheOptions: {},
         createChecksum,

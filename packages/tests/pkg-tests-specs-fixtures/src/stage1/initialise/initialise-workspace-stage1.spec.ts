@@ -237,7 +237,13 @@ describe("initialise workspace", () => {
               "options": {
                 "address": "http://localhost:8174/repo1.git"
               }
-            }
+            },
+            {
+              "provider": "git",
+              "options": {
+                "address": "http://localhost:8174/repo2.git"
+              }
+            },
           ]
         });
         // expect(

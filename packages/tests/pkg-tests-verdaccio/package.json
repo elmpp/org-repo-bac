@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "npm-cli-login": "^1.0.0",
-    "typescript": "5.0.2",
+    "typescript": "5.3.3",
     "verdaccio": "^5.22.1",
     "verdaccio-auth-memory": "^10.2.1"
   }

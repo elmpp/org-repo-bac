@@ -63,24 +63,15 @@ export class RunWorkspaceLifecycleBase<
   }
 
   static hooks = {
-    beforeRunWorkspace: new AsyncHook<{}, void, "runWorkspace">(
+    beforeRunWorkspace: new AsyncHook<"runWorkspace">(
       ["options"],
       "runWorkspace",
       "beforeRunWorkspace"
     ),
     runWorkspace: new AsyncHook<
-      {},
-      Result<
-        {
-          destinationPath: AddressPathAbsolute;
-        },
-        {
-          error: BacError;
-        }
-      >,
       "runWorkspace"
     >(["options"], "runWorkspace", "runWorkspace"),
-    afterRunWorkspace: new AsyncHook<{}, void, "runWorkspace">(
+    afterRunWorkspace: new AsyncHook<"runWorkspace">(
       ["options"],
       "runWorkspace",
       "afterRunWorkspace"

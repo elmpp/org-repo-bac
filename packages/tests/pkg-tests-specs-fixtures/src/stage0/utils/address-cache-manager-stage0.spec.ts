@@ -1,6 +1,6 @@
 import { AddressPathAbsolute, addr } from "@business-as-code/address";
 import { constants, expectIsOk, fsUtils } from "@business-as-code/core";
-import { AddressCacheManager } from "@business-as-code/core/src/cache/address-cache-manager";
+import { AddressAbsoluteCacheManager } from "@business-as-code/core/src/cache/address-absolute-cache-manager";
 import { createPersistentTestEnv } from "@business-as-code/tests-core";
 import { describe, it, jest, expect } from "bun:test";
 // import { expect } from "@jest/globals";
@@ -18,7 +18,7 @@ describe("address-cache-manager", () => {
 
         // const namespace = sourceAddress.type;
 
-        const cacheManager = await AddressCacheManager.initialise({
+        const cacheManager = await AddressAbsoluteCacheManager.initialise({
           metaBaseAddress: addr.pathUtils.join(
             testContext.testEnvVars.workspacePath,
             addr.parsePath(constants.RC_META_FOLDER)
@@ -142,7 +142,7 @@ describe("address-cache-manager", () => {
 
         // const namespace = sourceAddress.type;
 
-        const cacheManager = await AddressCacheManager.initialise({
+        const cacheManager = await AddressAbsoluteCacheManager.initialise({
           metaBaseAddress: addr.pathUtils.join(
             testContext.testEnvVars.workspacePath,
             addr.parsePath(constants.RC_META_FOLDER)
@@ -305,7 +305,7 @@ describe("address-cache-manager", () => {
 
         // const namespace = sourceAddress.type;
 
-        const cacheManager = await AddressCacheManager.initialise({
+        const cacheManager = await AddressAbsoluteCacheManager.initialise({
           metaBaseAddress: addr.pathUtils.join(
             testContext.testEnvVars.workspacePath,
             addr.parsePath(constants.RC_META_FOLDER)
@@ -513,11 +513,11 @@ describe("address-cache-manager", () => {
       sourcePath,
       destinationPath,
     }: {
-      cacheManager: AddressCacheManager;
+      cacheManager: AddressAbsoluteCacheManager;
       sourcePath: AddressPathAbsolute;
       destinationPath: AddressPathAbsolute;
     }): Promise<void> => {
-      return AddressCacheManager.copyContent({ sourcePath, destinationPath });
+      return AddressAbsoluteCacheManager.copyContent({ sourcePath, destinationPath });
     };
 
     it("saves to meta, first time", async () => {
@@ -529,7 +529,7 @@ describe("address-cache-manager", () => {
         const key = "skeleton-js";
         // const namespace = sourceAddress.type;
 
-        const cacheManager = await AddressCacheManager.initialise({
+        const cacheManager = await AddressAbsoluteCacheManager.initialise({
           metaBaseAddress: addr.pathUtils.join(
             testContext.testEnvVars.workspacePath,
             addr.parsePath(constants.RC_META_FOLDER)
@@ -674,7 +674,7 @@ describe("address-cache-manager", () => {
         const key = "skeleton-js";
         // const namespace = sourceAddress.type;
 
-        const cacheManager = await AddressCacheManager.initialise({
+        const cacheManager = await AddressAbsoluteCacheManager.initialise({
           metaBaseAddress: addr.pathUtils.join(
             testContext.testEnvVars.workspacePath,
             addr.parsePath(constants.RC_META_FOLDER)
@@ -817,7 +817,7 @@ describe("address-cache-manager", () => {
       testName: `address-cache-manager : managed content : sets up ok`,
     });
     await persistentTestEnv.test({}, async (testContext) => {
-      await AddressCacheManager.initialise({
+      await AddressAbsoluteCacheManager.initialise({
         metaBaseAddress: addr.pathUtils.join(
           testContext.testEnvVars.workspacePath,
           addr.parsePath(constants.RC_META_FOLDER)
@@ -851,7 +851,7 @@ describe("address-cache-manager", () => {
       const sourceAddress = fsUtils.resolveCoreConfig("skeleton.js");
       const key = "skeleton-js";
 
-      const cacheManager = await AddressCacheManager.initialise({
+      const cacheManager = await AddressAbsoluteCacheManager.initialise({
         metaBaseAddress: addr.pathUtils.join(
           testContext.testEnvVars.workspacePath,
           addr.parsePath(constants.RC_META_FOLDER)

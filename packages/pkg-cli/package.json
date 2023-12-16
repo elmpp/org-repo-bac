@@ -36,6 +36,7 @@
     "@business-as-code/plugin-core-package-manager-bun": "workspace:*",
     "@business-as-code/plugin-core-package-manager-pnpm": "workspace:*",
     "@business-as-code/plugin-core-package-manager-yarn": "workspace:*",
+    "@business-as-code/plugin-core-subrepo": "workspace:*",
     "@oclif/command": "^1.8.22",
     "@oclif/config": "^1.18.8",
     "@oclif/core": "2.6.4",
@@ -43,7 +44,7 @@
     "@oclif/plugin-not-found": "^2.3.21",
     "@oclif/plugin-plugins": "^2.3.2",
     "ts-node": "^10.9.1",
-    "typescript": "5.0.2"
+    "typescript": "5.3.3"
   },
   "devDependencies": {
     "@business-as-code/plugin-dev-tests": "workspace:*",
@@ -64,7 +65,8 @@
       "@business-as-code/plugin-core-git",
       "@business-as-code/plugin-core-package-manager-bun",
       "@business-as-code/plugin-core-package-manager-pnpm",
-      "@business-as-code/plugin-core-package-manager-yarn"
+      "@business-as-code/plugin-core-package-manager-yarn",
+      "@business-as-code/plugin-core-subrepo"
     ],
     "devPlugins": [
       "@business-as-code/plugin-dev-tests",

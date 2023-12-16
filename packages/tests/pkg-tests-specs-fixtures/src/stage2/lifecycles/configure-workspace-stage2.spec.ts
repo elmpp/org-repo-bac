@@ -60,6 +60,8 @@ describe("configure workspace", () => {
       const configRes = await bacService.loadConfig();
       expectIsOk(configRes)
 
+      console.log(`configRes :>> `, configRes)
+
       const configureWorkspaceLifecycleRes =
         await testContext.context.lifecycles.configureWorkspace.executeConfigureWorkspace(
           {

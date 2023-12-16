@@ -13,7 +13,6 @@ import {
   InitialiseWorkspaceLifecycleBase,
   RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
-  SynchroniseWorkspaceLifecycleBase,
 } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 // import { Lifecycles } from "../lifecycles";
@@ -79,7 +78,7 @@ export type ContextCommand<T extends typeof Command> = {
     initialiseWorkspace: InitialiseWorkspaceLifecycleBase<any>;
     configureWorkspace: ConfigureWorkspaceLifecycleBase<any>;
     configureProject: ConfigureProjectLifecycleBase<any>;
-    synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
+    // synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
     runWorkspace: RunWorkspaceLifecycleBase<any>;
     runProject: RunProjectLifecycleBase<any>;
     fetchContent: FetchContentLifecycleBase<any>;
@@ -115,7 +114,7 @@ export type Context = {
 
 export type Plugin = {
   services?: ServiceStaticInterface[];
-  /** gives opportunity to subscribe to hooks */
+  // /** allows a plugin chance to execute somestu */
   // initialise?: (options: { context: ContextCommand<any> }) => void;
   lifecycles?: LifecycleStaticInterface[];
 };

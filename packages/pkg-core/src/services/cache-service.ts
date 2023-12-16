@@ -1,12 +1,7 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import {
-  AddressDescriptorUnion,
-  AddressPathAbsolute,
-  addr,
-} from "@business-as-code/address";
+import { AddressPathAbsolute } from "@business-as-code/address";
 import { ServiceInitialiseCommonOptions } from "../__types__";
 import { AddressCacheManager } from "../cache/address-cache-manager";
-import { sanitise } from "../utils/fs-utils";
 
 declare global {
   namespace Bac {
@@ -70,16 +65,16 @@ export class CacheService {
     await ins.initialise(options);
     ins.cacheManager = await AddressCacheManager.initialise({
       ...options,
-      metaBaseAddress: addr.pathUtils.join(
-        options.rootPath,
-        addr.parseAsType("meta", "portablePathFilename")
-      ) as AddressPathAbsolute,
-      createAttributes: (address) => {
-        return {
-          key: sanitise(address.addressNormalized),
-          namespace: sanitise(address.type),
-        };
-      },
+      // metaBaseAddress: addr.pathUtils.join(
+      //   options.rootPath,
+      //   addr.parseAsType(constants.RC_META_FOLDER, "portablePathFilename")
+      // ) as AddressPathAbsolute,
+      // createAttributes: (address) => {
+      //   return {
+      //     key: sanitise(address.addressNormalized),
+      //     namespace: sanitise(address.type),
+      //   };
+      // },
     });
     // ins.cacheManager = await AddressCacheManager.initialise({
     //   contentBaseAddress: addr.pathUtils.join(
@@ -107,60 +102,61 @@ export class CacheService {
   // async get(...options: Parameters<(AddressCacheManager['get'])>): ReturnType<AddressCacheManager['get']> {
   //   return this.cacheManager.get(...options)
   // }
-  async get({
-    /** address here is the sourceAddress, where content comes from. We'll always generate the namespaced location within rootPath */
-    address,
-    cacheOptions,
-    createChecksum,
-    onHit,
-    onMiss,
-    onStale,
-  }: Omit<Parameters<AddressCacheManager["get"]>[0], "address"> & {
-    address: AddressDescriptorUnion;
-  }): ReturnType<AddressCacheManager["get"]> {
-    // return this.cacheManager.get(...options)
+  async get(
+    options: Parameters<AddressCacheManager["get"]>[0]
+  ): ReturnType<AddressCacheManager["get"]> {
 
-    const { absolute: contentPath, relative: contentPathRelative } =
-      await this.cacheManager.createContentPaths({
-        rootPath: this.options.rootPath,
-        address,
-      });
-    await this.cacheManager.primeContent({rootPath: this.options.rootPath, address})
+    return this.cacheManager.get(options);
 
-    const fetchRes = await this.cacheManager.get({
-      address: contentPath,
-      // namespace,
-      cacheOptions: {},
-      // expectedChecksum: "",
-      createChecksum,
-      onHit,
-      onStale,
-      onMiss,
-      // onHit: () => {},
-      // onStale: async ({ contentPath, existentChecksum }) => {
-      //   return await doFetch(sourceAddress, contentPath);
-      // },
-      // // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
-      // onMiss: async ({ contentPath }) => {
-      //   console.log(`contentPath :>> `, contentPath);
-      //   await doFetch(sourceAddress, contentPath);
-      // },
-    });
+    // const { absolute: contentPath, relative: contentPathRelative } =
+    //   await this.cacheManager.createContentPaths({
+    //     rootPath: this.options.rootPath,
+    //     address,
+    //   });
+    // await this.cacheManager.primeContent({
+    //   rootPath: this.options.rootPath,
+    //   address,
+    // });
 
-    return fetchRes;
+    // const fetchRes = await this.cacheManager.get({
+    //   address: contentPath,
+    //   // namespace,
+    //   cacheOptions: {},
+    //   // expectedChecksum: "",
+    //   createChecksum,
+    //   onHit,
+    //   onStale,
+    //   onMiss,
+    //   // onHit: () => {},
+    //   // onStale: async ({ contentPath, existentChecksum }) => {
+    //   //   return await doFetch(sourceAddress, contentPath);
+    //   // },
+    //   // // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
+    //   // onMiss: async ({ contentPath }) => {
+    //   //   console.log(`contentPath :>> `, contentPath);
+    //   //   await doFetch(sourceAddress, contentPath);
+    //   // },
+    // });
+
+    // return fetchRes;
   }
-  async has(address: AddressDescriptorUnion): Promise<boolean> {
-    const { absolute: contentPath, relative: contentPathRelative } =
-      await this.cacheManager.createContentPaths({
-        rootPath: this.options.rootPath,
-        address,
-      });
-    const hasMeta = await this.cacheManager.hasMeta(contentPath);
-    const hasContent = await this.cacheManager.hasContent(contentPath);
-
-// console.log(`address, contentPath :>> `, address, contentPath)
-    return hasMeta && hasContent; // leave any cache dir inconsistencies to the cacheManager
+  async has(
+    options: Parameters<AddressCacheManager["has"]>[0]
+  ): ReturnType<AddressCacheManager["has"]> {
+    return this.cacheManager.has(options);
   }
+  // async has(address: AddressDescriptorUnion): Promise<boolean> {
+  //   const { absolute: contentPath, relative: contentPathRelative } =
+  //     await this.cacheManager.createContentPaths({
+  //       rootPath: this.options.rootPath,
+  //       address,
+  //     });
+  //   const hasMeta = await this.cacheManager.hasMeta(contentPath);
+  //   const hasContent = await this.cacheManager.hasContent(contentPath);
+
+  //   // console.log(`address, contentPath :>> `, address, contentPath)
+  //   return hasMeta && hasContent; // leave any cache dir inconsistencies to the cacheManager
+  // }
 
   // protected getCacheManagerAttributes({
   //   address,

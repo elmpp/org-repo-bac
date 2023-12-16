@@ -1,5 +1,6 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import {
+  ConfigConfigured,
   Context,
   ContextCommand,
   LifecycleImplementedMethods,
@@ -187,7 +188,7 @@ describe("types", () => {
           | "fetchContent"
           | "initialiseWorkspace"
           | "configureWorkspace"
-          | "synchroniseWorkspace"
+          // | "synchroniseWorkspace"
           | "runWorkspace"
           | "runProject"
         >().toMatchTypeOf<LifecycleImplementedMethods>();
@@ -459,6 +460,15 @@ describe("types", () => {
         //   | { provider: "git"; options: { options: any } }
         // >();
       });
+
+      it(`fetchContent should be compatible with ConfigConfigured`, () => {
+        type FetchContentInput = LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"fetchContent">
+        type ConfigureLifecycleOutput = ConfigConfigured['projects']
+        expectTypeOf<FetchContentInput>().toMatchTypeOf<ConfigureLifecycleOutput>()
+      });
+
+
+
       // it("find particular lifecycle method return", () => {
       //   type InitialiseWorkspaceReturn = LifecycleMethodReturn<'initialiseWorkspace', 'git'>
       //   expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny()

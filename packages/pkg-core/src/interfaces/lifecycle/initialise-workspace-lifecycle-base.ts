@@ -12,7 +12,6 @@ import {
   assertIsResult,
 } from "../../__types__";
 import { AsyncHook, TapFn } from "../../hooks";
-import { Config } from "../../validation";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
@@ -31,44 +30,12 @@ export class InitialiseWorkspaceLifecycleBase<
 
   static hooks = {
     beforeInitialiseWorkspace: new AsyncHook<
-      {
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
-        cliPath?: string;
-      },
-      void,
       "initialiseWorkspace"
     >(["options"], "initialiseWorkspace", "beforeInitialiseWorkspace"),
     initialiseWorkspace: new AsyncHook<
-      {
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
-        cliPath?: string;
-      },
-      // } & LifecycleOptionsByProvider<'initialiseWorkspace'>,
-      Result<
-        {
-          destinationPath: AddressPathAbsolute;
-        },
-        {
-          error: BacError;
-        }
-      >,
       "initialiseWorkspace"
     >(["options"], "initialiseWorkspace", "initialiseWorkspace"),
     afterInitialiseWorkspace: new AsyncHook<
-      {
-        config: Config;
-        configPath: string;
-        cliVersion: string;
-        cliRegistry: string;
-        cliPath?: string;
-      },
-      void,
       "initialiseWorkspace"
     >(["options"], "initialiseWorkspace", "afterInitialiseWorkspace"),
   };

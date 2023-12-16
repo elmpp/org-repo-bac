@@ -16,7 +16,7 @@ import { z } from "zod";
 
 // }
 export const originProviderTypeSchema = z.union([
-  z.literal("git"),
+  z.literal("SubrepoService"),
   z.literal("github"),
 ]);
 

@@ -36,11 +36,6 @@ type TaskOptions = Record<string, unknown> & {
   sshStrictHostCheckingDisable?: boolean;
 };
 
-// /**
-//  NodeGit GH - https://github.com/nodegit/nodegit
-//  NodeGit API Docs - https://www.nodegit.org/api/
-//  NodeGit Examples Folder - https://github.com/nodegit/nodegit/tree/master/examples
-//  */
 /**
  SimpleGit GH - https://github.com/nodegit/nodegit
  SimpleGit API Docs - https://www.simpleGit.org/api/
@@ -48,7 +43,6 @@ type TaskOptions = Record<string, unknown> & {
  */
 export class GitService {
   static title = "git" as const;
-  // title = 'git' as const
 
   public CheckRepoActions = CheckRepoActionsImport;
   protected options: Options;

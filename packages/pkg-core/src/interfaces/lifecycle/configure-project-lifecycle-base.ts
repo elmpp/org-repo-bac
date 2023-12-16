@@ -1,6 +1,5 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
-import { Config } from "prettier";
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
 import {
   Context,
@@ -14,6 +13,7 @@ import {
 import { AsyncHook, TapFn } from "../../hooks";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
+import { Config } from "../../validation";
 
 export class ConfigureProjectLifecycleBase<
   T extends LifecycleStaticInterface = typeof ConfigureProjectLifecycleBase<any>
@@ -30,32 +30,13 @@ export class ConfigureProjectLifecycleBase<
 
   static hooks = {
     beforeConfigureProject: new AsyncHook<
-      {
-        config?: Config;
-      },
-      void,
       "configureProject"
     >(["options"], "configureProject", "beforeconfigureProject"),
     /** configure project should coordinate configures at the project level */
     configureProject: new AsyncHook<
-      {
-        config?: Config;
-      },
-      Result<
-        {
-          destinationPath: AddressPathAbsolute;
-        },
-        {
-          error: BacError;
-        }
-      >,
       "configureProject"
     >(["options"], "configureProject", "configureProject"),
     afterConfigureProject: new AsyncHook<
-      {
-        config?: Config;
-      },
-      void,
       "configureProject"
     >(["options"], "configureProject", "afterConfigureProject"),
   };

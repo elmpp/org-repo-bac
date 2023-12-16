@@ -9,6 +9,11 @@ const config = {
     options: {
       address: 'ssh://git-ssh-mock-server@localhost:2222/repo1.git',
     },
+  }, {
+    provider: 'git',
+    options: {
+      address: 'ssh://git-ssh-mock-server@localhost:2222/repo2.git',
+    },
   }],
 }
 
