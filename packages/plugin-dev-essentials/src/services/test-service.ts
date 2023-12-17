@@ -51,8 +51,8 @@ export class TestService {
       {
         context: this.options.context,
         workingPath: ".",
-        // packageManager: "packageManagerBun", // blocked until this ticket is complete :cry - https://github.com/oven-sh/bun/issues/6418
-        packageManager: "packageManagerPnpm",
+        packageManager: "packageManagerBun", // blocked until this ticket is complete :cry - https://github.com/oven-sh/bun/issues/6418
+        // packageManager: "packageManagerPnpm",
       }
     );
 

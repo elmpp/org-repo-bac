@@ -97,7 +97,8 @@ export const projectSchema = z.object({
   alias: z.string().nullable().optional(),
 	config: z.union([projectConfigSchema, z.object({})]),
 	// config: projectConfigSchema,
-	dependencies: z.record(z.string(), projectDependencySchema),
+	dependencies: z.array(projectDependencySchema),
+	// dependencies: z.record(z.string(), projectDependencySchema),
 	// dependencies: Record<string, ProjectDependency>;
 	fileGroups: z.record(z.string(), fileGroupSchema),
 	// fileGroups: Record<string, FileGroup>;

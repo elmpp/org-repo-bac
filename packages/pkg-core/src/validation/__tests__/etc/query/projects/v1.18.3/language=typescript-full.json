@@ -1,0 +1,2659 @@
+{
+  "projects": [
+    {
+      "alias": "@business-as-code/address",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/**/*",
+            "!packages/pkg-address/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-address/src/**/*",
+            "!packages/pkg-address/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-address",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-address",
+      "source": "packages/pkg-address",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/cli",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "plugin-core-essentials",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-core-essentials"
+          },
+          {
+            "id": "plugin-core-git",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-core-git"
+          },
+          {
+            "id": "plugin-core-package-manager-bun",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-core-package-manager-bun"
+          },
+          {
+            "id": "plugin-core-package-manager-pnpm",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-core-package-manager-pnpm"
+          },
+          {
+            "id": "plugin-core-package-manager-yarn",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-core-package-manager-yarn"
+          },
+          {
+            "id": "plugin-core-subrepo",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-core-subrepo"
+          },
+          {
+            "id": "plugin-dev-changesets",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-changesets"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "plugin-dev-tests",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-tests"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "application",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "plugin-core-git",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-git"
+        },
+        {
+          "id": "plugin-dev-changesets",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-changesets"
+        },
+        {
+          "id": "plugin-core-subrepo",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-subrepo"
+        },
+        {
+          "id": "plugin-dev-tests",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-tests"
+        },
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "plugin-core-essentials",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-essentials"
+        },
+        {
+          "id": "plugin-core-package-manager-bun",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-package-manager-bun"
+        },
+        {
+          "id": "plugin-core-package-manager-yarn",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-package-manager-yarn"
+        },
+        {
+          "id": "plugin-core-package-manager-pnpm",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-core-package-manager-pnpm"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-cli/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-cli/**/*",
+            "!packages/pkg-cli/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-cli/src/**/*",
+            "!packages/pkg-cli/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-cli",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-application",
+          "typescript-application"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-cli",
+      "source": "packages/pkg-cli",
+      "tasks": {},
+      "type": "application"
+    },
+    {
+      "alias": "@business-as-code/core",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-core/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-core/**/*",
+            "!packages/pkg-core/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-core/src/**/*",
+            "!packages/pkg-core/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-core",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-core",
+      "source": "packages/pkg-core",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/error",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-error/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-error/**/*",
+            "!packages/pkg-error/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-error/src/**/*",
+            "!packages/pkg-error/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-error",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-error",
+      "source": "packages/pkg-error",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/fslib",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/pkg-fslib/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/pkg-fslib/**/*",
+            "!packages/pkg-fslib/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/pkg-fslib/src/**/*",
+            "!packages/pkg-fslib/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-fslib",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/pkg-fslib",
+      "source": "packages/pkg-fslib",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/tests-core",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "pkg-tests-git-mock-server",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-git-server"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "pkg-tests-git-mock-server",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-git-server"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/tests/pkg-tests-core/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/tests/pkg-tests-core/**/*",
+            "!packages/tests/pkg-tests-core/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/tests/pkg-tests-core/src/**/*",
+            "!packages/tests/pkg-tests-core/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "pkg-tests-core",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/pkg-tests-core",
+      "source": "packages/tests/pkg-tests-core",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-essentials",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-essentials/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-essentials/**/*",
+            "!packages/plugin-core-essentials/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-essentials/src/**/*",
+            "!packages/plugin-core-essentials/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-essentials",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-essentials",
+      "source": "packages/plugin-core-essentials",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-git",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-git/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-git/**/*",
+            "!packages/plugin-core-git/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-git/src/**/*",
+            "!packages/plugin-core-git/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-git",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-git",
+      "source": "packages/plugin-core-git",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-package-manager-bun",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-bun/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-bun/**/*",
+            "!packages/plugin-core-package-manager-bun/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-bun/src/**/*",
+            "!packages/plugin-core-package-manager-bun/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-package-manager-bun",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-package-manager-bun",
+      "source": "packages/plugin-core-package-manager-bun",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-package-manager-pnpm",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-pnpm/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-pnpm/**/*",
+            "!packages/plugin-core-package-manager-pnpm/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-pnpm/src/**/*",
+            "!packages/plugin-core-package-manager-pnpm/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-package-manager-pnpm",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-package-manager-pnpm",
+      "source": "packages/plugin-core-package-manager-pnpm",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-package-manager-yarn",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-yarn/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-yarn/**/*",
+            "!packages/plugin-core-package-manager-yarn/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-package-manager-yarn/src/**/*",
+            "!packages/plugin-core-package-manager-yarn/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-package-manager-yarn",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-package-manager-yarn",
+      "source": "packages/plugin-core-package-manager-yarn",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-core-subrepo",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-subrepo/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-subrepo/**/*",
+            "!packages/plugin-core-subrepo/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-core-subrepo/src/**/*",
+            "!packages/plugin-core-subrepo/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-core-subrepo",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-core-subrepo",
+      "source": "packages/plugin-core-subrepo",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-dev-changesets",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-changesets/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-changesets/**/*",
+            "!packages/plugin-dev-changesets/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-changesets/src/**/*",
+            "!packages/plugin-dev-changesets/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-dev-changesets",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-dev-changesets",
+      "source": "packages/plugin-dev-changesets",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-dev-essentials",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-essentials/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-essentials/**/*",
+            "!packages/plugin-dev-essentials/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/plugin-dev-essentials/src/**/*",
+            "!packages/plugin-dev-essentials/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-dev-essentials",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/plugin-dev-essentials",
+      "source": "packages/plugin-dev-essentials",
+      "tasks": {},
+      "type": "library"
+    },
+    {
+      "alias": "@business-as-code/plugin-dev-tests",
+      "config": {
+        "schema": "https://moonrepo.dev/schemas/project.json",
+        "dependsOn": [
+          {
+            "id": "pkg-address",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/address"
+          },
+          {
+            "id": "pkg-core",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/core"
+          },
+          {
+            "id": "pkg-error",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/error"
+          },
+          {
+            "id": "pkg-fslib",
+            "scope": "production",
+            "source": "implicit",
+            "via": "@business-as-code/fslib"
+          },
+          {
+            "id": "plugin-dev-essentials",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/plugin-dev-essentials"
+          },
+          {
+            "id": "pkg-tests-core",
+            "scope": "development",
+            "source": "implicit",
+            "via": "@business-as-code/tests-core"
+          }
+        ],
+        "env": {},
+        "fileGroups": {},
+        "id": null,
+        "language": "unknown",
+        "owners": {
+          "customGroups": {},
+          "defaultOwner": null,
+          "optional": false,
+          "paths": [],
+          "requiredApprovals": 1
+        },
+        "platform": null,
+        "project": null,
+        "tags": [],
+        "tasks": {},
+        "toolchain": {
+          "bun": null,
+          "node": null,
+          "rust": null,
+          "typescript": null
+        },
+        "type": "library",
+        "workspace": {
+          "inheritedTasks": {
+            "exclude": [],
+            "include": null,
+            "rename": {}
+          }
+        }
+      },
+      "dependencies": [
+        {
+          "id": "pkg-core",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/core"
+        },
+        {
+          "id": "pkg-fslib",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/fslib"
+        },
+        {
+          "id": "pkg-error",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/error"
+        },
+        {
+          "id": "pkg-address",
+          "scope": "production",
+          "source": "implicit",
+          "via": "@business-as-code/address"
+        },
+        {
+          "id": "plugin-dev-essentials",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/plugin-dev-essentials"
+        },
+        {
+          "id": "pkg-tests-core",
+          "scope": "development",
+          "source": "implicit",
+          "via": "@business-as-code/tests-core"
+        }
+      ],
+      "fileGroups": {
+        "configs": {
+          "files": [],
+          "globs": [
+            "packages/tests/plugin-dev-tests/*.{js,json}"
+          ],
+          "id": "configs"
+        },
+        "publishable": {
+          "files": [],
+          "globs": [
+            "packages/tests/plugin-dev-tests/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*"
+          ],
+          "id": "publishable"
+        },
+        "sources": {
+          "files": [],
+          "globs": [
+            "packages/tests/plugin-dev-tests/src/**/*",
+            "!packages/tests/plugin-dev-tests/src/**/*.spec.[tj]s"
+          ],
+          "id": "sources"
+        }
+      },
+      "id": "plugin-dev-tests",
+      "inherited": {
+        "order": [
+          "*",
+          "node",
+          "typescript",
+          "node-library",
+          "typescript-library"
+        ],
+        "layers": {
+          ".moon/tasks/typescript.yml": {
+            "$schema": "https://moonrepo.dev/schemas/tasks.json",
+            "fileGroups": {
+              "configs": [
+                "*.{js,json}"
+              ],
+              "publishable": [
+                "**/*",
+                "!src/**/*"
+              ],
+              "sources": [
+                "src/**/*",
+                "!src/**/*.spec.[tj]s"
+              ]
+            }
+          }
+        },
+        "config": {
+          "schema": "https://moonrepo.dev/schemas/tasks.json",
+          "extends": null,
+          "fileGroups": {
+            "configs": [
+              "*.{js,json}"
+            ],
+            "publishable": [
+              "**/*",
+              "!src/**/*"
+            ],
+            "sources": [
+              "src/**/*",
+              "!src/**/*.spec.[tj]s"
+            ]
+          },
+          "implicitDeps": [],
+          "implicitInputs": [],
+          "tasks": {}
+        }
+      },
+      "language": "typescript",
+      "platform": "node",
+      "root": "/Users/matt/dev/org-repo-moonrepo/packages/tests/plugin-dev-tests",
+      "source": "packages/tests/plugin-dev-tests",
+      "tasks": {},
+      "type": "library"
+    }
+  ],
+  "options": {
+    "alias": null,
+    "affected": false,
+    "id": null,
+    "json": true,
+    "language": null,
+    "query": "projectType=library || projectType=application",
+    "source": null,
+    "tags": null,
+    "tasks": null,
+    "touched_files": [],
+    "type_of": null
+  }
+}

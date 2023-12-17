@@ -27,7 +27,8 @@ import {
   Outputs,
   Result
 } from "../__types__";
-import pathKey from 'path-key'
+// import pathKey from 'path-key'
+// const pathKey = require('path-key').default
 import { constants } from "../constants";
 
 // export interface ExecOptions
@@ -137,7 +138,8 @@ export async function doExec({
 
   // console.log(`context.cliOptions.flags["log-level"] :>> `, context.cliOptions.flags["log-level"])
 
-  const PATH_KEY = pathKey()
+  // const PATH_KEY = pathKey()
+  const PATH_KEY = 'PATH' // can't use `path-key` from sindresorhus due to ESM import error
   const applicablePath = spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY]
 
   const defaultedEnvs = {

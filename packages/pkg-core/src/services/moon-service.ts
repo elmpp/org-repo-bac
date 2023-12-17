@@ -1,6 +1,6 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { BacError, MessageName } from "@business-as-code/error";
+import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
 import { doExec, DoExecOptions, DoExecOptionsLite as DoExecOptionsLiteOrig } from "../utils/exec-utils";
 import { objectMapAndFilter } from "../utils/object-utils";
 import {
@@ -10,10 +10,14 @@ import {
 import {
   assertIsOk,
   expectIsOk,
+  LifecycleProvidersForAsByMethod,
   MoonQuery,
   ResultPromiseAugment,
   ServiceInitialiseCommonOptions,
+  ServiceMap,
 } from "../__types__";
+import { stringify } from "json5";
+import { JSONParse } from "../utils/format-utils";
 
 declare global {
   namespace Bac {
@@ -29,6 +33,7 @@ declare global {
 type Options = ServiceInitialiseCommonOptions & {
   // /** path to root of instance */
   // workspacePath: AddressPathAbsolute;
+  // packageManager: LifecycleProvidersForAsByMethod<"packageManager">,
 };
 type DoExecOptionsLite = DoExecOptionsLiteOrig & {
   json?: boolean;
@@ -40,6 +45,8 @@ type DoExecOptionsLite = DoExecOptionsLiteOrig & {
 export class MoonService {
   static title = "moon" as const;
   options: Required<Options>;
+  // @ts-expect-error: initialise
+  packageManagerService: ServiceMap['packageManager'][0];
 
   static async initialise(options: Options) {
     const ins = new MoonService(options);
@@ -59,12 +66,22 @@ export class MoonService {
   }
 
   protected async initialise(options: Options) {
+    if (!options.context.detectedPackageManager) {
+      throw new Error('need to make this explicit')
+    }
+    this.packageManagerService = await options.context.serviceFactory('packageManager', {
+      context: options.context,
+      workingPath: '.',
+      packageManager: options.context.detectedPackageManager,
+    })
+
     try {
       await this.getVersion();
     } catch (err) {
-      throw new BacError(
+      throw new BacErrorWrapper(
         MessageName.SERVICE_INITIALISATION_ERROR,
-        `MoonService: moon instance not found at cwd: '${this.options.workspacePath.original}'`
+        `MoonService: moon instance not found at cwd: '${this.options.workspacePath.original}'`,
+        err as Error,
       );
     }
   }
@@ -80,10 +97,11 @@ export class MoonService {
     query?: MoonQuery;
     affected?: boolean;
   } = {}): Promise<MoonQueryProjects> {
+    const command = `query projects${options?.query ? ` '${options.query}'` : ""}${
+      options?.affected ? " --affected" : ""
+    }`
     const res = await this.run({
-      command: `query projects${options?.query ? ` '${options.query}'` : ""}${
-        options?.affected ? " --affected" : ""
-      }`,
+      command,
       options: { json: true, logLevel: 'info' },
     });
     // console.log(`res :>> `, res.res)
@@ -92,7 +110,23 @@ export class MoonService {
 
     // const resJson =
 // console.log(`res :>> `, res)
-    return moonQueryProjects.parse(res.res.parsed);
+    try {
+      const parsed = JSONParse(res.res.outputs.stdout)
+      const validated = moonQueryProjects.parse(parsed);
+      return validated
+    }
+    catch (err) {
+      // console.log(`res.res :>> `, res.res.outputs.stdout)
+      throw BacError.fromError((err as any), {reportCode: MessageName.MOON_SERVICE_PROJECT_FORMAT, extra: (err as any).errors, messagePrefix: `Unable to parse response. Command ran: '${command}'`})
+    }
+
+    // if (parsed.success) {
+    //   return parsed.data
+    // }
+    // else {
+    // }
+
+
 
     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
 
@@ -185,7 +219,7 @@ export class MoonService {
     options?: DoExecOptionsLite;
   }): Promise<any> {
     const args = {
-      command: `pnpm moon ${options.command}${options.options?.json ? " --json" : ""}`,
+      command: `moon ${options.command}${options.options?.json ? " --json" : ""}`,
       options: {
         shell: true,
         ...(options.options ?? {}),
@@ -205,25 +239,51 @@ export class MoonService {
           }
           return val;
         }),
-      } satisfies DoExecOptions,
+      },
     };
 
-    const res = await doExec(args);
-    // expectIsOk(res)
-    // console.log(`res :>> `, res)
-    // process.exit(1)
+    return this.packageManagerService.run(args)
 
-    if (assertIsOk(res) && options.options?.json) {
-      // return JSON.parse(res.res.outputs.stdout)
-      return {
-        ...res,
-        res: {
-          ...res.res,
-          parsed: JSON.parse(res.res.outputs.stdout),
-        },
-      };
-    }
-    return res;
-    // return res.res.outputs.stdout
+    // const args = {
+    //   command: `pnpm moon ${options.command}${options.options?.json ? " --json" : ""}`,
+    //   options: {
+    //     shell: true,
+    //     ...(options.options ?? {}),
+    //     context: this.options.context,
+    //     cwd: addr.pathUtils.join(
+    //       this.options.workspacePath,
+    //       addr.parsePath(this.options.workingPath)
+    //     ) as AddressPathAbsolute,
+    //     // env: {
+    //     //   MOON_LOG: 'info', // needs to be overwritten when calling moon itself in case the current process is from moon (`MOON_LOG: 'moon=info,proto=info,starbase=info'`)
+    //     // },
+    //     // strip out current Moon envs when calling in new process in case we're inside a moon process
+    //     extendEnv: false,
+    //     env: objectMapAndFilter(process.env, (val, key) => {
+    //       if (typeof key === "string" && key.startsWith("MOON_")) {
+    //         return objectMapAndFilter.skip;
+    //       }
+    //       return val;
+    //     }),
+    //   } satisfies DoExecOptions,
+    // };
+
+    // const res = await doExec(args);
+    // // expectIsOk(res)
+    // // console.log(`res :>> `, res)
+    // // process.exit(1)
+
+    // if (assertIsOk(res) && options.options?.json) {
+    //   // return JSON.parse(res.res.outputs.stdout)
+    //   return {
+    //     ...res,
+    //     res: {
+    //       ...res.res,
+    //       parsed: JSON.parse(res.res.outputs.stdout),
+    //     },
+    //   };
+    // }
+    // return res;
+    // // return res.res.outputs.stdout
   }
 }

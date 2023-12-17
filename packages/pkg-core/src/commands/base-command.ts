@@ -8,7 +8,7 @@ import {
   AddressPathRelative,
   assertIsAddressPathRelative,
 } from "@business-as-code/address";
-import { BacError, MessageName } from "@business-as-code/error";
+import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
 // import {
 //   oclif.Command,
 //   Config,
@@ -225,6 +225,8 @@ export abstract class BaseCommand<
       exit?: number | false;
     } & PrettyPrintableError = {}
   ) {
+    console.log(`:>> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL`);
+
     this.logger.error(BacError.fromError(input).toString());
     // console.log(`input :>> `, input)
 
@@ -823,6 +825,8 @@ export abstract class BaseCommand<
       packageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
     };
   }) {
+    // console.log(`:>> handling error`, extra, err, exitProcess);
+
     // const logger = process.stderr.write; // reference does not seem to work
 
     try {
@@ -833,22 +837,33 @@ export abstract class BaseCommand<
       // const shouldPrint = !(err instanceof ExitError)
       // const pretty = prettyPrint(err)
       // const stack = clean(err.stack || '', {pretty: true})
-      const stack = err.stack || "";
+      // const stack = err.stack || "";
 
       // if (shouldPrint) {
       //   logger(err.stack)
       //   // console.error(pretty ? pretty : stack)
       // }
 
+      let msg = `Failure during command invocation.`
+
+      // const errWrapped = BacErrorWrapper()
+
       if (extra) {
-        process.stdout.write(
-          `Failure during command invocation. Command: '${extra.args.join(
-            " "
-          )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
-            extra.cwd
-          }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'` + EOL
-        );
+        msg = `Failure during command invocation. Command: '${extra.args.join(
+          " "
+        )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
+          extra.cwd
+        }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'`
+        // process.stdout.write(
+        //   `Failure during command invocation. Command: '${extra.args.join(
+        //     " "
+        //   )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
+        //     extra.cwd
+        //   }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'` + EOL
+        // );
       }
+
+      // const wrappedErr = new BacErrorWrapper(MessageName.UNNAMED, msg, err)
 
       const exitCode =
         err.oclif?.exit !== undefined && err.oclif?.exit !== false
@@ -856,13 +871,16 @@ export abstract class BaseCommand<
           : 1;
 
       if (process.stderr.write && err.code !== "EEXIT") {
-        if (stack) {
-          // console.error(`stack :>> `, stack);
-          // process.stderr.write(stack)
-          // await logger(stack);
-          // process.stderr.write('bollocks')
-          process.stderr.write(stack + EOL);
-        }
+        // if (stack) {
+        //   // console.error(`stack :>> `, stack);
+        //   // process.stderr.write(stack)
+        //   // await logger(stack);
+        //   // process.stderr.write('bollocks')
+        //   process.stderr.write(stack + EOL);
+        // }
+        // console.log(`err :>> `, require('util').inspect(err, {showHidden: false, depth: undefined, colors: true}))
+
+        process.stderr.write(err.toString() + EOL)
 
         // config.errorLogger.flush()
         try {
@@ -1174,7 +1192,11 @@ export abstract class BaseCommand<
   }
 
   // called after run and catch regardless of whether or not the command errored
-  protected override async finally(_: Error | undefined): Promise<any> {
+  protected override async finally(err: Error | undefined): Promise<any> {
+    // if (err) {
+    //   BaseCommand.handleError({err, exitProcess: false})
+    // }
+
     try {
       const config = oclif.Errors.config;
       if (config.errorLogger) {

@@ -102,7 +102,8 @@ Extra = unknown,
       // console.log(`err :>> `, Object.keys(err))
       return err;
     }
-    const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err) : err.message
+    // const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err) : err.message
+    const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err.message) : err.message
     const nextErr = new BacError<Code, Extra>(
       reportCode ?? (MessageName.UNNAMED as Code),
       nextMessage,

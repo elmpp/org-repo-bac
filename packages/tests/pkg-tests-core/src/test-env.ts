@@ -428,7 +428,7 @@ async function doCreatePersistentTestEnvs(
     /** the current test has declared how its cli should be sourced. This really only applies to stage1 tests */
     cliSource,
     /** the test run has been ran with a cliSource */
-    cliSourceActive: process.env.BAC_TEST_CLISOURCE as
+    cliSourceActive: createPersistentTestEnvVars.cliSource ?? process.env.BAC_TEST_CLISOURCE as
       | "cliRegistry"
       | "cliLinked",
   };
@@ -715,10 +715,10 @@ function validateTestEnv({
   }
   // we expect the cliSource to be present in the environment
   if (
-    !["cliRegistry", "cliLinked"].includes(process.env.BAC_TEST_CLISOURCE ?? "")
+    !testEnvVars.cliSource && !["cliRegistry", "cliLinked"].includes(process.env.BAC_TEST_CLISOURCE ?? "")
   ) {
     throw new Error(
-      `Tests must be ran with BAC_TEST_CLISOURCE. Possible values: ['cliRegistry', 'cliLinked']`
+      `Tests must be have envVar 'cliSource' or be ran with BAC_TEST_CLISOURCE. Possible values: ['cliRegistry', 'cliLinked']`
     );
   }
   if (testEnvVars.stage === "stage1" && !testEnvVars.cacheNamespaceFolder) {

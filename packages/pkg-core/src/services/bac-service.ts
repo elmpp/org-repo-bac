@@ -137,7 +137,7 @@ export class BacService {
   protected async getForAddress(address: AddressPathAbsolute, cacheManager: AddressAbsoluteCacheManager) {
     return cacheManager.get({
       address,
-      cacheOptions: {},
+      // cacheOptions: {},
       onHit(options) {
         // do nothing atm
       },

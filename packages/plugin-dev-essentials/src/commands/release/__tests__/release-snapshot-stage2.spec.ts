@@ -9,6 +9,7 @@ describe("release-snapshot", () => {
   it("builds; creates changeset and publishes to local registry", async () => {
     const persistentTestEnv = await createPersistentTestEnv({
       testName: `release-snapshot:builds; creates changeset and publishes to local registry`,
+      cliSource: "cliRegistry",
     });
     await persistentTestEnv.test(
       {
@@ -27,7 +28,7 @@ describe("release-snapshot", () => {
             "--message",
             `Making a release`,
           ],
-          // { logLevel: "debug" }
+          { logLevel: "debug" }
         );
 
         expectIsOk(res);

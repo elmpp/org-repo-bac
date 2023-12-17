@@ -51,17 +51,25 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   async execute(context: ContextCommand<typeof ReleaseSnapshot>) {
 
-    // const moonService = await context.serviceFactory('moon', {context, workingPath: '.'})
+    const moonService = await context.serviceFactory('moon', {context, workingPath: '.'})
     const releaseService = await context.serviceFactory('release', {context, workingPath: '.'})
 
     const moonQuery = `projectType=library || projectType=application`
 
+    const projects = await moonService.findProjectsJson({query: moonQuery})
+    // let projects: any
+    // try {
+    //   projects = await moonService.findProjectsJson({query: moonQuery})
+    // }
+    // catch (err) {
+    //   console.error(`err :>> `, err)
+    // }
+
     // // find the versions of the releasable projects
-    // const projects = await moonService.findProjects({query: moonQuery})
 
 
 
-    // console.log(`projects :>> `, projects)
+    console.log(`projects :>> `, projects)
     // return
 
     return releaseService.snapshot({

@@ -20,7 +20,7 @@
 
  <!-- - p moon run root:publishDev // -> when failing: p moon run root:buildWatch // -> when unauthenticated: (cd packages/tests/pkg-tests-verdaccio && p run verdaccio:login) -->
 
- - p moon query projects 'projectType=application || projectType=library' # snapshottable projects
+ - bun --bun moon query projects 'projectType=application || projectType=library' # snapshottable projects
 
  PUBLISHING SNAPSHOT LOCAL
   - p dev:runCli release snapshot --message 'this is a snapshot release' --workspacePath /Users/matt/dev/org-repo-moonrepo --logLevel debug // 🌈
