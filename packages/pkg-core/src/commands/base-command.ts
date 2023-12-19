@@ -8,20 +8,10 @@ import {
   AddressPathRelative,
   assertIsAddressPathRelative,
 } from "@business-as-code/address";
-import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
-// import {
-//   oclif.Command,
-//   Config,
-//   Errors,
-//   oclif.Flags,
-//   oclif.Interfaces,
-//   Performance,
-//   ux
-// } from "@oclif/core";
+import { BacError, MessageName } from "@business-as-code/error";
 import * as oclif from "@oclif/core";
 import { OclifError, PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-// import ModuleLoader from "@oclif/core/lib/module-loader";
 import * as ansiColors from "ansi-colors";
 import { EOL } from "os";
 import { filter } from "rxjs/operators";
@@ -47,9 +37,10 @@ import {
   ConfigureWorkspaceLifecycleBase,
   FetchContentLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
-  RunProjectLifecycleBase,
+  // RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
   // SynchroniseWorkspaceLifecycleBase,
+  // ExecuteWorkspaceLifecycleBase,
 } from "../interfaces";
 import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 import { BacService, CacheService, ExecService, MoonService } from "../services";
@@ -225,8 +216,6 @@ export abstract class BaseCommand<
       exit?: number | false;
     } & PrettyPrintableError = {}
   ) {
-    console.log(`:>> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL`);
-
     this.logger.error(BacError.fromError(input).toString());
     // console.log(`input :>> `, input)
 
@@ -648,7 +637,7 @@ export abstract class BaseCommand<
       //   ...acc,
       //   ...staticPluginServices,
       // };
-    }, Promise.resolve(coreServices) as unknown as Promise<ServiceStaticMap>)) as ServiceStaticMap;
+    }, Promise.resolve(coreServices) as unknown as Promise<ServiceStaticMap>)) as unknown as ServiceStaticMap;
 
     // console.log(`res :>> `, res)
 
@@ -831,8 +820,9 @@ export abstract class BaseCommand<
 
     try {
       // console.log(`err :>> `, err.stack)
-      if (!err) err = new Error("no error?");
+      // if (!err) err = new Error("no error?");
       if (err.message === "SIGINT") process.exit(1);
+      // console.log(`err.message :>> `, err.message)
 
       // const shouldPrint = !(err instanceof ExitError)
       // const pretty = prettyPrint(err)
@@ -844,16 +834,22 @@ export abstract class BaseCommand<
       //   // console.error(pretty ? pretty : stack)
       // }
 
-      let msg = `Failure during command invocation.`
+      // console.log(`err.message :>> `, err.message)
+      let wrapped = BacError.fromError(err, {messagePrefix: `Failure during command invocation.`})
+      // process.stderr.write(`:>> BBBBBBBBB`);
+      // let msg = `Failure during command invocation.`
+
+      // console.log(`err.message :>> `, err.message)
 
       // const errWrapped = BacErrorWrapper()
 
+      // console.log(`extra :>> `, extra)
       if (extra) {
-        msg = `Failure during command invocation. Command: '${extra.args.join(
+        wrapped = BacError.fromError(err, {messagePrefix: `Failure during command invocation. Command: '${extra.args.join(
           " "
         )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
           extra.cwd
-        }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'`
+        }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'`})
         // process.stdout.write(
         //   `Failure during command invocation. Command: '${extra.args.join(
         //     " "
@@ -864,23 +860,18 @@ export abstract class BaseCommand<
       }
 
       // const wrappedErr = new BacErrorWrapper(MessageName.UNNAMED, msg, err)
-
       const exitCode =
         err.oclif?.exit !== undefined && err.oclif?.exit !== false
           ? err.oclif?.exit
           : 1;
 
-      if (process.stderr.write && err.code !== "EEXIT") {
-        // if (stack) {
-        //   // console.error(`stack :>> `, stack);
-        //   // process.stderr.write(stack)
-        //   // await logger(stack);
-        //   // process.stderr.write('bollocks')
-        //   process.stderr.write(stack + EOL);
-        // }
-        // console.log(`err :>> `, require('util').inspect(err, {showHidden: false, depth: undefined, colors: true}))
 
-        process.stderr.write(err.toString() + EOL)
+      if (process.stderr.write && err.code !== "EEXIT") {
+
+
+        // console.log(`err :>> `, err.stack) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
+        process.stderr.write(wrapped.stack ?? wrapped.message + EOL)
+        // console.error(wrapped.stack)
 
         // config.errorLogger.flush()
         try {
@@ -1067,7 +1058,7 @@ export abstract class BaseCommand<
         configureWorkspace: new ConfigureWorkspaceLifecycleBase<any>(),
         configureProject: new ConfigureProjectLifecycleBase<any>(),
         fetchContent: new FetchContentLifecycleBase<any>(),
-        runProject: new RunProjectLifecycleBase<any>(),
+        // runProject: new RunProjectLifecycleBase<any>(),
         runWorkspace: new RunWorkspaceLifecycleBase<any>(),
         // synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
       },

@@ -65,4 +65,4 @@ declare global {
 
 // export {};
 
-export type { Config } from "@business-as-code/core";
+export type { Config, ConfigRun, ConfigConfigured } from "@business-as-code/core/src/validation/config";

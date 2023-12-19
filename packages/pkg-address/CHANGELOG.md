@@ -1,5 +1,14 @@
 # @business-as-code/address
 
+## 0.0.0-latest-20231218214927
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-latest-20231218214927
+  - @business-as-code/fslib@0.0.0-latest-20231218214927
+
 ## 0.0.0-latest-20231217101715
 
 ### Patch Changes

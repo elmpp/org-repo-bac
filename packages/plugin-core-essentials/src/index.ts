@@ -6,8 +6,8 @@ import { MyService, YourService } from "./services";
 import {
   InitialiseWorkspaceCoreLifecycle,
   RunWorkspaceMoonLifecycle,
-  RunWorkspaceNodeLifecycle,
-  RunProjectNodeLifecycle,
+  RunWorkspaceExecLifecycle,
+  // RunProjectNodeLifecycle,
 } from "./lifecycles";
 
 export const plugin = {
@@ -15,8 +15,8 @@ export const plugin = {
   lifecycles: [
     InitialiseWorkspaceCoreLifecycle,
     RunWorkspaceMoonLifecycle,
-    RunWorkspaceNodeLifecycle,
-    RunProjectNodeLifecycle,
+    RunWorkspaceExecLifecycle,
+    // RunProjectNodeLifecycle,
     // ConfigureWorkspaceLifecycle,
   ],
   // initialise: (initialiseOptions) => {

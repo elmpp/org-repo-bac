@@ -35,6 +35,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   static override args = {};
 
   async execute(context: ContextCommand<typeof QueryProjects>) {
+
     const moonService = await context.serviceFactory("moon", {
       context: context,
       workingPath: ".",

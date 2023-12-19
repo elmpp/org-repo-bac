@@ -396,7 +396,7 @@ export class TestService {
       try {
         await this.ensureDaemons();
       } catch (err) {
-        console.log(`err :>> `, err);
+        console.log(`err test :>> `, err);
         return {
           success: false as const,
           res: {

@@ -165,19 +165,19 @@ type LifecycleMap<
           "configureProject"
         >
       : never;
-    synchroniseWorkspace: UnionToIntersection<
-      BacLifecyclesNormalised[LProvider]
-    > extends {
-      synchroniseWorkspace: any;
-    }
-      ? Pick<
-          Extract<
-            BacLifecyclesNormalised[LProvider],
-            { synchroniseWorkspace: any }
-          >["synchroniseWorkspace"]["insType"],
-          "synchroniseWorkspace"
-        >
-      : never;
+    // synchroniseWorkspace: UnionToIntersection<
+    //   BacLifecyclesNormalised[LProvider]
+    // > extends {
+    //   synchroniseWorkspace: any;
+    // }
+    //   ? Pick<
+    //       Extract<
+    //         BacLifecyclesNormalised[LProvider],
+    //         { synchroniseWorkspace: any }
+    //       >["synchroniseWorkspace"]["insType"],
+    //       "synchroniseWorkspace"
+    //     >
+    //   : never;
     runWorkspace: UnionToIntersection<
       BacLifecyclesNormalised[LProvider]
     > extends {
@@ -191,19 +191,19 @@ type LifecycleMap<
           "runWorkspace"
         >
       : never;
-    runProject: UnionToIntersection<
-      BacLifecyclesNormalised[LProvider]
-    > extends {
-      runProject: any;
-    }
-      ? Pick<
-          Extract<
-            BacLifecyclesNormalised[LProvider],
-            { runProject: any }
-          >["runProject"]["insType"],
-          "runProject"
-        >
-      : never;
+    // runProject: UnionToIntersection<
+    //   BacLifecyclesNormalised[LProvider]
+    // > extends {
+    //   runProject: any;
+    // }
+    //   ? Pick<
+    //       Extract<
+    //         BacLifecyclesNormalised[LProvider],
+    //         { runProject: any }
+    //       >["runProject"]["insType"],
+    //       "runProject"
+    //     >
+    //   : never;
     fetchContent: UnionToIntersection<
       BacLifecyclesNormalised[LProvider]
     > extends {
@@ -297,22 +297,29 @@ export type LifecycleReturnByMethodAndProviderSingular<
 /** a union of method options that are keyed by provider. Suitable for calling Bail hook types - https://tinyurl.com/2deua67q */
 export type LifecycleOptionsByMethodKeyedByProviderSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Omit<Exclude<
+> = OmitMethodUnion<Exclude<
   ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
   { options: never }
->, '_method'>;
+>>;
+type OmitMethodUnion<T> = T extends any ? Omit<T, '_method'> : never
+// export type LifecycleOptionsByMethodKeyedByProviderSingular<
+//   LMethod extends LifecycleMethods = LifecycleMethods
+// > = Omit<Exclude<
+//   ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
+//   { options: never }
+// >, '_method'>;
 export type LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Omit<Extract<Exclude<
+> = Extract<Exclude<
   ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
   { options: never }
->, {options: any}>, '_method'>;
+>, {options: any}>;
 export type LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<
   LMethod extends LifecycleMethods = LifecycleMethods
-> = Omit<Extract<Exclude<
+> = Extract<Exclude<
   ValueOf<LifecycleOptionsWithoutCommonByProviderMap[LMethod]>,
   { options: never }
->, {options: any}>, '_method'>[];
+>, {options: any}>[];
 export type LifecycleOptionsByMethodKeyedByProviderArray<
   LMethod extends LifecycleMethods = LifecycleMethods
 > = Exclude<
@@ -320,15 +327,15 @@ export type LifecycleOptionsByMethodKeyedByProviderArray<
   { options: never }
 > extends never
   ? never
-  : Omit<Exclude<
+  : Exclude<
       ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
       { options: never }
-    >, '_method'>[];
+    >[];
 /** a specific options object for a provider method. Suitable for lifecycles with a single provider */
 export type LifecycleOptionsByMethodAndProvider<
   LMethod extends LifecycleMethods = LifecycleMethods,
   LProvider extends _LifecycleAllProviders = _LifecycleAllProviders
-> = Omit<SafeGet<
+> = SafeGet<
   Extract<
     Exclude<
       ValueOf<LifecycleOptionsByProviderMap[LMethod]>,
@@ -337,7 +344,7 @@ export type LifecycleOptionsByMethodAndProvider<
     { provider: LProvider }
   >,
   "options"
->, '_method'>;
+>;
 export type LifecycleMethods = _LifecycleAllMethods;
 export type LifecycleProviders = _LifecycleAllProviders;
 export type LifecycleImplementedMethods = NonNullable<

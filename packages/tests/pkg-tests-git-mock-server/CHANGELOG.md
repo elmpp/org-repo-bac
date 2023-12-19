@@ -1,5 +1,12 @@
 # git-http-mock-server
 
+## 0.0.0-latest-20231218214927
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231218214927
+
 ## 0.0.0-latest-20231217101715
 
 ### Patch Changes

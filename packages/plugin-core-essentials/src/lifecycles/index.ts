@@ -2,8 +2,8 @@
 import { InitialiseWorkspaceCoreLifecycle } from "./initialise-workspace-core-lifecycle";
 // import { ConfigureWorkspaceCoreLifecycle } from "./configure-workspace-core-lifecycle";
 import { RunWorkspaceMoonLifecycle } from "./run-workspace-moon-lifecycle";
-import { RunWorkspaceNodeLifecycle } from "./run-workspace-node-lifecycle";
-import { RunProjectNodeLifecycle } from "./run-project-node-lifecycle";
+import { RunWorkspaceExecLifecycle } from "./run-workspace-exec-lifecycle";
+// import { RunProjectNodeLifecycle } from "./run-project-node-lifecycle";
 
 /** we must define them in one place due to augmentation limitations */
 declare global {
@@ -25,15 +25,15 @@ declare global {
           staticType: typeof RunWorkspaceMoonLifecycle;
         };
       };
-      node: {
+      exec: {
         runWorkspace: {
-          insType: RunWorkspaceNodeLifecycle;
-          staticType: typeof RunWorkspaceNodeLifecycle;
+          insType: RunWorkspaceExecLifecycle;
+          staticType: typeof RunWorkspaceExecLifecycle;
         };
-        runProject: {
-          insType: RunProjectNodeLifecycle;
-          staticType: typeof RunProjectNodeLifecycle;
-        };
+        // runProject: {
+        //   insType: RunProjectNodeLifecycle;
+        //   staticType: typeof RunProjectNodeLifecycle;
+        // };
       };
     }
   }
@@ -43,7 +43,7 @@ export {
   InitialiseWorkspaceCoreLifecycle,
   // ConfigureWorkspaceCoreLifecycle,
   RunWorkspaceMoonLifecycle,
-  RunWorkspaceNodeLifecycle,
-  RunProjectNodeLifecycle,
+  RunWorkspaceExecLifecycle,
+  // RunProjectNodeLifecycle,
 };
 // export { ConfigureWorkspaceLifecycle, InitialiseWorkspaceLifecycle };

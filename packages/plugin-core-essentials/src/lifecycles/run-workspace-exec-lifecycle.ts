@@ -22,12 +22,12 @@ import {
 // }
 
 /**
- Runs commands via a node process
+ Runs commands via new process (exec-utils)
  */
-export class RunWorkspaceNodeLifecycle extends RunWorkspaceLifecycleBase<
-  typeof RunWorkspaceNodeLifecycle
+export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
+  typeof RunWorkspaceExecLifecycle
 > {
-  static override title = "node" as const;
+  static override title = "exec" as const;
 
   // override get ctor(): typeof RunWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -67,8 +67,9 @@ export class RunWorkspaceNodeLifecycle extends RunWorkspaceLifecycleBase<
         command,
         options: {
           ...execOptions,
-          cwd: workspacePath, // use runProject#node if needing workingPath
+          cwd: workspacePath, // use runProject#exec if needing workingPath
           context,
+          logLevel: 'debug',
         },
       });
 

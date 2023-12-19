@@ -6,8 +6,11 @@ import {
   execUtils as _execUtils,
 } from "@business-as-code/core";
 
+/**
+
+ */
 export default class ReleaseSnapshot extends BaseCommand<typeof ReleaseSnapshot> {
-  static override description = "Creates a local snapshot release, including build";
+  static override description = "Creates a local snapshot release";
 
   static override examples = [
     `$ oex hello friend --from oclif
@@ -51,12 +54,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   async execute(context: ContextCommand<typeof ReleaseSnapshot>) {
 
-    const moonService = await context.serviceFactory('moon', {context, workingPath: '.'})
+    // const moonService = await context.serviceFactory('moon', {context, workingPath: '.'})
     const releaseService = await context.serviceFactory('release', {context, workingPath: '.'})
 
     const moonQuery = `projectType=library || projectType=application`
 
-    const projects = await moonService.findProjectsJson({query: moonQuery})
+    // const projects = await moonService.findProjectsJson({query: moonQuery})
     // let projects: any
     // try {
     //   projects = await moonService.findProjectsJson({query: moonQuery})
@@ -69,7 +72,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
 
 
-    console.log(`projects :>> `, projects)
+    // console.log(`projects :>> `, projects)
     // return
 
     return releaseService.snapshot({

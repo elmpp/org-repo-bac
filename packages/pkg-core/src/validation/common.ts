@@ -1,10 +1,11 @@
-import { addr, AddressType } from "@business-as-code/address";
+// import { addr, AddressType } from "@business-as-code/address";
 // import type {
 //   ProjectLanguage as MoonLanguage,
 //   ProjectType as MoonProjectType,
 // } from "@moonrepo/types";
 
 import { z } from "zod";
+import { MoonQueryProjects } from "./moon-query-projects";
 // import { Lifecycles } from "../lifecycles";
 
 /** the origin providers. Will be only core plugins so we know their handles upfront */
@@ -58,43 +59,53 @@ export const projectTypeSchema = z.union([
   // z.literal("unknown"),
 ]);
 
-type AddressPathAbsoluteString = string;
-type AddressUrlGitString = string;
-/** we support currently absolute filepaths or our git format with workspace indexing support */
-export const sourceLocation = z
-  .string()
-  .refine<AddressPathAbsoluteString | AddressUrlGitString>(
-    (val): val is AddressPathAbsoluteString | AddressUrlGitString => {
-      const valAddress = addr.parse({ address: val as string, strict: false });
-      if (!valAddress) {
-        return false;
-      }
-      if (
-        !(
-          [
-            "portablePathPosixAbsolute",
-            "portablePathWindowsAbsolute",
-            "githubRepoUrl",
-          ] as (keyof AddressType)[]
-        ).includes(valAddress.type)
-      ) {
-        return false;
-      }
+// type AddressPathAbsoluteString = string;
+// type AddressUrlGitString = string;
+// /** we support currently absolute filepaths or our git format with workspace indexing support */
+// export const sourceLocation = z
+//   .string()
+//   .refine<AddressPathAbsoluteString | AddressUrlGitString>(
+//     (val): val is AddressPathAbsoluteString | AddressUrlGitString => {
+//       const valAddress = addr.parse({ address: val as string, strict: false });
+//       if (!valAddress) {
+//         return false;
+//       }
+//       if (
+//         !(
+//           [
+//             "portablePathPosixAbsolute",
+//             "portablePathWindowsAbsolute",
+//             "githubRepoUrl",
+//           ] as (keyof AddressType)[]
+//         ).includes(valAddress.type)
+//       ) {
+//         return false;
+//       }
 
-      return true;
+//       return true;
 
-      // if (assertIsAddressPathAbsolute(val)) {
-      //   return true
-      // }
-      // if (assertIsAddressUrl(val)) {
-      //   return true
-      // }
-      // return false
-    },
-    { message: "bollocks" }
-  );
+//       // if (assertIsAddressPathAbsolute(val)) {
+//       //   return true
+//       // }
+//       // if (assertIsAddressUrl(val)) {
+//       //   return true
+//       // }
+//       // return false
+//     },
+//     { message: "bollocks" }
+//   );
 
 export type ProjectLanguage = z.infer<typeof languageSchema>;
 export type ProjectLanguageVariant = z.infer<typeof languageVariantSchema>;
-export type Project = z.infer<typeof projectTypeSchema>;
+
+
+// export type Project = z.infer<typeof projectTypeSchema>;
+
+
+type ArrayInfer<T extends Array<unknown>> = T extends Array<infer U> ? U : never
+/** defines the models/dtos that will be passed around app layer. Let's just alias to Moon though, in reality */
+
+type Projects = MoonQueryProjects['projects']
+export type Project = ArrayInfer<Projects>
+
 // export type SourceLocation = z.infer<typeof projectTypeSchema>;

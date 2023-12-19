@@ -13,6 +13,8 @@ import {
 } from "../../__types__";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
+import { MoonQueryProjects } from "../../validation/moon-query-projects";
+import { Project } from "../../validation/entities";
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
@@ -47,7 +49,8 @@ import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./
 // }
 
 /**
- execute a command across many projects within a workspace. Will use moon via the arbitrary extra command feature - https://tinyurl.com/24459t9e
+ execute a command across many projects within a workspace. The command must extend BaseRunCommand (i.e. support moon query syntax as an option)
+ Will use moon via the arbitrary extra command feature - https://tinyurl.com/24459t9e
  */
 export class RunWorkspaceLifecycleBase<
   T extends LifecycleStaticInterface = typeof RunWorkspaceLifecycleBase<any>
@@ -164,6 +167,7 @@ export class RunWorkspaceLifecycleBase<
   // async executeRunWorkspace(options: InferHookParams<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>): Promise<InferHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>> {
   async executeRunWorkspace(
     options: {
+      projects: Project[],
       common: CommonExecuteOptions;
       options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runWorkspace">;
     }

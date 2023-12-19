@@ -1,6 +1,6 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
+import type { ConfigConfigured } from "@business-as-code/cli";
 import {
-  ConfigConfigured,
   Context,
   ContextCommand,
   LifecycleImplementedMethods,
@@ -190,7 +190,7 @@ describe("types", () => {
           | "configureWorkspace"
           // | "synchroniseWorkspace"
           | "runWorkspace"
-          | "runProject"
+          // | "runProject"
         >().toMatchTypeOf<LifecycleImplementedMethods>();
       });
       it("can derive a union of lifecycle method return types with provider key", () => {
@@ -223,7 +223,7 @@ describe("types", () => {
         expectTypeOf<NonImplementers>().toBeNever();
 
         expectTypeOf<keyof AllProviders>().toEqualTypeOf<
-          "options" | "provider" | "_method"
+          "options" | "provider"
         >();
         expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
         expectTypeOf<AllProviders["options"]>().not.toBeAny();
@@ -289,7 +289,7 @@ describe("types", () => {
         expectTypeOf<NonImplementers>().toBeNever();
 
         expectTypeOf<keyof AllProviders>().toEqualTypeOf<
-          "options" | "provider" | "_method"
+          "options" | "provider"
         >();
         expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
         expectTypeOf<AllProviders["options"]>().not.toBeAny();
@@ -318,11 +318,11 @@ describe("types", () => {
           Options,
           { provider: "moon" }
         >["options"]["options"];
-        type _NodeOptions = Extract<Options, { provider: "node" }>;
+        // type _NodeOptions = Extract<Options, { provider: "exec" }>;
         // type NodeOptionsOptions = Extract<Options, {provider: 'node'}>['options']
         type NodeOptionsOptionsOptions = Extract<
           Options,
-          { provider: "node" }
+          { provider: "exec" }
         >["options"]["options"];
 
         expectTypeOf<MoonOptionsOptionsOptions>().toMatchTypeOf<{
@@ -338,7 +338,7 @@ describe("types", () => {
 
         expectTypeOf<Options>().toMatchTypeOf<
           | { provider: "moon"; options: { options: { query?: string } } } // options should be specific to provider
-          | { provider: "node"; options: { options: { execOptions: any } } } // options should be specific to provider
+          | { provider: "exec"; options: { options: { execOptions: any } } } // options should be specific to provider
           | { provider: "packageManager"; options: { options: any } }
         >();
       });

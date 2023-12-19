@@ -88,29 +88,35 @@ Extra = unknown,
 
     const { reportCode, extra, messagePrefix } = options;
     let err = errParam
-
     if (typeof err === 'string') {
       err = new BacError<Code, Extra>(reportCode ?? MessageName.UNNAMED as Code, err)
     }
     else if (
       assertIsBacWrappedError<Extra, Code>(err) ||
       assertIsBacError<Extra, Code>(err)
-    ) {
-      if (reportCode) err.reportCode = reportCode;
-      if (extra) err.extra = extra;
+      ) {
+        if (reportCode) err.reportCode = reportCode;
+        if (extra) err.extra = extra;
 
       // console.log(`err :>> `, Object.keys(err))
       return err;
     }
     // const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err) : err.message
+
     const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err.message) : err.message
+    // const nextErr = Object.assign(new BacError<Code, Extra>(
+    //   reportCode ?? (MessageName.UNNAMED as Code),
+    //   nextMessage,
+    //   { extra }
+    //   ), err); // nextErr.stack = err.stack - silently fails due to readonly
     const nextErr = new BacError<Code, Extra>(
       reportCode ?? (MessageName.UNNAMED as Code),
       nextMessage,
-      { extra }
-    );
-    // @ts-ignore
-    nextErr.stack = err.stack
+      { extra, cause: err }
+      );
+
+      // console.log(`err, nextErr :>> `, err, nextErr) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
+
     return nextErr
   }
 
@@ -138,9 +144,9 @@ Extra = unknown,
   //   err.message = `${prefixMessage}${err.message}`;
   // }
 
-  constructor(code: Code, message: string, { extra }: { extra?: Extra } = {}) {
+  constructor(code: Code, message: string, { extra, cause }: { extra?: Extra, cause?: Error } = {}) {
     // super(BacError.formatMessageName(code, message))
-    super(message);
+    super(message, {cause});
     this.messageRaw = message;
     this.reportCode = code;
     if (extra) {

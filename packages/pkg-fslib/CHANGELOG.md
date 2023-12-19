@@ -1,5 +1,11 @@
 # @business-as-code/fslib
 
+## 0.0.0-latest-20231218214927
+
+### Patch Changes
+
+- Making a release
+
 ## 0.0.0-latest-20231217101715
 
 ### Patch Changes

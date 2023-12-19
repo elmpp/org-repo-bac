@@ -1,6 +1,7 @@
 import {assertIsBacError, assertIsBacWrappedError, BacError, BacErrorWrapper} from '../errors'
 import { MessageName } from '../message-name'
 // import os from 'os'
+import { expect, describe, it } from "bun:test";
 
 const getMockStack1 = (msg: string) => `Error: ${msg}
   at BlahService.method1  (/my-checkout/blah-service-1.tsx:184:26)
@@ -57,7 +58,7 @@ describe('errors', () => {
     })
 
     describe('fromError', () => {
-      it('keeps original stack', async () => {
+      it.only('keeps original stack', async () => {
         let anErrorWithStack: Error
         function throwSite() {
           try {
@@ -75,7 +76,8 @@ describe('errors', () => {
         expect(assertIsBacError(coerced)).toBeTruthy()
         expect(assertIsBacWrappedError(coerced)).toBeFalsy()
 
-        expect(coerced.stack).toMatch('at throwSite')
+        // console.log(`coerced.stack :>> `, coerced.stack)
+        expect(coerced.stack).toMatch('at throwSite') // will update when this is fixed - https://github.com/oven-sh/bun/issues/3311
       })
       it('bacError', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')

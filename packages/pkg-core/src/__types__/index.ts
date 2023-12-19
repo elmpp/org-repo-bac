@@ -8,13 +8,13 @@ import {
   FlagsInfer,
 } from "../commands/base-command";
 import {
+  ConfigureProjectLifecycleBase,
   ConfigureWorkspaceLifecycleBase,
   FetchContentLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
-  RunProjectLifecycleBase,
+  // RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
 } from "../interfaces";
-import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
 // import { Lifecycles } from "../lifecycles";
 import { LifecycleProvidersForAsByMethod, LifecycleStaticInterface } from "./lifecycles";
 import {
@@ -80,7 +80,7 @@ export type ContextCommand<T extends typeof Command> = {
     configureProject: ConfigureProjectLifecycleBase<any>;
     // synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
     runWorkspace: RunWorkspaceLifecycleBase<any>;
-    runProject: RunProjectLifecycleBase<any>;
+    // runProject: RunProjectLifecycleBase<any>;
     fetchContent: FetchContentLifecycleBase<any>;
   };
   /** @internal @private @ignore @hidden @deprecated */

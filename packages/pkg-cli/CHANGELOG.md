@@ -1,5 +1,19 @@
 # @business-as-code/cli
 
+## 0.0.0-latest-20231218214927
+
+### Patch Changes
+
+- Making a release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-latest-20231218214927
+  - @business-as-code/plugin-core-essentials@0.0.0-latest-20231218214927
+  - @business-as-code/plugin-core-git@0.0.0-latest-20231218214927
+  - @business-as-code/plugin-core-package-manager-bun@0.0.0-latest-20231218214927
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-latest-20231218214927
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-latest-20231218214927
+  - @business-as-code/plugin-core-subrepo@0.0.0-latest-20231218214927
+
 ## 0.0.0-latest-20231217101715
 
 ### Patch Changes

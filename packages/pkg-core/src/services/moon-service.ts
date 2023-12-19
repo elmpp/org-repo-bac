@@ -93,7 +93,10 @@ export class MoonService {
     // const res = this.run({command: '--version'})
   }
 
-  async findProjectsJson(options: {
+  /**
+   e.g. `projectType=library || projectType=application`
+   */
+  async findProjects(options: {
     query?: MoonQuery;
     affected?: boolean;
   } = {}): Promise<MoonQueryProjects> {
@@ -132,6 +135,48 @@ export class MoonService {
 
     // console.log(`projects :>> `, projects)
   }
+//   /**
+//    e.g. `projectType=library || projectType=application`
+//    */
+//   async findProjectsJson(options: {
+//     query?: MoonQuery;
+//     affected?: boolean;
+//   } = {}): Promise<MoonQueryProjects> {
+//     const command = `query projects${options?.query ? ` '${options.query}'` : ""}${
+//       options?.affected ? " --affected" : ""
+//     }`
+//     const res = await this.run({
+//       command,
+//       options: { json: true, logLevel: 'info' },
+//     });
+//     // console.log(`res :>> `, res.res)
+
+//     expectIsOk(res)
+
+//     // const resJson =
+// // console.log(`res :>> `, res)
+//     try {
+//       const parsed = JSONParse(res.res.outputs.stdout)
+//       const validated = moonQueryProjects.parse(parsed);
+//       return validated
+//     }
+//     catch (err) {
+//       // console.log(`res.res :>> `, res.res.outputs.stdout)
+//       throw BacError.fromError((err as any), {reportCode: MessageName.MOON_SERVICE_PROJECT_FORMAT, extra: (err as any).errors, messagePrefix: `Unable to parse response. Command ran: '${command}'`})
+//     }
+
+//     // if (parsed.success) {
+//     //   return parsed.data
+//     // }
+//     // else {
+//     // }
+
+
+
+//     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
+
+//     // console.log(`projects :>> `, projects)
+//   }
 
 
 
