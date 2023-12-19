@@ -5,6 +5,7 @@ import { AddressPathAbsolute } from "@business-as-code/address";
 export type CommonExecuteOptions = {
   context: Context;
   workspacePath: AddressPathAbsolute;
+  workingPath: string,
 }
 export type InferHookParams<T extends Hook<any, any, any>> = T extends Hook<
   infer T,

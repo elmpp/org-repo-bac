@@ -64,6 +64,7 @@ describe("fetch-content", () => {
           common: {
             context: testContext.context,
             workspacePath: testContext.testEnvVars.workspacePath,
+            workingPath: '.',
             cacheService,
           },
           options: [
@@ -134,6 +135,7 @@ describe("fetch-content", () => {
               common: {
                 context: testContext.context,
                 workspacePath: testContext.testEnvVars.workspacePath,
+                workingPath: '.',
                 cacheService,
               },
               options: [

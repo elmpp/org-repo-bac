@@ -66,6 +66,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           common: {
             context,
             workspacePath: context.workspacePath,
+            workingPath: '.',
           },
           options: {
             config,

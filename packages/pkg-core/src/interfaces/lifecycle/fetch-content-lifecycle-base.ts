@@ -112,8 +112,9 @@ export class FetchContentLifecycleBase<
 
   protected beforeFetchContent():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
         // workingPath: string;
         // options: FetchOptions;
         cacheService: ServiceMap['cache'][0],
@@ -125,8 +126,9 @@ export class FetchContentLifecycleBase<
 
   protected fetchContent():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // options: FetchOptions;
         cacheService: ServiceMap['cache'][0],
@@ -138,8 +140,9 @@ export class FetchContentLifecycleBase<
 
   protected afterFetchContent():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // options: FetchOptions;
         cacheService: ServiceMap['cache'][0],

@@ -11,8 +11,7 @@ import {
 } from "../../__types__";
 import { constants } from "../../constants";
 import { AsyncHook, TapFn } from "../../hooks";
-import { Config } from "../../validation";
-import { ConfigConfigured } from "../../validation/config";
+import { ConfigConfigured, Config } from "../../validation/config";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
 
@@ -181,8 +180,9 @@ export class ConfigureWorkspaceLifecycleBase<
 
   protected beforeConfigureWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // config: Config;
         options: any;
@@ -193,8 +193,9 @@ export class ConfigureWorkspaceLifecycleBase<
 
   protected configureWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // config: Config;
         options: any;
@@ -205,8 +206,9 @@ export class ConfigureWorkspaceLifecycleBase<
 
   protected afterConfigureWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // config: Config;
         options: any;

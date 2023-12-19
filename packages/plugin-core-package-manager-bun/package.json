@@ -37,6 +37,11 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./src/commands"
+    "commands": "./src/commands",
+    "topics": {
+      "bun": {
+        "description": "Bun actions"
+      }
+    }
   }
 }

@@ -68,6 +68,7 @@ describe("configure workspace", () => {
             common: {
               context: testContext.context,
               workspacePath: testContext.testEnvVars.workspacePath,
+              workingPath: '.',
             },
             options: {
               config: configRes.res,

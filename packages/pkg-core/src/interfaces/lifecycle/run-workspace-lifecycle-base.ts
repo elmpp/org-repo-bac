@@ -1,20 +1,17 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
 import { BacError } from "@business-as-code/error";
 import { AsyncHook, TapFn } from "../../hooks";
 // import { AsyncSeriesBailHook, AsyncSeriesHook, Hook } from "tapable";
 import {
-  Context,
   ContextCommand,
   LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray,
   LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
-  assertIsResult,
+  assertIsResult
 } from "../../__types__";
+import { Project } from "../../validation/common";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
-import { MoonQueryProjects } from "../../validation/moon-query-projects";
-import { Project } from "../../validation/entities";
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
@@ -199,8 +196,9 @@ export class RunWorkspaceLifecycleBase<
 
   protected beforeRunWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         options: any;
       }) => Promise<unknown | void>)
@@ -208,8 +206,9 @@ export class RunWorkspaceLifecycleBase<
 
   protected runWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         options: any;
       }) => Promise<unknown | void>)
@@ -217,8 +216,9 @@ export class RunWorkspaceLifecycleBase<
 
   protected afterRunWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         options: any;
       }) => Promise<unknown | void>)

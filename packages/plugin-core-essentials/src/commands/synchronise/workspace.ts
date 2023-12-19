@@ -74,6 +74,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           common: {
             context,
             workspacePath: context.workspacePath,
+            workingPath: '.',
           },
           options: {
             config,
@@ -131,6 +132,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
             common: {
               context,
               workspacePath: context.workspacePath,
+              workingPath: '.',
               cacheService,
             },
             // options: fetchOptions,

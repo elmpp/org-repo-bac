@@ -181,6 +181,7 @@ export default class BacTestsRealpath extends BaseCommand<
       common: {
         context,
         workspacePath: context.workspacePath,
+        workingPath: '.',
       },
       options: [
         {

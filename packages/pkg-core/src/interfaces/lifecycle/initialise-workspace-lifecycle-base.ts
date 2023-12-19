@@ -126,8 +126,9 @@ export class InitialiseWorkspaceLifecycleBase<
 
   protected beforeInitialiseWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // options: {
         //   name: string;
@@ -144,8 +145,9 @@ export class InitialiseWorkspaceLifecycleBase<
 
   protected initialiseWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         // options: {
         //   name: string;
@@ -162,8 +164,9 @@ export class InitialiseWorkspaceLifecycleBase<
 
   protected afterInitialiseWorkspace():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        // context: Context;
+        // workspacePath: AddressPathAbsolute;
+        common: CommonExecuteOptions,
         // workingPath: string;
         options: any;
         // options: {

@@ -245,7 +245,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         common: {
           context,
           workspacePath,
-          // workingPath: ".",
+          workingPath: ".",
         },
         options: [
           {
@@ -300,6 +300,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         common: {
           context,
           workspacePath,
+          workingPath: '.',
         },
         options: {
           config: configWithoutCommonRes.res,

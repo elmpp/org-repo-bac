@@ -393,9 +393,10 @@ type LifecycleOptionsType<
 > = "options" extends keyof Parameters<NonNullable<ReturnType<T>>>[0]
   ? true extends IsEmptyObject<
       Parameters<NonNullable<ReturnType<T>>>[0]["options"]
+      // Parameters<NonNullable<ReturnType<T>>>[0]["options"]
     >
     ? Record<string, never>
-    : Parameters<NonNullable<ReturnType<T>>>[0] // note that we omit the complex common types
+    : Parameters<NonNullable<ReturnType<T>>>[0]['common'] // note that we omit the complex common types
   : // : Parameters<ReturnType<T>>[0]["options"]
     Record<string, never>; // we use the convention of providers needing their tapable options through .options
 
