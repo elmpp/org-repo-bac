@@ -43,6 +43,9 @@
   "oclif": {
     "commands": "./src/commands",
     "topics": {
+      "build": {
+        "description": "Build actions"
+      },
       "release": {
         "description": "Release actions"
       }

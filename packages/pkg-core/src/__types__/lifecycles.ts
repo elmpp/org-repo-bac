@@ -191,19 +191,19 @@ type LifecycleMap<
           "runWorkspace"
         >
       : never;
-    // runProject: UnionToIntersection<
-    //   BacLifecyclesNormalised[LProvider]
-    // > extends {
-    //   runProject: any;
-    // }
-    //   ? Pick<
-    //       Extract<
-    //         BacLifecyclesNormalised[LProvider],
-    //         { runProject: any }
-    //       >["runProject"]["insType"],
-    //       "runProject"
-    //     >
-    //   : never;
+    runProject: UnionToIntersection<
+      BacLifecyclesNormalised[LProvider]
+    > extends {
+      runProject: any;
+    }
+      ? Pick<
+          Extract<
+            BacLifecyclesNormalised[LProvider],
+            { runProject: any }
+          >["runProject"]["insType"],
+          "runProject"
+        >
+      : never;
     fetchContent: UnionToIntersection<
       BacLifecyclesNormalised[LProvider]
     > extends {

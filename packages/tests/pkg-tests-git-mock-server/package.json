@@ -31,7 +31,7 @@
     "//gitServerSshAnonymous:isRunning": "bun ./ssh-daemon-anonymous.js isRunning || lsof -i 4tcp:2224 -sTCP:LISTEN",
     "///gitServerSshAnonymous:isRunning": "bun ./ssh-daemon-anonymous.js isRunning",
     "gitServerSshAnonymous:isRunning": "lsof -i 4tcp:2224 -sTCP:LISTEN",
-    "gitServerSshAnonymous:startBackground": "bun ./ssh-daemon-anonymous.js start",
+    "gitServerSshAnonymous:startBackground": "bun run --env-file=../../../.env.local ./ssh-daemon-anonymous.js start",
     "//gitServerSshAnonymous:stopBackground": "bun ./ssh-daemon-anonymous.js stop || kill-port 2224 || true; ! pnpm run gitServerSshAnonymous:isRunning",
     "gitServerSshAnonymous:stopBackground": "kill-port 2224 || true"
   },

@@ -97,7 +97,8 @@ new Promise((resolve, reject) => {
   // console.log(`parsed pubKey :>> `, pubKey)
 
   // var pubKey = ssh2.utils.genPublicKey(ssh2.utils.parseKey(keypair.pubKey))
-  var f = fixturez(config.root, { root: process.cwd(), glob: config.glob });
+  // var f = fixturez(config.root, { root: process.cwd(), glob: config.glob });
+  var f = fixturez(config.root, {root: config.root, glob: config.glob})
 
   if (process.env.GIT_SSH_MOCK_SERVER_PASSWORD) {
     throw new Error(`process.env.GIT_SSH_MOCK_SERVER_PASSWORD must be present`)

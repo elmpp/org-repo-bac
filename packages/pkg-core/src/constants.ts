@@ -1,32 +1,46 @@
-import dotenv from "dotenv-flow";
+// import dotenv from "dotenv-flow";
+// import * as path from 'path'
 
+// const workspaceBase = path.resolve(__dirname, '../../..')
+// console.log(`workspaceBase :>> `, workspaceBase, __dirname)
+// const dotenvParsed = dotenv.config({
+//   path: workspaceBase,
+//   // silent: true,
+// });
+// if (dotenvParsed.error) {
+//   throw new Error(`Unable to read env file`);
+// }
 
-const dotenvParsed = dotenv.config({
-  silent: true,
-});
-if (dotenvParsed.error) {
-  throw new Error(`Unable to read env file`);
+const fromEnv = {
+  TMP_ROOT: '',
+  VERDACCIO_STORAGE_PATH: '',
+  TESTS_STORAGE_PATH: '',
+  CACHE_STORAGE_PATH: '',
+  EXEC_STORAGE_PATH: '',
+  GIT_HTTP_MOCK_SERVER_ROOT: '',
+  GIT_HTTP_MOCK_SERVER_PORT: '',
+  GIT_SSH_PUBKEY_MOCK_SERVER_ROOT: '',
+  GIT_SSH_PUBKEY_MOCK_SERVER_PORT: '',
+  // GIT_SSH_PASSWORD_MOCK_SERVER_ROOT:'',
+  // GIT_SSH_PASSWORD_MOCK_SERVER_PORT:'',
+  // GIT_SSH_MOCK_SERVER_PASSWORD:'',
+  GIT_SSH_ANONYMOUS_MOCK_SERVER_ROOT: '',
+  GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT: '',
+  // used to influence other ssh servers and done internally
+  // GIT_SSH_MOCK_SERVER_PUBKEY:'',
 }
+
+const extractFromEnv = () => Object.fromEntries(Object.entries(fromEnv).map(([key, val]) => {
+  if (process.env[key] === undefined) {
+    throw new Error(`Env value not available '${key}'`)
+  }
+  return [key, process.env[key]]
+}))
+
 export const constants = {
   // the following will be replaced from the .env. Here for the type inferrence
-  ...{
-    TMP_ROOT:'',
-    VERDACCIO_STORAGE_PATH:'',
-    TESTS_STORAGE_PATH:'',
-    CACHE_STORAGE_PATH:'',
-    EXEC_STORAGE_PATH:'',
-    GIT_HTTP_MOCK_SERVER_ROOT:'',
-    GIT_HTTP_MOCK_SERVER_PORT:'',
-    GIT_SSH_PUBKEY_MOCK_SERVER_ROOT:'',
-    GIT_SSH_PUBKEY_MOCK_SERVER_PORT:'',
-    // GIT_SSH_PASSWORD_MOCK_SERVER_ROOT:'',
-    // GIT_SSH_PASSWORD_MOCK_SERVER_PORT:'',
-    // GIT_SSH_MOCK_SERVER_PASSWORD:'',
-    GIT_SSH_ANONYMOUS_MOCK_SERVER_ROOT:'',
-    GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT:'',
-    // used to influence other ssh servers and done internally
-    // GIT_SSH_MOCK_SERVER_PUBKEY:'',
-  },
+  ...fromEnv,
+
   ...{
 
     // /** {@linkInspirationhttps://tinyurl.com/2z9go29w | Mui} */
@@ -96,7 +110,7 @@ export const constants = {
 
     // // when needing a concrete Mnt.MapUtil.StackKeys
   },
-  ...dotenvParsed.parsed,
+  ...extractFromEnv(),
 };
 
 // console.log(`constants :>> `, constants, process.env)

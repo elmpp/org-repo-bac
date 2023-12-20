@@ -26,7 +26,8 @@
     "oclif"
   ],
   "bin": {
-    "bac": "src/bin/run.ts",
+    "bac": "src/bin/run.js",
+    "bac-src": "src/bin/run.ts",
     "bac-test": "src/bin/dev.js"
   },
   "dependencies": {

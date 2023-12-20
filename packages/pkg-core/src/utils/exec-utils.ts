@@ -142,6 +142,7 @@ export async function doExec({
   const PATH_KEY = 'PATH' // can't use `path-key` from sindresorhus due to ESM import error
   const applicablePath = spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY]
 
+  // console.log(`constants :>> `, constants)
   const defaultedEnvs = {
     FORCE_COLOR: "true",
     ...(spawnOptions.env ?? {}),

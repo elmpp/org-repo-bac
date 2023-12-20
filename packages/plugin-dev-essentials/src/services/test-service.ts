@@ -37,7 +37,7 @@ export class TestService {
     return ins;
   }
 
-  constructor(protected options: Options) {}
+  constructor(protected options: Options) { }
 
   /**
    the following need to be running to run our tests:
@@ -362,12 +362,30 @@ export class TestService {
   }
 
   async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
-    const moonService = await this.options.context.serviceFactory("moon", {
+    const bacService = await this.options.context.serviceFactory("bac", {
       context: this.options.context,
       workingPath: ".",
+      packageManager: 'packageManagerBun',
     });
-    return moonService.runTask({ command: "publishDev" });
+    // return bacService.runTask({ command: "publishDev" });
+
+
+    const buildRes = await bacService.run({ command: 'build bun-bundle' })
+    expectIsOk(buildRes)
+
+    const snapshotRes = await bacService.run({ command: `release snapshot --message 'this is a snapshot release' --workspacePath $workspaceRoot --tag bollards --logLevel debug` })
+    expectIsOk(snapshotRes)
+
+    return snapshotRes
   }
+  // with bun, don't need the moon layer
+  // async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
+  //   const moonService = await this.options.context.serviceFactory("moon", {
+  //     context: this.options.context,
+  //     workingPath: ".",
+  //   });
+  //   return moonService.runTask({ command: "publishDev" });
+  // }
 
   async test({
     testFileMatch,
@@ -444,11 +462,10 @@ export class TestService {
       );
 
       const stage0Res = await packageManagerService.run({
-        command: `${stage === "stage0" ? `dev:testWatch` : `dev:test`} ${
-          testFileMatch && stage === "stage0"
+        command: `${stage === "stage0" ? `dev:testWatch` : `dev:test`} ${testFileMatch && stage === "stage0"
             ? ` '${testFileMatch}-stage0'`
             : ` 'stage0'`
-        }`,
+          }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -468,11 +485,10 @@ export class TestService {
       );
 
       const stage1Res = await packageManagerService.run({
-        command: `${stage === "stage1" ? `dev:testWatch` : `dev:test`} ${
-          testFileMatch && stage === "stage1"
+        command: `${stage === "stage1" ? `dev:testWatch` : `dev:test`} ${testFileMatch && stage === "stage1"
             ? ` '${testFileMatch}-stage1'`
             : ` 'stage1'`
-        }`,
+          }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -492,11 +508,10 @@ export class TestService {
       );
 
       const stage2Res = await packageManagerService.run({
-        command: `${stage === "stage2" ? `dev:testWatch` : `dev:test`} ${
-          testFileMatch && stage === "stage2"
+        command: `${stage === "stage2" ? `dev:testWatch` : `dev:test`} ${testFileMatch && stage === "stage2"
             ? ` '${testFileMatch}-stage2'`
             : ` 'stage2'`
-        }`,
+          }`,
         options: {
           env: {
             BAC_TEST_CLISOURCE: cliSource,
@@ -516,9 +531,8 @@ export class TestService {
     );
 
     const stageXRes = await packageManagerService.run({
-      command: `${watch ? `dev:testWatch` : `dev:test`} ${
-        testFileMatch ? ` '${testFileMatch}-${stage}'` : ` '${stage}'`
-      }`,
+      command: `${watch ? `dev:testWatch` : `dev:test`} ${testFileMatch ? ` '${testFileMatch}-${stage}'` : ` '${stage}'`
+        }`,
       options: {
         env: {
           BAC_TEST_CLISOURCE: cliSource,

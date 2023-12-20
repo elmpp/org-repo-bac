@@ -40,6 +40,9 @@
   "editor.formatOnSave": false,
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   }
   // ---------- moon prettier setup EOF ----
 }

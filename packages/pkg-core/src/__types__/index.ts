@@ -12,6 +12,7 @@ import {
   ConfigureWorkspaceLifecycleBase,
   FetchContentLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
+  RunProjectLifecycleBase,
   // RunProjectLifecycleBase,
   RunWorkspaceLifecycleBase,
 } from "../interfaces";
@@ -80,7 +81,7 @@ export type ContextCommand<T extends typeof Command> = {
     configureProject: ConfigureProjectLifecycleBase<any>;
     // synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
     runWorkspace: RunWorkspaceLifecycleBase<any>;
-    // runProject: RunProjectLifecycleBase<any>;
+    runProject: RunProjectLifecycleBase<any>;
     fetchContent: FetchContentLifecycleBase<any>;
   };
   /** @internal @private @ignore @hidden @deprecated */

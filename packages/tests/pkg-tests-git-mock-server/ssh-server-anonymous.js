@@ -16,6 +16,9 @@ var config = {
   route: process.env.GIT_SSH_MOCK_SERVER_ROUTE || '/'
 }
 
+console.log(`constants :>> `, constants, config)
+// console.log(`process.env :>> `, process.env)
+
 const keyPaths = {
   pub: path.join(config.root, 'id_rsa.pub'),
   prv: path.join(config.root, 'id_rsa'),
@@ -87,7 +90,8 @@ new Promise((resolve, reject) => {
   // console.log(`parsed pubKey anonymous :>> `, pubKey)
 
   // var pubKey = ssh2.utils.genPublicKey(ssh2.utils.parseKey(keypair.pubKey))
-  var f = fixturez(config.root, {root: process.cwd(), glob: config.glob})
+  // var f = fixturez(config.root, {root: process.cwd(), glob: config.glob})
+  var f = fixturez(config.root, {root: config.root, glob: config.glob})
 
   const PASSWORD_BUFFER = Buffer.from(process.env.GIT_SSH_MOCK_SERVER_PASSWORD || '')
 

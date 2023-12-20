@@ -1,6 +1,6 @@
 import * as oclif from "@oclif/core";
-import path from "path";
-import { BaseCommand } from "@business-as-code/core";
+import * as path from "path";
+import { BaseCommand, handleCommandError } from "@business-as-code/core";
 
 const project = path.join(__dirname, "../..", "tsconfig.json");
 
@@ -17,7 +17,7 @@ oclif
   .run()
   .then(() => oclif.flush())
   .catch((err) => {
-    return BaseCommand.handleError({ err, exitProcess: true });
+    return handleCommandError({ err, exitProcess: true });
   });
 
 // .catch(oclif.Errors.handle);
