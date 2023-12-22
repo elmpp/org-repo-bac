@@ -13,6 +13,7 @@ import {
 } from "../../__types__";
 import { CommonExecuteOptions } from "./__types__";
 import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
+import { Project } from "../../validation/common";
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
@@ -157,6 +158,7 @@ export class RunProjectLifecycleBase<
   // async executeRunProject(options: InferHookParams<typeof RunProjectLifecycleBase.hooks.runProject>): Promise<InferHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>> {
   async executeRunProject(
     options: {
+      projects: Project[],
       common: CommonExecuteOptions;
       options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runProject">;
     }

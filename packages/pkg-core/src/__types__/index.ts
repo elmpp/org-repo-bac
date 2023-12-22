@@ -109,6 +109,17 @@ export type Context = {
    Note that this will differ from values in services etc
    */
   workspacePath: AddressPathAbsolute;
+
+  lifecycles: {
+    initialiseWorkspace: InitialiseWorkspaceLifecycleBase<any>;
+    configureWorkspace: ConfigureWorkspaceLifecycleBase<any>;
+    configureProject: ConfigureProjectLifecycleBase<any>;
+    // synchroniseWorkspace: SynchroniseWorkspaceLifecycleBase<any>;
+    runWorkspace: RunWorkspaceLifecycleBase<any>;
+    runProject: RunProjectLifecycleBase<any>;
+    fetchContent: FetchContentLifecycleBase<any>;
+  };
+
   /** @internal @private @ignore @hidden @deprecated */
   toJSON: () => string;
 };

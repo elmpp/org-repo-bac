@@ -28,7 +28,7 @@
   "bin": {
     "bac": "src/bin/run.js",
     "bac-src": "src/bin/run.ts",
-    "bac-test": "src/bin/dev.js"
+    "bac-test": "src/bin/dev.ts"
   },
   "dependencies": {
     "@business-as-code/core": "workspace:*",

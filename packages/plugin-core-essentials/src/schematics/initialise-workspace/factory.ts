@@ -81,7 +81,8 @@ export default function (options: Schema): Rule {
               expectIsOk(await service.link({path: options.cliPath, pkg: '@business-as-code/cli', save: true}))
             }
             else {
-              expectIsOk(await service.add({pkg: '@business-as-code/cli@workspace:*'}))
+              expectIsOk(await service.add({pkg: '@business-as-code/cli'}))
+              // expectIsOk(await service.add({pkg: '@business-as-code/cli@workspace:*'}))
             }
 
             const res = await service.install({logLevel: 'info'})

@@ -126,7 +126,7 @@ export class PackageManagerBunService extends BasePackageManagerService<Options>
 
     /** probably not needed but helps with tests */
     return this.exec({
-      command: `run ${options.command}`,
+      command: `run --bun ${options.command}`,
       options: {
         ...options.options,
         ...(cwd ? {cwd} : {}),

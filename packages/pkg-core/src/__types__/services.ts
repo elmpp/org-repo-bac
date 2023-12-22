@@ -1,5 +1,5 @@
 import { AddressPathAbsolute } from "@business-as-code/address";
-import { Context } from "./index";
+import { Context, ContextCommand } from "./index";
 import { SetOptional, ValueOf } from "./lib";
 
 /** instance types of all loaded services */

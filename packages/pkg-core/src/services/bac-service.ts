@@ -17,8 +17,7 @@ import { AddressAbsoluteCacheManager } from "@business-as-code/core/src/cache/ad
 import { constants } from "../constants";
 import { execUtils, formatUtils, fsUtils, hashUtils } from "../utils";
 import { tmpResolvableFolder } from "../utils/fs-utils";
-import { Config } from "../validation";
-import { ConfigConfigured } from "../validation/config";
+import { Config, ConfigConfigured } from "../validation/config";
 
 declare global {
   namespace Bac {
@@ -227,7 +226,7 @@ export class BacService {
     options?: DoExecOptionsLite;
   }): Promise<any> {
     const args = {
-      command: `bac ${options.command}`,
+      command: `bac-src ${options.command}`,
       options: {
         shell: true,
         ...(options.options ?? {}),

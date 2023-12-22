@@ -67,7 +67,7 @@ export class MoonService {
 
   protected async initialise(options: Options) {
     if (!options.context.detectedPackageManager) {
-      throw new Error('need to make this explicit')
+      throw new Error('need to have a general error type to throw here')
     }
     this.packageManagerService = await options.context.serviceFactory('packageManager', {
       context: options.context,

@@ -5,6 +5,7 @@ import {
   expectIsOk,
   assertIsOk,
   ok,
+  mapExecUtils,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 
@@ -361,14 +362,50 @@ export class TestService {
     // })()
   }
 
+  async cleanProjects(): Promise<Result<{}, { error: BacError }>> {
+    const moonService = await this.options.context.serviceFactory('moon', {
+      context: this.options.context,
+      workingPath: '.',
+    })
+    const moonProjects = await moonService.findProjects({ query: 'projectType=library || projectType=application' })
+
+    const mapRes = await mapExecUtils.doMapExec({
+      command: `echo \$(pwd)`,
+      projects: moonProjects.projects,
+      execOptions: {
+        context: this.options.context,
+        shell: true,
+      }
+    })
+    // console.log(`mapRes :>> `, mapRes)
+    expectIsOk(mapRes)
+
+
+    // NEED TO EXTENDS EXEC-UTIL OR LOOK AT THAT MICROSOFT TOOL. SHOULD BE ABLE TO EXEC ARBITRARY STUFF ACROSS PROJECTS
+
+    // console.log(`projects :>> `, projects)
+    // await this.options.context.lifecycles.runProject.executeRunProject({common: {
+    //   context: this.options.context,
+    //   workspacePath: this.options.workspacePath,
+    //   workingPath: '.',
+    // }, projects: moonProjects.projects, options: [
+    //   {
+
+    //   }
+    // ]})
+  }
+
   async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
+
     const bacService = await this.options.context.serviceFactory("bac", {
       context: this.options.context,
       workingPath: ".",
       packageManager: 'packageManagerBun',
     });
     // return bacService.runTask({ command: "publishDev" });
+    console.log(`:>> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL`);
 
+    await this.cleanProjects()
 
     const buildRes = await bacService.run({ command: 'build bun-bundle' })
     expectIsOk(buildRes)
@@ -378,6 +415,7 @@ export class TestService {
 
     return snapshotRes
   }
+
   // with bun, don't need the moon layer
   // async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
   //   const moonService = await this.options.context.serviceFactory("moon", {
@@ -463,8 +501,8 @@ export class TestService {
 
       const stage0Res = await packageManagerService.run({
         command: `${stage === "stage0" ? `dev:testWatch` : `dev:test`} ${testFileMatch && stage === "stage0"
-            ? ` '${testFileMatch}-stage0'`
-            : ` 'stage0'`
+          ? ` '${testFileMatch}-stage0'`
+          : ` 'stage0'`
           }`,
         options: {
           env: {
@@ -486,8 +524,8 @@ export class TestService {
 
       const stage1Res = await packageManagerService.run({
         command: `${stage === "stage1" ? `dev:testWatch` : `dev:test`} ${testFileMatch && stage === "stage1"
-            ? ` '${testFileMatch}-stage1'`
-            : ` 'stage1'`
+          ? ` '${testFileMatch}-stage1'`
+          : ` 'stage1'`
           }`,
         options: {
           env: {
@@ -509,8 +547,8 @@ export class TestService {
 
       const stage2Res = await packageManagerService.run({
         command: `${stage === "stage2" ? `dev:testWatch` : `dev:test`} ${testFileMatch && stage === "stage2"
-            ? ` '${testFileMatch}-stage2'`
-            : ` 'stage2'`
+          ? ` '${testFileMatch}-stage2'`
+          : ` 'stage2'`
           }`,
         options: {
           env: {

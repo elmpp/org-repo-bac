@@ -164,7 +164,6 @@ export class RunWorkspaceLifecycleBase<
   // async executeRunWorkspace(options: InferHookParams<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>): Promise<InferHookReturn<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>> {
   async executeRunWorkspace(
     options: {
-      projects: Project[],
       common: CommonExecuteOptions;
       options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runWorkspace">;
     }

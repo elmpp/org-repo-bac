@@ -79,7 +79,7 @@ type ExecError = BacError<
 >;
 
 /**
- Launches node process. Handles output capturing and gives a promise-based approach
+ Launches new process. Handles output capturing and gives a promise-based approach
  */
 export async function doExec({
   command,

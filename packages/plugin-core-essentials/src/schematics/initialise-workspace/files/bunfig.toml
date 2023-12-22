@@ -1,0 +1,4 @@
+<% if (cliRegistry) { %>
+[install.scopes]
+"@business-as-code" = { username = "foo", password = "bar", url = "http://localhost:4873" }
+<% } %>

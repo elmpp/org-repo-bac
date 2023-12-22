@@ -34,8 +34,10 @@ export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
   // }
 
   override runWorkspace(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     options: {
       command: MoonCommand;
@@ -43,8 +45,10 @@ export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
     };
   }) => ReturnType<typeof execUtils.doExec> {
     return async ({
-      context,
-      workspacePath,
+      common: {
+        context,
+        workspacePath,
+      },
       options: { command, execOptions },
     }) => {
       // if (!(await xfs.existsPromise(workspacePath.address))) {

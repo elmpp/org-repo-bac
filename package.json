@@ -13,6 +13,7 @@
     "dev:runCliNode": "NODE_ENV=development TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
     "dev:runCli": "NODE_ENV=development bun --env-file=.env.local packages/pkg-cli/src/bin/run.ts",
     "dev:runCliWatch": "NODE_ENV=development bun --watch --env-file=.env.local packages/pkg-cli/src/bin/run.ts",
+    "dev:runCliTest": "NODE_ENV=test bun --env-file=.env.local packages/pkg-cli/src/bin/run.ts test test",
     "dev:runCliProd": "NODE_ENV=development bun --env-file=.env.local packages/pkg-cli/src/bin/run.js",
     "dev:runCliProdWatch": "NODE_ENV=development bun --watch --env-file=.env.local packages/pkg-cli/src/bin/run.js",
     "///dev:runCliWatch": "TS_NODE_DEBUG=false ts-node-dev --transpile-only --project ./tsconfig.json packages/pkg-cli/src/bin/dev-ts.ts",
