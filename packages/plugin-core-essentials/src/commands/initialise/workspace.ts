@@ -8,15 +8,13 @@ import {
 } from "@business-as-code/address";
 import {
   BaseCommand,
-  Config,
   ContextCommand,
   expectIsOk,
   fsUtils,
   Oclif,
   ok,
-  validators,
-  Interfaces as _Interfaces,
-  LifecycleProvidersForAsByMethod,
+  ServiceProvidersForAsByMethod,
+  validators
 } from "@business-as-code/core";
 // import { configSchema } from "@business-as-code/core/src/validation/config";
 import {
@@ -68,7 +66,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     cliRegistry: Oclif.Flags.string({
       description: "Specify a package manager registry to load the Bac cli",
       required: false,
-      default: "https://registry.npmjs.org",
+      // default: "https://registry.npmjs.org",
       // default: "http://localhost:4873",
     }),
     cliPath: Oclif.Flags.string({
@@ -76,10 +74,11 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
       required: false,
     }),
-    packageManager: Oclif.Flags.custom<LifecycleProvidersForAsByMethod<"packageManager">>({
+    packageManager: Oclif.Flags.custom<ServiceProvidersForAsByMethod<"packageManager">>({
       summary: "Package manager for the workspace",
       // env: 'BAC_LOG_LEVEL',
-      options: ['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn'] satisfies LifecycleProvidersForAsByMethod<"packageManager">[],
+      options: ['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn'] satisfies ServiceProvidersForAsByMethod<"packageManager">[], // don't support npm workspaces
+      // options: ['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn', 'packageManagerNpm'] satisfies ServiceProvidersForAsByMethod<"packageManager">[],
       // helpGroup: "GLOBAL",
       // default: 'info',
       // default: async () => process.env.BAC_LOG_LEVEL ?? 'info',
@@ -89,7 +88,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // packageManager: Oclif.Flags.string({
     //   description:
     //     "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
-    //   options: identity<LifecycleProvidersForAsByMethod<"packageManager">[]>(['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn']),
+    //   options: identity<ServiceProvidersForAsByMethod<"packageManager">[]>(['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn']),
     //   required: true,
     //   // default: 'packageManagerBun',
     // }),

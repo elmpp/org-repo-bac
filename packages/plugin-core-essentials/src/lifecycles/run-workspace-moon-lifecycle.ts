@@ -36,8 +36,10 @@ export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
   // }
 
   override runWorkspace(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     options: {
       query?: MoonQuery;
@@ -47,8 +49,10 @@ export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
     };
   }) => ReturnType<ServiceMap["moon"][number]["run"]> {
     return async ({
-      context,
-      workspacePath,
+      common: {
+        context,
+        workspacePath,
+      },
       // workingPath,
       options: {
         query,

@@ -31,8 +31,10 @@ export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleB
   static override title = "git" as const;
 
   override configureWorkspace(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     // config?: Config | undefined; // why optional
     options: {
@@ -47,7 +49,9 @@ export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleB
       { error: BacError }
     >
   > {
-    return async ({ context, options: { address } }) => {
+    return async ({ common: {
+      context,
+    }, options: { address } }) => {
 
       const gitService = await context.serviceFactory('git', {
         context,

@@ -3,6 +3,7 @@ import {
   ServiceInitialiseCommonOptions,
   execUtils as _execUtils,
 } from "@business-as-code/core";
+import { Project } from "@business-as-code/core/validation/common";
 import { BacError as _BacError } from "@business-as-code/error";
 
 declare global {
@@ -42,29 +43,21 @@ export class ChangesetService {
     // this.options = options;
   }
 
+
   async create({
-    query = "projectType=library || projectType=application",
+    projects,
     bump = "patch",
     message,
   }: {
-    query?: string;
+    projects: Project[],
     message: string;
     bump?: "major" | "minor" | "patch";
   }) {
     const { context } = this.options;
 
-    const moonService = await context.serviceFactory("moon", {
-      context,
-      workingPath: ".",
-    });
     const schematicService = await context.serviceFactory("schematics", {
       context,
       workingPath: ".",
-    });
-
-    // const snapshotProjects = await moonService.findProjects()
-    const snapshotProjects = await moonService.findProjects({
-      query,
     });
 
     const schematicOptionsChanges: {
@@ -72,7 +65,7 @@ export class ChangesetService {
       changes: Record<string, "major" | "minor" | "patch">;
     } = {
       message,
-      changes: snapshotProjects.projects.reduce((acc, p) => {
+      changes: projects.reduce((acc, p) => {
         acc[p.alias ?? p.id] = bump!;
         return acc;
       }, {} as Record<string, "major" | "minor" | "patch">),

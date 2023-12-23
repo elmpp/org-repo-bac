@@ -6,6 +6,7 @@ import {
   assertIsOk,
   ok,
   mapExecUtils,
+  constants,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 
@@ -19,6 +20,8 @@ declare global {
     }
   }
 }
+
+const activeDaemons: ('verdaccio' | 'gitSshPubKey' | 'gitSshAnonymous' | 'gitSshPassword' | 'gitHttp')[] = ['verdaccio', 'gitHttp', 'gitSshAnonymous', 'gitSshPubKey']
 
 type Options = ServiceInitialiseCommonOptions & {};
 
@@ -59,67 +62,74 @@ export class TestService {
 
     const proms: Promise<unknown>[] = [];
 
-    if (
-      !checkBefore ||
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `verdaccio:isRunning`,
-          pkg: "@business-as-code/tests-verdaccio",
-        })
-      )
-    ) {
-      proms.push(
-        packageManagerService.run({
-          command: `verdaccio:startBackground`,
-          pkg: "@business-as-code/tests-verdaccio",
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
+    if (activeDaemons.includes('verdaccio')) {
+      if (
+        !checkBefore ||
+        !assertIsOk(
+          await packageManagerService.run({
+            command: `verdaccio:isRunning`,
+            pkg: "@business-as-code/tests-verdaccio",
+          })
+        )
+      ) {
+        proms.push(
+          packageManagerService.run({
+            command: `verdaccio:startBackground`,
+            pkg: "@business-as-code/tests-verdaccio",
+            options: {
+              stdio: "inherit",
+            },
+          })
+        );
+      }
     }
 
-    if (
-      !checkBefore ||
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `gitServerHttp:isRunning`,
-          pkg: `@business-as-code/tests-git-server`,
-        })
-      )
-    ) {
-      proms.push(
-        packageManagerService.run({
-          command: `gitServerHttp:startBackground`,
-          pkg: "@business-as-code/tests-git-server",
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
+    if (activeDaemons.includes('gitHttp')) {
+      if (
+        !checkBefore ||
+        !assertIsOk(
+          await packageManagerService.run({
+            command: `gitServerHttp:isRunning`,
+            pkg: `@business-as-code/tests-git-server`,
+          })
+        )
+      ) {
+        proms.push(
+          packageManagerService.run({
+            command: `gitServerHttp:startBackground`,
+            pkg: "@business-as-code/tests-git-server",
+            options: {
+              stdio: "inherit",
+            },
+          })
+        );
+      }
     }
 
-    if (
-      !checkBefore ||
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `gitServerSshPubKey:isRunning`,
-          pkg: "@business-as-code/tests-git-server",
-        })
-      )
-    ) {
-      proms.push(
-        packageManagerService.run({
-          command: `gitServerSshPubKey:startBackground`,
-          pkg: "@business-as-code/tests-git-server",
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
+    if (activeDaemons.includes('gitSshPubKey')) {
+      if (
+        !checkBefore ||
+        !assertIsOk(
+          await packageManagerService.run({
+            command: `gitServerSshPubKey:isRunning`,
+            pkg: "@business-as-code/tests-git-server",
+          })
+        )
+      ) {
+        proms.push(
+          packageManagerService.run({
+            command: `gitServerSshPubKey:startBackground`,
+            pkg: "@business-as-code/tests-git-server",
+            options: {
+              stdio: "inherit",
+            },
+          })
+        );
+      }
     }
 
     // github does not support password authentication currently + hard to test
+    // if (activeDaemons.includes('gitSshPassword')) {
     // if (
     //   !checkBefore ||
     //   !assertIsOk(
@@ -139,25 +149,28 @@ export class TestService {
     //     })
     //   );
     // }
+    // }
 
-    if (
-      !checkBefore ||
-      !assertIsOk(
-        await packageManagerService.run({
-          command: `gitServerSshAnonymous:isRunning`,
-          pkg: "@business-as-code/tests-git-server",
-        })
-      )
-    ) {
-      proms.push(
-        packageManagerService.run({
-          command: `gitServerSshAnonymous:startBackground`,
-          pkg: "@business-as-code/tests-git-server",
-          options: {
-            stdio: "inherit",
-          },
-        })
-      );
+    if (activeDaemons.includes('gitSshAnonymous')) {
+      if (
+        !checkBefore ||
+        !assertIsOk(
+          await packageManagerService.run({
+            command: `gitServerSshAnonymous:isRunning`,
+            pkg: "@business-as-code/tests-git-server",
+          })
+        )
+      ) {
+        proms.push(
+          packageManagerService.run({
+            command: `gitServerSshAnonymous:startBackground`,
+            pkg: "@business-as-code/tests-git-server",
+            options: {
+              stdio: "inherit",
+            },
+          })
+        );
+      }
     }
 
     proms.push(
@@ -230,43 +243,53 @@ export class TestService {
       }
     );
 
-    await (async function verdaccio() {
-      const isRunning = await packageManagerService.run({
-        command: `verdaccio:isRunning`,
-        pkg: "@business-as-code/tests-verdaccio",
-      });
-      if (!assertIsOk(isRunning)) {
-        throw new BacError(
-          MessageName.UNNAMED,
-          `Verdaccio server not running. Do you need to start the daemons?`
-        );
-      }
-    })();
-    await (async function gitServerHttp() {
-      const isRunning = await packageManagerService.run({
-        command: `gitServerHttp:isRunning`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-      if (!assertIsOk(isRunning)) {
-        throw new BacError(
-          MessageName.UNNAMED,
-          `Git http server not running. Do you need to start the daemons?`
-        );
-      }
-    })();
-    await (async function gitServerSshPubKey() {
-      const isRunning = await packageManagerService.run({
-        command: `gitServerSshPubKey:isRunning`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-      if (!assertIsOk(isRunning)) {
-        throw new BacError(
-          MessageName.UNNAMED,
-          `Git ssh public key server not running. Do you need to start the daemons?`
-        );
-      }
-    })();
+    if (activeDaemons.includes('verdaccio')) {
+      await (async function verdaccio() {
+        const isRunning = await packageManagerService.run({
+          command: `verdaccio:isRunning`,
+          pkg: "@business-as-code/tests-verdaccio",
+        });
+        if (!assertIsOk(isRunning)) {
+          throw new BacError(
+            MessageName.UNNAMED,
+            `Verdaccio server not running. Do you need to start the daemons?`
+          );
+        }
+      })();
+    }
+
+    if (activeDaemons.includes('gitHttp')) {
+      await (async function gitServerHttp() {
+        const isRunning = await packageManagerService.run({
+          command: `gitServerHttp:isRunning`,
+          pkg: `@business-as-code/tests-git-server`,
+        });
+        if (!assertIsOk(isRunning)) {
+          throw new BacError(
+            MessageName.UNNAMED,
+            `Git http server not running. Do you need to start the daemons?`
+          );
+        }
+      })();
+    }
+
+    if (activeDaemons.includes('gitSshPubKey')) {
+      await (async function gitServerSshPubKey() {
+        const isRunning = await packageManagerService.run({
+          command: `gitServerSshPubKey:isRunning`,
+          pkg: `@business-as-code/tests-git-server`,
+        });
+        if (!assertIsOk(isRunning)) {
+          throw new BacError(
+            MessageName.UNNAMED,
+            `Git ssh public key server not running. Do you need to start the daemons?`
+          );
+        }
+      })();
+    }
+
     // github does not support password authentication currently + hard to test
+    // if (activeDaemons.includes('gitSshPassword')) {
     // await (async function gitServerSshPassword() {
     //   const isRunning = await packageManagerService.run({
     //     command: `gitServerSshPassword:isRunning`,
@@ -279,18 +302,22 @@ export class TestService {
     //     );
     //   }
     // })();
-    await (async function gitServerSshAnonymous() {
-      const isRunning = await packageManagerService.run({
-        command: `gitServerSshAnonymous:isRunning`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-      if (!assertIsOk(isRunning)) {
-        throw new BacError(
-          MessageName.UNNAMED,
-          `Git ssh anonymous server not running. Do you need to start the daemons?`
-        );
-      }
-    })();
+    // }
+
+    if (activeDaemons.includes('gitSshAnonymous')) {
+      await (async function gitServerSshAnonymous() {
+        const isRunning = await packageManagerService.run({
+          command: `gitServerSshAnonymous:isRunning`,
+          pkg: `@business-as-code/tests-git-server`,
+        });
+        if (!assertIsOk(isRunning)) {
+          throw new BacError(
+            MessageName.UNNAMED,
+            `Git ssh anonymous server not running. Do you need to start the daemons?`
+          );
+        }
+      })();
+    }
 
     this.options.context.logger.info(`Daemons running ok`);
 
@@ -314,52 +341,53 @@ export class TestService {
       }
     );
 
-    await (async function verdaccio() {
-      await packageManagerService.run({
-        command: `verdaccio:stopBackground`,
-        pkg: `@business-as-code/tests-verdaccio`,
-      });
-    })();
-    await (async function gitServerHttp() {
-      await packageManagerService.run({
-        command: `gitServerHttp:stopBackground`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-    })();
-    await (async function gitServerSshPubKey() {
-      await packageManagerService.run({
-        command: `gitServerSshPubKey:stopBackground`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-    })();
+    if (activeDaemons.includes('verdaccio')) {
+      await (async function verdaccio() {
+        await packageManagerService.run({
+          command: `verdaccio:stopBackground`,
+          pkg: `@business-as-code/tests-verdaccio`,
+        });
+      })();
+    }
+
+    if (activeDaemons.includes('gitHttp')) {
+      await (async function gitServerHttp() {
+        await packageManagerService.run({
+          command: `gitServerHttp:stopBackground`,
+          pkg: `@business-as-code/tests-git-server`,
+        });
+      })();
+    }
+
+    if (activeDaemons.includes('gitSshPubKey')) {
+      await (async function gitServerSshPubKey() {
+        await packageManagerService.run({
+          command: `gitServerSshPubKey:stopBackground`,
+          pkg: `@business-as-code/tests-git-server`,
+        });
+      })();
+    }
+
     // github does not support password authentication currently + hard to test
+    // if (activeDaemons.includes('gitSshPassword')) {
     // await (async function gitServerSshPassword() {
     //   await packageManagerService.run({
     //     command: `gitServerSshPassword:stopBackground`,
     //     pkg: `@business-as-code/tests-git-server`,
     //   });
     // })();
-    await (async function gitServerSshAnonymous() {
-      await packageManagerService.run({
-        command: `gitServerSshAnonymous:stopBackground`,
-        pkg: `@business-as-code/tests-git-server`,
-      });
-    })();
-    // await (async function gitServerSshAnonymous() {
-    //   await packageManagerService.run({
-    //     command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:stopBackground`,
-    //   });
-    // })();
+    // }
 
-    // this.options.context.logger.info(`Daemons stopped`);
+    if (activeDaemons.includes('gitSshAnonymous')) {
+      await (async function gitServerSshAnonymous() {
+        await packageManagerService.run({
+          command: `gitServerSshAnonymous:stopBackground`,
+          pkg: `@business-as-code/tests-git-server`,
+        });
+      })();
+    }
 
     return ok({});
-
-    // ;await (async function gitServerSshAnonymous() {
-    //     await packageManagerService.run({
-    //       command: `--filter @business-as-code/tests-git-server run gitServerSshAnonymous:stopBackground`
-    //     });
-    // })()
   }
 
   async cleanProjects(): Promise<Result<unknown, { error: BacError }>> {
@@ -403,6 +431,8 @@ export class TestService {
 
   async buildAndPublishSnapshot(): Promise<Result<unknown, { error: BacError }>> {
 
+    const tag = 'bollards'
+
     const bacService = await this.options.context.serviceFactory("bac", {
       context: this.options.context,
       workingPath: ".",
@@ -417,8 +447,20 @@ export class TestService {
     // console.log(`buildRes :>> `, buildRes)
     expectIsOk(buildRes)
 
-    const snapshotRes = await bacService.run({ command: `release snapshot --message 'this is a snapshot release' --workspacePath ${this.options.context.workspacePath.original} --tag bollards --logLevel debug` })
+    const snapshotRes = await bacService.run({ command: `release snapshot --message 'this is a snapshot release' --workspacePath ${this.options.context.workspacePath.original} --tag ${tag} --logLevel debug` })
     expectIsOk(snapshotRes)
+
+      /** validatePublishSuccess */
+      ; await (async () => {
+        const packageManagerService = await this.options.context.serviceFactory("packageManager", {
+          context: this.options.context,
+          workingPath: ".",
+          packageManager: 'packageManagerNpm', // bun not support this yet
+        });
+        const versions = await packageManagerService.info({ pkg: `@business-as-code/cli`, options: {registry: 'http://localhost:4873'} })
+
+console.log(`versions :>> `, versions)
+      })()
 
     return snapshotRes
     // return {success: true, res: undefined}

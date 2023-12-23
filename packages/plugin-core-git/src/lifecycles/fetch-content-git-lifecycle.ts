@@ -59,8 +59,10 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
   // }
 
   override fetchContent(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     // options: FetchOptions;
     cacheService: ServiceMap['cache'][0],
@@ -119,15 +121,15 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
           });
         },
         onHit: () =>
-          options.context.logger.debug(
+          options.common.context.logger.debug(
             `Cache hit. Address: '${applicableAddress.addressNormalized}'`
           ),
         // onMiss: async () =>
-        //   options.context.logger.debug(
+        //   options.common.context.logger.debug(
         //     `Cache miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
         //   ),
         onStale: async ({ contentPath, existentChecksum }) => {
-          options.context.logger.debug(
+          options.common.context.logger.debug(
             `Cache checksum fail (prev: '${existentChecksum?.globalVersion}::${existentChecksum?.key}). Address: '${applicableAddress.addressNormalized}'. Will be updated from source`
           );
           await this.updateFromNetwork({
@@ -143,7 +145,7 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         },
         // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
         onMiss: async ({ contentPath }) => {
-          options.context.logger.debug(
+          options.common.context.logger.debug(
             `Cache Miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
           );
           await this.cloneFromNetwork({
@@ -166,8 +168,10 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
   }
 
   protected async cloneFromNetwork(options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     // options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
     options: { address: AddressUrlGit };
@@ -175,8 +179,10 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
     destinationPath: AddressPathAbsolute;
   }): Promise<void> {
     const {
+      common: {
+        context,
+      },
       destinationPath,
-      context,
       options: { address },
     } = options;
 
@@ -208,8 +214,10 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
   }
 
   protected async updateFromNetwork(options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     // options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
     options: { address: AddressUrlGit };
@@ -218,8 +226,10 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
     existentChecksum?: CacheKey;
   }): Promise<void> {
     const {
+      common: {
+        context,
+      },
       destinationPath,
-      context,
       existentChecksum,
       options: { address },
     } = options;

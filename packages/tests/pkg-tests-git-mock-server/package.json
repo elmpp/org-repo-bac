@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/tests-git-server",
   "private": true,
-  "version": "0.0.0-bollards-20231222213642",
+  "version": "0.0.0-bollards-20231223082609",
   "description": "Clone and push to git repository test fixtures over HTTP.",
   "main": "index.js",
   "exports": "./index.js",

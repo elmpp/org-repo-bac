@@ -1,23 +1,20 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
 import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
-import { doExec, DoExecOptions, DoExecOptionsLite as DoExecOptionsLiteOrig } from "../utils/exec-utils";
+import {
+  expectIsOk,
+  MoonQuery,
+  ResultPromiseAugment,
+  ServiceInitialiseCommonOptions,
+  ServiceMap
+} from "../__types__";
+import { doExec, DoExecOptionsLite as DoExecOptionsLiteOrig } from "../utils/exec-utils";
+import { JSONParse } from "../utils/format-utils";
 import { objectMapAndFilter } from "../utils/object-utils";
 import {
   MoonQueryProjects,
   moonQueryProjects,
 } from "../validation/moon-query-projects";
-import {
-  assertIsOk,
-  expectIsOk,
-  LifecycleProvidersForAsByMethod,
-  MoonQuery,
-  ResultPromiseAugment,
-  ServiceInitialiseCommonOptions,
-  ServiceMap,
-} from "../__types__";
-import { stringify } from "json5";
-import { JSONParse } from "../utils/format-utils";
 
 declare global {
   namespace Bac {
@@ -33,7 +30,7 @@ declare global {
 type Options = ServiceInitialiseCommonOptions & {
   // /** path to root of instance */
   // workspacePath: AddressPathAbsolute;
-  // packageManager: LifecycleProvidersForAsByMethod<"packageManager">,
+  // packageManager: ServiceProvidersForAsByMethod<"packageManager">,
 };
 type DoExecOptionsLite = DoExecOptionsLiteOrig & {
   json?: boolean;

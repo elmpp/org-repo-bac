@@ -5,6 +5,7 @@ import {
   InitialiseWorkspaceLifecycleBase,
   LifecycleProvidersForAsByMethod,
   ServiceMap,
+  ServiceProvidersForAsByMethod,
 } from "@business-as-code/core";
 import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
@@ -33,8 +34,10 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
   // }
 
   override initialiseWorkspace(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     options: {
       // a: 'a'
@@ -43,12 +46,13 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
       cliVersion: string;
       cliRegistry: string;
       cliPath?: string;
-      packageManager: LifecycleProvidersForAsByMethod<"packageManager">,
+      packageManager: ServiceProvidersForAsByMethod<"packageManager">,
     };
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
     return async ({
-      context,
-      workspacePath,
+      common: { context,
+        workspacePath,
+      },
       options: { name, configPath, cliVersion, cliRegistry, cliPath, packageManager },
     }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {

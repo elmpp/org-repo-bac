@@ -1,5 +1,27 @@
 # @business-as-code/plugin-dev-tests
 
+## 0.0.0-bollards-20231223082609
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20231223082609
+  - @business-as-code/core@0.0.0-bollards-20231223082609
+  - @business-as-code/error@0.0.0-bollards-20231223082609
+  - @business-as-code/fslib@0.0.0-bollards-20231223082609
+
+## 0.0.0-bollards-20231223081910
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/address@0.0.0-bollards-20231223081910
+  - @business-as-code/core@0.0.0-bollards-20231223081910
+  - @business-as-code/error@0.0.0-bollards-20231223081910
+  - @business-as-code/fslib@0.0.0-bollards-20231223081910
+
 ## 0.0.0-bollards-20231222213642
 
 ### Patch Changes

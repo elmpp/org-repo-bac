@@ -17,7 +17,7 @@ import {
   RunWorkspaceLifecycleBase,
 } from "../interfaces";
 // import { Lifecycles } from "../lifecycles";
-import { LifecycleProvidersForAsByMethod, LifecycleStaticInterface } from "./lifecycles";
+import { LifecycleStaticInterface, ServiceProvidersForAsByMethod } from "./lifecycles";
 import {
   ServiceInitialiseLiteOptions,
   ServiceMap,
@@ -26,11 +26,11 @@ import {
 } from "./services";
 
 export * from "./interfaces";
+export * from "./lib";
 export * from "./lifecycles";
 export * from "./moon";
 export * from "./services";
 export * from "./type-utils";
-export * from "./lib";
 export * from "./util";
 
 export type Outputs = {
@@ -56,7 +56,7 @@ export const logLevelMatching = (
 export type ContextCommand<T extends typeof Command> = {
   /** values coming out of oclif command phase */
   cliOptions: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-    BaseParseOutput;
+  BaseParseOutput;
   serviceFactory: (<SName extends keyof ServiceStaticMap>(
     serviceName: SName,
     options: ServiceInitialiseLiteOptions<SName>
@@ -68,7 +68,7 @@ export type ContextCommand<T extends typeof Command> = {
   // logger: (msg: string, level?: LogLevel) => void;
   /** @internal */
   oclifConfig: Interfaces.Config;
-  detectedPackageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
+  detectedPackageManager?: ServiceProvidersForAsByMethod<"packageManager">;
   /**
    This is the process' absolute path, and is dependent upon cli --workspacePath option or process.cwd()
    Note that this will differ from values in services etc
@@ -103,7 +103,7 @@ export type Context = {
   logger: Logger;
   /** @internal */
   oclifConfig: Interfaces.Config;
-  detectedPackageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
+  detectedPackageManager?: ServiceProvidersForAsByMethod<"packageManager">;
   /**
    This is the process' absolute path, and is dependent upon cli --workspacePath option or process.cwd()
    Note that this will differ from values in services etc

@@ -59,6 +59,8 @@ export interface DoExecOptions extends Omit<ExecaOptions, "cwd"> {
   context: Context;
   // matched against current process logLevel and will stream to stdout/stderr if matching
   logLevel?: LogLevel;
+  /** allows removal of PATH segments. Will be contained with OS-specific terminators. e.g. '/private/tmp/bun-node-.*' */
+  pathBlacklist?: (RegExp | string)[]
 }
 export type DoExecOptionsLite = Omit<DoExecOptions, "context" | "cwd"> & {
   cwd?: AddressPathAbsolute;
@@ -140,21 +142,33 @@ export async function doExec({
 
   // const PATH_KEY = pathKey()
   const PATH_KEY = 'PATH' // can't use `path-key` from sindresorhus due to ESM import error
-  const applicablePath = spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY]
+  let applicablePath = spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY] ?? ''
+  if (options.pathBlacklist) {
+    options.context.logger.debug(`DoExec: options.pathBlacklist supplied. PATH before: '${applicablePath}'`)
+    applicablePath = options.pathBlacklist.reduce<string>((acc, aRegExp) =>
+      acc.replaceAll(aRegExp instanceof RegExp ? new RegExp(`${aRegExp.source}[:^])`, 'g') : new RegExp(`${aRegExp}[:^]`, 'g'), '')
+      , applicablePath)
+  }
 
   // console.log(`constants :>> `, constants)
+
+  // console.log(`applicablePath :>> `, applicablePath)
+
   const defaultedEnvs = {
+    NODE_DEBUG: 'execa',
     FORCE_COLOR: "true",
     ...(spawnOptions.env ?? {}),
-    ...(options.shell && applicablePath ? {PATH: `${applicablePath}:${addr.parsePath(constants.EXEC_STORAGE_PATH).addressNormalized}`} : {}),
+    ...(options.shell && applicablePath ? { PATH: `${applicablePath}:${addr.parsePath(constants.EXEC_STORAGE_PATH).originalNormalized}` } : {}), // extendEnv does this
   };
 
   // console.log(`defaultedEnvs :>> `, defaultedEnvs)
 
+
+
   /** Execa options - https://tinyurl.com/2qndy7hr */
   const execaOptions: ExecaOptions = {
     // shell: true,
-    extendEnv: true,
+    extendEnv: true, // breaks the daemons if false so must be doing more than our defaultedEnvs above :(
     ...spawnOptions,
     ...((spawnOptions.cwd ? { cwd: spawnOptions.cwd.original } : {}) as {
       cwd: string;
@@ -212,8 +226,7 @@ export async function doExec({
 
   await options.context.logger.debug(
     // MessageName.UNNAMED,
-    `DoExec: Command: '${command}'. Cwd: '${
-      spawnOptions.cwd.original
+    `DoExec: Command: '${command}'. Cwd: '${spawnOptions.cwd.original
     }'. Full command: '${optionsAsCommand(command, execaOptions)}'`
   );
 

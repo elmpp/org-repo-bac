@@ -1,8 +1,8 @@
 import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import ModuleLoader from "@oclif/core/lib/module-loader";
-import * as oclif from "@oclif/core";
-import { LifecycleProvidersForAsByMethod } from "../__types__";
 import { xfs } from "@business-as-code/fslib";
+import * as oclif from "@oclif/core";
+import ModuleLoader from "@oclif/core/lib/module-loader";
+import { ServiceProvidersForAsByMethod } from "../__types__";
 // import crypto from 'crypto'
 // import { Config } from "../validation";
 // import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
@@ -13,7 +13,7 @@ import { xfs } from "@business-as-code/fslib";
 /** npm detect-package-manager - https://tinyurl.com/ymfu3st2 */
 export async function detectPackageManager(options: {
   workspacePath: AddressPathAbsolute;
-}): Promise<LifecycleProvidersForAsByMethod<"packageManager"> | undefined> {
+}): Promise<ServiceProvidersForAsByMethod<"packageManager"> | undefined> {
   return Promise.all([
     xfs.existsPromise(
       addr.pathUtils.join(options.workspacePath, addr.parsePath("yarn.lock"))

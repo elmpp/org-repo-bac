@@ -3,8 +3,8 @@ export interface Schema {
   name: string,
   configPath: string,
   cliVersion: string
-  cliRegistry: string
+  cliRegistry?: string
   cliPath?: string
-  packageManager: LifecycleProvidersForAsByMethod<"packageManager">
+  packageManager: ServiceProvidersForAsByMethod<"packageManager">
   _bacContext: import('@business-as-code/core').Context
 }

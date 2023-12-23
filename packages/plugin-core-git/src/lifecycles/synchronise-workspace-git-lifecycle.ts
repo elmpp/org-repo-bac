@@ -34,8 +34,10 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
    Accepts a ConfigConfigured and makes it concrete
    */
   override synchroniseWorkspace(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     options: {
       // a: "a";
@@ -47,7 +49,10 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
       // cliPath?: string;
     };
   }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
-    return async ({ context, workspacePath, options: { config } }) => {
+    return async ({ common: {
+      context,
+      workspacePath,
+    }, options: { config } }) => {
       // const config = await fsUtils.loadConfig(workspacePath);
 
       // console.log(

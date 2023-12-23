@@ -1,10 +1,11 @@
 import { AddressPackageStringified } from "@business-as-code/address";
 import {
-  BasePackageManagerService, DoExecOptionsLite, LifecycleProvidersForAsByMethod,
+  BasePackageManagerService,
+  PackageManagerExecOptions,
   ServiceInitialiseCommonOptions,
-  execUtils as _execUtils,
+  ServiceProvidersForAsByMethod
 } from "@business-as-code/core";
-import { BacError as _BacError } from "@business-as-code/error";
+import { BacError, MessageName } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 
 declare global {
@@ -20,7 +21,7 @@ declare global {
 }
 
 type Options = ServiceInitialiseCommonOptions & {
-  packageManager?: LifecycleProvidersForAsByMethod<
+  packageManager?: ServiceProvidersForAsByMethod<
     "packageManager"
   >;
 };
@@ -71,10 +72,23 @@ export class PackageManagerYarnService extends BasePackageManagerService<Options
     });
   }
 
+  /** yarn config list */
+  override async configList(options: {
+    // development?: boolean;
+    options?: PackageManagerExecOptions;
+  }) {
+    // console.log(`optionssss :>> `, options)
+    return this.exec({
+      command: `config list`,
+      // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
+      options: options.options,
+    });
+  }
+
   async run(options: {
     command: string;
     pkg?: AddressPackageStringified,
-    options?: DoExecOptionsLite;
+    options?: PackageManagerExecOptions;
   }) {
 
     /** probably not needed but helps with tests */
@@ -82,5 +96,28 @@ export class PackageManagerYarnService extends BasePackageManagerService<Options
       command: `run${options.pkg ? ` --filter=${options.pkg}` : ''} ${options.command}`,
       options: options.options,
     });
+  }
+
+  protected override async exec(options: {
+    command: string;
+    options?: PackageManagerExecOptions;
+  }): Promise<any> {
+
+    if (options.options?.registry) {
+      throw new BacError(MessageName.UNNAMED, `Yarn package manager service does not support runtime options.registry. Only .npmrc files`)
+    }
+
+    const args = {
+      command: options.command,
+      options: {
+        ...(options.options ?? {}),
+        pathBlacklist: [
+          ...options?.options?.pathBlacklist ?? [],
+          '/[^:]*bun-node-[0-9a-zA-Z]*',
+        ],
+      },
+    };
+
+    return super.exec(args);
   }
 }

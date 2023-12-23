@@ -4,16 +4,15 @@ import { NodeJsSyncHost } from "@angular-devkit/core/node";
 import { Tree } from "@angular-devkit/schematics";
 import { AddressPathAbsolute, addr } from "@business-as-code/address";
 import {
-  BaseCommand,
   ContextCommand,
   LogLevel,
+  Oclif,
   Outputs,
   Result,
   assertIsOk,
   consoleUtils,
   constants,
   fsUtils,
-  Oclif,
   logLevelMatching,
 } from "@business-as-code/core";
 // import {
@@ -22,7 +21,8 @@ import {
 import {
   ArgsInfer,
   FlagsInfer,
-} from "@business-as-code/core/commands/base-command";
+  handleCommandError,
+} from "@business-as-code/core/src/commands/base-command";
 import {
   BacError,
   BacErrorWrapper,
@@ -36,10 +36,8 @@ import { ExpectUtil } from "./jest-utils";
 import { HostCreateLazyTree } from "./schematics/schematics-host-lazy-tree";
 import SchematicsRunCommand from "./schematics/schematics-run-command";
 import {
-  getCurrentTestFilenameSanitised,
-  getCurrentTestNameSanitised,
+  getCurrentTestFilenameSanitised
 } from "./test-utils";
-import { detectPackageManager } from "@business-as-code/core/utils/fs-utils";
 
 // const oclifTestWithExpect = Object.assign(oclifTest, {expect: oclifExpect})
 
@@ -965,7 +963,7 @@ async function createTestEnv(persistentTestEnvVars: PersistentTestEnvVars) {
             .catch((anError) => {
               // TO DEBUG STUFF HERE, RUN WITH `DEBUG=* !!`
 
-              BaseCommand.handleError({
+              handleCommandError({
                 err: anError,
                 exitProcess: false,
                 extra: {

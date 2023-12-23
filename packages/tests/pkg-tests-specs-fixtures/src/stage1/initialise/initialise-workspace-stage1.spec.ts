@@ -97,7 +97,7 @@ describe("initialise workspace", () => {
           )
         ).lineContainsString({
           match: `@business-as-code:registry=https://registry.npmjs.org`,
-          occurrences: 1,
+          occurrences: 0, // does NOT default to normal registry
         });
       });
     });

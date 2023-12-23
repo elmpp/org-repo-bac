@@ -1,5 +1,33 @@
 # @business-as-code/cli
 
+## 0.0.0-bollards-20231223082609
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20231223082609
+  - @business-as-code/plugin-core-essentials@0.0.0-bollards-20231223082609
+  - @business-as-code/plugin-core-git@0.0.0-bollards-20231223082609
+  - @business-as-code/plugin-core-package-manager-bun@0.0.0-bollards-20231223082609
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-bollards-20231223082609
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-bollards-20231223082609
+  - @business-as-code/plugin-core-subrepo@0.0.0-bollards-20231223082609
+
+## 0.0.0-bollards-20231223081910
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20231223081910
+  - @business-as-code/plugin-core-essentials@0.0.0-bollards-20231223081910
+  - @business-as-code/plugin-core-git@0.0.0-bollards-20231223081910
+  - @business-as-code/plugin-core-package-manager-bun@0.0.0-bollards-20231223081910
+  - @business-as-code/plugin-core-package-manager-pnpm@0.0.0-bollards-20231223081910
+  - @business-as-code/plugin-core-package-manager-yarn@0.0.0-bollards-20231223081910
+  - @business-as-code/plugin-core-subrepo@0.0.0-bollards-20231223081910
+
 ## 0.0.0-bollards-20231222213642
 
 ### Patch Changes

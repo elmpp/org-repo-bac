@@ -1,5 +1,17 @@
 # @business-as-code/error
 
+## 0.0.0-bollards-20231223082609
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-bollards-20231223081910
+
+### Patch Changes
+
+- this is a snapshot release
+
 ## 0.0.0-bollards-20231222213642
 
 ### Patch Changes

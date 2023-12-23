@@ -20,8 +20,10 @@ export class ConfigureWorkspaceCoreLifecycle extends ConfigureWorkspaceLifecycle
    * just expand the initialised configs to a configured form.
    */
   override afterConfigureWorkspace(): (options: {
-    context: Context;
-    workspacePath: AddressPathAbsolute;
+    common: {
+      context: Context;
+      workspacePath: AddressPathAbsolute;
+    },
     // workingPath: string;
     // config: Config;
     options: {
@@ -32,7 +34,7 @@ export class ConfigureWorkspaceCoreLifecycle extends ConfigureWorkspaceLifecycle
 
     // a: "a";
   }> {
-    return async ({ context, options: {configuredConfig} }) => {
+    return async ({ common: {context}, options: {configuredConfig} }) => {
 
     // // this is the outputs of the configure providers but in a LifecycleOptionsByMethodKeyedByProviderWithoutCommon format
     // const configuredConfig = configuredConfig.res.map((c) => {

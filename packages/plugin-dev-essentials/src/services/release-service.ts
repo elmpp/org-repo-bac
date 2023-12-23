@@ -50,7 +50,7 @@ export class ReleaseService {
   async snapshot({
     query,
     message,
-    registry = "https://registry.npmjs.org",
+    // registry = "https://registry.npmjs.org",
     tag = "latest",
   }: {
     query?: string;
@@ -63,13 +63,19 @@ export class ReleaseService {
     // const buildRes = await this.build(); // do not build here - moon
     // expectIsOk(buildRes)
 
+    const moonService = await context.serviceFactory("moon", {
+      context,
+      workingPath: ".",
+    });
+    const moonProjects = await moonService.findProjects({query: "projectType=library || projectType=application"})
+
     const changesetService = await context.serviceFactory("changeset", {
       context,
       workingPath: ".",
     });
 
     await changesetService.create({
-      query: "projectType=library || projectType=application",
+      projects: moonProjects.projects,
       message,
       bump: "patch",
     });
@@ -81,7 +87,7 @@ export class ReleaseService {
 
     expectIsOk(versionRes);
 
-    console.log(`versionRes :>> `, versionRes)
+    console.log(`versionRes :>> `, versionRes, registry)
 
     const publishRes = await changesetService.publish({
       registry,

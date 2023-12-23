@@ -5,6 +5,7 @@ import {
   AddressPathAbsolute,
   assertIsAddressPathAbsolute,
 } from "@business-as-code/address";
+import { AddressAbsoluteCacheManager } from "@business-as-code/core/src/cache/address-absolute-cache-manager";
 import {
   BacError,
   BacErrorWrapper,
@@ -12,8 +13,7 @@ import {
 } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 import crypto from "crypto";
-import { fail, LifecycleProvidersForAsByMethod, ok, Result, ServiceInitialiseCommonOptions, ServiceMap } from "../__types__";
-import { AddressAbsoluteCacheManager } from "@business-as-code/core/src/cache/address-absolute-cache-manager";
+import { fail, ok, Result, ServiceInitialiseCommonOptions, ServiceMap, ServiceProvidersForAsByMethod } from "../__types__";
 import { constants } from "../constants";
 import { execUtils, formatUtils, fsUtils, hashUtils } from "../utils";
 import { tmpResolvableFolder } from "../utils/fs-utils";
@@ -31,7 +31,7 @@ declare global {
 }
 
 type Options = ServiceInitialiseCommonOptions & {
-  packageManager: LifecycleProvidersForAsByMethod<"packageManager">,
+  packageManager: ServiceProvidersForAsByMethod<"packageManager">,
 };
 type DoExecOptionsLite = Omit<
   Parameters<typeof execUtils.doExec>[0]["options"],

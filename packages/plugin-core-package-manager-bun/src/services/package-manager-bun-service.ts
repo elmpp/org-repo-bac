@@ -1,17 +1,15 @@
 import {
-  AddressPackage,
   AddressPackageStringified,
   AddressPathAbsolute,
-  addr,
+  addr
 } from "@business-as-code/address";
 import {
   BasePackageManagerService,
   DoExecOptionsLite,
-  LifecycleProvidersForAsByMethod,
+  PackageManagerExecOptions,
   ServiceInitialiseCommonOptions,
-  execUtils as _execUtils,
+  ServiceProvidersForAsByMethod
 } from "@business-as-code/core";
-import { BacError as _BacError } from "@business-as-code/error";
 import { xfs } from "@business-as-code/fslib";
 
 declare global {
@@ -27,7 +25,7 @@ declare global {
 }
 
 type Options = ServiceInitialiseCommonOptions & {
-  packageManager?: LifecycleProvidersForAsByMethod<"packageManager">;
+  packageManager?: ServiceProvidersForAsByMethod<"packageManager">;
 };
 
 export class PackageManagerBunService extends BasePackageManagerService<Options> {
@@ -74,6 +72,27 @@ export class PackageManagerBunService extends BasePackageManagerService<Options>
   // constructor(protected options: Options) {
   //   // this.options = options;
   // }
+
+  /** npm config ls -l */
+  async configList(options: {
+    // development?: boolean;
+    options?: PackageManagerExecOptions;
+  }) {
+    throw new Error('Bun does not currently support config')
+
+    return undefined as unknown as any // wut
+  }
+
+  /** hits registry to find details about a package */
+  override async info(options: {
+    pkg: string;
+    // development?: boolean;
+    options?: PackageManagerExecOptions;
+  }) {
+    throw new Error('Bun does not currently support config')
+
+    return undefined as unknown as any // wut
+  }
 
   async link({
     path,

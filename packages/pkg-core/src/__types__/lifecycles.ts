@@ -1,4 +1,4 @@
-import { ContextCommand, InferOkResult, Result } from ".";
+import { ContextCommand, InferOkResult, Result, ServiceStaticMap } from ".";
 import {
   IsEmptyObject,
   SafeGet,
@@ -243,6 +243,7 @@ type LifecycleOptionsByProviderMap = {
     };
   };
 };
+// type DD = Simplify<Bac.Lifecycles>
 type LifecycleOptionsWithoutCommonByProviderMap = {
   [ALMethod in _LifecycleAllMethods]: {
     [ALProvider in _LifecycleAllProviders]: {
@@ -254,6 +255,9 @@ type LifecycleOptionsWithoutCommonByProviderMap = {
     };
   };
 };
+
+// expectTypeOf<keyof LifecycleOptionsWithoutCommonByProviderMap['runWorkspace']>().toEqualTypeOf<'moon' | 'exec'>() // providers crossing over into other lifecycles
+// expectTypeOf<keyof LifecycleOptionsWithoutCommonByProviderMap['initialiseWorkspace']>().toEqualTypeOf<'core'>() // providers crossing over into other lifecycles
 
 // just the options.options
 // type LifecycleOptionsByProviderMap = {
@@ -354,9 +358,6 @@ export type LifecycleImplementedMethods = NonNullable<
   >["_method"]
 >;
 
-// type PPP = Simplify<Bac.Lifecycles>
-// export type LifecycleProvidersForAsByMethod<LMethod extends _LifecycleAllMethods, LProviderAs extends LifecycleProviders> = LifecycleReturnsByMethodAndProvider<LMethod, LProviderAs>
-// type LifecycleProvidersForAsByMethod<LMethod extends _LifecycleAllMethods, LProviderAs extends LifecycleProviders> = Extract<ValueOf<Bac.Lifecycles>, {as: LProviderAs}>
 export type LifecycleProvidersForAsByMethod<
   LProviderAs extends LifecycleProviders
 > = keyof {
@@ -366,6 +367,12 @@ export type LifecycleProvidersForAsByMethod<
     ? LProvider
     : never]: unknown;
 };
+
+// type D = ServiceMap
+// type DD = ServiceStaticMap['packageManager'][number]['title']
+export type ServiceProvidersForAsByMethod<
+  ProviderAs extends keyof ServiceStaticMap
+> = ServiceStaticMap[ProviderAs][number]['title'];
 // type YAAA = Bac.Lifecycles['']
 // type DDDD = LifecycleProvidersForAsByMethod<'runWorkspace', 'packageManager'>
 // type BBB = ValueOf<LifecycleOptionsByProviderMap[LifecycleMethods]>
@@ -392,11 +399,12 @@ type LifecycleOptionsType<
   T extends () => ((...args: any[]) => any) | undefined
 > = "options" extends keyof Parameters<NonNullable<ReturnType<T>>>[0]
   ? true extends IsEmptyObject<
-      Parameters<NonNullable<ReturnType<T>>>[0]["options"]
+      Parameters<NonNullable<ReturnType<T>>>[0]['options'] // note that we want all option groups here (common, options)
       // Parameters<NonNullable<ReturnType<T>>>[0]["options"]
     >
     ? Record<string, never>
-    : Parameters<NonNullable<ReturnType<T>>>[0]['common'] // note that we omit the complex common types
+    : Parameters<NonNullable<ReturnType<T>>>[0] // note that we want all option groups here (common, options)
+    // : Parameters<NonNullable<ReturnType<T>>>[0]['options'] // note that we omit the complex common types
   : // : Parameters<ReturnType<T>>[0]["options"]
     Record<string, never>; // we use the convention of providers needing their tapable options through .options
 

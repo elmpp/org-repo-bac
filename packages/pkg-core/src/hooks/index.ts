@@ -20,6 +20,7 @@ import {
 
 // const dbg = debug('tapable')
 
+type DDD = TapFn<'initialiseWorkspace'>
 export type TapFn<LMethod extends LifecycleMethods> = (
   options: LifecycleOptionsByMethodAndProvider<LMethod>
 ) => Promise<

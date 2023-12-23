@@ -9,6 +9,11 @@ import { ServiceInitialiseCommonOptions } from "../../__types__";
 //   >;
 // };
 
+export type PackageManagerExecOptions = DoExecOptionsLite & {
+  /** will be set via a npm_config_registry env */
+  registry?: string,
+}
+
 /** also see ServiceStaticInterface */
 abstract class BasePackageManagerService<Options extends ServiceInitialiseCommonOptions> {
 
@@ -16,13 +21,18 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
 
   // abstract login(): Promise<unknown>
 
-  abstract link(options: {path: string}): Promise<unknown>
+  abstract link(options: {path: string}): ReturnType<typeof execUtils.doExec>
+
+  abstract configList(options: {
+    // development?: boolean;
+    options?: PackageManagerExecOptions;
+  }): ReturnType<typeof execUtils.doExec>
 
   constructor(protected options: Options) {
     // this.options = options;
   }
 
-  async login(options?: DoExecOptionsLite) {
+  async login(options?: PackageManagerExecOptions) {
     const cwd = addr.packageUtils.resolveRoot({
       address: addr.parsePackage(
         `@business-as-code/plugin-core-package-manager-${this.cliName}`
@@ -49,7 +59,7 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
   async add(options: {
     pkg: string;
     development?: boolean;
-    options?: DoExecOptionsLite;
+    options?: PackageManagerExecOptions;
   }) {
     return this.exec({
       command: `add ${options.development ? '-d ' : ''}${options.pkg}`,
@@ -58,7 +68,7 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
     });
   }
 
-  async install(options?: DoExecOptionsLite) {
+  async install(options?: PackageManagerExecOptions) {
     return this.exec({
       command: `install`,
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
@@ -68,24 +78,39 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
     });
   }
 
+  /** hits registry to find details about a package */
+  async info(options: {
+    pkg: string;
+    // development?: boolean;
+    options?: PackageManagerExecOptions;
+  }) {
+    return this.exec({
+      command: `info ${options.pkg}`,
+      // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
+      options: options.options,
+    });
+  }
+
   abstract run(options: {
     command: string;
     pkg?: AddressPackageStringified;
-    options?: DoExecOptionsLite;
+    options?: PackageManagerExecOptions;
   }): ReturnType<typeof execUtils.doExec>;
 
   protected async exec(options: {
     command: string;
-    options?: DoExecOptionsLite;
+    options?: PackageManagerExecOptions;
   }): ReturnType<typeof execUtils.doExec>;
   protected async exec(options: {
     command: string;
-    options: DoExecOptionsLite;
+    options: PackageManagerExecOptions;
   }): ReturnType<typeof execUtils.doExec>;
   protected async exec(options: {
     command: string;
-    options?: DoExecOptionsLite;
+    options?: PackageManagerExecOptions;
   }): Promise<any> {
+    const {registry, ...execOptionsLite} = options.options ?? {}
+
     const args = {
       command: `${this.cliName} ${options.command}`,
       options: {
@@ -95,7 +120,8 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
           this.options.workspacePath,
           addr.parsePath(this.options.workingPath)
         ) as AddressPathAbsolute,
-        ...(options.options ?? {}),
+        ...(registry ? {env: {npm_config_registry: registry}} : {}),
+        ...(execOptionsLite),
       },
     };
 
