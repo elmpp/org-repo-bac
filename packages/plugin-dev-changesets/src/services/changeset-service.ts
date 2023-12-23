@@ -63,7 +63,7 @@ export class ChangesetService {
     });
 
     // const snapshotProjects = await moonService.findProjects()
-    const snapshotProjects = await moonService.findProjectsJson({
+    const snapshotProjects = await moonService.findProjects({
       query,
     });
 

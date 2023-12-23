@@ -362,7 +362,7 @@ export class TestService {
     // })()
   }
 
-  async cleanProjects(): Promise<Result<{}, { error: BacError }>> {
+  async cleanProjects(): Promise<Result<unknown, { error: BacError }>> {
     const moonService = await this.options.context.serviceFactory('moon', {
       context: this.options.context,
       workingPath: '.',
@@ -370,15 +370,21 @@ export class TestService {
     const moonProjects = await moonService.findProjects({ query: 'projectType=library || projectType=application' })
 
     const mapRes = await mapExecUtils.doMapExec({
-      command: `echo \$(pwd)`,
+      command: `rm -rf dist`,
       projects: moonProjects.projects,
       execOptions: {
         context: this.options.context,
         shell: true,
-      }
+        logLevel: 'warn',
+      },
     })
     // console.log(`mapRes :>> `, mapRes)
     expectIsOk(mapRes)
+
+    return {
+      success: true,
+      res: undefined,
+    }
 
 
     // NEED TO EXTENDS EXEC-UTIL OR LOOK AT THAT MICROSOFT TOOL. SHOULD BE ABLE TO EXEC ARBITRARY STUFF ACROSS PROJECTS
@@ -395,7 +401,7 @@ export class TestService {
     // ]})
   }
 
-  async buildAndPublishSnapshot(): Promise<Result<{}, { error: BacError }>> {
+  async buildAndPublishSnapshot(): Promise<Result<unknown, { error: BacError }>> {
 
     const bacService = await this.options.context.serviceFactory("bac", {
       context: this.options.context,
@@ -403,17 +409,19 @@ export class TestService {
       packageManager: 'packageManagerBun',
     });
     // return bacService.runTask({ command: "publishDev" });
-    console.log(`:>> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL`);
+    // console.log(`:>> LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL`);
 
     await this.cleanProjects()
 
-    const buildRes = await bacService.run({ command: 'build bun-bundle' })
+    const buildRes = await bacService.run({ command: `build bun-bundle --workspacePath=${this.options.context.workspacePath.original}` })
+    // console.log(`buildRes :>> `, buildRes)
     expectIsOk(buildRes)
 
-    const snapshotRes = await bacService.run({ command: `release snapshot --message 'this is a snapshot release' --workspacePath $workspaceRoot --tag bollards --logLevel debug` })
+    const snapshotRes = await bacService.run({ command: `release snapshot --message 'this is a snapshot release' --workspacePath ${this.options.context.workspacePath.original} --tag bollards --logLevel debug` })
     expectIsOk(snapshotRes)
 
     return snapshotRes
+    // return {success: true, res: undefined}
   }
 
   // with bun, don't need the moon layer

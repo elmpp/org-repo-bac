@@ -1,5 +1,68 @@
 # @business-as-code/address
 
+## 0.0.0-bollards-20231222213642
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222213642
+  - @business-as-code/fslib@0.0.0-bollards-20231222213642
+
+## 0.0.0-bollards-20231222213500
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222213500
+  - @business-as-code/fslib@0.0.0-bollards-20231222213500
+
+## 0.0.0-bollards-20231222212523
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222212523
+  - @business-as-code/fslib@0.0.0-bollards-20231222212523
+
+## 0.0.0-bollards-20231222212036
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222212036
+  - @business-as-code/fslib@0.0.0-bollards-20231222212036
+
+## 0.0.0-bollards-20231222211811
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222211811
+  - @business-as-code/fslib@0.0.0-bollards-20231222211811
+
+## 0.0.0-bollards-20231222211659
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222211659
+  - @business-as-code/fslib@0.0.0-bollards-20231222211659
+
+## 0.0.0-bollards-20231222210811
+
+### Patch Changes
+
+- this is a snapshot release
+- Updated dependencies
+  - @business-as-code/error@0.0.0-bollards-20231222210811
+  - @business-as-code/fslib@0.0.0-bollards-20231222210811
+
 ## 0.0.0-latest-20231218214927
 
 ### Patch Changes

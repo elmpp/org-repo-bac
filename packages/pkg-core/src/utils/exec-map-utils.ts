@@ -111,6 +111,7 @@ export const doMapExec = async (options: {
               options: {
                 ...execOptions,
                 cwd: addr.parsePath(project.root) as AddressPathAbsolute,
+                // logLevel: 'debug',
               },
               command,
             })

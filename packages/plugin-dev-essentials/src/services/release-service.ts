@@ -81,6 +81,8 @@ export class ReleaseService {
 
     expectIsOk(versionRes);
 
+    console.log(`versionRes :>> `, versionRes)
+
     const publishRes = await changesetService.publish({
       registry,
       tag,

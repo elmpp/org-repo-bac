@@ -45,7 +45,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // console.log(`name :>> `, name)
 
     if (context.cliOptions.flags.json) {
-      const projects = await moonService.findProjectsJson({
+      const projects = await moonService.findProjects({
         query: context.cliOptions.flags.query,
       });
       this.logJson(projects)
