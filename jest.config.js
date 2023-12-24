@@ -13,7 +13,7 @@ module.exports = {
   },
   /** some deps are pure esmodules that swc/jest doesn't understand */
   transformIgnorePatterns: [
-    '/node_modules/!(?!(execa)/)', // i.e. include execa for transformation
+    '/node_modules/!(?!(execa)/)' // i.e. include execa for transformation
   ],
   // testMatch: ['**/__tests__/**/*.spec.ts?(x)', '**/__tests__/**/*.spec.js?(x)', '**/tests/**/*.spec.ts?(x)'],
   testMatch: ['**/*.spec.[t|j]s?(x)'],
@@ -23,7 +23,7 @@ module.exports = {
     '\\.(pre-.*?)$',
     '\\.(post-.*?)$',
     // '\\.*.ignore.*$',
-    '\\/dist\\/*',
+    '\\/dist\\/*'
   ],
 
   modulePathIgnorePatterns: [
@@ -31,7 +31,7 @@ module.exports = {
     // '<rootDir>/packages/mnt-pkg-fslib-extra/fixtures',
     // '<rootDir>/packages/tests/packages/tests-fixtures',
     '<rootDir>/.moon',
-    'schematics/.*/files', // picks up the schematic package.json files otherwise
+    'schematics/.*/files' // picks up the schematic package.json files otherwise
     // '<rootDir>/packages/*/*/schematics',
   ],
 
@@ -43,7 +43,7 @@ module.exports = {
   // globalSetup: require.resolve(`./jest.setup.js`), // https://tinyurl.com/2lrnm6kn
   // setupTestFrameworkScriptFile: [require.resolve(`./jest.setup.js`)],
 
-  verbose: true,
+  verbose: true
   // globals: {
   //   ['ts-jest']: {
   //     tsconfig: './tsconfig.jest.json',

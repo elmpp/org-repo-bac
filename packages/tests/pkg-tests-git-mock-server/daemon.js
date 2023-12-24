@@ -1,28 +1,27 @@
 #!/usr/bin/env node
 const fs = require('fs')
 const path = require('path')
-const {spawn} = require('child_process')
+const { spawn } = require('child_process')
 const kill = require('tree-kill')
 const minimisted = require('minimisted')
 
 module.exports = function (cmdName, target) {
-  const args = [
-    target
-  ]
+  const args = [target]
 
-  async function main({_: [cmd]}) {
+  async function main({ _: [cmd] }) {
     switch (cmd) {
       case 'start': {
-        require('daemonize-process')({stdio: 'inherit'})
+        require('daemonize-process')({ stdio: 'inherit' })
         let server = spawn(
           // `${process.env.npm_node_execpath} run`, args,
           // 'pnpm -w dev:run', args, // required before crypto ticket fixed
-          'bun run --bun', args, // still not working grrr. Need to check that GH issue fix
+          'bun run --bun',
+          args, // still not working grrr. Need to check that GH issue fix
           {
             shell: true,
             stdio: 'inherit',
             windowsHide: true,
-            env: process.env,
+            env: process.env
           }
         )
         fs.writeFileSync(
@@ -33,8 +32,7 @@ module.exports = function (cmdName, target) {
         process.on('exit', () => {
           try {
             fs.unlinkSync(path.join(process.cwd(), `${cmdName}.pid`))
-          }
-          catch (err) {}
+          } catch (err) {}
           server.kill()
         })
         server.on('close', (...opts) => {
@@ -52,7 +50,7 @@ module.exports = function (cmdName, target) {
           pid = fs.readFileSync(
             path.join(process.cwd(), `${cmdName}.pid`),
             'utf8'
-          );
+          )
         } catch (err) {
           console.log(`No ${cmdName}.pid file`)
           process.exit(1)
@@ -76,7 +74,7 @@ module.exports = function (cmdName, target) {
           pid = fs.readFileSync(
             path.join(process.cwd(), `${cmdName}.pid`),
             'utf8'
-          );
+          )
           process.exit(0)
         } catch (err) {
           process.exit(1)

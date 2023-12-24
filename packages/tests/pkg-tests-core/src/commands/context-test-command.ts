@@ -1,40 +1,42 @@
-import { BaseCommand, ContextCommand, Oclif } from "@business-as-code/core";
+import { BaseCommand, ContextCommand, Oclif } from '@business-as-code/core'
 import {
   ArgsInfer,
   BaseParseOutput,
-  FlagsInfer,
-} from "@business-as-code/core/commands/base-command";
+  FlagsInfer
+} from '@business-as-code/core/commands/base-command'
 // import * as oclif from "@oclif/core";
-import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
+import { ParserOutput } from '@oclif/core/lib/interfaces/parser'
 
 /** here purely to allow test-env to create a context */
-export default class ContextTestCommand extends BaseCommand<typeof ContextTestCommand> {
-  static override description = "Creates a context";
+export default class ContextTestCommand extends BaseCommand<
+  typeof ContextTestCommand
+> {
+  static override description = 'Creates a context'
 
   static override examples = [
     `$ oex hello friend --from oclif
 hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ];
+`
+  ]
 
   static override flags = {
     workspacePath: Oclif.Flags.directory({
       exists: true,
-      description: "Workspace name",
-      required: false,
-    }),
-  };
+      description: 'Workspace name',
+      required: false
+    })
+  }
 
   static override args = {
     // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
-  };
+  }
 
   // @ts-ignore
   async execute(context: ContextCommand<typeof ContextTestCommand>) {
-    throw new Error(`Should not be ran!!`);
+    throw new Error(`Should not be ran!!`)
   }
 
   static async createContext<T extends typeof Oclif.Command>(
@@ -46,24 +48,24 @@ hello friend from oclif! (./src/commands/hello/index.ts)
   ): Promise<ContextCommand<typeof ContextTestCommand>> {
     const config = await Oclif.Config.load(
       opts || require.main?.filename || __dirname
-    );
-    const cmd = new this([] as any[], config);
+    )
+    const cmd = new this([] as any[], config)
     if (!cmd.id) {
-      const id = cmd.constructor.name.toLowerCase();
-      cmd.id = id;
+      const id = cmd.constructor.name.toLowerCase()
+      cmd.id = id
       // @ts-ignore
-      cmd.ctor.id = id;
+      cmd.ctor.id = id
     }
     // @ts-ignore
-    cmd.ctor.oclifConfig = config;
+    cmd.ctor.oclifConfig = config
 
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
 
     // console.log(`parseOutput :>> `, require('util').inspect(parseOutput, {showHidden: false, depth: undefined, colors: true}))
 
     // @ts-ignore
-    const context = await cmd.getContext(parseOutput);
-    return context;
+    const context = await cmd.getContext(parseOutput)
+    return context
   }
 
   /**
@@ -77,9 +79,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     > &
       BaseParseOutput
   ): Promise<ContextCommand<typeof ContextTestCommand>> {
-    await this.initialise({ parseOutput, config: this.config });
-    const context = await this.createContext({ parseOutput });
-    await this.initialisePlugins({ context });
-    return context;
+    await this.initialise({ parseOutput, config: this.config })
+    const context = await this.createContext({ parseOutput })
+    await this.initialisePlugins({ context })
+    return context
   }
 }

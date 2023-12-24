@@ -2,15 +2,15 @@
 // import { formatUtils } from "@business-as-code/core";
 // import { xfs } from "@business-as-code/fslib";
 // import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import { describe, it, jest, expect } from "bun:test";
+import { describe, it, jest, expect } from 'bun:test'
 export {}
 
 /** are we creating our packages correctly */
-describe("workspaces-smoke-test", () => {
+describe('workspaces-smoke-test', () => {
   // jest.setTimeout(30000);
 
   // publishable packages should include specific attributes
-  it("publishable packages correct", async () => {
+  it('publishable packages correct', async () => {
     // const persistentTestEnv = await createPersistentTestEnv({});
     // await persistentTestEnv.test({}, async (testContext) => {
     //   const context = testContext.testEnvVars.
@@ -18,7 +18,6 @@ describe("workspaces-smoke-test", () => {
     //     context: this.options.context,
     //     workingPath: ".",
     //   });
-
     //   const publishableProjects = await moonService.findProjects({
     //     query,
     //   });
@@ -31,11 +30,10 @@ describe("workspaces-smoke-test", () => {
     //     "utf-8"
     //   );
     //   const collection = formatUtils.JSONParse(collectionJson);
-
     //   expect(collection).toHaveProperty(
     //     ["schematics", "initialise-workspace", "factory"],
     //     expect.stringMatching("./src/schematics/")
     //   );
     // });
-  });
-});
+  })
+})

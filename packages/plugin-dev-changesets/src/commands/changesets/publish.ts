@@ -3,18 +3,20 @@ import {
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
-  execUtils as _execUtils,
-} from "@business-as-code/core";
+  execUtils as _execUtils
+} from '@business-as-code/core'
 
 /** probably should fold this into the snapshot command */
-export default class ChangesetsPublish extends BaseCommand<typeof ChangesetsPublish> {
-  static override description = "Creates an empty workspace";
+export default class ChangesetsPublish extends BaseCommand<
+  typeof ChangesetsPublish
+> {
+  static override description = 'Creates an empty workspace'
 
   static override examples = [
     `$ oex hello friend --from oclif
 hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ];
+`
+  ]
 
   static override flags = {
     // message: Oclif.Flags.string({
@@ -28,9 +30,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
 
     workspacePath: Oclif.Flags.directory({
-  exists: true,
-      description: "Workspace name",
-      required: false,
+      exists: true,
+      description: 'Workspace name',
+      required: false
     }),
     // configPath: Oclif.Flags.string({
     //   description: "Relative or absolute path to a workspace configuration",
@@ -42,33 +44,34 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   default: "*",
     // }),
     registry: Oclif.Flags.string({
-      description: "Specify a package manager registry to load the Bac cli",
+      description: 'Specify a package manager registry to load the Bac cli',
       required: false,
-      default: "http://localhost:4873",
+      default: 'http://localhost:4873'
     }),
     tag: Oclif.Flags.string({
-      description: "Add a tag to the published package",
-      required: false,
+      description: 'Add a tag to the published package',
+      required: false
       // default: "http://localhost:4873",
-    }),
-  };
+    })
+  }
 
   static override args = {
     // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
-  };
+  }
 
   async execute(context: ContextCommand<typeof ChangesetsPublish>) {
-
-    const changesetService = await context.serviceFactory('changeset', {context, workingPath: '.'})
+    const changesetService = await context.serviceFactory('changeset', {
+      context,
+      workingPath: '.'
+    })
 
     return changesetService.publish({
       registry: context.cliOptions.flags.registry,
-      tag: context.cliOptions.flags.tag,
+      tag: context.cliOptions.flags.tag
     })
-
 
     // type D = InferHookParams<typeof RunWorkspaceLifecycleBase.hooks.runWorkspace>
     // type DD = LifecycleOptionsByMethod<'runWorkspace'>

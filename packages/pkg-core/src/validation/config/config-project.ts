@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { Simplify } from "../../__types__";
+import { z } from 'zod'
+import { Simplify } from '../../__types__'
 // import { projectSchema as moonProjectSchema } from '../moon/by-state-files/project';
 
 /**
@@ -44,19 +44,17 @@ import { Simplify } from "../../__types__";
 //   teams: z.record(z.string(), configTeamSchema),
 // })
 
-
-
 const commonProjectSchema = z.object({
   // blah: z.number()
 
-  active: z.boolean().optional(),
+  active: z.boolean().optional()
 })
 // type BFE = z.infer<typeof commonProjectSchema>
 // export const configProjectConfigSchema = providerReturnSchemaBuilder('initialiseWorkspace', commonProjectSchema)
 export const configProjectConfigSchema = commonProjectSchema
-export type ConfigProjectConfig = Simplify<z.infer<typeof configProjectConfigSchema>>
-
-
+export type ConfigProjectConfig = Simplify<
+  z.infer<typeof configProjectConfigSchema>
+>
 
 // type BaseProject = z.infer<typeof baseProjectSchema>
 

@@ -5,26 +5,28 @@ import { AddressHandler } from '../__types__'
 
 declare module '../__types__' {
   interface AddressType {
-    scaffoldIdentPackage: [{
-      descriptor: {
-        identHash: string
-        scope?: string
-        name: string
-        identString: string
-        // protocol: AddressPackageProtocols // package manager dependent
-        subpath?: string
+    scaffoldIdentPackage: [
+      {
+        descriptor: {
+          identHash: string
+          scope?: string
+          name: string
+          identString: string
+          // protocol: AddressPackageProtocols // package manager dependent
+          subpath?: string
+        }
+        params: URLSearchParams
+        paramsSorted: URLSearchParams
       },
-      params: URLSearchParams
-      paramsSorted: URLSearchParams
-    }, 'package', string]
+      'package',
+      string
+    ]
   }
 }
 
-
-
-
 // const PACKAGE_REGEX = /^(?:@([a-z0-9-~][a-z0-9-._~]*?)\/)?([a-z0-9-~][a-z0-9-._~]*)(?:@([a-z0-9-~][a-z0-9-._~]*))?(?:\/([^#]+))?(?:#([^#\/]+))?$/
-const PACKAGE_REGEX = /^(?:@([a-z0-9-~][a-z0-9-._~]*?)\/)?([a-z0-9-~][a-z0-9-._~]*)(?:@([^#\/]+))?(?:\/([^#]+))?(?:#([^#]+))?$/ // range/params optionality required to allow specific validation within 'parse'
+const PACKAGE_REGEX =
+  /^(?:@([a-z0-9-~][a-z0-9-._~]*?)\/)?([a-z0-9-~][a-z0-9-._~]*)(?:@([^#\/]+))?(?:\/([^#]+))?(?:#([^#]+))?$/ // range/params optionality required to allow specific validation within 'parse'
 // const PACKAGE_REGEX = /^(?:@([a-z0-9-~][a-z0-9-._~]*?)\/)?([a-z0-9-~][a-z0-9-._~]*)(?:#([^#]+))$/
 
 /**
@@ -35,8 +37,7 @@ const PACKAGE_REGEX = /^(?:@([a-z0-9-~][a-z0-9-._~]*?)\/)?([a-z0-9-~][a-z0-9-._~
 export const handler: AddressHandler<'scaffoldIdentPackage'> = {
   name: 'scaffoldIdentPackage',
   group: 'package',
-  parse({address}) {
-
+  parse({ address }) {
     // console.log(`address, address.match(PACKAGE_REGEX) :>> `, address, address.match(PACKAGE_REGEX))
     const matches = address.match(PACKAGE_REGEX)
     if (!matches) return
@@ -45,15 +46,25 @@ export const handler: AddressHandler<'scaffoldIdentPackage'> = {
 
     const [, scope, name, range, subpath, hashParamString] = matches
     if (range) {
-      throw new Error(`Address: package descriptor has been encountered in this default package handler 'scaffold-ident-package-handler'. Descriptors (i.e. having a range) should be handled before this. Address: '${address}'`)
+      throw new Error(
+        `Address: package descriptor has been encountered in this default package handler 'scaffold-ident-package-handler'. Descriptors (i.e. having a range) should be handled before this. Address: '${address}'`
+      )
     }
     const identHash = makeHash([scope, name])
-    const params = hashParamString ? new URLSearchParams(hashParamString) : undefined
+    const params = hashParamString
+      ? new URLSearchParams(hashParamString)
+      : undefined
     if (!params || !params.get('namespace')) {
-      throw new Error(`Address: a namespace param is required when defining package paths with 'scaffold-ident-package-handler'. e.g. my-package#namespace=my-scaffold-folder. Address: '${address}'`)
+      throw new Error(
+        `Address: a namespace param is required when defining package paths with 'scaffold-ident-package-handler'. e.g. my-package#namespace=my-scaffold-folder. Address: '${address}'`
+      )
     }
 
-    const paramsSorted = (() => {const params = new URLSearchParams(hashParamString); params.sort(); return params})()
+    const paramsSorted = (() => {
+      const params = new URLSearchParams(hashParamString)
+      params.sort()
+      return params
+    })()
     const parts = {
       descriptor: {
         identHash,
@@ -61,12 +72,15 @@ export const handler: AddressHandler<'scaffoldIdentPackage'> = {
         name,
         identString: `${scope ? `@${scope}/` : ''}${name}`,
         // protocol,
-        ...(subpath ? {subpath} : {}),
+        ...(subpath ? { subpath } : {})
       },
       params,
-      paramsSorted,
+      paramsSorted
     }
-    const handled = handle({descriptor: parts.descriptor, params: parts.paramsSorted})
+    const handled = handle({
+      descriptor: parts.descriptor,
+      params: parts.paramsSorted
+    })
 
     return {
       original: address,
@@ -75,14 +89,16 @@ export const handler: AddressHandler<'scaffoldIdentPackage'> = {
       addressNormalized: handled,
       group: 'package',
       parts,
-      type: 'scaffoldIdentPackage',
+      type: 'scaffoldIdentPackage'
     }
   },
-  format({address}) {
-    return handle({descriptor: address.parts.descriptor, params: address.parts.paramsSorted})
+  format({ address }) {
+    return handle({
+      descriptor: address.parts.descriptor,
+      params: address.parts.paramsSorted
+    })
     // return handler.normalize!({address: options.address, addressIns: options.addressIns})
-  },
-
+  }
 }
 
 // to include all permutations of all handlers
@@ -96,8 +112,17 @@ type PackageDescriptorLoose = {
   subpath?: string
 }
 
-function handle({descriptor, params}: {descriptor: PackageDescriptorLoose, params?: URLSearchParams}) {
-  return serializePackageDescriptor(descriptor) + (params ? `#${params.toString()}` : ``)
+function handle({
+  descriptor,
+  params
+}: {
+  descriptor: PackageDescriptorLoose
+  params?: URLSearchParams
+}) {
+  return (
+    serializePackageDescriptor(descriptor) +
+    (params ? `#${params.toString()}` : ``)
+  )
 }
 // function normalize({address, addressIns}) {
 //   let serialized = serializePackageDescriptor(address.parts.descriptor)
@@ -110,8 +135,10 @@ function handle({descriptor, params}: {descriptor: PackageDescriptorLoose, param
 //   return serialized
 // }
 
-export const serializePackageDescriptor = (desc: PackageDescriptorLoose): string => {
-  const {scope, name} = desc
+export const serializePackageDescriptor = (
+  desc: PackageDescriptorLoose
+): string => {
+  const { scope, name } = desc
   let ret = `${scope ? `@${scope}/` : ''}${name}`
   if (desc.range) ret = `${ret}@${desc.range}`
   if (desc.subpath) ret = `${ret}/${desc.subpath}`

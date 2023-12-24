@@ -8,12 +8,11 @@ var chalk = require('chalk')
 var fixturez = require('fixturez')
 var htpasswd = require('htpasswd-js')
 
-function pad (str) {
+function pad(str) {
   return (str + '    ').slice(0, 7)
 }
 
-
-function matchInfo (req) {
+function matchInfo(req) {
   var u = url.parse(req.url)
   if (req.method === 'GET' && u.pathname.endsWith('/info/refs')) {
     return true
@@ -22,43 +21,61 @@ function matchInfo (req) {
   }
 }
 
-function matchService (req) {
+function matchService(req) {
   var u = url.parse(req.url, true)
   if (req.method === 'GET' && u.pathname.endsWith('/info/refs')) {
     return u.query.service
   }
-  if (req.method === 'POST' && req.headers['content-type'] === 'application/x-git-upload-pack-request') {
+  if (
+    req.method === 'POST' &&
+    req.headers['content-type'] === 'application/x-git-upload-pack-request'
+  ) {
     return 'git-upload-pack'
   }
-  if (req.method === 'POST' && req.headers['content-type'] === 'application/x-git-receive-pack-request') {
+  if (
+    req.method === 'POST' &&
+    req.headers['content-type'] === 'application/x-git-receive-pack-request'
+  ) {
     return 'git-receive-pack'
   }
 }
 
-function factory (config) {
-  if (!config.root) throw new Error('Missing required "gitHttpServer.root" config option')
-  if (!config.route) throw new Error('Missing required "gitHttpServer.route" config option')
-  if (!config.route.startsWith('/')) throw new Error('"gitHttpServer.route" must start with a "/"')
+function factory(config) {
+  if (!config.root)
+    throw new Error('Missing required "gitHttpServer.root" config option')
+  if (!config.route)
+    throw new Error('Missing required "gitHttpServer.route" config option')
+  if (!config.route.startsWith('/'))
+    throw new Error('"gitHttpServer.route" must start with a "/"')
   // TODO: Make this configurable in karma.conf.js
-  var f = fixturez(config.root, {root: config.root, glob: config.glob})
+  var f = fixturez(config.root, { root: config.root, glob: config.glob })
 
-  function getGitDir (req) {
+  function getGitDir(req) {
     var u = url.parse(req.url)
     if (u.pathname.startsWith(config.route)) {
       const info = matchInfo(req)
       if (info) {
-        let gitdir = u.pathname.replace(config.route, '').replace(/\/info\/refs$/, '').replace(/^\//, '')
+        let gitdir = u.pathname
+          .replace(config.route, '')
+          .replace(/\/info\/refs$/, '')
+          .replace(/^\//, '')
         let fixtureName = path.posix.basename(gitdir)
         return f.find(fixtureName)
       }
       const service = matchService(req)
       if (service === 'git-upload-pack') {
-        let gitdir = u.pathname.replace(config.route, '').replace(/\/git-upload-pack$/, '').replace(/^\//, '')
+        let gitdir = u.pathname
+          .replace(config.route, '')
+          .replace(/\/git-upload-pack$/, '')
+          .replace(/^\//, '')
         let fixtureName = path.posix.basename(gitdir)
         return f.find(fixtureName)
       }
       if (service === 'git-receive-pack') {
-        let gitdir = u.pathname.replace(config.route, '').replace(/\/git-receive-pack$/, '').replace(/^\//, '')
+        let gitdir = u.pathname
+          .replace(config.route, '')
+          .replace(/\/git-receive-pack$/, '')
+          .replace(/^\//, '')
         let fixtureName = path.posix.basename(gitdir)
         return f.copy(fixtureName)
       }
@@ -66,16 +83,20 @@ function factory (config) {
     return null
   }
 
-  return async function middleware (req, res, next) {
+  return async function middleware(req, res, next) {
     try {
       // handle pre-flight OPTIONS
       if (req.method === 'OPTIONS') {
         res.statusCode = 204
         res.end('')
-        console.log(chalk.green('[git-http-server] 204 ' + pad(req.method) + ' ' + req.url))
+        console.log(
+          chalk.green(
+            '[git-http-server] 204 ' + pad(req.method) + ' ' + req.url
+          )
+        )
         return
       }
-      if (!next) next = () => void(0)
+      if (!next) next = () => void 0
       try {
         // process.stdout.write(`config :>> ` + require('util').inspect(config, {showHidden: false, depth: 2, colors: true}) + `\n`)
         // console.log(`req.url :>> `, req.url)
@@ -83,7 +104,9 @@ function factory (config) {
         // console.log(`gitdir :>> `, gitdir)
       } catch (err) {
         res.statusCode = 404
-        console.log(chalk.red('[git-http-server] 404 ' + pad(req.method) + ' ' + req.url))
+        console.log(
+          chalk.red('[git-http-server] 404 ' + pad(req.method) + ' ' + req.url)
+        )
         res.end(err.message + '\n')
         return
       }
@@ -107,7 +130,11 @@ function factory (config) {
           res.statusMessage = 'Authorization Required'
           res.setHeader('WWW-Authenticate', 'Basic')
           res.end('Unauthorized' + '\n')
-          console.log(chalk.green('[git-http-server] 401 ' + pad(req.method) + ' ' + req.url))
+          console.log(
+            chalk.green(
+              '[git-http-server] 401 ' + pad(req.method) + ' ' + req.url
+            )
+          )
           return
         }
         let valid = await htpasswd.authenticate({
@@ -122,26 +149,32 @@ function factory (config) {
           res.statusMessage = 'Authorization Required'
           res.setHeader('WWW-Authenticate', 'Basic')
           res.end('Bad credentials' + '\n')
-          console.log(chalk.green('[git-http-server] 401 ' + pad(req.method) + ' ' + req.url))
+          console.log(
+            chalk.green(
+              '[git-http-server] 401 ' + pad(req.method) + ' ' + req.url
+            )
+          )
           return
         }
       }
 
       const info = matchInfo(req)
       const service = matchService(req)
-      const env = req.headers['git-protocol'] ? { GIT_PROTOCOL: req.headers['git-protocol'] } : {}
+      const env = req.headers['git-protocol']
+        ? { GIT_PROTOCOL: req.headers['git-protocol'] }
+        : {}
 
-      const args = ['--stateless-rpc' ];
+      const args = ['--stateless-rpc']
       if (info) args.push('--advertise-refs')
       args.push(gitdir)
 
       if (info) {
         res.setHeader('content-type', `application/x-${service}-advertisement`)
-        function pack (s) {
-            var n = (4 + s.length).toString(16);
-            return Array(4 - n.length + 1).join('0') + n + s;
+        function pack(s) {
+          var n = (4 + s.length).toString(16)
+          return Array(4 - n.length + 1).join('0') + n + s
         }
-        res.write(pack('# service=' + service + '\n') + '0000');
+        res.write(pack('# service=' + service + '\n') + '0000')
       } else {
         res.setHeader('content-type', `application/x-${service}-result`)
       }
@@ -149,11 +182,15 @@ function factory (config) {
       const ps = spawn(service, args, { env })
       req.pipe(ps.stdin)
       ps.stdout.pipe(res)
-      console.log(chalk.green('[git-http-server] 200 ' + pad(req.method) + ' ' + req.url))
+      console.log(
+        chalk.green('[git-http-server] 200 ' + pad(req.method) + ' ' + req.url)
+      )
     } catch (err) {
       res.statusCode = 500
       res.end(err + '\n')
-      console.log(chalk.red('[git-http-server] 500 ' + pad(req.method) + ' ' + req.url))
+      console.log(
+        chalk.red('[git-http-server] 500 ' + pad(req.method) + ' ' + req.url)
+      )
     }
   }
 }

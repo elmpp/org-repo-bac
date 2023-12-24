@@ -4,8 +4,7 @@
  * @type {Config}
  */
 const config = {
-  projectSource: [],
+  projectSource: []
 }
-
 
 module.exports.config = config

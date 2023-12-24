@@ -1,23 +1,23 @@
 // oclif custom base command docs - https://tinyurl.com/2n3wch65
 // advanced BaseCommand Salesforce example - https://tinyurl.com/2lexro75
-import { logging } from "@angular-devkit/core";
-import { ProcessOutput } from "@angular-devkit/core/node";
+import { logging } from '@angular-devkit/core'
+import { ProcessOutput } from '@angular-devkit/core/node'
 import {
   addr,
   AddressPathAbsolute,
   AddressPathRelative,
-  assertIsAddressPathRelative,
-} from "@business-as-code/address";
-import { BacError, MessageName } from "@business-as-code/error";
-import * as oclif from "@oclif/core";
-import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
-import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-import * as ansiColors from "ansi-colors";
-import debugLoggerModule from 'debug';
-import { EOL } from "os";
-import { filter } from "rxjs/operators";
-import { fileURLToPath } from "url";
-import * as util from "util";
+  assertIsAddressPathRelative
+} from '@business-as-code/address'
+import { BacError, MessageName } from '@business-as-code/error'
+import * as oclif from '@oclif/core'
+import { PrettyPrintableError } from '@oclif/core/lib/interfaces'
+import { ParserOutput } from '@oclif/core/lib/interfaces/parser'
+import * as ansiColors from 'ansi-colors'
+import debugLoggerModule from 'debug'
+import { EOL } from 'os'
+import { filter } from 'rxjs/operators'
+import { fileURLToPath } from 'url'
+import * as util from 'util'
 import {
   assertIsOk,
   assertIsResult,
@@ -31,27 +31,27 @@ import {
   ServiceInitialiseLiteOptions,
   ServiceMap,
   ServiceStaticMap
-} from "../__types__";
-import { constants } from "../constants";
+} from '../__types__'
+import { constants } from '../constants'
 import {
   ConfigureWorkspaceLifecycleBase,
   FetchContentLifecycleBase,
   InitialiseWorkspaceLifecycleBase,
   RunProjectLifecycleBase,
   // RunProjectLifecycleBase,
-  RunWorkspaceLifecycleBase,
-} from "../interfaces";
-import { ConfigureProjectLifecycleBase } from "../interfaces/lifecycle/configure-project-lifecycle-base";
-import { BacService, CacheService, ExecService, MoonService } from "../services";
-import { SchematicsService } from "../services/schematics-service";
-import { fsUtils, objectUtils } from "../utils";
-import { findUp, loadModule } from "../utils/fs-utils";
+  RunWorkspaceLifecycleBase
+} from '../interfaces'
+import { ConfigureProjectLifecycleBase } from '../interfaces/lifecycle/configure-project-lifecycle-base'
+import { BacService, CacheService, ExecService, MoonService } from '../services'
+import { SchematicsService } from '../services/schematics-service'
+import { fsUtils, objectUtils } from '../utils'
+import { findUp, loadModule } from '../utils/fs-utils'
 
 // export type FlagsInfer<T extends typeof oclif.Command> = oclif.Interfaces.InferredFlags<
 //   typeof BaseCommand["baseFlags"] & T["flags"]
 // >
 export type FlagsInfer<T extends typeof oclif.Command> =
-  oclif.Interfaces.InferredFlags<T["baseFlags"] & T["flags"]>;
+  oclif.Interfaces.InferredFlags<T['baseFlags'] & T['flags']>
 // export type FlagsInfer<T extends typeof oclif.Command> = NullishToOptional<oclif.Interfaces.InferredFlags<
 //   T["baseFlags"] & T["flags"]
 // >>
@@ -59,63 +59,63 @@ export type FlagsInfer<T extends typeof oclif.Command> =
 //   typeof BaseCommand["baseFlags"] & T["flags"]
 // > : never;
 export type ArgsInfer<T extends typeof oclif.Command> =
-  oclif.Interfaces.InferredArgs<T["args"]>;
+  oclif.Interfaces.InferredArgs<T['args']>
 
-const colors = ansiColors.create();
+const colors = ansiColors.create()
 
 export type BaseParseOutput = {
   flags: {
-    ["logLevel"]: LogLevel;
-    ["json"]: boolean;
+    ['logLevel']: LogLevel
+    ['json']: boolean
     // ["workspacePath"]?: string;
     // ["options"]: Record<string, any>;
-  };
-};
+  }
+}
 
 export abstract class BaseCommand<
   T extends typeof oclif.Command
 > extends oclif.Command {
   // add the --json flag
-  static override enableJsonFlag = true;
+  static override enableJsonFlag = true
 
   // define flags that can be inherited by any command that extends BaseCommand
   static override baseFlags = {
     logLevel: oclif.Flags.custom<LogLevel>({
-      summary: "Specify level for logging.",
+      summary: 'Specify level for logging.',
       env: 'BAC_LOG_LEVEL',
-      options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
-      helpGroup: "GLOBAL",
+      options: ['debug', 'error', 'fatal', 'info', 'warn'] satisfies LogLevel[],
+      helpGroup: 'GLOBAL',
       default: 'info',
       // default: async () => process.env.BAC_LOG_LEVEL ?? 'info',
       // default: "info",
-      required: true,
+      required: true
     })(),
     json: oclif.Flags.boolean({
-      required: false,
-    }),
+      required: false
+    })
     // "options": oclif.Flags.custom<Record<string, unknown>>({
     //   summary: "Additional ",
     //   // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
     //   helpGroup: "GLOBAL",
     //   default: {},
     // })(),
-  } satisfies { [key in keyof BaseParseOutput["flags"]]: any };
+  } satisfies { [key in keyof BaseParseOutput['flags']]: any }
 
   // @ts-ignore - set in initialise and used optionally in .log()
-  protected logger: Logger;
-  protected static oclifConfig: oclif.Interfaces.Config;
+  protected logger: Logger
+  protected static oclifConfig: oclif.Interfaces.Config
   /** set during successful run/runDirect */
-  private context?: ContextCommand<T>;
+  private context?: ContextCommand<T>
 
   // protected flags!: any;
   // protected args!: any;
-  protected flags!: FlagsInfer<T> & { logLevel: LogLevel };
+  protected flags!: FlagsInfer<T> & { logLevel: LogLevel }
   // protected flags!: FlagsInfer<T>;
-  protected args!: ArgsInfer<T>;
+  protected args!: ArgsInfer<T>
 
   constructor(argv: string[], config: oclif.Config) {
-    super(argv, config);
-    this.id = this.ctor.id;
+    super(argv, config)
+    this.id = this.ctor.id
     // try {
     //   this.debug = require('debug')(this.id ? `${this.config.bin}:${this.id}` : this.config.bin)
     // } catch {
@@ -124,48 +124,48 @@ export abstract class BaseCommand<
 
     /** oclif expects .debug to have debug's util.format api - https://tinyurl.com/2j67ajot */
     this.debug = (...args: any[]) => {
-      return this.logger?.debug(util.format(...args));
-    };
+      return this.logger?.debug(util.format(...args))
+    }
   }
 
   static override async run<T extends oclif.Command>(
     this: new (argv: string[], config: oclif.Config) => T,
     argv?: string[] | undefined,
     opts?: oclif.Interfaces.LoadOptions
-  ): Promise<ReturnType<T["run"]>> {
-    if (!argv) argv = process.argv.slice(2);
+  ): Promise<ReturnType<T['run']>> {
+    if (!argv) argv = process.argv.slice(2)
 
     // Handle the case when a file URL string is passed in such as 'import.meta.url'; covert to file path.
-    if (typeof opts === "string" && opts.startsWith("file://")) {
-      opts = fileURLToPath(opts);
+    if (typeof opts === 'string' && opts.startsWith('file://')) {
+      opts = fileURLToPath(opts)
     }
 
     const config = await oclif.Config.load(
       opts || require.main?.filename || __dirname
-    );
-    const cmd = new this(argv, config);
+    )
+    const cmd = new this(argv, config)
     if (!cmd.id) {
-      const id = cmd.constructor.name.toLowerCase();
-      cmd.id = id;
+      const id = cmd.constructor.name.toLowerCase()
+      cmd.id = id
       // @ts-ignore
-      cmd.ctor.id = id;
+      cmd.ctor.id = id
     }
     // @ts-ignore
-    cmd.ctor.oclifConfig = opts;
+    cmd.ctor.oclifConfig = opts
 
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
 
     // @ts-ignore
-    const res = await cmd._run<ReturnType<T["run"]>>();
-    return res;
+    const res = await cmd._run<ReturnType<T['run']>>()
+    return res
   }
 
   /** Our custom initialise hook. Do not use 'init' which is an oclif base method */
   async initialise(options: {
-    config: oclif.Config;
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+    config: oclif.Config
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
   }) {
-    this.logger = this.createLogger(options);
+    this.logger = this.createLogger(options)
     this.addDebugLogger({ logger: this.logger, ...options })
 
     // console.log(`this.logger :>> `, this.logger)
@@ -186,39 +186,39 @@ export abstract class BaseCommand<
 
   override warn(input: string | Error) {
     if (!this.jsonEnabled()) {
-      this.logger.warn(BacError.fromError(input).toString());
+      this.logger.warn(BacError.fromError(input).toString())
       // oclif.Errors.warn(BacError.fromError(input).toString());
-      oclif.Errors.warn(input);
+      oclif.Errors.warn(input)
     }
-    return input;
+    return input
   }
 
   override error(
     input: string | Error,
     options: {
-      code?: string;
-      exit: false;
+      code?: string
+      exit: false
     } & PrettyPrintableError
-  ): void;
+  ): void
   override error(
     input: string | Error,
     options?: {
-      code?: string;
-      exit?: number;
+      code?: string
+      exit?: number
     } & PrettyPrintableError
-  ): never;
+  ): never
   override error(
     input: string | Error,
     options: {
-      code?: string;
-      exit?: number | false;
+      code?: string
+      exit?: number | false
     } & PrettyPrintableError = {}
   ) {
-    this.logger.error(BacError.fromError(input).toString());
+    this.logger.error(BacError.fromError(input).toString())
     // console.log(`input :>> `, input)
 
     /** Oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L245 */
-    return super.error(input, options as any);
+    return super.error(input, options as any)
     // return Errors.error(input, options as any);
   }
   //   override error(input: string | Error, options: {
@@ -237,41 +237,41 @@ export abstract class BaseCommand<
   //   console.log(`message :>> `, message)
   //   return this.log(message, ...args)
   // }
-  override log(message: any = "", ...args: any[]) {
+  override log(message: any = '', ...args: any[]) {
     if (!this.jsonEnabled()) {
       // console.log(`message :>> `, message)
       // console.log(`this.logger :>> `, this.logger, this)
       this.logger?.log(
-        "info",
+        'info',
         message,
         args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
-      );
+      )
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
       // stream_1.stdout.write((0, util_1.format)(message, ...args) + "\n");
     }
   }
   /** logging that is unaffected by the logLevel */
-  logToStdout(message: any = "") {
+  logToStdout(message: any = '') {
     if (!this.jsonEnabled()) {
       // console.log(`message :>> `, message)
       // console.log(`this.logger :>> `, this.logger, this)
       this.logger.stdout(
         message
         // args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
-      );
+      )
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
       // stream_1.stdout.write((0, util_1.format)(message, ...args) + "\n");
     }
   }
-  override logToStderr(message = "", ...args: any[]) {
+  override logToStderr(message = '', ...args: any[]) {
     if (!this.jsonEnabled()) {
       this.logger.log(
-        "error",
+        'error',
         message,
         args.reduce((acc, a, k) => ({ ...acc, k: a }), {})
-      );
+      )
       // message =
       //   typeof message === "string" ? message : (0, util_1.inspect)(message);
       // stream_1.stderr.write((0, util_1.format)(message, ...args) + "\n");
@@ -280,13 +280,20 @@ export abstract class BaseCommand<
 
   /** many libraries rely directly on the debug logger module - https://tinyurl.com/ymvxgb7a */
   protected addDebugLogger(options: {
-    logger: Logger, config: oclif.Config;
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+    logger: Logger
+    config: oclif.Config
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
   }) {
     // debugLoggerModule.log = options.logger.log
     // debugLoggerModule.log = console.log.bind(console)
     debugLoggerModule.log = options.logger.debug.bind(options.logger)
-    if (logLevelMatching(options.parseOutput.flags["logLevel"], "debug", options.parseOutput.flags.json)) {
+    if (
+      logLevelMatching(
+        options.parseOutput.flags['logLevel'],
+        'debug',
+        options.parseOutput.flags.json
+      )
+    ) {
       debugLoggerModule.enable('*') // perhaps be more selective here?
     }
   }
@@ -295,10 +302,10 @@ export abstract class BaseCommand<
    standardise on the schematic logger for compatibility. Oclif hides usage behind a .log method so easily transformed
    */
   protected createLogger({
-    parseOutput,
+    parseOutput
   }: {
-    config: oclif.Config;
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+    config: oclif.Config
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>
   }): Logger {
     /**
      * Angular console logger - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/core/node/cli-logger.ts#L19
@@ -310,29 +317,29 @@ export abstract class BaseCommand<
       stderr: ProcessOutput = process.stderr,
       masks?: Partial<Record<logging.LogLevel, (s: string) => string>>
     ): Logger {
-      const logger = new logging.IndentLogger("cling") as Logger;
+      const logger = new logging.IndentLogger('cling') as Logger
       // console.log(`parseOutput.flags["logLevel"], parseOutput.flags["json"] :>> `, parseOutput.flags["logLevel"], parseOutput.flags["json"])
       logger
         .pipe(
           filter((entry) => {
             return logLevelMatching(
-              parseOutput.flags["logLevel"],
+              parseOutput.flags['logLevel'],
               entry.level,
-              parseOutput.flags["json"]
-            );
+              parseOutput.flags['json']
+            )
           })
         )
         .subscribe((entry) => {
           // const color = colors && colors[entry.level];
-          const mask = masks && masks[entry.level];
-          let output = stdout;
+          const mask = masks && masks[entry.level]
+          let output = stdout
 
           switch (entry.level) {
-            case "warn":
-            case "fatal":
-            case "error":
-              output = stderr;
-              break;
+            case 'warn':
+            case 'fatal':
+            case 'error':
+              output = stderr
+              break
           }
 
           // If we do console.log(message) or process.stdout.write(message + '\n'), the process might
@@ -354,31 +361,31 @@ export abstract class BaseCommand<
           // by platform).
           //
           // For more details, see https://nodejs.org/api/process.html#process_a_note_on_process_i_o
-          const chunkSize = 2000; // Small chunk.
-          let message = entry.message;
-          if (!message.length) return; // we return '' when --json
+          const chunkSize = 2000 // Small chunk.
+          let message = entry.message
+          if (!message.length) return // we return '' when --json
 
           // console.log(`message :>> `, message)
           // let written = false
           while (message) {
-            const chunk = message.slice(0, chunkSize);
-            const masked = mask ? mask(chunk) : chunk;
-            message = message.slice(chunkSize);
-            output.write(masked);
+            const chunk = message.slice(0, chunkSize)
+            const masked = mask ? mask(chunk) : chunk
+            message = message.slice(chunkSize)
+            output.write(masked)
             // if (masked.length) {
             //   written = true
             // }
           }
 
           // if (written) {
-          output.write("\n");
+          output.write('\n')
           // }
-        });
+        })
       logger.stdout = (s: string) => {
-        stdout.write(s + EOL);
-      };
+        stdout.write(s + EOL)
+      }
 
-      return logger;
+      return logger
     }
 
     const logger = createConsoleLogger(
@@ -390,12 +397,12 @@ export abstract class BaseCommand<
         info: (s: string) => s,
         debug: (s: string) => {
           // console.log(s); // not required
-          return s;
+          return s
         },
         // debug: (s: string) => s,
         warn: (s: string) => colors.bold.yellow(s),
         error: (s: string) => colors.bold.red(s),
-        fatal: (s: string) => colors.bold.red(s),
+        fatal: (s: string) => colors.bold.red(s)
       }
       // objectMapAndFilter(
       //   {
@@ -414,18 +421,18 @@ export abstract class BaseCommand<
       //       ? fn
       //       : (s) => ''
       // )
-    );
-    return logger;
+    )
+    return logger
   }
 
   protected loadPluginExport = async ({
     pluginPath,
     plugin,
-    debug,
+    debug
   }: {
-    pluginPath: AddressPathAbsolute;
-    plugin: oclif.Interfaces.Plugin;
-    debug?: boolean;
+    pluginPath: AddressPathAbsolute
+    plugin: oclif.Interfaces.Plugin
+    debug?: boolean
   }): Promise<Plugin> => {
     try {
       // const p = path.join(plugin.pjson.oclif.commands, ...id.split(':'))
@@ -443,84 +450,86 @@ export abstract class BaseCommand<
 
       // console.log(`plugin.type :>> `, plugin.type)
 
-      const { module } = await loadModule(plugin);
+      const { module } = await loadModule(plugin)
 
       if (
         !module.plugin &&
-        plugin.type === "user" &&
-        plugin.name !== "@business-as-code/cli"
+        plugin.type === 'user' &&
+        plugin.name !== '@business-as-code/cli'
       ) {
         // this.error(`Plugin package does not have a named export 'plugin'. Package: '${plugin.name}', plugin type: '${plugin.type}', package path: '${pluginPath.original}'`)
         // return {}
       }
-      return module?.plugin ?? {};
+      return module?.plugin ?? {}
     } catch (error: any) {
-      throw error;
+      throw error
     }
-  };
+  }
 
   protected async initialisePlugins({
-    context,
+    context
   }: {
-    context: ContextCommand<T>;
+    context: ContextCommand<T>
   }) {
     context.logger.debug(
-      `plugin.initialisePlugins: '${context.oclifConfig.plugins.length
+      `plugin.initialisePlugins: '${
+        context.oclifConfig.plugins.length
       }' plugins found. '${context.oclifConfig.plugins
         .map((p) => `${p.name}:${p.root}`)
-        .join("\n")}'`
-    );
+        .join('\n')}'`
+    )
     await Promise.all(
       context.oclifConfig.plugins.map(async (plugin) =>
         this.loadLifecycleImplementationsForPlugin({ plugin, context })
       )
-    );
+    )
   }
 
   protected async loadLifecycleImplementationsForPlugin({
     plugin,
-    context,
+    context
   }: {
-    plugin: oclif.Interfaces.Plugin;
-    context: ContextCommand<T>;
+    plugin: oclif.Interfaces.Plugin
+    context: ContextCommand<T>
   }) {
     const marker = oclif.Performance.mark(
       `plugin.loadInitialiserForPlugin#${plugin.name}`,
       { plugin: plugin.name }
-    );
+    )
 
     const initialiseFunc = await this.loadPluginExport({
-      pluginPath: addr.parseAsType(plugin.root, "portablePathPosixAbsolute"),
+      pluginPath: addr.parseAsType(plugin.root, 'portablePathPosixAbsolute'),
       plugin,
-      debug: true,
+      debug: true
     }).then((mod) => {
       // console.log(`plugin.loadInitialiserForPlugin#${plugin.name} does not define an initialise function`)
       if (!(mod.lifecycles ?? []).length) {
         this.debug(
           `plugin.loadLifecycleImplementationsForPlugin#${plugin.name} does not define any lifecycles`
-        );
-        return;
+        )
+        return
       }
 
       // // load lifecycle into tapable
       // return mod.initialise
 
       this.debug(
-        `plugin.loadLifecycleImplementationsForPlugin#${plugin.name
+        `plugin.loadLifecycleImplementationsForPlugin#${
+          plugin.name
         } defines lifecycles: '${mod.lifecycles
           ?.map((l) => `${l.lifecycleTitle}: ${l.title}`)
-          .join(", ")}'`
-      );
+          .join(', ')}'`
+      )
 
       for (const lifecycleImplementation of mod.lifecycles!) {
         lifecycleImplementation.initialise({
-          context,
-        });
+          context
+        })
       }
-    });
+    })
 
-    marker?.stop();
-    return initialiseFunc;
+    marker?.stop()
+    return initialiseFunc
   }
   // protected async loadInitialiserForPlugin({
   //   plugin,
@@ -556,20 +565,20 @@ export abstract class BaseCommand<
   // }
 
   protected async loadServicesForPlugin({
-    plugin,
+    plugin
   }: {
-    plugin: oclif.Interfaces.Plugin;
+    plugin: oclif.Interfaces.Plugin
   }): Promise<Partial<ServiceStaticMap>> {
     const marker = oclif.Performance.mark(
       `plugin.loadServicesForPlugin#${plugin.name}`,
       { plugin: plugin.name }
-    );
+    )
 
     const pluginServices = (
       await this.loadPluginExport({
-        pluginPath: addr.parseAsType(plugin.root, "portablePathPosixAbsolute"),
+        pluginPath: addr.parseAsType(plugin.root, 'portablePathPosixAbsolute'),
         plugin,
-        debug: true,
+        debug: true
       }).then((pluginMod) =>
         pluginMod.services && Array.isArray(pluginMod.services)
           ? pluginMod.services
@@ -578,13 +587,13 @@ export abstract class BaseCommand<
     ).reduce(
       (acc, staticService) => ({
         ...acc,
-        [staticService.as ?? staticService.title]: [staticService],
+        [staticService.as ?? staticService.title]: [staticService]
       }),
       {}
-    );
+    )
 
-    marker?.stop();
-    return pluginServices;
+    marker?.stop()
+    return pluginServices
   }
 
   // protected override async parse<F extends FlagOutput, B extends FlagOutput, A extends ArgOutput>(options?: Input<F, B, A>, argv = this.argv): Promise<ParserOutput<F, B, A>> {
@@ -601,41 +610,41 @@ export abstract class BaseCommand<
 
   protected async loadServiceFactory({
     plugins,
-    workspacePath: originalWorkspacePath,
+    workspacePath: originalWorkspacePath
   }: {
-    plugins: oclif.Interfaces.Plugin[];
-    logger: Context["logger"];
-    workspacePath: AddressPathAbsolute;
-  }): Promise<Context["serviceFactory"]> {
+    plugins: oclif.Interfaces.Plugin[]
+    logger: Context['logger']
+    workspacePath: AddressPathAbsolute
+  }): Promise<Context['serviceFactory']> {
     const coreServices = {
       bac: [BacService],
       cache: [CacheService],
       exec: [ExecService],
       moon: [MoonService],
-      schematics: [SchematicsService],
-    };
+      schematics: [SchematicsService]
+    }
 
-    const staticServices = (await plugins.reduce(async (accum, plugin) => {
-      const acc = await accum;
-      const staticPluginServices = await this.loadServicesForPlugin({
-        plugin,
-      });
-      if (!staticPluginServices) {
-        return acc;
-      }
+    const staticServices = (await plugins.reduce(
+      async (accum, plugin) => {
+        const acc = await accum
+        const staticPluginServices = await this.loadServicesForPlugin({
+          plugin
+        })
+        if (!staticPluginServices) {
+          return acc
+        }
 
-      // return Object.assign({}, acc, staticPluginServices);
-      const res = objectUtils.deepMerge(
-        acc,
-        staticPluginServices
-      );
-      return res
+        // return Object.assign({}, acc, staticPluginServices);
+        const res = objectUtils.deepMerge(acc, staticPluginServices)
+        return res
 
-      // return {
-      //   ...acc,
-      //   ...staticPluginServices,
-      // };
-    }, Promise.resolve(coreServices) as unknown as Promise<ServiceStaticMap>)) as unknown as ServiceStaticMap;
+        // return {
+        //   ...acc,
+        //   ...staticPluginServices,
+        // };
+      },
+      Promise.resolve(coreServices) as unknown as Promise<ServiceStaticMap>
+    )) as unknown as ServiceStaticMap
 
     // console.log(`res :>> `, res)
 
@@ -644,7 +653,7 @@ export abstract class BaseCommand<
       initialiseOptionsLite: ServiceInitialiseLiteOptions<SName>
       // initialiseOptions: ServiceOptions<SName>
     ): Promise<ServiceMap[SName][number]> => {
-      const staticServiceArr = staticServices[serviceName];
+      const staticServiceArr = staticServices[serviceName]
       // console.log(`staticServices :>> `, staticServices)
       // console.log(`staticService, serviceName :>> `, staticService, serviceName)
       if (!staticServiceArr) {
@@ -652,24 +661,26 @@ export abstract class BaseCommand<
         this.error(
           `Attempting initialisation of unknown service '${serviceName}'. Loaded services: '${Object.keys(
             staticServices
-          ).join(", ")}'`
-        );
+          ).join(', ')}'`
+        )
       }
 
       function deriveNextWorkspacePath() {
-        return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath;
+        return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath
         // return initialiseOptionsLite?.workspacePath ?? originalWorkspacePath;
       }
 
       const nextContext = {
         ...initialiseOptionsLite.context,
-        workspacePath: deriveNextWorkspacePath(),
-      };
+        workspacePath: deriveNextWorkspacePath()
+      }
 
-      const initialiseOptions: Parameters<ServiceStaticMap[SName][number]["initialise"]>[0] = {
+      const initialiseOptions: Parameters<
+        ServiceStaticMap[SName][number]['initialise']
+      >[0] = {
         workspacePath: originalWorkspacePath, // we DO allow passing through of workspacePath
         ...initialiseOptionsLite,
-        context: nextContext,
+        context: nextContext
       }
 
       const initialiseService = async (
@@ -697,16 +708,16 @@ export abstract class BaseCommand<
         // }
 
         /** bit naughty but we need to infer */
-        const serviceIns = (await (staticService as ServiceStaticMap[SName][number]).initialise(
-          initialiseOptions
-        )) as ServiceMap[SName][number];
+        const serviceIns = (await (
+          staticService as ServiceStaticMap[SName][number]
+        ).initialise(initialiseOptions)) as ServiceMap[SName][number]
 
-        (function validateService() {
-          if (!initialiseOptionsLite.workingPath) return;
+        ;(function validateService() {
+          if (!initialiseOptionsLite.workingPath) return
 
-          const serviceOptions = (serviceIns as any) as Parameters<
+          const serviceOptions = serviceIns as any as Parameters<
             typeof staticService.initialise
-          >[0];
+          >[0]
 
           // console.log(
           //   `serviceOptions && serviceOptions.workspacePath.original :>> `,
@@ -732,21 +743,21 @@ export abstract class BaseCommand<
               `Intended new workspacePath parameter option has not been propogated to the context option. Service: '${serviceIns.ctor.name}'. Supplied new workspacePath: '${serviceOptions?.workspacePath.original}' has not been propogated to the instance options.context.workspacePath: '${serviceOptions?.context?.workspacePath.original}'. It was supplied to instance as nextContext.workspacePath: '${nextContext.workspacePath.original}'.
               initialiseOptionsLite.workspacePath: '${initialiseOptionsLite?.workspacePath?.original}'
               `
-            );
+            )
           }
-        })();
+        })()
 
         if (!serviceIns) {
           this.debug(
             `loadServiceFactory: service '${staticService.title}' does not instantiate`
-          );
-          return;
+          )
+          return
         }
         this.debug(
           `loadServiceFactory: service '${staticService.title}' instantiated`
-        );
-        return serviceIns;
-      };
+        )
+        return serviceIns
+      }
 
       // console.log(`staticServiceArr :>> `, staticServiceArr);
 
@@ -754,32 +765,37 @@ export abstract class BaseCommand<
         await Promise.all(
           staticServiceArr.map(async (s) => initialiseService(s))
         )
-      ).filter(Boolean);
+      ).filter(Boolean)
 
       if (res.length > 1) {
         throw new Error(
           `loadServiceFactory: Multiple services self-reported as initialised`
-        );
+        )
       }
       if (res.length === 0) {
-        console.log(`initialiseOptions :>> `, serviceName, Object.keys(initialiseOptions), Object.keys(initialiseOptionsLite))
-        console.error((new Error()))
+        console.log(
+          `initialiseOptions :>> `,
+          serviceName,
+          Object.keys(initialiseOptions),
+          Object.keys(initialiseOptionsLite)
+        )
+        console.error(new Error())
         throw new BacError(
           MessageName.SERVICE_NOT_FOUND,
           `Service '${serviceName}' not found. Ensure you have installed relevant plugins. Available: '${Object.keys(
             staticServices
-          ).join(", ")}'`
-        );
+          ).join(', ')}'`
+        )
       }
 
       // console.log(`res :>> `, res);
 
-      return res[0]!;
-    };
-    factory["availableServices"] = Object.keys(
+      return res[0]!
+    }
+    factory['availableServices'] = Object.keys(
       staticServices
-    ) as (keyof ServiceStaticMap)[];
-    return factory;
+    ) as (keyof ServiceStaticMap)[]
+    return factory
   }
 
   // static async runDirect<T extends typeof oclif.Command>(
@@ -792,24 +808,24 @@ export abstract class BaseCommand<
   ): Promise<Result<unknown, { error: Error }>> {
     const config = await oclif.Config.load(
       opts || require.main?.filename || __dirname
-    );
-    const cmd = new this([] as any[], config);
+    )
+    const cmd = new this([] as any[], config)
     if (!cmd.id) {
-      const id = cmd.constructor.name.toLowerCase();
-      cmd.id = id;
+      const id = cmd.constructor.name.toLowerCase()
+      cmd.id = id
       // @ts-ignore
-      cmd.ctor.id = id;
+      cmd.ctor.id = id
     }
     // @ts-ignore
-    cmd.ctor.oclifConfig = config;
+    cmd.ctor.oclifConfig = config
 
     // await (cmd as T & { initialise: () => Promise<void> }).initialise();
 
     // console.log(`parseOutput :>> `, require('util').inspect(parseOutput, {showHidden: false, depth: undefined, colors: true}))
 
     // @ts-ignore
-    const directRes = await cmd.runDirect<ReturnType<T["run"]>>(parseOutput);
-    return directRes;
+    const directRes = await cmd.runDirect<ReturnType<T['run']>>(parseOutput)
+    return directRes
   }
 
   // /**
@@ -880,9 +896,7 @@ export abstract class BaseCommand<
   //         ? err.oclif?.exit
   //         : 1;
 
-
   //     if (process.stderr.write && err.code !== "EEXIT") {
-
 
   //       // console.log(`err :>> `, err.stack) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
   //       process.stderr.write(wrapped.stack ?? wrapped.message + EOL)
@@ -905,18 +919,18 @@ export abstract class BaseCommand<
   // }
 
   protected override async _run<T>(): Promise<T> {
-    let err: Error | undefined;
-    let result;
+    let err: Error | undefined
+    let result
     try {
       // remove redirected env var to allow subsessions to run autoupdated client
-      delete process.env[this.config.scopedEnvVarKey("REDIRECTED")];
-      await this.init();
-      result = await this.run();
+      delete process.env[this.config.scopedEnvVarKey('REDIRECTED')]
+      await this.init()
+      result = await this.run()
     } catch (error: any) {
-      err = error;
-      await this.catch(error);
+      err = error
+      await this.catch(error)
     } finally {
-      await this.finally(err);
+      await this.finally(err)
     }
 
     // // we want to adjust the original outputting logic - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L226
@@ -953,41 +967,43 @@ export abstract class BaseCommand<
     //   // }
     // }
 
-    return result as T;
+    return result as T
   }
 
   protected override logJson(json: unknown): void {
     if (
       !this.jsonEnabled() &&
       !logLevelMatching(
-        "error",
+        'error',
         this.context!.cliOptions.flags.logLevel,
         this.context!.cliOptions.flags.json
       )
     ) {
       throw new BacError(
         MessageName.COMMAND_DANGEROUS_JSON,
-        `Command '${this.ctor.name
-        }' has called logJson but current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${this.context!.cliOptions.flags.logLevel
+        `Command '${
+          this.ctor.name
+        }' has called logJson but current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${
+          this.context!.cliOptions.flags.logLevel
         }'.\n Run again with either --json or --logLevel=error.\n Also ensure you have no console.*() usage`
-      );
+      )
     }
 
-    oclif.ux.styledJSON(json);
+    oclif.ux.styledJSON(json)
   }
 
   async run(): Promise<void> {
     const parseOutput = (await this.parse({
       flags: {
         ...this.ctor.flags,
-        ...(this.ctor as typeof BaseCommand).baseFlags,
+        ...(this.ctor as typeof BaseCommand).baseFlags
       },
       // flags: this.ctor.flags,
       // baseFlags: (this.ctor as typeof BaseCommand).baseFlags,
       args: this.ctor.args,
-      strict: this.ctor.strict,
+      strict: this.ctor.strict
     })) as ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-      BaseParseOutput;
+      BaseParseOutput
     // const parseOutput = (await this.parse<
     //   FlagsInfer<T>,
     //   FlagsInfer<T>,
@@ -996,20 +1012,27 @@ export abstract class BaseCommand<
     //   BaseParseOutput;
     // console.log(`parseOutput :>> `, parseOutput)
 
-    await this.initialise({ parseOutput, config: this.config });
-    const context = (this.context = await this.createContext({ parseOutput }));
-    await this.initialisePlugins({ context });
+    await this.initialise({ parseOutput, config: this.config })
+    const context = (this.context = await this.createContext({ parseOutput }))
+    await this.initialisePlugins({ context })
 
-    const res = await this.execute(context);
+    const res = await this.execute(context)
 
     assertIsResult(res)
     // if (!res.success) {
     if (!assertIsOk(res)) {
-      console.log(`failing res during command execution: '${this.ctor.name}' :>> `, require('util').inspect(res, { showHidden: false, depth: undefined, colors: true }))
+      console.log(
+        `failing res during command execution: '${this.ctor.name}' :>> `,
+        require('util').inspect(res, {
+          showHidden: false,
+          depth: undefined,
+          colors: true
+        })
+      )
 
-      const err = res.res.error;
-      (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
-      throw err; // will end up in this.catch()
+      const err = res.res.error
+      ;(err as any).exitCode = err?.extra?.exitCode ?? 1 // make it look like an OclifError
+      throw err // will end up in this.catch()
     }
 
     // return res.res; // return ok payload to support Oclif's --json support - https://tinyurl.com/2bt2z7x7 (see this._run)
@@ -1022,21 +1045,21 @@ export abstract class BaseCommand<
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
       BaseParseOutput
   ): Promise<Result<unknown, any>> {
-    await this.initialise({ parseOutput, config: this.config });
-    const context = (this.context = await this.createContext({ parseOutput }));
-    await this.initialisePlugins({ context });
-    const res = await this.execute(context);
-    return res;
+    await this.initialise({ parseOutput, config: this.config })
+    const context = (this.context = await this.createContext({ parseOutput }))
+    await this.initialisePlugins({ context })
+    const res = await this.execute(context)
+    return res
   }
 
   protected async createContext({
-    parseOutput,
+    parseOutput
   }: {
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-    BaseParseOutput;
+      BaseParseOutput
   }): Promise<ContextCommand<T>> {
     // type ServiceMap = Bac.Services
-    const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
+    const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig
 
     // const logger: Context["logger"] = (
     //   msg: string,
@@ -1049,14 +1072,14 @@ export abstract class BaseCommand<
     // };
 
     const workspacePath = await this.getWorkspacePath(
-      parseOutput.flags["workspacePath"]
-    );
+      parseOutput.flags['workspacePath']
+    )
 
     const serviceFactory = await this.loadServiceFactory({
       plugins: oclifConfig.plugins,
       logger: this.logger,
-      workspacePath,
-    });
+      workspacePath
+    })
 
     const contextCommand: ContextCommand<T> = {
       oclifConfig,
@@ -1064,7 +1087,7 @@ export abstract class BaseCommand<
       logger: this.logger,
       serviceFactory,
       workspacePath,
-      toJSON: () => "__complex__",
+      toJSON: () => '__complex__',
       // lifecycles: setupLifecycles({context}),
       lifecycles: {
         initialiseWorkspace: new InitialiseWorkspaceLifecycleBase<any>(),
@@ -1072,12 +1095,14 @@ export abstract class BaseCommand<
         configureProject: new ConfigureProjectLifecycleBase<any>(),
         fetchContent: new FetchContentLifecycleBase<any>(),
         runProject: new RunProjectLifecycleBase<any>(),
-        runWorkspace: new RunWorkspaceLifecycleBase<any>(),
+        runWorkspace: new RunWorkspaceLifecycleBase<any>()
         // synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
       },
-      detectedPackageManager: await fsUtils.detectPackageManager({ workspacePath: workspacePath }),
-    };
-    return contextCommand;
+      detectedPackageManager: await fsUtils.detectPackageManager({
+        workspacePath: workspacePath
+      })
+    }
+    return contextCommand
   }
 
   // protected async initialisePlugins({
@@ -1152,7 +1177,7 @@ export abstract class BaseCommand<
 
   abstract execute(
     context: ContextCommand<T>
-  ): Promise<Result<unknown, { error: BacError<MessageName, any> }>>;
+  ): Promise<Result<unknown, { error: BacError<MessageName, any> }>>
 
   /** oclif GH - https://github.com/oclif/core/blob/79c41cafe58a27f22b6f7c88e1126c5fd06cb7bb/src/command.ts#L332 */
   protected override async catch(
@@ -1160,15 +1185,15 @@ export abstract class BaseCommand<
   ): Promise<any> {
     // return super.catch(err); // does not actually log to stderr so define own
 
-    process.exitCode = process.exitCode ?? err.exitCode ?? 1;
+    process.exitCode = process.exitCode ?? err.exitCode ?? 1
     if (this.jsonEnabled()) {
-      this.logJson(this.toErrorJson(err));
+      this.logJson(this.toErrorJson(err))
     } else {
       // if (!err.message) throw err;
       try {
-        oclif.ux.action.stop(colors.red("!"));
+        oclif.ux.action.stop(colors.red('!'))
         // Note this should be the only place where caught errors are to be output!!!
-      } catch { }
+      } catch {}
       // return
       // throw err
 
@@ -1181,7 +1206,7 @@ export abstract class BaseCommand<
 
       // console.log(`:>> BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`, this.jsonEnabled(), BacError.getMessageForError(err));
 
-      throw err; // we DO want to rethrow here after writing to stderr
+      throw err // we DO want to rethrow here after writing to stderr
     }
 
     // /** super.catch doesn't seem to log errors outside of json so handle this specifically */
@@ -1202,9 +1227,9 @@ export abstract class BaseCommand<
     // }
 
     try {
-      const config = oclif.Errors.config;
+      const config = oclif.Errors.config
       if (config.errorLogger) {
-        await config.errorLogger.flush();
+        await config.errorLogger.flush()
       }
     } catch (error) {
       // console.error(error);
@@ -1219,30 +1244,30 @@ export abstract class BaseCommand<
       const workspacePathByDotfile = await findUp(
         addr.parsePath(__dirname) as AddressPathAbsolute,
         constants.RC_FILENAME
-      );
+      )
 
       if (workspacePathByDotfile) {
-        return workspacePathByDotfile;
+        return workspacePathByDotfile
       }
 
       throw new BacError(
         MessageName.WORKSPACE_CWD_UNRESOLVABLE,
         `The workspace path cannot be resolved. Perhaps you're missing '--workspacePath' option?.`
-      );
+      )
     }
 
     let pathAddress: AddressPathAbsolute | AddressPathRelative = addr.parsePath(
       // pathRelOrAbsoluteNative ?? process.cwd() // do not fall back to cwd() yet - should be explicit until we can detect existing project
       pathRelOrAbsoluteNative
-    );
+    )
     if (assertIsAddressPathRelative(pathAddress)) {
       pathAddress = addr.pathUtils.resolve(
         addr.parsePath(process.cwd()),
         pathAddress
-      ) as AddressPathAbsolute;
+      ) as AddressPathAbsolute
     }
 
-    return pathAddress;
+    return pathAddress
   }
 }
 
@@ -1314,9 +1339,7 @@ export abstract class BaseCommand<
 //           ? err.oclif?.exit
 //           : 1;
 
-
 //       if (process.stderr.write && err.code !== "EEXIT") {
-
 
 //         // console.log(`err :>> `, err.stack) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
 //         process.stderr.write(wrapped.stack ?? wrapped.message + EOL)
@@ -1337,4 +1360,3 @@ export abstract class BaseCommand<
 //       exitProcess && process.exit(1);
 //     }
 //   }
-

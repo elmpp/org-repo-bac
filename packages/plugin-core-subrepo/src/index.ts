@@ -1,8 +1,8 @@
 import { Plugin } from '@business-as-code/core'
 // import { GitService } from './services/git-service'
-import {services} from './services'
-import {ConfigureWorkspaceGitLifecycle} from './lifecycles'
-import {FetchContentGitLifecycle} from './lifecycles'
+import { services } from './services'
+import { ConfigureWorkspaceGitLifecycle } from './lifecycles'
+import { FetchContentGitLifecycle } from './lifecycles'
 // import {SynchroniseWorkspaceGitLifecycle} from './lifecycles'
 
 // declare global {
@@ -19,10 +19,10 @@ export const plugin = {
   services,
   lifecycles: [
     ConfigureWorkspaceGitLifecycle,
-    FetchContentGitLifecycle,
+    FetchContentGitLifecycle
     // SynchroniseWorkspaceGitLifecycle,
     // InitialiseWorkspaceLifecycle,
-  ],
+  ]
   // initialise: ({context}) => {
 
   // },

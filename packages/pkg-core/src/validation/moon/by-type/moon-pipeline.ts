@@ -1,14 +1,14 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 export const actionStatusSchema = z.union([
-  z.literal("cached-from-remote"),
-  z.literal("cached"),
-  z.literal("failed-and-abort"),
-  z.literal("failed"),
-  z.literal("invalid"),
-  z.literal("passed"),
-  z.literal("running"),
-  z.literal("skipped")
+  z.literal('cached-from-remote'),
+  z.literal('cached'),
+  z.literal('failed-and-abort'),
+  z.literal('failed'),
+  z.literal('invalid'),
+  z.literal('passed'),
+  z.literal('running'),
+  z.literal('skipped')
 ])
 
 export const attemptSchema = z.object({
@@ -48,7 +48,7 @@ export const actionContextSchema = z.object({
   interactive: z.boolean(),
   passthroughArgs: z.array(z.string()),
   primaryTargets: z.array(z.string()),
-  profile: z.union([z.literal("cpu"), z.literal("heap")]).nullable(),
+  profile: z.union([z.literal('cpu'), z.literal('heap')]).nullable(),
   targetHashes: z.record(z.string()),
   touchedFiles: z.array(z.string()),
   workspaceRoot: z.string()
@@ -105,27 +105,27 @@ export const runReportSchema = z.object({
 })
 
 export const actionNodeInstallDepsSchema = z.object({
-  action: z.literal("InstallDeps"),
+  action: z.literal('InstallDeps'),
   params: z.object({
     platform: z.union([
-      z.literal("Deno"),
-      z.literal("Node"),
-      z.literal("System"),
-      z.literal("Unknown")
+      z.literal('Deno'),
+      z.literal('Node'),
+      z.literal('System'),
+      z.literal('Unknown')
     ]),
     version: z.string().optional()
   })
 })
 
 export const actionNodeInstallProjectDepsSchema = z.object({
-  action: z.literal("InstallProjectDeps"),
+  action: z.literal('InstallProjectDeps'),
   params: z.tuple([
     z.object({
       platform: z.union([
-        z.literal("Deno"),
-        z.literal("Node"),
-        z.literal("System"),
-        z.literal("Unknown")
+        z.literal('Deno'),
+        z.literal('Node'),
+        z.literal('System'),
+        z.literal('Unknown')
       ]),
       version: z.string().optional()
     }),
@@ -134,14 +134,14 @@ export const actionNodeInstallProjectDepsSchema = z.object({
 })
 
 export const actionNodeRunTargetSchema = z.object({
-  action: z.literal("RunTarget"),
+  action: z.literal('RunTarget'),
   params: z.tuple([
     z.object({
       platform: z.union([
-        z.literal("Deno"),
-        z.literal("Node"),
-        z.literal("System"),
-        z.literal("Unknown")
+        z.literal('Deno'),
+        z.literal('Node'),
+        z.literal('System'),
+        z.literal('Unknown')
       ]),
       version: z.string().optional()
     }),
@@ -150,27 +150,27 @@ export const actionNodeRunTargetSchema = z.object({
 })
 
 export const actionNodeSetupToolSchema = z.object({
-  action: z.literal("SetupTool"),
+  action: z.literal('SetupTool'),
   params: z.object({
     platform: z.union([
-      z.literal("Deno"),
-      z.literal("Node"),
-      z.literal("System"),
-      z.literal("Unknown")
+      z.literal('Deno'),
+      z.literal('Node'),
+      z.literal('System'),
+      z.literal('Unknown')
     ]),
     version: z.string().optional()
   })
 })
 
 export const actionNodeSyncProjectSchema = z.object({
-  action: z.literal("SyncProject"),
+  action: z.literal('SyncProject'),
   params: z.tuple([
     z.object({
       platform: z.union([
-        z.literal("Deno"),
-        z.literal("Node"),
-        z.literal("System"),
-        z.literal("Unknown")
+        z.literal('Deno'),
+        z.literal('Node'),
+        z.literal('System'),
+        z.literal('Unknown')
       ]),
       version: z.string().optional()
     }),

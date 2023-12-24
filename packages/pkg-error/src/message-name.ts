@@ -17,8 +17,7 @@ export enum MessageName {
   CONFIGURATION_INVALID_ERROR = 15, // configuration file was found and exports ok etc but has validation errors
   // COMMAND_INVALID_RETURN = 16, // a command has returned a non string/json response in its .execute()
   COMMAND_DANGEROUS_JSON = 16, // a command has used .logJson() but the current logLevel/--json don't support clean output()
-  MOON_SERVICE_PROJECT_FORMAT = 17, // could not parse the moon project query response
-
+  MOON_SERVICE_PROJECT_FORMAT = 17 // could not parse the moon project query response
 
   // ACTION_SUCCESS = 1, // a special code that signifies completion of an action. Will be collated by the Doctor for display (remember it uses buffered reports). May not be formatted with a hyperlink
   // TEST_ENV = 3, // ignorable message that is used within tests

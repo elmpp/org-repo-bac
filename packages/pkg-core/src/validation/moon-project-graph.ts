@@ -1,8 +1,8 @@
 /**
  this module is here to offer true typing for the `.moon/cache/states/projectGraph.json` file. Discord question: https://discord.com/channels/974160221452763146/974160221452763149/1105784724951150642
  */
-import { z } from "zod";
-import { projectSchema as moonProjectSchema } from "./moon/by-state-files/project";
+import { z } from 'zod'
+import { projectSchema as moonProjectSchema } from './moon/by-state-files/project'
 // import { inheritedTasksConfigSchema } from "./moon/by-state-files/moon-project-config";
 
 // const nodeInheritedConfigSchema = inheritedTasksConfigSchema.extend({
@@ -29,17 +29,13 @@ export const moonProjectGraph = z.object({
     nodes: z.array(moonProjectSchema),
     node_holes: z.array(z.unknown()),
     edge_property: z.literal('directed'),
-    edges: z.array(z.tuple([
-      z.number(),
-      z.number(),
-      z.null(),
-    ]))
+    edges: z.array(z.tuple([z.number(), z.number(), z.null()]))
   }),
   indices: z.record(z.string(), z.number()),
-  sources: z.record(z.string(), z.string()),
-});
+  sources: z.record(z.string(), z.string())
+})
 
-export type MoonProjectGraph = z.infer<typeof moonProjectGraph>;
+export type MoonProjectGraph = z.infer<typeof moonProjectGraph>
 // expectTypeOf<MoonProjectGraphSubset>().toMatchTypeOf<>
 
 // type BaseProject = z.infer<typeof baseProjectSchema>

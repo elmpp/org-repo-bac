@@ -4,13 +4,14 @@
  * @type {Config}
  */
 const config = {
-  projectSource: [{
-    provider: 'git',
-    options: {
-      address: 'http://localhost:8174/thisrepodoesnotexist.git',
-    },
-  }],
+  projectSource: [
+    {
+      provider: 'git',
+      options: {
+        address: 'http://localhost:8174/thisrepodoesnotexist.git'
+      }
+    }
+  ]
 }
-
 
 module.exports.config = config

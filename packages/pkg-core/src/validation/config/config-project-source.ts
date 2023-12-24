@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { Simplify } from '../../__types__';
-import { providerOptionsSchemaBuilder } from "../utils";
+import { z } from 'zod'
+import { Simplify } from '../../__types__'
+import { providerOptionsSchemaBuilder } from '../utils'
 
 // const baseProjectSourceSchema = z.object({
 //   protocol: z.literal('git'),
@@ -10,7 +10,6 @@ import { providerOptionsSchemaBuilder } from "../utils";
 //   provider: z.literal(val)
 // })
 // const providerUnion = <T>(schemas: z.ZodTypeAny[]): z.ZodTypeAny => z.discriminatedUnion('provider', schemas)
-
 
 // type BaseProject = z.infer<typeof baseProjectSchema>
 
@@ -127,10 +126,6 @@ import { providerOptionsSchemaBuilder } from "../utils";
 //   blah: 6,
 // })
 
-
-
-
-
 // const commonProjectSourceSchema = z.object({
 //   // blah: z.number()
 //   active: z.boolean().optional(),
@@ -140,9 +135,12 @@ import { providerOptionsSchemaBuilder } from "../utils";
 // type BBBB = LifecycleOptionsByMethodKeyedByProvider<'configureWorkspace'>
 // type BFE = z.infer<typeof commonProjectSourceSchema>
 // export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace', commonProjectSourceSchema) // correct - configureWorkspace will receive our static/possibly dynamic project configs
-export const configProjectSourceConfigSchema = providerOptionsSchemaBuilder('configureWorkspace') // correct - configureWorkspace will receive our static/possibly dynamic project configs
+export const configProjectSourceConfigSchema =
+  providerOptionsSchemaBuilder('configureWorkspace') // correct - configureWorkspace will receive our static/possibly dynamic project configs
 // export const configProjectSourceConfigSchema = commonProjectSourceSchema
-export type ConfigProjectSourceConfig = Simplify<z.infer<typeof configProjectSourceConfigSchema>>
+export type ConfigProjectSourceConfig = Simplify<
+  z.infer<typeof configProjectSourceConfigSchema>
+>
 
 // type BFE = Simplify<z.infer<typeof configProjectSourceConfigSchema>>
 
@@ -155,7 +153,6 @@ export type ConfigProjectSourceConfig = Simplify<z.infer<typeof configProjectSou
 //   },
 //   active: true,
 // })
-
 
 // export const configProjectSourceConfigSchema = z.object({
 //   protocol: z.literal('git'),
@@ -190,8 +187,6 @@ export type ConfigProjectSourceConfig = Simplify<z.infer<typeof configProjectSou
 //   // ])
 // })
 
-
-
 // const myConfig: ConfigProjectSourceConfig = {
 //   protocol: 'git',
 //   location: 'erge',
@@ -205,12 +200,9 @@ export type ConfigProjectSourceConfig = Simplify<z.infer<typeof configProjectSou
 // }
 // const poo = configProjectSourceConfigSchema.parse(myConfig)
 
-
-
 // export type BaseProject = {
 //   language: Language
 //   type: ProjectType
 //   name: string
 //   aliases: Aliases
 // }
-

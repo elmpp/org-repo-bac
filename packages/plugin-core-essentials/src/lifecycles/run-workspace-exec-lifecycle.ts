@@ -1,11 +1,11 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { AddressPathAbsolute } from '@business-as-code/address'
 import {
   Context,
   DoExecOptions,
   execUtils,
   MoonCommand,
-  RunWorkspaceLifecycleBase,
-} from "@business-as-code/core";
+  RunWorkspaceLifecycleBase
+} from '@business-as-code/core'
 
 // declare global {
 //   namespace Bac {
@@ -27,7 +27,7 @@ import {
 export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
   typeof RunWorkspaceExecLifecycle
 > {
-  static override title = "exec" as const;
+  static override title = 'exec' as const
 
   // override get ctor(): typeof RunWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -35,21 +35,18 @@ export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
 
   override runWorkspace(): (options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     options: {
-      command: MoonCommand;
-      execOptions: Omit<DoExecOptions, "context" | "cwd">;
-    };
+      command: MoonCommand
+      execOptions: Omit<DoExecOptions, 'context' | 'cwd'>
+    }
   }) => ReturnType<typeof execUtils.doExec> {
     return async ({
-      common: {
-        context,
-        workspacePath,
-      },
-      options: { command, execOptions },
+      common: { context, workspacePath },
+      options: { command, execOptions }
     }) => {
       // if (!(await xfs.existsPromise(workspacePath.address))) {
       //   const workspacePathParent = addr.pathUtils.dirname(workspacePath);
@@ -73,9 +70,9 @@ export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
           ...execOptions,
           cwd: workspacePath, // use runProject#exec if needing workingPath
           context,
-          logLevel: 'debug',
-        },
-      });
+          logLevel: 'debug'
+        }
+      })
 
       // we depend on there being an existing moon task for each platform which we can then append our command to
 
@@ -106,9 +103,8 @@ export class RunWorkspaceExecLifecycle extends RunWorkspaceLifecycleBase<
       // }
 
       // return res;
-    };
+    }
   }
 }
-
 
 // type DDD = Bac.Lifecycles['runWorkspace']['insType']['runWorkspace']

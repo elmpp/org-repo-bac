@@ -9,7 +9,6 @@ export type RepoMap = {
   // }[]
   // // languageVariant: 'typescript' | 'javascript' | 'rust'
   // packages: {
-
   // },
   // commits: {
   //   committer: {
@@ -17,7 +16,6 @@ export type RepoMap = {
   //     email: string
   //     message: string
   //   }
-
   // }[]
 }
 

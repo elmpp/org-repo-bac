@@ -2,6 +2,5 @@ $schema: 'https://moonrepo.dev/schemas/project.json'
 # docs - https://tinyurl.com/2qk3kdhv
 
 type: 'library'
-
 # dependsOn: # using the node syncer in moon
 #   - '@business-as-code/core'

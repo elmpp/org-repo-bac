@@ -1,63 +1,63 @@
-import { addr } from "@business-as-code/address";
+import { addr } from '@business-as-code/address'
 import {
   constants,
   expectIsOk,
   fsUtils,
-  validators,
-} from "@business-as-code/core";
-import { Filename, xfs } from "@business-as-code/fslib";
+  validators
+} from '@business-as-code/core'
+import { Filename, xfs } from '@business-as-code/fslib'
 import {
   TestContext,
-  createPersistentTestEnv,
-} from "@business-as-code/tests-core";
-import { describe, expect, it } from 'bun:test';
+  createPersistentTestEnv
+} from '@business-as-code/tests-core'
+import { describe, expect, it } from 'bun:test'
 
 /** simply turns /bac.js -> /.bac/bac.json */
-describe("configure workspace", () => {
+describe('configure workspace', () => {
   // jest.setTimeout(10000);
 
   async function setup(testContext: TestContext, configFilename: Filename) {
     const resCopy = await testContext.copy(
-      "initialise:workspace default skeleton config bun",
+      'initialise:workspace default skeleton config bun',
       testContext.testEnvVars.workspacePath
-    );
+    )
 
-    let expectConfig = await resCopy.res.expectUtil.createConfig();
+    let expectConfig = await resCopy.res.expectUtil.createConfig()
 
     await (async function updateConfig() {
-      const configPath = fsUtils.resolveCoreConfig(configFilename);
+      const configPath = fsUtils.resolveCoreConfig(configFilename)
       await xfs.copyFilePromise(
         configPath.address,
         addr.pathUtils.join(
           testContext.testEnvVars.workspacePath,
           addr.parsePath(constants.RC_FILENAME)
         ).address
-      );
+      )
 
-      expectConfig = await resCopy.res.expectUtil.createConfig();
+      expectConfig = await resCopy.res.expectUtil.createConfig()
 
       expectConfig.expectText.equals(
-        xfs.readFileSync(configPath.address, "utf8")
-      ); // it's updated
-    })();
+        xfs.readFileSync(configPath.address, 'utf8')
+      ) // it's updated
+    })()
   }
 
-  it("git-minimal-http", async () => {
+  it('git-minimal-http', async () => {
     const persistentTestEnv = await createPersistentTestEnv({
       testName: `configure workspace: git-minimal-http`
       // defaultLogLevel: "debug",
-    });
+    })
     await persistentTestEnv.test({}, async (testContext) => {
-      await setup(testContext, "git-minimal-http.js" as Filename);
+      await setup(testContext, 'git-minimal-http.js' as Filename)
 
       const bacService = await testContext.context.serviceFactory('bac', {
         context: testContext.context,
         workspacePath: testContext.testEnvVars.workspacePath,
         workingPath: '.',
-        packageManager: 'packageManagerBun',
+        packageManager: 'packageManagerBun'
       })
 
-      const configRes = await bacService.loadConfig();
+      const configRes = await bacService.loadConfig()
       expectIsOk(configRes)
 
       console.log(`configRes :>> `, configRes)
@@ -68,27 +68,27 @@ describe("configure workspace", () => {
             common: {
               context: testContext.context,
               workspacePath: testContext.testEnvVars.workspacePath,
-              workingPath: '.',
+              workingPath: '.'
             },
             options: {
-              config: configRes.res,
-            },
+              config: configRes.res
+            }
           }
-        );
+        )
       // console.log(`res :>> `, res)
-      expectIsOk(configureWorkspaceLifecycleRes);
+      expectIsOk(configureWorkspaceLifecycleRes)
       const configuredWorkspaceConfig = configureWorkspaceLifecycleRes.res
 
       // the output of configure-workspace should be a ConfigSynchronised. This should be validatable
       const validRes = validators.config.configConfiguredSchema.safeParse(
         configureWorkspaceLifecycleRes.res
-      );
+      )
 
       // console.log(`res.res :>> `, require('util').inspect(res.res, {showHidden: false, depth: undefined, colors: true}))
 
       // console.log(`validRes :>> `, require('util').inspect(validRes.error, {showHidden: false, depth: undefined, colors: true}))
 
-      expect(validRes).toHaveProperty("success", true);
+      expect(validRes).toHaveProperty('success', true)
 
       // console.log(
       //   `res :>> `,
@@ -101,10 +101,10 @@ describe("configure workspace", () => {
 
       expect(configuredWorkspaceConfig.version).toMatch(/.*/)
       expect(configuredWorkspaceConfig.projects[0]).toEqual({
-        provider: "git",
+        provider: 'git',
         options: {
-          address: "http://localhost:8174/repo1.git",
-        },
+          address: 'http://localhost:8174/repo1.git'
+        }
       })
 
       // expect(configureWorkspaceLifecycleRes.res).toEqual(
@@ -198,6 +198,6 @@ describe("configure workspace", () => {
       // };
 
       // await assertForRepo("repo1.git"); // only testing the git-server side of things. 1 repo only required
-    });
-  });
-});
+    })
+  })
+})

@@ -1,101 +1,99 @@
-import { expectIsOk, validators } from "@business-as-code/core";
+import { expectIsOk, validators } from '@business-as-code/core'
 
-import { createPersistentTestEnv } from "@business-as-code/tests-core";
-import { describe, it, jest, expect } from "bun:test";
+import { createPersistentTestEnv } from '@business-as-code/tests-core'
+import { describe, it, jest, expect } from 'bun:test'
 
-describe("query projects", () => {
+describe('query projects', () => {
   // jest.setTimeout(25000);
 
-  it("produces valid json projects response with --json", async () => {
+  it('produces valid json projects response with --json', async () => {
     const persistentTestEnv = await createPersistentTestEnv({
       testName: `query projects: produces valid json projects response with --json`
-    });
+    })
     await persistentTestEnv.test({}, async (testContext) => {
-
-
       const res = await testContext.command(
         [
-          "query",
-          "projects",
-          "--workspacePath",
+          'query',
+          'projects',
+          '--workspacePath',
           testContext.testEnvVars.checkoutPath.original,
-          "--json",
+          '--json'
         ],
         {
-          logLevel: "error",
+          logLevel: 'error'
         }
-      );
+      )
 
-      expectIsOk(res);
+      expectIsOk(res)
 
-      const expectStdout = await res.res.expectUtil.createStdout();
+      const expectStdout = await res.res.expectUtil.createStdout()
 
       // it should be compatible with our moon projects validator
       expect(
         validators.moon.queryProjects.safeParse(
           res.res.expectUtil.options.outputs.stdout
         )
-      ).toBeTruthy();
+      ).toBeTruthy()
 
-      const projectJson = expectStdout.asJson({ json5: false });
+      const projectJson = expectStdout.asJson({ json5: false })
 
-      expect(projectJson).toHaveProperty("projects");
-    });
-  });
-  it("produces valid string projects response without --json (and regardless of the logLevel)", async () => {
+      expect(projectJson).toHaveProperty('projects')
+    })
+  })
+  it('produces valid string projects response without --json (and regardless of the logLevel)', async () => {
     const persistentTestEnv = await createPersistentTestEnv({
       testName: `query projects: produces valid string projects response without --json (and regardless of the logLevel)`
-    });
+    })
     await persistentTestEnv.test({}, async (testContext) => {
       const res = await testContext.command(
         [
-          "query",
-          "projects",
-          "--workspacePath",
-          testContext.testEnvVars.checkoutPath.original,
+          'query',
+          'projects',
+          '--workspacePath',
+          testContext.testEnvVars.checkoutPath.original
         ],
         {
-          logLevel: "error", // output should still appear
+          logLevel: 'error' // output should still appear
         }
-      );
+      )
 
-      expectIsOk(res);
+      expectIsOk(res)
 
-      const expectStdout = await res.res.expectUtil.createStdout();
+      const expectStdout = await res.res.expectUtil.createStdout()
       expectStdout.lineContainsString({
         match: `plugin-core-essentials | packages/plugin-core-essentials | library | typescript`,
-        occurrences: 1,
-      });
-    });
-  });
-});
+        occurrences: 1
+      })
+    })
+  })
+})
 
-describe("errors", () => {
-  it("--json suppresses logger output, as suggested with --logLevel=debug", async () => {
+describe('errors', () => {
+  it('--json suppresses logger output, as suggested with --logLevel=debug', async () => {
     const persistentTestEnv = await createPersistentTestEnv({
       testName: `query projects: errors: --json suppresses logger output, as suggested with --logLevel=debug`
-    });
+    })
     await persistentTestEnv.test({}, async (testContext) => {
       const res = await testContext.command(
         [
-          "query",
-          "projects",
-          "--workspacePath",
+          'query',
+          'projects',
+          '--workspacePath',
           testContext.testEnvVars.checkoutPath.original,
-          "--json",
-        ],
+          '--json'
+        ]
         // { logLevel: "debug" }
-      );
+      )
 
-      expectIsOk(res);
-      const expectStdout = await res.res.expectUtil.createStdout();
-      const expectStderr = await res.res.expectUtil.createStderr();
+      expectIsOk(res)
+      const expectStdout = await res.res.expectUtil.createStdout()
+      const expectStderr = await res.res.expectUtil.createStderr()
 
-      expectStdout.asJson({}); // --json isn't turning off loggers. Any console.logs() ??
+      expectStdout.asJson({}) // --json isn't turning off loggers. Any console.logs() ??
       expectStderr.lineContainsString({
         match: `Command 'QueryProjects' has returned a value but the current output settings do not guarantee clean outputting`,
-        occurrences: 0,
-      });
-    });
-  });
-});
+        occurrences: 0
+      })
+    })
+  })
+})

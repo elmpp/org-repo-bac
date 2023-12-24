@@ -1,7 +1,7 @@
 // type Config = import('@business-as-code/core').Config
 
-import { Rule } from "@angular-devkit/schematics";
-import { ServiceOptions } from "@business-as-code/core";
+import { Rule } from '@angular-devkit/schematics'
+import { ServiceOptions } from '@business-as-code/core'
 
 // export type RepoMap = {
 //   // language: 'javascript' | 'rust'
@@ -25,14 +25,14 @@ import { ServiceOptions } from "@business-as-code/core";
 export interface Schema {
   // rule: Rule,
   cb: <SName extends keyof Services>(options: {
-    service: Services[SName];
-    serviceName: SName;
-  }) => Promise<void>;
+    service: Services[SName]
+    serviceName: SName
+  }) => Promise<void>
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
-  serviceName: SName;
-  originPath?: string;
+  serviceName: SName
+  originPath?: string
   initialiseOptions: ServiceOptions<SName>['initialiseOptions']
   // name: string,
 
-  _bacContext: import("@business-as-code/core").Context;
+  _bacContext: import('@business-as-code/core').Context
 }

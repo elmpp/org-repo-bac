@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { projectSchema } from "./moon/by-state-files/project";
+import { z } from 'zod'
+import { projectSchema } from './moon/by-state-files/project'
 
 export const workspaceSchema = z.object({
   lastHashTime: z.string().datetime(),
-  lastHash: z.string(),
+  lastHash: z.string()
 })
 
 export const projectGraph = z.object({
@@ -13,16 +13,10 @@ export const projectGraph = z.object({
       nodes: z.array(projectSchema),
       node_holes: z.array(z.unknown()),
       edge_property: z.literal('directed'),
-      edges: z.array(z.tuple([
-        z.number(),
-        z.number(),
-        z.null(),
-      ]))
+      edges: z.array(z.tuple([z.number(), z.number(), z.null()]))
     }),
     indices: z.record(z.string(), z.number()),
-    sources: z.record(z.string(), z.string()),
+    sources: z.record(z.string(), z.string())
   }),
-  workspace: workspaceSchema,
-});
-
-
+  workspace: workspaceSchema
+})

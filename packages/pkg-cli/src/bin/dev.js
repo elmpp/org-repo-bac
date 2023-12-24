@@ -8,12 +8,12 @@ const project = path.join(__dirname, '../..', 'tsconfig.json')
 // In dev mode -> use ts-node and dev plugins
 process.env.NODE_ENV = 'development'
 
-if (typeof Bun === "undefined") {
-  require('ts-node').register({project}) // hopefully should be swc
+if (typeof Bun === 'undefined') {
+  require('ts-node').register({ project }) // hopefully should be swc
 }
 
 // In dev mode, always show stack traces
-oclif.settings.debug = true;
+oclif.settings.debug = true
 
 // Start the CLI
 oclif.run().then(oclif.flush).catch(oclif.Errors.handle)

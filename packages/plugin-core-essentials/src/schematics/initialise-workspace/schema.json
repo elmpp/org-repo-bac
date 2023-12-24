@@ -18,24 +18,30 @@
     },
     "cliVersion": {
       "type": "string",
-      "description": "The version of BaC",
+      "description": "The version of BaC"
     },
     "cliRegistry": {
       "type": "string",
-      "description": "Allows BaC to be built from a local registry if required",
+      "description": "Allows BaC to be built from a local registry if required"
     },
     "cliPath": {
       "type": "string",
-      "description": "Allows BaC to be linked from a local version via package manager link (dev use)",
+      "description": "Allows BaC to be linked from a local version via package manager link (dev use)"
     },
     "packageManager": {
       "type": "string",
-      "description": "The package manager to be used",
+      "description": "The package manager to be used"
     },
     "_bacContext": {
       "type": "object",
       "description": "Ubiquitous bac context"
     }
   },
-  "required": ["name", "configPath", "cliVersion", "packageManager", "_bacContext"]
+  "required": [
+    "name",
+    "configPath",
+    "cliVersion",
+    "packageManager",
+    "_bacContext"
+  ]
 }

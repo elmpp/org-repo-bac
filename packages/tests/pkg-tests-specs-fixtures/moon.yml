@@ -6,13 +6,11 @@ type: 'tool'
 # dependsOn: # using the node syncer in moon
 #   - '@business-as-code/core'
 
-
 # moonrepo globs - https://tinyurl.com/2ftkxeso
 fileGroups:
   # List of non-source test files.
   testFixtures:
     - '**/*.spec.*'
-
 
 # A task is an action that is ran within the context of a project, and wraps
 # around an npm or system command. Tasks that are defined here and inherited by all projects

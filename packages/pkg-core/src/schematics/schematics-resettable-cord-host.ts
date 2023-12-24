@@ -1,35 +1,49 @@
-import { FileAlreadyExistException, FileDoesNotExistException, Path } from "@angular-devkit/core";
-import { CordHost, CordHostCreate, CordHostDelete, CordHostOverwrite, CordHostRecord, CordHostRename, Host } from "@angular-devkit/core/src/virtual-fs/host";
-import { DirEntry } from "@angular-devkit/schematics";
-import { from as observableFrom, Observable, of, throwError } from "rxjs";
-import { concatMap, reduce, switchMap } from "rxjs/operators";
+import {
+  FileAlreadyExistException,
+  FileDoesNotExistException,
+  Path
+} from '@angular-devkit/core'
+import {
+  CordHost,
+  CordHostCreate,
+  CordHostDelete,
+  CordHostOverwrite,
+  CordHostRecord,
+  CordHostRename,
+  Host
+} from '@angular-devkit/core/src/virtual-fs/host'
+import { DirEntry } from '@angular-devkit/schematics'
+import { from as observableFrom, Observable, of, throwError } from 'rxjs'
+import { concatMap, reduce, switchMap } from 'rxjs/operators'
 
 export interface ResettableCordHostDeleteDir {
-  kind: 'deleteDir';
-  path: Path;
+  kind: 'deleteDir'
+  path: Path
 }
-export type ResettableCordHostRecord = CordHostRecord | ResettableCordHostDeleteDir;
+export type ResettableCordHostRecord =
+  | CordHostRecord
+  | ResettableCordHostDeleteDir
 
 export class SchematicResettableCordHost extends CordHost {
-
   _dirsToRename: Map<Path, Path> = new Map()
   _dirsToDelete: Set<Path> = new Set()
   // NEED TO EXPAND THIS HERE TO INCLUDE OTHER DIRECTORY OPERATIONS
 
   /** GH - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/core/src/virtual-fs/host/record.ts#L95 */
   static cloneFrom(recordHost: CordHost): SchematicResettableCordHost {
-
-    const dolly = new SchematicResettableCordHost((recordHost as SchematicResettableCordHost)._back);
+    const dolly = new SchematicResettableCordHost(
+      (recordHost as SchematicResettableCordHost)._back
+    )
     // console.log(`recordHost._back :>> `, recordHost._back)
 
     // dolly._cache = new Map(recordHost._cache);
 
     /** this resets the actions... */
-    dolly._filesToCreate = new Set();
-    dolly._filesToRename = new Map();
-    dolly._filesToRenameRevert = new Map();
-    dolly._filesToDelete = new Set();
-    dolly._filesToOverwrite = new Set();
+    dolly._filesToCreate = new Set()
+    dolly._filesToRename = new Map()
+    dolly._filesToRenameRevert = new Map()
+    dolly._filesToDelete = new Set()
+    dolly._filesToOverwrite = new Set()
     dolly._dirsToRename = new Map()
     dolly._dirsToDelete = new Set()
 
@@ -42,7 +56,7 @@ export class SchematicResettableCordHost extends CordHost {
 
     // records must be wiped clear (so that hostTree.actions don't rollover)
 
-    return dolly;
+    return dolly
 
     // console.log(`recordHost :>> `, recordHost)
     // return recordHost.clone()
@@ -56,8 +70,8 @@ export class SchematicResettableCordHost extends CordHost {
     return this._exists(path)
       ? of(true)
       : this.willDelete(path) || this.willRename(path)
-      ? of(false)
-      : this._back.exists(path);
+        ? of(false)
+        : this._back.exists(path)
   }
 
   mvDir(fromPath: Path, toPath: Path) {
@@ -70,17 +84,15 @@ export class SchematicResettableCordHost extends CordHost {
    * Custom hack to effect removal of directories, despite Schematic's file-only mechanics - https://tinyurl.com/2yl7gxra
    * As a halfway nod to security, only folders without any files (nested empty folders are ok) are allowed. Therefore
    * suitable for use after normal tree.delete(folderPath)
-  */
+   */
   rmDir(dirEntry: DirEntry) {
-
     const dirEntryPath = dirEntry.path
 
     // console.log(`rmDir: dirEntryPath, this._exists(dirEntryPath), this._filesToCreate.has(dirEntryPath), this._filesToOverwrite.has(dirEntryPath), this._filesToRenameRevert.has(dirEntryPath) :>> `, dirEntryPath, this._exists(dirEntryPath), this._filesToCreate.has(dirEntryPath), this._filesToOverwrite.has(dirEntryPath), this._filesToRenameRevert.has(dirEntryPath))
 
-      // console.log(`:>> Adding ${dirEntryPath}`);
+    // console.log(`:>> Adding ${dirEntryPath}`);
 
     this._dirsToDelete.add(dirEntryPath)
-
 
     // this._filesToDelete.add(dirEntryPath)
 
@@ -218,48 +230,47 @@ export class SchematicResettableCordHost extends CordHost {
       concatMap((record) => {
         switch (record.kind) {
           case 'delete':
-            return host.delete(record.path);
+            return host.delete(record.path)
           case 'rename':
-            return host.rename(record.from, record.to);
+            return host.rename(record.from, record.to)
           case 'create':
             return host.exists(record.path).pipe(
               switchMap((exists) => {
                 if (exists && !force) {
-                  return throwError(new FileAlreadyExistException(record.path));
+                  return throwError(new FileAlreadyExistException(record.path))
                 } else {
-                  return host.write(record.path, record.content);
+                  return host.write(record.path, record.content)
                 }
-              }),
-            );
+              })
+            )
           case 'overwrite':
             return host.exists(record.path).pipe(
               switchMap((exists) => {
                 if (!exists && !force) {
-                  return throwError(new FileDoesNotExistException(record.path));
+                  return throwError(new FileDoesNotExistException(record.path))
                 } else {
-                  return host.write(record.path, record.content);
+                  return host.write(record.path, record.content)
                 }
-              }),
-            );
+              })
+            )
           case 'deleteDir':
             console.log(`host :>> `, host)
             return host.exists(record.path).pipe(
               switchMap((exists) => {
-
                 if (!exists && !force) {
-                  return throwError(new FileDoesNotExistException(record.path));
+                  return throwError(new FileDoesNotExistException(record.path))
                 } else {
                   return of<void>()
                   // return host.delete(record.path);
                 }
-              }),
-            );
+              })
+            )
           // default:
           //   throwError(new FileDoesNotExistException(record.path));
         }
       }),
-      reduce(() => {}),
-    );
+      reduce(() => {})
+    )
   }
 
   // @ts-ignore
@@ -268,44 +279,39 @@ export class SchematicResettableCordHost extends CordHost {
 
     const ret = [
       ...[...this._filesToDelete.values()].map(
-        (path): CordHostDelete =>
-          ({
-            kind: 'delete',
-            path,
-          }),
+        (path): CordHostDelete => ({
+          kind: 'delete',
+          path
+        })
       ),
       ...[...this._filesToRename.entries()].map(
-        ([from, to]): CordHostRename =>
-          ({
-            kind: 'rename',
-            from,
-            to,
-          }),
+        ([from, to]): CordHostRename => ({
+          kind: 'rename',
+          from,
+          to
+        })
       ),
       ...[...this._filesToCreate.values()].map(
-        (path): CordHostCreate =>
-          ({
-            kind: 'create',
-            path,
-            content: this._read(path),
-          }),
+        (path): CordHostCreate => ({
+          kind: 'create',
+          path,
+          content: this._read(path)
+        })
       ),
       ...[...this._filesToOverwrite.values()].map(
-        (path): CordHostOverwrite =>
-          ({
-            kind: 'overwrite',
-            path,
-            content: this._read(path),
-          }),
+        (path): CordHostOverwrite => ({
+          kind: 'overwrite',
+          path,
+          content: this._read(path)
+        })
       ),
       ...[...this._dirsToDelete.values()].map(
-        (path): ResettableCordHostDeleteDir =>
-          ({
-            kind: 'deleteDir',
-            path,
-          }),
-      ),
-    ];
+        (path): ResettableCordHostDeleteDir => ({
+          kind: 'deleteDir',
+          path
+        })
+      )
+    ]
     return ret
   }
 
@@ -317,16 +323,16 @@ export class SchematicResettableCordHost extends CordHost {
 
     if (this._exists(filePath)) {
       if (this._filesToCreate.has(filePath)) {
-        this._filesToCreate.delete(filePath);
+        this._filesToCreate.delete(filePath)
       } else if (this._filesToOverwrite.has(filePath)) {
-        this._filesToOverwrite.delete(filePath);
-        this._filesToDelete.add(filePath);
+        this._filesToOverwrite.delete(filePath)
+        this._filesToDelete.add(filePath)
       } else {
-        const maybeOrigin = this._filesToRenameRevert.get(filePath);
+        const maybeOrigin = this._filesToRenameRevert.get(filePath)
         if (maybeOrigin) {
-          this._filesToRenameRevert.delete(filePath);
-          this._filesToRename.delete(maybeOrigin);
-          this._filesToDelete.add(maybeOrigin);
+          this._filesToRenameRevert.delete(filePath)
+          this._filesToRename.delete(maybeOrigin)
+          this._filesToDelete.add(maybeOrigin)
         } else {
           // console.log(`this._filesToCreate :>> `, this._filesToCreate)
           // console.log(`:>> this._exists === true; we may well think that files exist as our cache is preserved yet we're clearing the _filesXXX ${filePath}`);
@@ -341,47 +347,45 @@ export class SchematicResettableCordHost extends CordHost {
 
       // return of<void>()
       return new Observable<void>((obs) => {
-        this._delete(filePath);
-        obs.next();
-        obs.complete();
-      });
+        this._delete(filePath)
+        obs.next()
+        obs.complete()
+      })
       // return super.delete(filePath);
     } else {
       return this._back.exists(filePath).pipe(
         switchMap((exists) => {
           if (exists) {
-            this._filesToDelete.add(filePath);
+            this._filesToDelete.add(filePath)
 
-            return of<void>();
+            return of<void>()
           } else {
             return of<void>() // we trust when doing a .rmDir()
             // return throwError(new FileDoesNotExistException(filePath));
           }
-        }),
-      );
+        })
+      )
     }
   }
 
   protected override _delete(path: Path): void {
-    const NormalizedSep = '/' as Path;
+    const NormalizedSep = '/' as Path
 
-    path = this._toAbsolute(path);
+    path = this._toAbsolute(path)
     // console.log(`path, this._isDirectory(path) :>> `, path, this._isDirectory(path))
     if (this._isDirectory(path)) {
       for (const [cachePath] of this._cache.entries()) {
         if (cachePath.startsWith(path + NormalizedSep) || cachePath === path) {
-          this._cache.delete(cachePath);
+          this._cache.delete(cachePath)
         }
       }
     } else {
-      this._cache.delete(path);
+      this._cache.delete(path)
     }
     // @ts-ignore
-    this._updateWatchers(path, 2);
+    this._updateWatchers(path, 2)
   }
 }
-
-
 
 // import {
 //   EMPTY,

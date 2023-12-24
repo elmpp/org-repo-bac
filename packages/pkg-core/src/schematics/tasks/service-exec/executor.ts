@@ -1,17 +1,18 @@
-import { SchematicContext, TaskExecutor } from '@angular-devkit/schematics';
-import { assertUtils } from '../../../utils';
-import { ServiceMap } from '../../../__types__';
+import { SchematicContext, TaskExecutor } from '@angular-devkit/schematics'
+import { assertUtils } from '../../../utils'
+import { ServiceMap } from '../../../__types__'
 import {
   ServiceExecTaskFactoryOptions,
   ServiceExecTaskOptions
-} from './options';
+} from './options'
 
 export function serviceExecExecutor<SName extends keyof ServiceMap>(
-  _?: ServiceExecTaskFactoryOptions,
+  _?: ServiceExecTaskFactoryOptions
 ): TaskExecutor<ServiceExecTaskOptions<SName>> {
-
-  return async (options: ServiceExecTaskOptions<SName> = {} as ServiceExecTaskOptions<SName>, _schematicContext: SchematicContext) => {
-
+  return async (
+    options: ServiceExecTaskOptions<SName> = {} as ServiceExecTaskOptions<SName>,
+    _schematicContext: SchematicContext
+  ) => {
     // if (!options) {
     //   throw new Error(`How is this supposed to work then huh!!`)
     // }
@@ -21,11 +22,14 @@ export function serviceExecExecutor<SName extends keyof ServiceMap>(
     // }
     assertUtils.assertNonEmpty(options)
 
-    const {serviceName, initialiseOptions, cb, context} = options
+    const { serviceName, initialiseOptions, cb, context } = options
 
-    const service = await context!.serviceFactory(serviceName, initialiseOptions)
+    const service = await context!.serviceFactory(
+      serviceName,
+      initialiseOptions
+    )
 
-    return cb({service, serviceName})
+    return cb({ service, serviceName })
 
     // return
 
@@ -95,5 +99,5 @@ export function serviceExecExecutor<SName extends keyof ServiceMap>(
 
     //   context.logger.info('Successfully initialized git.');
     // } catch {}
-  };
+  }
 }

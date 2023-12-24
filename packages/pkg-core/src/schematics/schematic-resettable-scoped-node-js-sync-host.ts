@@ -1,28 +1,23 @@
-import {
-  getSystemPath,
-  join,
-  NormalizedRoot,
-  Path,
-} from "@angular-devkit/core";
-import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { ResolverHost } from "@angular-devkit/core/src/virtual-fs/host";
-import { rmSync } from "node:fs";
-import { Observable } from "rxjs";
+import { getSystemPath, join, NormalizedRoot, Path } from '@angular-devkit/core'
+import { NodeJsSyncHost } from '@angular-devkit/core/node'
+import { ResolverHost } from '@angular-devkit/core/src/virtual-fs/host'
+import { rmSync } from 'node:fs'
+import { Observable } from 'rxjs'
 
 export class SchematicResettableScopedNodeJsSyncHost extends ResolverHost<{}> {
-  protected override _delegate: SchematicResettableNodeJsSyncHost;
+  protected override _delegate: SchematicResettableNodeJsSyncHost
   constructor(protected _root: Path = NormalizedRoot) {
-    const delegate = new SchematicResettableNodeJsSyncHost();
-    super(delegate);
-    this._delegate = delegate;
+    const delegate = new SchematicResettableNodeJsSyncHost()
+    super(delegate)
+    this._delegate = delegate
   }
 
   deleteDir(path: Path) {
-    return this._delegate.deleteDir(this._resolve(path));
+    return this._delegate.deleteDir(this._resolve(path))
   }
 
   protected _resolve(path: Path): Path {
-    return join(this._root, path);
+    return join(this._root, path)
   }
 }
 
@@ -35,11 +30,11 @@ class SchematicResettableNodeJsSyncHost extends NodeJsSyncHost {
       rmSync(getSystemPath(path), {
         force: true,
         recursive: true,
-        maxRetries: 3,
-      });
+        maxRetries: 3
+      })
 
-      obs.complete();
-    });
+      obs.complete()
+    })
   }
 
   // write(path: Path, content: virtualFs.FileBuffer): Observable<void> {

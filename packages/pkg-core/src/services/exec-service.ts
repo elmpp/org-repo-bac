@@ -1,64 +1,64 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { execUtils } from "../utils";
-import { ServiceInitialiseCommonOptions } from "../__types__";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { execUtils } from '../utils'
+import { ServiceInitialiseCommonOptions } from '../__types__'
 
 declare global {
   namespace Bac {
     interface Services {
       exec: {
-        insType: ExecService;
-        staticType: typeof ExecService;
-      };
+        insType: ExecService
+        staticType: typeof ExecService
+      }
     }
   }
 }
 
-type Options = ServiceInitialiseCommonOptions & {
-};
+type Options = ServiceInitialiseCommonOptions & {}
 type DoExecOptionsLite = Omit<
-  Parameters<typeof execUtils.doExec>[0]["options"],
-  "context" | "cwd"
+  Parameters<typeof execUtils.doExec>[0]['options'],
+  'context' | 'cwd'
 >
 
 /**
  Provides programmatic way to interact with a Bac instance
  */
 export class ExecService {
-  static title = "exec" as const
+  static title = 'exec' as const
   // title = 'bac' as const
-  options: Required<Options>;
+  options: Required<Options>
 
   get ctor(): typeof ExecService {
-    return this.constructor as unknown as typeof ExecService;
+    return this.constructor as unknown as typeof ExecService
   }
   get title(): (typeof ExecService)['title'] {
-    return (this.constructor as any).title as unknown as (typeof ExecService)['title']
+    return (this.constructor as any)
+      .title as unknown as (typeof ExecService)['title']
   }
 
   static async initialise(options: Options) {
-    const ins = new ExecService(options);
-    await ins.initialise(options);
-    return ins;
+    const ins = new ExecService(options)
+    await ins.initialise(options)
+    return ins
   }
 
   constructor(options: Options) {
-    this.options = options;
+    this.options = options
   }
 
   protected async initialise(options: Options) {}
 
   async run(options: {
-    command: string;
-    options?: DoExecOptionsLite;
-  }): ReturnType<typeof execUtils.doExec>;
+    command: string
+    options?: DoExecOptionsLite
+  }): ReturnType<typeof execUtils.doExec>
   async run(options: {
-    command: string;
-    options: DoExecOptionsLite;
-  }): ReturnType<typeof execUtils.doExec>;
+    command: string
+    options: DoExecOptionsLite
+  }): ReturnType<typeof execUtils.doExec>
   async run(options: {
-    command: string;
-    options?: DoExecOptionsLite;
+    command: string
+    options?: DoExecOptionsLite
   }): Promise<any> {
     const args = {
       command: `${options.command}`,
@@ -69,10 +69,10 @@ export class ExecService {
         cwd: addr.pathUtils.join(
           this.options.workspacePath,
           addr.parsePath(this.options.workingPath)
-        ) as AddressPathAbsolute,
-      },
+        ) as AddressPathAbsolute
+      }
     }
 
-    return execUtils.doExec(args);
+    return execUtils.doExec(args)
   }
 }

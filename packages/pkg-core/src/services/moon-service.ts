@@ -1,28 +1,31 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { BacError, BacErrorWrapper, MessageName } from "@business-as-code/error";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { BacError, BacErrorWrapper, MessageName } from '@business-as-code/error'
 import {
   expectIsOk,
   MoonQuery,
   ResultPromiseAugment,
   ServiceInitialiseCommonOptions,
   ServiceMap
-} from "../__types__";
-import { doExec, DoExecOptionsLite as DoExecOptionsLiteOrig } from "../utils/exec-utils";
-import { JSONParse } from "../utils/format-utils";
-import { objectMapAndFilter } from "../utils/object-utils";
+} from '../__types__'
+import {
+  doExec,
+  DoExecOptionsLite as DoExecOptionsLiteOrig
+} from '../utils/exec-utils'
+import { JSONParse } from '../utils/format-utils'
+import { objectMapAndFilter } from '../utils/object-utils'
 import {
   MoonQueryProjects,
-  moonQueryProjects,
-} from "../validation/moon-query-projects";
+  moonQueryProjects
+} from '../validation/moon-query-projects'
 
 declare global {
   namespace Bac {
     interface Services {
       moon: {
-        insType: MoonService;
-        staticType: typeof MoonService;
-      };
+        insType: MoonService
+        staticType: typeof MoonService
+      }
     }
   }
 }
@@ -31,93 +34,102 @@ type Options = ServiceInitialiseCommonOptions & {
   // /** path to root of instance */
   // workspacePath: AddressPathAbsolute;
   // packageManager: ServiceProvidersForAsByMethod<"packageManager">,
-};
+}
 type DoExecOptionsLite = DoExecOptionsLiteOrig & {
-  json?: boolean;
-};
+  json?: boolean
+}
 
 /**
  Light wrapper for processes involving a Moon instance
  */
 export class MoonService {
-  static title = "moon" as const;
-  options: Required<Options>;
+  static title = 'moon' as const
+  options: Required<Options>
   // @ts-expect-error: initialise
-  packageManagerService: ServiceMap['packageManager'][0];
+  packageManagerService: ServiceMap['packageManager'][0]
 
   static async initialise(options: Options) {
-    const ins = new MoonService(options);
-    await ins.initialise(options);
-    return ins;
+    const ins = new MoonService(options)
+    await ins.initialise(options)
+    return ins
   }
 
   constructor(options: Options) {
-    this.options = options;
+    this.options = options
   }
 
   get ctor(): typeof MoonService {
-    return this.constructor as unknown as typeof MoonService;
+    return this.constructor as unknown as typeof MoonService
   }
   get title(): (typeof MoonService)['title'] {
-    return (this.constructor as any).title as unknown as (typeof MoonService)['title']
+    return (this.constructor as any)
+      .title as unknown as (typeof MoonService)['title']
   }
 
   protected async initialise(options: Options) {
     if (!options.context.detectedPackageManager) {
       throw new Error('need to have a general error type to throw here')
     }
-    this.packageManagerService = await options.context.serviceFactory('packageManager', {
-      context: options.context,
-      workingPath: '.',
-      packageManager: options.context.detectedPackageManager,
-    })
+    this.packageManagerService = await options.context.serviceFactory(
+      'packageManager',
+      {
+        context: options.context,
+        workingPath: '.',
+        packageManager: options.context.detectedPackageManager
+      }
+    )
 
     try {
-      await this.getVersion();
+      await this.getVersion()
     } catch (err) {
       throw new BacErrorWrapper(
         MessageName.SERVICE_INITIALISATION_ERROR,
         `MoonService: moon instance not found at cwd: '${this.options.workspacePath.original}'`,
-        err as Error,
-      );
+        err as Error
+      )
     }
   }
 
   async getVersion(): Promise<string> {
-    const res = await this.run({ command: "--version" });
-    expectIsOk(res);
-    return res.res.outputs.stdout.replace(/moon[\s]*/i, "");
+    const res = await this.run({ command: '--version' })
+    expectIsOk(res)
+    return res.res.outputs.stdout.replace(/moon[\s]*/i, '')
     // const res = this.run({command: '--version'})
   }
 
   /**
    e.g. `projectType=library || projectType=application`
    */
-  async findProjects(options: {
-    query?: MoonQuery;
-    affected?: boolean;
-  } = {}): Promise<MoonQueryProjects> {
-    const command = `query projects${options?.query ? ` '${options.query}'` : ""}${
-      options?.affected ? " --affected" : ""
+  async findProjects(
+    options: {
+      query?: MoonQuery
+      affected?: boolean
+    } = {}
+  ): Promise<MoonQueryProjects> {
+    const command = `query projects${options?.query ? ` '${options.query}'` : ''}${
+      options?.affected ? ' --affected' : ''
     }`
     const res = await this.run({
       command,
-      options: { json: true, logLevel: 'info' },
-    });
+      options: { json: true, logLevel: 'info' }
+    })
     // console.log(`res :>> `, res.res)
 
     expectIsOk(res)
 
     // const resJson =
-// console.log(`res :>> `, res)
+    // console.log(`res :>> `, res)
     try {
       const parsed = JSONParse(res.res.outputs.stdout)
-      const validated = moonQueryProjects.parse(parsed);
+      const validated = moonQueryProjects.parse(parsed)
       return validated
-    }
-    catch (err) {
+    } catch (err) {
       // console.log(`res.res :>> `, res.res.outputs.stdout)
-      throw BacError.fromError((err as any), {reportCode: MessageName.MOON_SERVICE_PROJECT_FORMAT, extra: (err as any).errors, messagePrefix: `Unable to parse response. Command ran: '${command}'`})
+      throw BacError.fromError(err as any, {
+        reportCode: MessageName.MOON_SERVICE_PROJECT_FORMAT,
+        extra: (err as any).errors,
+        messagePrefix: `Unable to parse response. Command ran: '${command}'`
+      })
     }
 
     // if (parsed.success) {
@@ -126,67 +138,63 @@ export class MoonService {
     // else {
     // }
 
-
-
     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
 
     // console.log(`projects :>> `, projects)
   }
-//   /**
-//    e.g. `projectType=library || projectType=application`
-//    */
-//   async findProjectsJson(options: {
-//     query?: MoonQuery;
-//     affected?: boolean;
-//   } = {}): Promise<MoonQueryProjects> {
-//     const command = `query projects${options?.query ? ` '${options.query}'` : ""}${
-//       options?.affected ? " --affected" : ""
-//     }`
-//     const res = await this.run({
-//       command,
-//       options: { json: true, logLevel: 'info' },
-//     });
-//     // console.log(`res :>> `, res.res)
+  //   /**
+  //    e.g. `projectType=library || projectType=application`
+  //    */
+  //   async findProjectsJson(options: {
+  //     query?: MoonQuery;
+  //     affected?: boolean;
+  //   } = {}): Promise<MoonQueryProjects> {
+  //     const command = `query projects${options?.query ? ` '${options.query}'` : ""}${
+  //       options?.affected ? " --affected" : ""
+  //     }`
+  //     const res = await this.run({
+  //       command,
+  //       options: { json: true, logLevel: 'info' },
+  //     });
+  //     // console.log(`res :>> `, res.res)
 
-//     expectIsOk(res)
+  //     expectIsOk(res)
 
-//     // const resJson =
-// // console.log(`res :>> `, res)
-//     try {
-//       const parsed = JSONParse(res.res.outputs.stdout)
-//       const validated = moonQueryProjects.parse(parsed);
-//       return validated
-//     }
-//     catch (err) {
-//       // console.log(`res.res :>> `, res.res.outputs.stdout)
-//       throw BacError.fromError((err as any), {reportCode: MessageName.MOON_SERVICE_PROJECT_FORMAT, extra: (err as any).errors, messagePrefix: `Unable to parse response. Command ran: '${command}'`})
-//     }
+  //     // const resJson =
+  // // console.log(`res :>> `, res)
+  //     try {
+  //       const parsed = JSONParse(res.res.outputs.stdout)
+  //       const validated = moonQueryProjects.parse(parsed);
+  //       return validated
+  //     }
+  //     catch (err) {
+  //       // console.log(`res.res :>> `, res.res.outputs.stdout)
+  //       throw BacError.fromError((err as any), {reportCode: MessageName.MOON_SERVICE_PROJECT_FORMAT, extra: (err as any).errors, messagePrefix: `Unable to parse response. Command ran: '${command}'`})
+  //     }
 
-//     // if (parsed.success) {
-//     //   return parsed.data
-//     // }
-//     // else {
-//     // }
+  //     // if (parsed.success) {
+  //     //   return parsed.data
+  //     // }
+  //     // else {
+  //     // }
 
+  //     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
 
+  //     // console.log(`projects :>> `, projects)
+  //   }
 
-//     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
-
-//     // console.log(`projects :>> `, projects)
-//   }
-
-
-
-  async findProjectsString(options: {
-    query?: MoonQuery;
-    affected?: boolean;
-  } = {}): Promise<string> {
+  async findProjectsString(
+    options: {
+      query?: MoonQuery
+      affected?: boolean
+    } = {}
+  ): Promise<string> {
     const res = await this.run({
-      command: `query projects${options?.query ? ` '${options.query}'` : ""}${
-        options?.affected ? " --affected" : ""
+      command: `query projects${options?.query ? ` '${options.query}'` : ''}${
+        options?.affected ? ' --affected' : ''
       }`,
-      options: { json: false },
-    });
+      options: { json: false }
+    })
     // console.log(`res :>> `, res.res)
 
     expectIsOk(res)
@@ -194,7 +202,7 @@ export class MoonService {
     return res.res.outputs.stdout
 
     // const resJson =
-// console.log(`res :>> `, res)
+    // console.log(`res :>> `, res)
     // return moonQueryProjects.parse(res.res.parsed);
 
     // console.log(`query :>> `, queryProjects.projects.map(p => p.id))
@@ -203,20 +211,20 @@ export class MoonService {
   }
 
   async runTask(options: {
-    command: string;
-    options: DoExecOptionsLite & { json: true };
-  }): ResultPromiseAugment<ReturnType<typeof doExec>, { parsed: any }>;
+    command: string
+    options: DoExecOptionsLite & { json: true }
+  }): ResultPromiseAugment<ReturnType<typeof doExec>, { parsed: any }>
   async runTask(options: {
-    command: string;
-    options?: DoExecOptionsLite;
-  }): ReturnType<typeof doExec>;
+    command: string
+    options?: DoExecOptionsLite
+  }): ReturnType<typeof doExec>
   async runTask(options: {
-    command: string;
-    options: DoExecOptionsLite;
-  }): ReturnType<typeof doExec>;
+    command: string
+    options: DoExecOptionsLite
+  }): ReturnType<typeof doExec>
   async runTask(options: {
-    command: string;
-    options?: DoExecOptionsLite;
+    command: string
+    options?: DoExecOptionsLite
   }): Promise<any> {
     return this.run({
       ...options,
@@ -225,9 +233,9 @@ export class MoonService {
   }
 
   protected async run(options: {
-    command: string;
-    options: DoExecOptionsLite & { json: true };
-  }): ResultPromiseAugment<ReturnType<typeof doExec>, { parsed: any }>;
+    command: string
+    options: DoExecOptionsLite & { json: true }
+  }): ResultPromiseAugment<ReturnType<typeof doExec>, { parsed: any }>
   // protected async run(options: {
   //   command: string;
   //   options: DoExecOptionsLite & { json?: boolean };
@@ -249,19 +257,19 @@ export class MoonService {
   //   options: DoExecOptionsLite & { throwOnFail?: false };
   // }): ReturnType<typeof doExec>;
   protected async run(options: {
-    command: string;
-    options?: DoExecOptionsLite;
-  }): ReturnType<typeof doExec>;
+    command: string
+    options?: DoExecOptionsLite
+  }): ReturnType<typeof doExec>
   protected async run(options: {
-    command: string;
-    options: DoExecOptionsLite;
-  }): ReturnType<typeof doExec>;
+    command: string
+    options: DoExecOptionsLite
+  }): ReturnType<typeof doExec>
   protected async run(options: {
-    command: string;
-    options?: DoExecOptionsLite;
+    command: string
+    options?: DoExecOptionsLite
   }): Promise<any> {
     const args = {
-      command: `moon ${options.command}${options.options?.json ? " --json" : ""}`,
+      command: `moon ${options.command}${options.options?.json ? ' --json' : ''}`,
       options: {
         shell: true,
         ...(options.options ?? {}),
@@ -276,13 +284,13 @@ export class MoonService {
         // strip out current Moon envs when calling in new process in case we're inside a moon process
         extendEnv: false,
         env: objectMapAndFilter(process.env, (val, key) => {
-          if (typeof key === "string" && key.startsWith("MOON_")) {
-            return objectMapAndFilter.skip;
+          if (typeof key === 'string' && key.startsWith('MOON_')) {
+            return objectMapAndFilter.skip
           }
-          return val;
-        }),
-      },
-    };
+          return val
+        })
+      }
+    }
 
     return this.packageManagerService.run(args)
 

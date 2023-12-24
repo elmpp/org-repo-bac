@@ -1,4 +1,3 @@
-import { Plugin } from "@business-as-code/core"
+import { Plugin } from '@business-as-code/core'
 
-export const plugin = {
-} satisfies Plugin
+export const plugin = {} satisfies Plugin

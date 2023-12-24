@@ -1,7 +1,11 @@
-import { addr, AddressPackageStringified, AddressPathAbsolute } from "@business-as-code/address";
-import { constants } from "../../constants";
-import { DoExecOptionsLite, execUtils } from "../../utils";
-import { ServiceInitialiseCommonOptions } from "../../__types__";
+import {
+  addr,
+  AddressPackageStringified,
+  AddressPathAbsolute
+} from '@business-as-code/address'
+import { constants } from '../../constants'
+import { DoExecOptionsLite, execUtils } from '../../utils'
+import { ServiceInitialiseCommonOptions } from '../../__types__'
 
 // type Options = ServiceInitialiseCommonOptions & {
 //   packageManager?: LifecycleProvidersForAsByMethod<
@@ -11,21 +15,22 @@ import { ServiceInitialiseCommonOptions } from "../../__types__";
 
 export type PackageManagerExecOptions = DoExecOptionsLite & {
   /** will be set via a npm_config_registry env */
-  registry?: string,
+  registry?: string
 }
 
 /** also see ServiceStaticInterface */
-abstract class BasePackageManagerService<Options extends ServiceInitialiseCommonOptions> {
-
+abstract class BasePackageManagerService<
+  Options extends ServiceInitialiseCommonOptions
+> {
   abstract cliName: string
 
   // abstract login(): Promise<unknown>
 
-  abstract link(options: {path: string}): ReturnType<typeof execUtils.doExec>
+  abstract link(options: { path: string }): ReturnType<typeof execUtils.doExec>
 
   abstract configList(options: {
     // development?: boolean;
-    options?: PackageManagerExecOptions;
+    options?: PackageManagerExecOptions
   }): ReturnType<typeof execUtils.doExec>
 
   constructor(protected options: Options) {
@@ -39,7 +44,7 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
         // `@business-as-code/plugin-core-package-manager-pnpm`
       ),
       projectCwd: addr.parsePath(__filename) as AddressPathAbsolute,
-      strict: true,
+      strict: true
     })
 
     return this.exec({
@@ -50,22 +55,22 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
       options: {
         // shell: false
         ...options,
-        cwd,
+        cwd
         // cwd: addr.pathUtils.resolve(addr.parsePath(__filename), addr.parsePath('../../../')),
-      },
-    });
+      }
+    })
   }
 
   async add(options: {
-    pkg: string;
-    development?: boolean;
-    options?: PackageManagerExecOptions;
+    pkg: string
+    development?: boolean
+    options?: PackageManagerExecOptions
   }) {
     return this.exec({
       command: `add ${options.development ? '-d ' : ''}${options.pkg}`,
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
-      options: options.options,
-    });
+      options: options.options
+    })
   }
 
   async install(options?: PackageManagerExecOptions) {
@@ -73,43 +78,43 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
       command: `install`,
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
       options: {
-        ...options,
-      },
-    });
+        ...options
+      }
+    })
   }
 
   /** hits registry to find details about a package */
   async info(options: {
-    pkg: string;
+    pkg: string
     // development?: boolean;
-    options?: PackageManagerExecOptions;
+    options?: PackageManagerExecOptions
   }) {
     return this.exec({
       command: `info ${options.pkg}`,
       // command: `npm-cli-login -u foo -p bar -e matthew.penrice@gmail.com -r http://localhost:4873 --config-path \"../../../.npmrc\"`,
-      options: options.options,
-    });
+      options: options.options
+    })
   }
 
   abstract run(options: {
-    command: string;
-    pkg?: AddressPackageStringified;
-    options?: PackageManagerExecOptions;
-  }): ReturnType<typeof execUtils.doExec>;
+    command: string
+    pkg?: AddressPackageStringified
+    options?: PackageManagerExecOptions
+  }): ReturnType<typeof execUtils.doExec>
 
   protected async exec(options: {
-    command: string;
-    options?: PackageManagerExecOptions;
-  }): ReturnType<typeof execUtils.doExec>;
+    command: string
+    options?: PackageManagerExecOptions
+  }): ReturnType<typeof execUtils.doExec>
   protected async exec(options: {
-    command: string;
-    options: PackageManagerExecOptions;
-  }): ReturnType<typeof execUtils.doExec>;
+    command: string
+    options: PackageManagerExecOptions
+  }): ReturnType<typeof execUtils.doExec>
   protected async exec(options: {
-    command: string;
-    options?: PackageManagerExecOptions;
+    command: string
+    options?: PackageManagerExecOptions
   }): Promise<any> {
-    const {registry, ...execOptionsLite} = options.options ?? {}
+    const { registry, ...execOptionsLite } = options.options ?? {}
 
     const args = {
       command: `${this.cliName} ${options.command}`,
@@ -120,19 +125,19 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
           this.options.workspacePath,
           addr.parsePath(this.options.workingPath)
         ) as AddressPathAbsolute,
-        ...(registry ? {env: {npm_config_registry: registry}} : {}),
-        ...(execOptionsLite),
-      },
-    };
+        ...(registry ? { env: { npm_config_registry: registry } } : {}),
+        ...execOptionsLite
+      }
+    }
 
-    return execUtils.doExec(args);
+    return execUtils.doExec(args)
   }
 
   protected getNpmRcFilePath(): AddressPathAbsolute {
     return addr.pathUtils.join(
       this.options.workspacePath,
       addr.parsePath(constants.NPM_RC_FILENAME)
-    ) as AddressPathAbsolute;
+    ) as AddressPathAbsolute
   }
 
   protected static getWorkingDestinationPath(
@@ -140,11 +145,9 @@ abstract class BasePackageManagerService<Options extends ServiceInitialiseCommon
   ): AddressPathAbsolute {
     return addr.pathUtils.join(
       options.workspacePath,
-      addr.parsePath(options.workingPath ?? ".")
-    ) as AddressPathAbsolute;
+      addr.parsePath(options.workingPath ?? '.')
+    ) as AddressPathAbsolute
   }
 }
 
-export {
-  BasePackageManagerService
-} // this error - "cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module"
+export { BasePackageManagerService } // this error - "cannot be compiled under '--isolatedModules' because it is considered a global script file. Add an import, export, or an empty 'export {}' statement to make it a module"

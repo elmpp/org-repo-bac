@@ -25,24 +25,26 @@ const fromEnv = {
   // GIT_SSH_PASSWORD_MOCK_SERVER_PORT:'',
   // GIT_SSH_MOCK_SERVER_PASSWORD:'',
   GIT_SSH_ANONYMOUS_MOCK_SERVER_ROOT: '',
-  GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT: '',
+  GIT_SSH_ANONYMOUS_MOCK_SERVER_PORT: ''
   // used to influence other ssh servers and done internally
   // GIT_SSH_MOCK_SERVER_PUBKEY:'',
 }
 
-const extractFromEnv = () => Object.fromEntries(Object.entries(fromEnv).map(([key, val]) => {
-  if (process.env[key] === undefined) {
-    throw new Error(`Env value not available '${key}'`)
-  }
-  return [key, process.env[key]]
-}))
+const extractFromEnv = () =>
+  Object.fromEntries(
+    Object.entries(fromEnv).map(([key, val]) => {
+      if (process.env[key] === undefined) {
+        throw new Error(`Env value not available '${key}'`)
+      }
+      return [key, process.env[key]]
+    })
+  )
 
 export const constants = {
   // the following will be replaced from the .env. Here for the type inferrence
   ...fromEnv,
 
   ...{
-
     // /** {@linkInspirationhttps://tinyurl.com/2z9go29w | Mui} */
     // COLORS: {
     //   info: '#79f3e3',
@@ -67,13 +69,13 @@ export const constants = {
     // CACHE_FOLDER_TMP_FILENAME: `tmp`,
     // DATABASE_MAIN_FILENAME: `db.sqlite`,
     WORKROOT_IDENT: `root`,
-    DEFAULT_COMMITTER: "no reply <no-reply@bac.com>",
-    RC_FILENAME: "bac.js",
-    RC_CONFIGURED_FILENAME: "bac.json",
-    RC_FOLDER: ".bac",
-    RC_META_FOLDER: "meta",
-    RC_CONTENT_FOLDER: "content",
-    NPM_RC_FILENAME: ".npmrc",
+    DEFAULT_COMMITTER: 'no reply <no-reply@bac.com>',
+    RC_FILENAME: 'bac.js',
+    RC_CONFIGURED_FILENAME: 'bac.json',
+    RC_FOLDER: '.bac',
+    RC_META_FOLDER: 'meta',
+    RC_CONTENT_FOLDER: 'content',
+    NPM_RC_FILENAME: '.npmrc'
     // DEFAULT_COMMITTER_NAME: 'no reply',
     // DEFAULT_COMMITTER_EMAIL: 'no-reply@bac.com',
     // WORKING_PACKAGE_IDENT: '@monotonous/mnt-working', // name of the gitignored /packages/mnt-working package that all projects will have added
@@ -110,7 +112,7 @@ export const constants = {
 
     // // when needing a concrete Mnt.MapUtil.StackKeys
   },
-  ...extractFromEnv(),
-};
+  ...extractFromEnv()
+}
 
 // console.log(`constants :>> `, constants, process.env)

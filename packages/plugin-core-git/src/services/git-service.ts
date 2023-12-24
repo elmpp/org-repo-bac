@@ -1,27 +1,27 @@
 import {
   ok,
   Result,
-  ServiceInitialiseCommonOptions,
-} from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
+  ServiceInitialiseCommonOptions
+} from '@business-as-code/core'
+import { BacError, MessageName } from '@business-as-code/error'
 // import nodeGit, { Repository } from 'nodegit'
 // import simpleGitFactory, {CheckRepoActions as CheckRepoActionsImport, SimpleGit, TaskOptions} from 'simple-git'
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
 import simpleGitFactory, {
   CheckRepoActions as CheckRepoActionsImport,
   InitResult,
   TaskOptions as OrigTaskOptions,
-  type SimpleGit,
-} from "simple-git";
-import { xfs } from "@business-as-code/fslib";
+  type SimpleGit
+} from 'simple-git'
+import { xfs } from '@business-as-code/fslib'
 
 declare global {
   namespace Bac {
     interface Services {
       git: {
-        insType: GitService;
-        staticType: typeof GitService;
-      };
+        insType: GitService
+        staticType: typeof GitService
+      }
     }
   }
   // export interface BacServices {
@@ -29,12 +29,12 @@ declare global {
   // }
 }
 
-type Options = ServiceInitialiseCommonOptions & {};
+type Options = ServiceInitialiseCommonOptions & {}
 
 type TaskOptions = Record<string, unknown> & {
-  sshPrivateKeyPath?: string;
-  sshStrictHostCheckingDisable?: boolean;
-};
+  sshPrivateKeyPath?: string
+  sshStrictHostCheckingDisable?: boolean
+}
 
 /**
  SimpleGit GH - https://github.com/nodegit/nodegit
@@ -42,17 +42,17 @@ type TaskOptions = Record<string, unknown> & {
  SimpleGit Examples Folder - https://github.com/nodegit/nodegit/tree/master/examples
  */
 export class GitService {
-  static title = "git" as const;
+  static title = 'git' as const
 
-  public CheckRepoActions = CheckRepoActionsImport;
-  protected options: Options;
+  public CheckRepoActions = CheckRepoActionsImport
+  protected options: Options
 
   get ctor(): typeof GitService {
-    return this.constructor as unknown as typeof GitService;
+    return this.constructor as unknown as typeof GitService
   }
-  get title(): (typeof GitService)["title"] {
+  get title(): (typeof GitService)['title'] {
     return (this.constructor as any)
-      .title as unknown as (typeof GitService)["title"];
+      .title as unknown as (typeof GitService)['title']
   }
 
   /** whether the service has initialised on a local repo. Prerequisite for most operations. See  */
@@ -70,8 +70,8 @@ export class GitService {
 
     // console.log(`process.env.DEBUG :>> `, process.env.DEBUG)
 
-    const ins = new GitService(options);
-    return ins;
+    const ins = new GitService(options)
+    return ins
   }
   // static async initialise(options: Options) {
   //   const ins = new GitService(options);
@@ -106,7 +106,7 @@ export class GitService {
   // }
 
   constructor(options: Options) {
-    this.options = options;
+    this.options = options
   }
 
   protected static getWorkingDestinationPath(
@@ -114,12 +114,12 @@ export class GitService {
   ): AddressPathAbsolute {
     return addr.pathUtils.join(
       options.workspacePath,
-      addr.parsePath(options.workingPath ?? ".")
-    ) as AddressPathAbsolute;
+      addr.parsePath(options.workingPath ?? '.')
+    ) as AddressPathAbsolute
   }
 
-  getRepository(strict: false): undefined | SimpleGit;
-  getRepository(strict?: true): SimpleGit;
+  getRepository(strict: false): undefined | SimpleGit
+  getRepository(strict?: true): SimpleGit
   getRepository(strict = true): SimpleGit | undefined {
     // if (!this.repository) {
     //   if (!strict) {
@@ -129,19 +129,19 @@ export class GitService {
     // }
 
     const repository = simpleGitFactory({
-      baseDir: GitService.getWorkingDestinationPath(this.options).original,
-    });
+      baseDir: GitService.getWorkingDestinationPath(this.options).original
+    })
 
     if (!repository) {
       if (!strict) {
-        return;
+        return
       }
       throw new BacError(
         MessageName.GIT_SERVICE_REPOSITORY_UNINITIALISED,
         `Attempting an operation without a current initialised repository`
-      );
+      )
     }
-    return repository;
+    return repository
     // return this.repository
   }
 
@@ -158,16 +158,13 @@ export class GitService {
   /**
    simpleGit example - https://tinyurl.com/2akaywmr
    */
-   async revParse(
+  async revParse(
     args: string,
     options?: TaskOptions
   ): Promise<Result<string, { error: BacError }>> {
-    const simpleGit = this.create(options);
-    const res = await simpleGit.revparse(
-      args,
-      options as OrigTaskOptions
-    );
-    return ok(res);
+    const simpleGit = this.create(options)
+    const res = await simpleGit.revparse(args, options as OrigTaskOptions)
+    return ok(res)
   }
 
   /**
@@ -177,19 +174,18 @@ export class GitService {
     url: string,
     options?: TaskOptions
   ): Promise<Result<undefined, { error: BacError }>> {
-    const simpleGit = this.create(options);
-
+    const simpleGit = this.create(options)
 
     await simpleGit.clone(
       url,
-      this.options.workspacePath.original,
+      this.options.workspacePath.original
       // options as OrigTaskOptions
-    );
+    )
     // @todo - error handling
     simpleGitFactory({
-      baseDir: GitService.getWorkingDestinationPath(this.options).original,
-    });
-    return ok(undefined);
+      baseDir: GitService.getWorkingDestinationPath(this.options).original
+    })
+    return ok(undefined)
   }
 
   /**
@@ -199,17 +195,17 @@ export class GitService {
     url: string,
     options?: TaskOptions
   ): Promise<Result<undefined, { error: BacError }>> {
-    const simpleGit = this.create(options);
+    const simpleGit = this.create(options)
     await simpleGit.pull(
       url,
       this.options.workspacePath.original,
       options as OrigTaskOptions
-    );
+    )
     // @todo - error handling
     // simpleGitFactory({
     //   baseDir: GitService.getWorkingDestinationPath(this.options).original,
     // });
-    return ok(undefined);
+    return ok(undefined)
   }
 
   /**
@@ -220,11 +216,11 @@ export class GitService {
     url: string,
     options?: TaskOptions
   ): Promise<Result<string, { error: BacError }>> {
-    const simpleGit = this.create(options);
-    const res = await simpleGit.listRemote([url]);
+    const simpleGit = this.create(options)
+    const res = await simpleGit.listRemote([url])
     // @todo - error handling
     // this.repository = simpleGitFactory({baseDir: GitService.getWorkingDestinationPath(this.options).original});
-    return ok(res);
+    return ok(res)
   }
 
   async init(
@@ -237,25 +233,27 @@ export class GitService {
     // // @todo - error handling
     // this.repository = repository
     // console.log(`GitService.getWorkingDestinationPath(this.options) :>> `, GitService.getWorkingDestinationPath(this.options))
-    const simpleGit = this.create(options);
-    const res = await simpleGit.init((options ?? {}) as OrigTaskOptions);
+    const simpleGit = this.create(options)
+    const res = await simpleGit.init((options ?? {}) as OrigTaskOptions)
 
     // // @todo - error handling
     // simpleGitFactory({
     //   baseDir: GitService.getWorkingDestinationPath(this.options).original,
     // });
 
-    return ok(res);
+    return ok(res)
   }
 
   protected create(options: TaskOptions = {}) {
     const baseDir = GitService.getWorkingDestinationPath(this.options)
-    if (!(xfs.existsSync)) {
-      throw new Error(`GitService#create: baseDir must already exist at '${baseDir.original}'`)
+    if (!xfs.existsSync) {
+      throw new Error(
+        `GitService#create: baseDir must already exist at '${baseDir.original}'`
+      )
     }
     const ins = simpleGitFactory({
-      baseDir: baseDir.original,
-    });
+      baseDir: baseDir.original
+    })
 
     let GIT_SSH_COMMAND = `ssh`
 
@@ -265,21 +263,21 @@ export class GitService {
      *  - simpleGit auth docs: https://tinyurl.com/25lb83xa
      */
     if (options.sshPrivateKeyPath) {
-      GIT_SSH_COMMAND += ` -i ${options.sshPrivateKeyPath}`;
+      GIT_SSH_COMMAND += ` -i ${options.sshPrivateKeyPath}`
     }
     if (options.sshStrictHostCheckingDisable) {
-      GIT_SSH_COMMAND += ` -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null`; // SO - https://tinyurl.com/yqrwtcob
+      GIT_SSH_COMMAND += ` -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null` // SO - https://tinyurl.com/yqrwtcob
     }
 
-    ins.env({ GIT_SSH_COMMAND });
+    ins.env({ GIT_SSH_COMMAND })
     this.options.context.logger.debug(
       `gitService: sshPrivateKey requested for instance. GIT_SSH_COMMAND: '${GIT_SSH_COMMAND}'`
-    );
+    )
 
-    return ins;
+    return ins
   }
 
   getWorkingDestinationPath(): AddressPathAbsolute {
-    return GitService.getWorkingDestinationPath(this.options);
+    return GitService.getWorkingDestinationPath(this.options)
   }
 }

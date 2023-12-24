@@ -5,7 +5,7 @@ import { PackageManagerBunService } from './services/package-manager-bun-service
 // } from "./lifecycles";
 
 export const plugin = {
-  services: [PackageManagerBunService],
+  services: [PackageManagerBunService]
   // lifecycles: [
   //   RunWorkspacePackageManagerBunLifecycle,
   // ],

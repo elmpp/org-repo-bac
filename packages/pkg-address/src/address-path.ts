@@ -18,7 +18,10 @@ import type { AddressTypeByGroup } from './__types__/util'
 
 export type AddressPathUtils = ReturnType<typeof createAddressPath>
 
-export const createAddressPath = (addressIns: Address, parseParams: InitialiseOptions['parseParams']) => {
+export const createAddressPath = (
+  addressIns: Address,
+  parseParams: InitialiseOptions['parseParams']
+) => {
   // /**
   //  note that the relativeCwd here is from the project root and is as kept within package entities etc
   //  */
@@ -140,7 +143,7 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
       addressNormalized: '/',
       group: 'path',
       type: 'portablePathPosixAbsolute',
-      parts: {},
+      parts: {}
     } as AddressDescriptor<'portablePathPosixAbsolute'>,
     dot: {
       original: '.',
@@ -149,7 +152,7 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
       addressNormalized: '.',
       group: 'path' as AddressGroupUnion,
       type: 'portablePathPosixRelative' as AddressTypeByGroup<'path'>,
-      parts: {},
+      parts: {}
     } as AddressPathRelative,
     get cwd(): AddressPathAbsolute {
       return addressIns.parsePath(process.cwd()) as AddressPathAbsolute
@@ -160,19 +163,26 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
         .toString(16)
         .padStart(8, `0`)
 
-      return addressIns.parsePath(path.join(tmpdir, hash)) as AddressPathAbsolute
+      return addressIns.parsePath(
+        path.join(tmpdir, hash)
+      ) as AddressPathAbsolute
     },
 
     // projectSubPath,
 
     // posix path methods
     resolve(...pathSegments: AddressPath[]): AddressPathAbsolute {
-      return addressIns.parsePath(path.posix.resolve(...pathSegments.map((p) => p.address))) as AddressPathAbsolute
+      return addressIns.parsePath(
+        path.posix.resolve(...pathSegments.map((p) => p.address))
+      ) as AddressPathAbsolute
     },
     join(...pathSegments: (AddressPath | undefined)[]): AddressPath {
       const filteredSegments = pathSegments.filter(Boolean) as AddressPath[]
       const normal = filteredSegments.pop()
-      let posixJoin = path.posix.join(...filteredSegments.map((p) => p.addressNormalized), normal!.address)
+      let posixJoin = path.posix.join(
+        ...filteredSegments.map((p) => p.addressNormalized),
+        normal!.address
+      )
       if (posixJoin === '*') posixJoin = './*'
       return addressIns.parsePath(posixJoin)
     },
@@ -181,28 +191,42 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
       destAddress: AddressPathAbsolute
       options?: {}
     }): AddressPathRelative {
-      const {srcAddress, destAddress, options: parseOptions} = options
+      const { srcAddress, destAddress, options: parseOptions } = options
       checkGroup(srcAddress, addressIns)
       checkGroup(destAddress, addressIns)
-      const relativePath = path.posix.relative(srcAddress.address, destAddress.address)
-      return addressIns.parsePath(relativePath, parseOptions) as AddressPathRelative
+      const relativePath = path.posix.relative(
+        srcAddress.address,
+        destAddress.address
+      )
+      return addressIns.parsePath(
+        relativePath,
+        parseOptions
+      ) as AddressPathRelative
     },
     isAbsolute(address: AddressPath) {
       checkGroup(address, addressIns)
-      return (['portablePathPosixAbsolute', 'portablePathWindowsAbsolute'] as (keyof AddressType)[]).includes(
-        address.type
-      )
+      return (
+        [
+          'portablePathPosixAbsolute',
+          'portablePathWindowsAbsolute'
+        ] as (keyof AddressType)[]
+      ).includes(address.type)
     },
     dirname<Addr extends AddressPath>(address: Addr): Addr {
       checkGroup(address, addressIns)
       // if (!this.isAbsolute(address)) {
       //   throw new Error(`AddressPath: dirname() called on non-absolute path '${addressIns.format(address)}' (parsed as type '${address.type}')`)
       // }
-      return addressIns.parsePath(path.posix.dirname(address.addressNormalized)) as Addr
+      return addressIns.parsePath(
+        path.posix.dirname(address.addressNormalized)
+      ) as Addr
     },
     basename(address: AddressPath): AddressDescriptor<'portablePathFilename'> {
       checkGroup(address, addressIns)
-      return addressIns.parseAsType(path.posix.basename(address.address), 'portablePathFilename')
+      return addressIns.parseAsType(
+        path.posix.basename(address.address),
+        'portablePathFilename'
+      )
     },
     overlap(srcAddress: AddressPath, destAddress: AddressPath): boolean {
       checkGroup(srcAddress, addressIns)
@@ -212,23 +236,29 @@ export const createAddressPath = (addressIns: Address, parseParams: InitialiseOp
       const suffixedSrcAddress = `${srcAddress.address}/`.replace(/\/+$/, `/`)
       const suffixedDestAddress = `${destAddress.address}/`.replace(/\/+$/, `/`)
 
-      const res = !!suffixedDestAddress.match(new RegExp(`^${suffixedSrcAddress}`))
+      const res = !!suffixedDestAddress.match(
+        new RegExp(`^${suffixedSrcAddress}`)
+      )
       return res
     },
     extname(address: AddressPath) {
       checkGroup(address, addressIns)
       const ext = path.posix.extname(address.address)
       if (ext === '') {
-        throw new Error(`AddressPath: extname() called on extensionless path '${addressIns.format(address)}'`)
+        throw new Error(
+          `AddressPath: extname() called on extensionless path '${addressIns.format(address)}'`
+        )
       }
       return addressIns.parsePath(ext)
-    },
+    }
   }
 }
 
 const checkGroup = (address: AddressDescriptor, addressIns: Address) => {
   if (address.group !== 'path')
-    throw new Error(`AddressPath: non path descriptor supplied '${addressIns.format(address)}'`)
+    throw new Error(
+      `AddressPath: non path descriptor supplied '${addressIns.format(address)}'`
+    )
 }
 
 // export const ppath: PathUtils<PortablePath> = Object.create(path.posix) as any

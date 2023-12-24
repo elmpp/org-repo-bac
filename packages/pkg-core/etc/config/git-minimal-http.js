@@ -4,17 +4,20 @@
  * @type {Config}
  */
 const config = {
-  projectSource: [{
-    provider: 'git',
-    options: {
-      address: 'http://localhost:8174/repo1.git',
+  projectSource: [
+    {
+      provider: 'git',
+      options: {
+        address: 'http://localhost:8174/repo1.git'
+      }
     },
-  }, {
-    provider: 'git',
-    options: {
-      address: 'http://localhost:8174/repo2.git',
-    },
-  }],
+    {
+      provider: 'git',
+      options: {
+        address: 'http://localhost:8174/repo2.git'
+      }
+    }
+  ]
 }
 
-module.exports.config = config;
+module.exports.config = config

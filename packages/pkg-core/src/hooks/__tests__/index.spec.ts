@@ -1,39 +1,39 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { BacError } from "@business-as-code/error";
-import { describe, expect, it, jest } from 'bun:test';
-import { ExecaReturnValue } from "execa";
-import { expectTypeOf } from "expect-type";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { BacError } from '@business-as-code/error'
+import { describe, expect, it, jest } from 'bun:test'
+import { ExecaReturnValue } from 'execa'
+import { expectTypeOf } from 'expect-type'
 import {
   Context,
   LifecycleReturnByMethodSingular,
   ok,
-  Result,
-} from "../../__types__";
-import { InferAsyncHookOptions, InferAsyncHookReturn } from "../__types__";
-import { AsyncHook } from "../index";
+  Result
+} from '../../__types__'
+import { InferAsyncHookOptions, InferAsyncHookReturn } from '../__types__'
+import { AsyncHook } from '../index'
 
-describe("Hook", () => {
-  describe.only("callLifecycleBailAsync", () => {
-    it("returns tapped return", async () => {
+describe('Hook', () => {
+  describe.only('callLifecycleBailAsync', () => {
+    it('returns tapped return', async () => {
       const hook = new AsyncHook<
         {
-          context: Context;
-          workspacePath: AddressPathAbsolute;
-          workingPath: string;
-          options: unknown;
+          context: Context
+          workspacePath: AddressPathAbsolute
+          workingPath: string
+          options: unknown
         },
         Result<
           {
-            destinationPath: AddressPathAbsolute;
+            destinationPath: AddressPathAbsolute
           },
           {
-            error: BacError;
+            error: BacError
           }
         >,
-        "runWorkspace"
-      >(["options"], "runWorkspace", "beforeRunWorkspace");
+        'runWorkspace'
+      >(['options'], 'runWorkspace', 'beforeRunWorkspace')
 
-      hook.tapAsync("moon", async (_options) => {
+      hook.tapAsync('moon', async (_options) => {
         // return {
         //   provider: "moon",
         //   res: "blah",
@@ -43,16 +43,16 @@ describe("Hook", () => {
           options: {
             outputs: {
               stdout: '',
-              stderr: '',
+              stderr: ''
             },
             execa: {} as ExecaReturnValue
           }
         })
-      });
+      })
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
 
-      expect(hook.taps[0].nameOrProvider).toBe("moon");
+      expect(hook.taps[0].nameOrProvider).toBe('moon')
       // hook.tapAsync("test4", () => {}, { after: "test3" });
       // expect(hook.taps[2].name).toBe("test4");
       // hook.tap("test5", () => {}, { after: "unknown" });
@@ -61,70 +61,70 @@ describe("Hook", () => {
       const res = await hook.callBailAsync({
         options: [
           {
-            provider: "moon",
+            provider: 'moon',
             options: {
               context: { logger: { debug: jest.fn() } } as unknown as Context,
               // workingPath: ".",
-              workspacePath: addr.parsePath(".") as AddressPathAbsolute,
+              workspacePath: addr.parsePath('.') as AddressPathAbsolute,
               options: {
-                command: "my command",
-                platform: "node",
-              },
-            },
-          },
-        ],
-      });
+                command: 'my command',
+                platform: 'node'
+              }
+            }
+          }
+        ]
+      })
 
-      expectTypeOf(res).toMatchTypeOf<{ success: boolean; res: unknown }>(); // hooks return Results
+      expectTypeOf(res).toMatchTypeOf<{ success: boolean; res: unknown }>() // hooks return Results
       expect(res).toEqual({
-        provider: "moon",
-        res: "blah",
-      });
+        provider: 'moon',
+        res: 'blah'
+      })
       type RunWorkspaceReturnTypeSing =
-        LifecycleReturnByMethodSingular<"runWorkspace">;
+        LifecycleReturnByMethodSingular<'runWorkspace'>
       expectTypeOf(res).toEqualTypeOf<
         Result<RunWorkspaceReturnTypeSing, { error: BacError }>
-      >();
-    });
-    it("throws when options do not match tap providers", async () => {
+      >()
+    })
+    it('throws when options do not match tap providers', async () => {
       const hook = new AsyncHook<
         {
-          context: Context;
-          workspacePath: AddressPathAbsolute;
-          workingPath: string;
-          options: unknown;
+          context: Context
+          workspacePath: AddressPathAbsolute
+          workingPath: string
+          options: unknown
         },
         Result<
           {
-            destinationPath: AddressPathAbsolute;
+            destinationPath: AddressPathAbsolute
           },
           {
-            error: BacError;
+            error: BacError
           }
         >,
-        "runWorkspace"
-      >(["options"], "runWorkspace", "beforeRunWorkspace");
+        'runWorkspace'
+      >(['options'], 'runWorkspace', 'beforeRunWorkspace')
 
-      hook.tapAsync("moon", async (_options) => {
+      hook.tapAsync('moon', async (_options) => {
         // return ok("blah");
         return ok({
           provider: 'moon' as const,
           options: {
             outputs: {
               stdout: '',
-              stderr: '',
+              stderr: ''
             },
             execa: {} as ExecaReturnValue
           }
-        });
-      });
+        })
+      })
       // hook.tapAsync("moon", (options: { provider: "moon"; options: any }) => {
       //   return "blah";
       // });
       // hook.tapAsync("test2", () => {});
       // hook.tapAsync("test3", () => {}, { before: "test2" });
 
-      expect(hook.taps[0].nameOrProvider).toBe("moon");
+      expect(hook.taps[0].nameOrProvider).toBe('moon')
       // hook.tapAsync("test4", () => {}, { after: "test3" });
       // expect(hook.taps[2].name).toBe("test4");
       // hook.tap("test5", () => {}, { after: "unknown" });
@@ -135,55 +135,55 @@ describe("Hook", () => {
           options: [
             {
               // @ts-expect-error:
-              provider: "notMoon",
+              provider: 'notMoon',
               options: {
                 context: { logger: { debug: jest.fn() } } as unknown as Context,
                 // workingPath: ".",
-                workspacePath: addr.parsePath(".") as AddressPathAbsolute,
+                workspacePath: addr.parsePath('.') as AddressPathAbsolute,
                 options: {
-                  command: "my command",
-                  platform: "node",
-                },
-              },
-            },
+                  command: 'my command',
+                  platform: 'node'
+                }
+              }
+            }
           ],
-          strict: true,
+          strict: true
         })
-      ).rejects.toThrowError();
-    });
-    it("can be inferred", async () => {
+      ).rejects.toThrowError()
+    })
+    it('can be inferred', async () => {
       type Options = {
         // context: Context;
         // workspacePath: AddressPathAbsolute;
         // workingPath: string;
         // options: {
-        a: "a";
+        a: 'a'
         // };
-      };
+      }
       type Return = Result<
         {
-          destinationPath: AddressPathAbsolute;
+          destinationPath: AddressPathAbsolute
         },
         {
-          error: BacError;
+          error: BacError
         }
-      >;
-      const hook = new AsyncHook<Options, Return, "runWorkspace">(
-        ["options"],
-        "runWorkspace",
-        "beforeRunWorkspace" // name
-      );
+      >
+      const hook = new AsyncHook<Options, Return, 'runWorkspace'>(
+        ['options'],
+        'runWorkspace',
+        'beforeRunWorkspace' // name
+      )
 
-      type InferredOptions = InferAsyncHookOptions<typeof hook>;
-      type InferredReturn = InferAsyncHookReturn<typeof hook>;
+      type InferredOptions = InferAsyncHookOptions<typeof hook>
+      type InferredReturn = InferAsyncHookReturn<typeof hook>
 
-      expectTypeOf<InferredOptions>().toEqualTypeOf<Options>;
-      expectTypeOf<InferredReturn>().toEqualTypeOf<Return>;
-    });
-  });
-});
+      expectTypeOf<InferredOptions>().toEqualTypeOf<Options>
+      expectTypeOf<InferredReturn>().toEqualTypeOf<Return>
+    })
+  })
+})
 
-describe("AsyncHook", () => {
+describe('AsyncHook', () => {
   // it("create", () => {
   //   expect(() => new AsyncHook()).not.toThrow();
   //   expect(() => new AsyncHook(["hi"], "hello")).not.toThrow();
@@ -203,4 +203,4 @@ describe("AsyncHook", () => {
   //   hook.tapAsync("test", fn);
   //   expect(fn).not.toHaveBeenCalled();
   // });
-});
+})

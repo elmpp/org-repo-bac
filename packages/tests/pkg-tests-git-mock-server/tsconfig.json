@@ -3,7 +3,6 @@
   "include": [
     // "**/*" // don't need to compile anything here
   ],
-  "compilerOptions": {
-  },
+  "compilerOptions": {},
   "references": []
 }

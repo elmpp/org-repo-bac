@@ -1,11 +1,11 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { AddressPathAbsolute } from '@business-as-code/address'
 import {
   ConfigConfigured,
   Context,
   ok,
   ServiceMap,
-  SynchroniseWorkspaceLifecycleBase,
-} from "@business-as-code/core";
+  SynchroniseWorkspaceLifecycleBase
+} from '@business-as-code/core'
 
 // declare global {
 //   namespace Bac {
@@ -24,7 +24,7 @@ import {
 export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecycleBase<
   typeof SynchroniseWorkspaceGitLifecycle
 > {
-  static override title = "SubrepoService" as const;
+  static override title = 'SubrepoService' as const
 
   // override get ctor(): typeof SynchroniseWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -35,24 +35,24 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
    */
   override synchroniseWorkspace(): (options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     options: {
       // a: "a";
       // name: string;
-      config: ConfigConfigured;
+      config: ConfigConfigured
       // configPath: string;
       // cliVersion: string;
       // cliRegistry: string;
       // cliPath?: string;
-    };
-  }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
-    return async ({ common: {
-      context,
-      workspacePath,
-    }, options: { config } }) => {
+    }
+  }) => ReturnType<ServiceMap['schematics'][number]['runSchematic']> {
+    return async ({
+      common: { context, workspacePath },
+      options: { config }
+    }) => {
       // const config = await fsUtils.loadConfig(workspacePath);
 
       // console.log(
@@ -63,7 +63,6 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
       //     colors: true,
       //   })
       // );
-
 
       // console.log(`config :>> `, config)
 
@@ -96,10 +95,9 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
       //     }
       //   );
 
-
       return ok({
-        destinationPath: workspacePath,
-      });
+        destinationPath: workspacePath
+      })
 
       // is the configured config up to date
       // if ()
@@ -108,7 +106,7 @@ export class SynchroniseWorkspaceGitLifecycle extends SynchroniseWorkspaceLifecy
       // console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)
 
       // return res;
-    };
+    }
   }
 }
 

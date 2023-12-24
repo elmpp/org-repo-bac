@@ -1,1 +1,1 @@
- - introspection of the workspace and its projects. Essentially a proxy onto Moon's query namespace - [Moon Query](https://tinyurl.com/28ce7jxe)
+- introspection of the workspace and its projects. Essentially a proxy onto Moon's query namespace - [Moon Query](https://tinyurl.com/28ce7jxe)

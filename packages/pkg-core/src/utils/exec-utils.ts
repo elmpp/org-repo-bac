@@ -1,5 +1,5 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { BacError, MessageName } from "@business-as-code/error";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { BacError, MessageName } from '@business-as-code/error'
 // const {
 //   execa,
 //   ExecaError,
@@ -10,7 +10,7 @@ import execa, {
   ExecaError,
   ExecaReturnValue,
   Options as ExecaOptions
-} from "execa";
+} from 'execa'
 // import {
 //   execa,
 //   ExecaError,
@@ -26,10 +26,10 @@ import {
   ok,
   Outputs,
   Result
-} from "../__types__";
+} from '../__types__'
 // import pathKey from 'path-key'
 // const pathKey = require('path-key').default
-import { constants } from "../constants";
+import { constants } from '../constants'
 
 // export interface ExecOptions
 //   extends Omit<import("child_process").SpawnOptions, "stdio" | "env" | "cwd"> {
@@ -41,7 +41,7 @@ import { constants } from "../constants";
 //   cwd: AddressPathAbsolute; // this must be mandatory
 //   context: Context;
 // }
-export interface DoExecOptions extends Omit<ExecaOptions, "cwd"> {
+export interface DoExecOptions extends Omit<ExecaOptions, 'cwd'> {
   // /** signals that the exec target is spawned from an mnt checkout. Dev only! @internal */
   // checkoutCwd?: AddressPathAbsolute
   // /** Returns the childProcess directly */
@@ -55,16 +55,16 @@ export interface DoExecOptions extends Omit<ExecaOptions, "cwd"> {
   //   'virtual'
   // >
 
-  cwd: AddressPathAbsolute; // this must be mandatory
-  context: Context;
+  cwd: AddressPathAbsolute // this must be mandatory
+  context: Context
   // matched against current process logLevel and will stream to stdout/stderr if matching
-  logLevel?: LogLevel;
+  logLevel?: LogLevel
   /** allows removal of PATH segments. Will be contained with OS-specific terminators. e.g. '/private/tmp/bun-node-.*' */
   pathBlacklist?: (RegExp | string)[]
 }
-export type DoExecOptionsLite = Omit<DoExecOptions, "context" | "cwd"> & {
-  cwd?: AddressPathAbsolute;
-};
+export type DoExecOptionsLite = Omit<DoExecOptions, 'context' | 'cwd'> & {
+  cwd?: AddressPathAbsolute
+}
 
 // type ErrorSpawnSetup = BacError<
 //   MessageName.EXEC_SPAWN_ERROR,
@@ -78,17 +78,17 @@ export type DoExecOptionsLite = Omit<DoExecOptions, "context" | "cwd"> & {
 type ExecError = BacError<
   MessageName.EXEC_SERVICE,
   { execa: ExecaError; outputs: Outputs }
->;
+>
 
 /**
  Launches new process. Handles output capturing and gives a promise-based approach
  */
 export async function doExec({
   command,
-  options,
+  options
 }: {
-  command: string;
-  options: DoExecOptions;
+  command: string
+  options: DoExecOptions
 }): Promise<
   Result<{ outputs: Outputs; execa: ExecaReturnValue }, { error: ExecError }>
 > {
@@ -101,7 +101,7 @@ export async function doExec({
     logLevel = options.context.cliOptions.flags.logLevel,
     // raw,
     ...spawnOptions
-  } = options;
+  } = options
 
   // const {JEST_WORKER_ID, ...allowableProcessEnvs} = process.env
 
@@ -142,12 +142,22 @@ export async function doExec({
 
   // const PATH_KEY = pathKey()
   const PATH_KEY = 'PATH' // can't use `path-key` from sindresorhus due to ESM import error
-  let applicablePath = spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY] ?? ''
+  let applicablePath =
+    spawnOptions.env?.[PATH_KEY] ?? process.env?.[PATH_KEY] ?? ''
   if (options.pathBlacklist) {
-    options.context.logger.debug(`DoExec: options.pathBlacklist supplied. PATH before: '${applicablePath}'`)
-    applicablePath = options.pathBlacklist.reduce<string>((acc, aRegExp) =>
-      acc.replaceAll(aRegExp instanceof RegExp ? new RegExp(`${aRegExp.source}[:^])`, 'g') : new RegExp(`${aRegExp}[:^]`, 'g'), '')
-      , applicablePath)
+    options.context.logger.debug(
+      `DoExec: options.pathBlacklist supplied. PATH before: '${applicablePath}'`
+    )
+    applicablePath = options.pathBlacklist.reduce<string>(
+      (acc, aRegExp) =>
+        acc.replaceAll(
+          aRegExp instanceof RegExp
+            ? new RegExp(`${aRegExp.source}[:^])`, 'g')
+            : new RegExp(`${aRegExp}[:^]`, 'g'),
+          ''
+        ),
+      applicablePath
+    )
   }
 
   // console.log(`constants :>> `, constants)
@@ -156,14 +166,16 @@ export async function doExec({
 
   const defaultedEnvs = {
     NODE_DEBUG: 'execa',
-    FORCE_COLOR: "true",
+    FORCE_COLOR: 'true',
     ...(spawnOptions.env ?? {}),
-    ...(options.shell && applicablePath ? { PATH: `${applicablePath}:${addr.parsePath(constants.EXEC_STORAGE_PATH).originalNormalized}` } : {}), // extendEnv does this
-  };
+    ...(options.shell && applicablePath
+      ? {
+          PATH: `${applicablePath}:${addr.parsePath(constants.EXEC_STORAGE_PATH).originalNormalized}`
+        }
+      : {}) // extendEnv does this
+  }
 
   // console.log(`defaultedEnvs :>> `, defaultedEnvs)
-
-
 
   /** Execa options - https://tinyurl.com/2qndy7hr */
   const execaOptions: ExecaOptions = {
@@ -171,9 +183,9 @@ export async function doExec({
     extendEnv: true, // breaks the daemons if false so must be doing more than our defaultedEnvs above :(
     ...spawnOptions,
     ...((spawnOptions.cwd ? { cwd: spawnOptions.cwd.original } : {}) as {
-      cwd: string;
+      cwd: string
     }),
-    env: defaultedEnvs,
+    env: defaultedEnvs
     // stdio: options.detached
     //   ? [
     //       "ignore",
@@ -194,7 +206,7 @@ export async function doExec({
     // verbose: true,
     // verbose: context.cliOptions.flags["logLevel"] === "debug",
     // stdio,
-  };
+  }
 
   // const fullSpawnOptions: CommonSpawnOptions = {
   //   shell: true,
@@ -213,58 +225,60 @@ export async function doExec({
   // };
 
   const optionsAsCommand = (command: string, options: ExecaOptions): string => {
-    const blacklist = ["XPC_SERVICE_NAME"] as string[];
+    const blacklist = ['XPC_SERVICE_NAME'] as string[]
     const envs = Object.entries(defaultedEnvs ?? {})
       .filter(([key, val]) => !blacklist.includes(key))
       .map(([key, val]) => `${key}='${val}'`)
-      .join(` `);
+      .join(` `)
     if (options.shell) {
-
     }
-    return `(cd ${options.cwd}; ${envs} ${command};)`;
-  };
+    return `(cd ${options.cwd}; ${envs} ${command};)`
+  }
 
   await options.context.logger.debug(
     // MessageName.UNNAMED,
-    `DoExec: Command: '${command}'. Cwd: '${spawnOptions.cwd.original
+    `DoExec: Command: '${command}'. Cwd: '${
+      spawnOptions.cwd.original
     }'. Full command: '${optionsAsCommand(command, execaOptions)}'`
-  );
+  )
 
   try {
     // Execa docs for 5.1.1 - https://tinyurl.com/2qefunlh
-    const execaResultPromise = execa(command, execaOptions);
+    const execaResultPromise = execa(command, execaOptions)
 
     if (options.detached) {
-      execaResultPromise.unref(); // long running processes require this - https://tinyurl.com/27ahpgr4
+      execaResultPromise.unref() // long running processes require this - https://tinyurl.com/27ahpgr4
     }
 
     // console.log(`context.cliOptions.flags.logLevel, logLevel :>> `, context.cliOptions.flags.logLevel, logLevel)
-    if (logLevelMatching(logLevel, "debug", options.context.cliOptions.flags.json)) {
+    if (
+      logLevelMatching(logLevel, 'debug', options.context.cliOptions.flags.json)
+    ) {
       // if (logLevelMatching(logLevel, 'debug') && !options.detached) {
-      execaResultPromise.stdout!.pipe(process.stdout);
-      execaResultPromise.stderr!.pipe(process.stderr);
+      execaResultPromise.stdout!.pipe(process.stdout)
+      execaResultPromise.stderr!.pipe(process.stderr)
     }
-    const execaResult = await execaResultPromise;
+    const execaResult = await execaResultPromise
     const successPayload = {
       execa: execaResult,
       outputs: {
         stdout: execaResult.stdout,
-        stderr: execaResult.stderr,
-      },
-    };
-    return ok(successPayload);
+        stderr: execaResult.stderr
+      }
+    }
+    return ok(successPayload)
   } catch (err) {
-    const caughtError = err as ExecaError;
+    const caughtError = err as ExecaError
     const execError = BacError.fromError(caughtError, {
       reportCode: MessageName.EXEC_SERVICE,
       extra: {
         execa: caughtError,
         outputs: {
           stdout: caughtError.stdout,
-          stderr: caughtError.stderr,
-        },
-      },
-    });
+          stderr: caughtError.stderr
+        }
+      }
+    })
     // (
     //   MessageName.EXEC_SERVICE,
     //   caughtError.message,
@@ -292,40 +306,57 @@ export async function doExec({
     //   }
     // );
 
-    return fail({ error: execError });
+    return fail({ error: execError })
   }
 }
 
 export async function doExecThrow(options: {
-  command: string;
-  options: DoExecOptions;
+  command: string
+  options: DoExecOptions
 }): Promise<{ execa: ExecaReturnValue; outputs: Outputs }> {
-  const res = await doExec(options);
+  const res = await doExec(options)
   // console.log(`reswwwwwwwwwww :>> `, res.res, Object.keys(res.res))
   if (assertIsOk(res)) {
-    return res.res;
+    return res.res
   }
 
   // throw new Error('bollards')
-  throw res.res;
+  throw res.res
 }
 
 export function getExecRuntime():
-  | "ts-node"
-  | "ts-node-dev"
-  | "node"
+  | 'ts-node'
+  | 'ts-node-dev'
+  | 'node'
   | undefined {
-  const lifecycleScript = process.env["npm_lifecycle_script"] || "";
-  if (!!lifecycleScript.match(/(\b)?ts-node-dev\b/)) return "ts-node-dev";
-  if (!!lifecycleScript.match(/(\b)?ts-node\b/)) return "ts-node";
-  if (!!lifecycleScript.match(/(\b)?node\b/)) return "node";
+  const lifecycleScript = process.env['npm_lifecycle_script'] || ''
+  if (!!lifecycleScript.match(/(\b)?ts-node-dev\b/)) return 'ts-node-dev'
+  if (!!lifecycleScript.match(/(\b)?ts-node\b/)) return 'ts-node'
+  if (!!lifecycleScript.match(/(\b)?node\b/)) return 'node'
 }
 
-export function promiseAwait<T extends Promise<unknown>>(prom: T, duration: number = 2000): T {
-  return Promise.race([prom, new Promise((resolve, reject) => setTimeout(() => reject(new BacError(MessageName.UNNAMED, `Promise did not resolve within expected '${duration}' ms`)), duration))]) as T
+export function promiseAwait<T extends Promise<unknown>>(
+  prom: T,
+  duration: number = 2000
+): T {
+  return Promise.race([
+    prom,
+    new Promise((resolve, reject) =>
+      setTimeout(
+        () =>
+          reject(
+            new BacError(
+              MessageName.UNNAMED,
+              `Promise did not resolve within expected '${duration}' ms`
+            )
+          ),
+        duration
+      )
+    )
+  ]) as T
 }
 
 export {
   type ExecaReturnValue,
-  type execa, // required for dreaded, "reference required ts error"
-};
+  type execa // required for dreaded, "reference required ts error"
+}

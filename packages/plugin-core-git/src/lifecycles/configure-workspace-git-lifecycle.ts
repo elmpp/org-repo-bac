@@ -1,15 +1,15 @@
 import {
   AddressPathAbsolute,
-  AddressUrlGitString,
-} from "@business-as-code/address";
+  AddressUrlGitString
+} from '@business-as-code/address'
 import {
   ConfigureWorkspaceLifecycleBase,
   Context,
   Result,
   assertIsOk,
-  ok,
-} from "@business-as-code/core";
-import { BacError } from "@business-as-code/error";
+  ok
+} from '@business-as-code/core'
+import { BacError } from '@business-as-code/error'
 
 // declare global {
 //   namespace Bac {
@@ -28,34 +28,31 @@ import { BacError } from "@business-as-code/error";
 export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleBase<
   typeof ConfigureWorkspaceGitLifecycle
 > {
-  static override title = "git" as const;
+  static override title = 'git' as const
 
   override configureWorkspace(): (options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     // config?: Config | undefined; // why optional
     options: {
-      address: AddressUrlGitString; // standard git lifecycle has no callback semantics
+      address: AddressUrlGitString // standard git lifecycle has no callback semantics
       // callback?: (tree, otherBollocks) => {} // unpack and allow clients to pick out their own projects
-    };
+    }
   }) => Promise<
     Result<
       {
-        address: AddressUrlGitString;
+        address: AddressUrlGitString
       },
       { error: BacError }
     >
   > {
-    return async ({ common: {
-      context,
-    }, options: { address } }) => {
-
+    return async ({ common: { context }, options: { address } }) => {
       const gitService = await context.serviceFactory('git', {
         context,
-        workingPath: '.',
+        workingPath: '.'
       })
 
       const remoteRes = await gitService.remoteList(address)
@@ -64,12 +61,10 @@ export class ConfigureWorkspaceGitLifecycle extends ConfigureWorkspaceLifecycleB
         return remoteRes
       }
 
-      return ok(
-        {
-          address,
-        }
-      )
-    };
+      return ok({
+        address
+      })
+    }
   }
 }
 

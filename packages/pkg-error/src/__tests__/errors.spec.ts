@@ -1,14 +1,19 @@
-import {assertIsBacError, assertIsBacWrappedError, BacError, BacErrorWrapper} from '../errors'
+import {
+  assertIsBacError,
+  assertIsBacWrappedError,
+  BacError,
+  BacErrorWrapper
+} from '../errors'
 import { MessageName } from '../message-name'
 // import os from 'os'
-import { expect, describe, it } from "bun:test";
+import { expect, describe, it } from 'bun:test'
 
 const getMockStack1 = (msg: string) => `Error: ${msg}
   at BlahService.method1  (/my-checkout/blah-service-1.tsx:184:26)
   at BlahService.method2  (/my-checkout/blah-service-2.tsx:184:26)`
-  // const getMockStack2 = (msg: string) => `Error: ${msg}
-  // at ChaiService.method1  (/my-checkout/chai-service-1.tsx:184:26)
-  // at ChaiService.method2  (/my-checkout/chai-service-2.tsx:184:26)`
+// const getMockStack2 = (msg: string) => `Error: ${msg}
+// at ChaiService.method1  (/my-checkout/chai-service-1.tsx:184:26)
+// at ChaiService.method2  (/my-checkout/chai-service-2.tsx:184:26)`
 
 describe('errors', () => {
   describe('BacError', () => {
@@ -20,9 +25,11 @@ describe('errors', () => {
       expect(err.extra).toBeUndefined()
     })
     it('accepts extra', () => {
-      const err = new BacError(MessageName.UNNAMED, 'hello', {extra: {a: 'a'}})
+      const err = new BacError(MessageName.UNNAMED, 'hello', {
+        extra: { a: 'a' }
+      })
 
-      expect(err.extra).toEqual({a: 'a'})
+      expect(err.extra).toEqual({ a: 'a' })
       expect(err.reportCode).toEqual(MessageName.UNNAMED)
       expect(err.message).toEqual('hello')
     })
@@ -48,12 +55,28 @@ describe('errors', () => {
 
     describe('getMessageForError', () => {
       it('includes stack', () => {
-        const res = BacError.getMessageForError(new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah'))
-        expect(res).toMatch(new RegExp(`Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`, 's'))
+        const res = BacError.getMessageForError(
+          new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah')
+        )
+        expect(res).toMatch(
+          new RegExp(
+            `Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`,
+            's'
+          )
+        )
         expect(res).toMatch(new RegExp(/^\s+at.*/, 'gm'))
       })
       it('uses full amount', () => {
-        expect(BacError.getMessageForError(new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah'))).toMatch(new RegExp(`Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`, 's'))
+        expect(
+          BacError.getMessageForError(
+            new BacError(MessageName.ADDRESS_FORMAT_INVALID, 'blah')
+          )
+        ).toMatch(
+          new RegExp(
+            `Error code '${MessageName.ADDRESS_FORMAT_INVALID}'.*blah`,
+            's'
+          )
+        )
       })
     })
 
@@ -63,8 +86,7 @@ describe('errors', () => {
         function throwSite() {
           try {
             throw new Error('meh')
-          }
-          catch (err) {
+          } catch (err) {
             anErrorWithStack = err as Error
           }
         }
@@ -93,52 +115,89 @@ describe('errors', () => {
       })
       it('bacError with options 1', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
-        const coerced = BacError.fromError(err, {reportCode: MessageName.ADDRESS_FORMAT_INVALID})
+        const coerced = BacError.fromError(err, {
+          reportCode: MessageName.ADDRESS_FORMAT_INVALID
+        })
 
         expect(coerced).toHaveProperty('message', 'hello')
-        expect(coerced).toHaveProperty('reportCode', MessageName.ADDRESS_FORMAT_INVALID)
+        expect(coerced).toHaveProperty(
+          'reportCode',
+          MessageName.ADDRESS_FORMAT_INVALID
+        )
       })
       it('bacError with options 2', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
-        const coerced = BacError.fromError(err, {extra: {a: 'a'}})
+        const coerced = BacError.fromError(err, { extra: { a: 'a' } })
 
         expect(coerced).toHaveProperty('message', 'hello')
-        expect(coerced).toHaveProperty('extra', {a: 'a'})
+        expect(coerced).toHaveProperty('extra', { a: 'a' })
       })
 
       it('bacErrorWrapper', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
-        const errWrapped = new BacErrorWrapper(MessageName.UNNAMED, 'wrapped', err)
+        const errWrapped = new BacErrorWrapper(
+          MessageName.UNNAMED,
+          'wrapped',
+          err
+        )
         const coerced = BacError.fromError(errWrapped)
 
-        expect(coerced).toHaveProperty('message', expect.stringMatching('wrapped'))
+        expect(coerced).toHaveProperty(
+          'message',
+          expect.stringMatching('wrapped')
+        )
         expect(coerced).toHaveProperty('reportCode', MessageName.UNNAMED)
       })
       it('bacErrorWrapper with options 1', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
-        const errWrapped = new BacErrorWrapper(MessageName.UNNAMED, 'wrapped', err)
-        const coerced = BacError.fromError(errWrapped, {reportCode: MessageName.ADDRESS_FORMAT_INVALID})
+        const errWrapped = new BacErrorWrapper(
+          MessageName.UNNAMED,
+          'wrapped',
+          err
+        )
+        const coerced = BacError.fromError(errWrapped, {
+          reportCode: MessageName.ADDRESS_FORMAT_INVALID
+        })
 
-        expect(coerced).toHaveProperty('message', expect.stringMatching('wrapped'))
-        expect(coerced).toHaveProperty('reportCode', MessageName.ADDRESS_FORMAT_INVALID)
+        expect(coerced).toHaveProperty(
+          'message',
+          expect.stringMatching('wrapped')
+        )
+        expect(coerced).toHaveProperty(
+          'reportCode',
+          MessageName.ADDRESS_FORMAT_INVALID
+        )
       })
       it('bacErrorWrapper with options 2', async () => {
         const err = new BacError(MessageName.UNNAMED, 'hello')
-        const errWrapped = new BacErrorWrapper(MessageName.UNNAMED, 'wrapped', err)
-        const coerced = BacError.fromError(errWrapped, {extra: {a: 'a'}})
+        const errWrapped = new BacErrorWrapper(
+          MessageName.UNNAMED,
+          'wrapped',
+          err
+        )
+        const coerced = BacError.fromError(errWrapped, { extra: { a: 'a' } })
 
-        expect(coerced).toHaveProperty('message', expect.stringMatching('wrapped'))
-        expect(coerced).toHaveProperty('extra', {a: 'a'})
+        expect(coerced).toHaveProperty(
+          'message',
+          expect.stringMatching('wrapped')
+        )
+        expect(coerced).toHaveProperty('extra', { a: 'a' })
       })
     })
   })
   describe('BacErrorWrapper', () => {
     it('works normally', () => {
       const errWrappable = new BacError(MessageName.UNNAMED, 'hello1')
-      const err = new BacErrorWrapper(MessageName.UNNAMED, 'hello2', errWrappable)
+      const err = new BacErrorWrapper(
+        MessageName.UNNAMED,
+        'hello2',
+        errWrappable
+      )
 
       expect(err.reportCode).toEqual(MessageName.UNNAMED)
-      expect(err.message).toMatch(/hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/)
+      expect(err.message).toMatch(
+        /hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/
+      )
       expect(err.extra).toBeUndefined()
     })
     it.skip('normal error with stack', async () => {
@@ -146,17 +205,30 @@ describe('errors', () => {
       ;(errWrappable1 as any).stack = getMockStack1('hello1')
 
       console.log(`errWrappable1.stack :>> `, errWrappable1.stack)
-      console.log(`errWrappable1 :>> `, require('util').inspect(errWrappable1, {showHidden: false, depth: undefined, colors: true}))
+      console.log(
+        `errWrappable1 :>> `,
+        require('util').inspect(errWrappable1, {
+          showHidden: false,
+          depth: undefined,
+          colors: true
+        })
+      )
 
       throw errWrappable1
     })
     it('handles stacks', () => {
       const errWrappable1 = new BacError(MessageName.UNNAMED, 'hello1')
       ;(errWrappable1 as any).stack = getMockStack1('hello1')
-      const err1 = new BacErrorWrapper(MessageName.UNNAMED, 'hello2', errWrappable1)
+      const err1 = new BacErrorWrapper(
+        MessageName.UNNAMED,
+        'hello2',
+        errWrappable1
+      )
 
       expect(err1.reportCode).toEqual(MessageName.UNNAMED)
-      expect(err1.message).toMatch(/hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/)
+      expect(err1.message).toMatch(
+        /hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/
+      )
 
       /** wrapped stack replaces upper error stack */
       expect(err1.stack).toEqual(`Error: hello2
@@ -180,7 +252,9 @@ Wrapped error:
       const err1 = new BacErrorWrapper(2, 'hello2', errWrappable1)
 
       expect(err1.reportCode).toEqual(2)
-      expect(err1.message).toMatch(/hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/)
+      expect(err1.message).toMatch(
+        /hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/
+      )
       /** wrapped stack replaces error stack of wrapper */
       expect(err1.stack).toEqual(`Error: hello2
 Wrapped error:
@@ -197,7 +271,9 @@ Wrapped error:
       // console.log(`err2 :>> `, require('util').inspect(err2, {showHidden: false, depth: undefined, colors: true}))
 
       expect(err2.reportCode).toEqual(3)
-      expect(err2.message).toMatch(/hello3[\s]*Wrapped error:\n[\s]*Error:\s*hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/)
+      expect(err2.message).toMatch(
+        /hello3[\s]*Wrapped error:\n[\s]*Error:\s*hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/
+      )
       expect(err2.extra).toBeUndefined()
       /** original stack remains despite nested wraps */
       expect(err2.stack).toEqual(`Error: hello3
@@ -211,11 +287,18 @@ Wrapped error:
     })
     it('accepts extra', () => {
       const errWrappable = new BacError(MessageName.UNNAMED, 'hello1')
-      const err = new BacErrorWrapper(MessageName.UNNAMED, 'hello2', errWrappable, {extra: {a: 'a'}})
+      const err = new BacErrorWrapper(
+        MessageName.UNNAMED,
+        'hello2',
+        errWrappable,
+        { extra: { a: 'a' } }
+      )
 
       expect(err.reportCode).toEqual(MessageName.UNNAMED)
-      expect(err.extra).toEqual({a: 'a'})
-      expect(err.message).toMatch(/hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/)
+      expect(err.extra).toEqual({ a: 'a' })
+      expect(err.message).toMatch(
+        /hello2[\s]*Wrapped error:\n[\s]*Error:\s*hello1/
+      )
     })
     // it('compatible with clipanion', () => {
     //   const errWrappable = new BacError(MessageName.UNNAMED, 'hello1')

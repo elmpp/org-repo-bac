@@ -1,17 +1,19 @@
-import { strings } from "@angular-devkit/core";
+import { strings } from '@angular-devkit/core'
 import {
-  apply, chain, mergeWith, Rule, template,
+  apply,
+  chain,
+  mergeWith,
+  Rule,
+  template,
   url
-} from "@angular-devkit/schematics";
-import { Schema } from "./schema";
-
+} from '@angular-devkit/schematics'
+import { Schema } from './schema'
 
 export default function (options: Schema): Rule {
   // const schematicsVersion = require('@angular-devkit/schematics/package.json').version;
   // const coreVersion = require('@angular-devkit/core/package.json').version;
 
   return (_tree, schematicContext) => {
-
     // const getConfigPath = (
     //   runtimeConfigRelOrAbsoluteNative?: string
     // ): AddressPathAbsolute => {
@@ -36,23 +38,21 @@ export default function (options: Schema): Rule {
     //   return configPath;
     // };
 
-    const templateSource = apply(url("./files"), [
+    const templateSource = apply(url('./files'), [
       // partitionApplyMerge(
-        // (p) => !/\/src\/.*?\/bare\//.test(p),
-        template({
-          ...options,
-          // configPath: getConfigPath(),
-          // coreVersion,
-          // schematicsVersion,
-          dot: ".",
-          dasherize: strings.dasherize,
-        })
+      // (p) => !/\/src\/.*?\/bare\//.test(p),
+      template({
+        ...options,
+        // configPath: getConfigPath(),
+        // coreVersion,
+        // schematicsVersion,
+        dot: '.',
+        dasherize: strings.dasherize
+      })
       // ),
       // move(destinationPath),
     ])
 
-    return chain([
-      mergeWith(templateSource),
-    ])
-  };
+    return chain([mergeWith(templateSource)])
+  }
 }

@@ -2,18 +2,20 @@ import {
   BaseCommand,
   ContextCommand,
   Oclif,
-  Interfaces as _Interfaces,
-} from "@business-as-code/core";
+  Interfaces as _Interfaces
+} from '@business-as-code/core'
 
 /** produces a changeset file. This is normally done as part of the PR process via its cli but we produce our own */
-export default class ChangesetsCreate extends BaseCommand<typeof ChangesetsCreate> {
-  static override description = "Creates an empty workspace";
+export default class ChangesetsCreate extends BaseCommand<
+  typeof ChangesetsCreate
+> {
+  static override description = 'Creates an empty workspace'
 
   static override examples = [
     `$ oex hello friend --from oclif
 hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ];
+`
+  ]
 
   static override flags = {
     // message: Oclif.Flags.string({
@@ -22,20 +24,20 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
     /** Moon scopes - https://tinyurl.com/2ek7rph4 . @todo - validate this better here */
     query: Oclif.Flags.string({
-      description: "Query to select snapshotted projects",
+      description: 'Query to select snapshotted projects',
       required: false,
-      default: "projectType=library || projectType=application",
+      default: 'projectType=library || projectType=application'
     }),
     message: Oclif.Flags.string({
-      description: "Message for the changeset",
-      required: true,
+      description: 'Message for the changeset',
+      required: true
     }),
-    bump: Oclif.Flags.custom<"major" | "minor" | "patch">({
-      summary: "Specify level for bumping",
-      options: ["major", "minor", "patch"],
-      helpGroup: "GLOBAL",
-      default: "patch",
-      required: true,
+    bump: Oclif.Flags.custom<'major' | 'minor' | 'patch'>({
+      summary: 'Specify level for bumping',
+      options: ['major', 'minor', 'patch'],
+      helpGroup: 'GLOBAL',
+      default: 'patch',
+      required: true
     })(),
     // bump: Oclif.Flags.custom({
     //   parse: async (input: string, opts) => {
@@ -46,10 +48,10 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
 
     workspacePath: Oclif.Flags.directory({
-  exists: true,
-      description: "Workspace name",
-      required: false,
-    }),
+      exists: true,
+      description: 'Workspace name',
+      required: false
+    })
     // configPath: Oclif.Flags.string({
     //   description: "Relative or absolute path to a workspace configuration",
     //   required: false,
@@ -65,23 +67,25 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   required: false,
     //   default: "http://localhost:4873",
     // }),
-  };
+  }
 
   static override args = {
     // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
-  };
+  }
 
   async execute(context: ContextCommand<typeof ChangesetsCreate>) {
-
-    const changesetService = await context.serviceFactory('changeset', {context, workingPath: '.'})
+    const changesetService = await context.serviceFactory('changeset', {
+      context,
+      workingPath: '.'
+    })
 
     await changesetService.create({
       query: context.cliOptions.flags.query,
       message: context.cliOptions.flags.message,
-      bump: context.cliOptions.flags.bump,
+      bump: context.cliOptions.flags.bump
     })
 
     // // console.log(`context.cliOptions :>> `, context.cliOptions)
@@ -135,8 +139,8 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     return {
       success: true,
-      res: {},
-    } as const;
+      res: {}
+    } as const
 
     // const res = await context.lifecycles.initialise.changesetsCommit({
     //   context,

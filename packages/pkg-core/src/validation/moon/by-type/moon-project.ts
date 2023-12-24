@@ -9,25 +9,30 @@
 // 	TaskOutputStyle,
 // } from './project-config';
 
-import { z } from "zod";
+import { z } from 'zod'
 // import { projectTypeSchema } from "../common";
 // import { projectConfigSchema } from "../project";
-import { dependencyScopeSchema, inheritedTasksConfigSchema, projectConfigSchema, projectLanguageSchema } from "./moon-project-config";
+import {
+  dependencyScopeSchema,
+  inheritedTasksConfigSchema,
+  projectConfigSchema,
+  projectLanguageSchema
+} from './moon-project-config'
 // import { projectTypeSchema } from "../common";
 // import { projectConfigSchema } from "../project";
 // import { dependencyScopeSchema, inheritedTasksConfigSchema, projectLanguageSchema } from "./moon-project-config";
 
 export const projectTypeSchema = z.union([
-  z.literal("application"),
-  z.literal("library"),
-  z.literal("tool"),
-  z.literal("unknown"),
-]);
+  z.literal('application'),
+  z.literal('library'),
+  z.literal('tool'),
+  z.literal('unknown')
+])
 
 export const taskTypeSchema = z.union([
-  z.literal("build"),
-  z.literal("run"),
-  z.literal("test")
+  z.literal('build'),
+  z.literal('run'),
+  z.literal('test')
 ])
 
 export const fileGroupSchema = z.object({
@@ -37,19 +42,19 @@ export const fileGroupSchema = z.object({
 
 export const taskOptionsSchema = z.object({
   affectedFiles: z.union([
-    z.literal("args"),
-    z.literal("both"),
-    z.literal("env")
+    z.literal('args'),
+    z.literal('both'),
+    z.literal('env')
   ]),
   cache: z.boolean(),
   envFile: z.string().nullable(),
 
-		// mergeArgs: TaskMergeStrategy;
-	// mergeDeps: TaskMergeStrategy;
-	// mergeEnv: TaskMergeStrategy;
-	// mergeInputs: TaskMergeStrategy;
-	// mergeOutputs: TaskMergeStrategy;
-	// outputStyle: TaskOutputStyle | null;
+  // mergeArgs: TaskMergeStrategy;
+  // mergeDeps: TaskMergeStrategy;
+  // mergeEnv: TaskMergeStrategy;
+  // mergeInputs: TaskMergeStrategy;
+  // mergeOutputs: TaskMergeStrategy;
+  // outputStyle: TaskOutputStyle | null;
 
   retryCount: z.number(),
   runDepsInParallel: z.boolean(),
@@ -72,32 +77,32 @@ export const taskSchema = z.object({
   outputs: z.array(z.string()),
   outputGlobs: z.array(z.string()),
   outputPaths: z.array(z.string()),
-	// platform: Platform;
+  // platform: Platform;
   target: z.string()
-	// type: TaskType;
+  // type: TaskType;
 })
 
 export const projectDependencySchema = z.object({
-	id: z.string(),
+  id: z.string(),
   scope: dependencyScopeSchema,
   via: z.string().nullable(),
-	source: z.union([z.literal("explicit"), z.literal("implicit")]),
+  source: z.union([z.literal('explicit'), z.literal('implicit')])
 })
 
 export const projectSchema = z.object({
   alias: z.string().nullable(),
-	config: projectConfigSchema,
-	dependencies: z.record(z.string(), projectDependencySchema),
-	// dependencies: Record<string, ProjectDependency>;
-	fileGroups: z.record(z.string(), fileGroupSchema),
-	// fileGroups: Record<string, FileGroup>;
+  config: projectConfigSchema,
+  dependencies: z.record(z.string(), projectDependencySchema),
+  // dependencies: Record<string, ProjectDependency>;
+  fileGroups: z.record(z.string(), fileGroupSchema),
+  // fileGroups: Record<string, FileGroup>;
   id: z.string(),
-	inheritedConfig: inheritedTasksConfigSchema,
-	language: projectLanguageSchema,
+  inheritedConfig: inheritedTasksConfigSchema,
+  language: projectLanguageSchema,
   root: z.string(),
   source: z.string(),
-	tasks: z.record(z.string(), taskSchema),
-	type: projectTypeSchema,
+  tasks: z.record(z.string(), taskSchema),
+  type: projectTypeSchema
 })
 // export interface Project {
 // 	alias: string | null;

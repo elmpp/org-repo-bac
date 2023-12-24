@@ -1,5 +1,5 @@
 import { ServiceStaticInterface } from '@business-as-code/core'
-import {SubrepoService} from './subrepo-service'
+import { SubrepoService } from './subrepo-service'
 
 // declare global {
 //   interface Bac {

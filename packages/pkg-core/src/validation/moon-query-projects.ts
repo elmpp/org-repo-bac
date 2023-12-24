@@ -1,9 +1,9 @@
 /**
  this module is here to offer true typing for the output of query `p moon query projects %QUERY% --json` file. Discord question: https://discord.com/channels/974160221452763146/974160221452763149/1105784724951150642
  */
-import { z } from "zod";
-import { projectSchema as moonProjectSchema } from "./moon/by-state-files/project";
-import { projectLanguageSchema } from "./moon/by-state-files/project-config";
+import { z } from 'zod'
+import { projectSchema as moonProjectSchema } from './moon/by-state-files/project'
+import { projectLanguageSchema } from './moon/by-state-files/project-config'
 // import { inheritedTasksConfigSchema } from "./moon/by-state-files/moon-project-config";
 
 // const nodeInheritedConfigSchema = inheritedTasksConfigSchema.extend({
@@ -38,9 +38,9 @@ export const moonQueryProjects = z.object({
     tasks: z.string().nullable(),
     type_of: z.string().nullable()
   })
-});
+})
 
-export type MoonQueryProjects = z.infer<typeof moonQueryProjects>;
+export type MoonQueryProjects = z.infer<typeof moonQueryProjects>
 
 // type MoonProjectGraph = z.infer<typeof moonProjectGraph>;
 // expectTypeOf<MoonProjectGraphSubset>().toMatchTypeOf<>

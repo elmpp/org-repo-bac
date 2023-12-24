@@ -1,5 +1,5 @@
-import {AddressHandler} from '../__types__'
-import {URL} from 'url'
+import { AddressHandler } from '../__types__'
+import { URL } from 'url'
 import { arrayIntersection } from '../tools/string-utils'
 
 declare module '../__types__' {
@@ -7,24 +7,28 @@ declare module '../__types__' {
     // schemedUrl: {
     //   scheme: string,
     // }
-    gitSshRepoUrl: [{
-      url: URL,
+    gitSshRepoUrl: [
+      {
+        url: URL
 
-      // user: string,
-      scheme: 'ssh'
-      host: string,
-      user?: string,
-      port?: number
-      repo: string
+        // user: string,
+        scheme: 'ssh'
+        host: string
+        user?: string
+        port?: number
+        repo: string
 
-      // path: string,
-      // key?: string
-      params: URLSearchParams
-      paramsSorted: URLSearchParams
+        // path: string,
+        // key?: string
+        params: URLSearchParams
+        paramsSorted: URLSearchParams
 
-      // org: string,
-      // owner: string
-    }, 'url', string]
+        // org: string,
+        // owner: string
+      },
+      'url',
+      string
+    ]
   }
 }
 
@@ -33,10 +37,12 @@ declare module '../__types__' {
 // const REGEX = /https?:\/\/.*github.com\/([^/]+)\/(.*)\.git(?:#([^#]+))?$/
 // console.log(`${URL_REGEX}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`)
 
-const URL_REGEX = /(ssh):\/\/(?:([^@]+)@)?((?:(?:[-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})|(?:localhost))(?:\:([0-9]+))?([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
-const REGEX = new RegExp(`${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`)
+const URL_REGEX =
+  /(ssh):\/\/(?:([^@]+)@)?((?:(?:[-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})|(?:localhost))(?:\:([0-9]+))?([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
+const REGEX = new RegExp(
+  `${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`
+)
 // const GITHUB_REPO_NORMALIZED_REGEX = /.*github.com\/([^/]+)\/(.*)\.git[#?]?.*/
-
 
 /**
  e.g.:
@@ -48,31 +54,41 @@ const REGEX = new RegExp(`${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+)
 export const handler: AddressHandler<'gitSshRepoUrl'> = {
   name: 'gitSshRepoUrl',
   group: 'url',
-  parse({address}) {
-
+  parse({ address }) {
     // console.log(`gitSshrepourl address, address.match(REGEX) :>> `, address, address.match(REGEX), REGEX)
     if (!address.match(REGEX)) return
 
     // if (!address.match(GITHUB_REPO_REGEX)) return
     // const handled = handleGitRepoUrl(address)
 
-
     const matches = address.match(REGEX)
     // console.log(`matches :>> `, matches)
 
     if (!matches) return
 
-    const [, scheme, user, host, port, _,  repo, hashParamString] = matches
+    const [, scheme, user, host, port, _, repo, hashParamString] = matches
 
     const params = new URLSearchParams(hashParamString ?? '')
-    const paramIntersection = arrayIntersection(Object.keys(params), ['head', 'tag', 'commit'])
+    const paramIntersection = arrayIntersection(Object.keys(params), [
+      'head',
+      'tag',
+      'commit'
+    ])
     if (paramIntersection.unmatched.length) {
-      throw new Error(`Address: unknown params has been supplied when url with 'git-ssh-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`)
+      throw new Error(
+        `Address: unknown params has been supplied when url with 'git-ssh-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`
+      )
     }
-    const paramsSorted = (() => {const params = new URLSearchParams(hashParamString); params.sort(); return params})()
+    const paramsSorted = (() => {
+      const params = new URLSearchParams(hashParamString)
+      params.sort()
+      return params
+    })()
 
     if (!['ssh'].includes(scheme)) {
-      throw new Error(`Address: incorrect scheme with 'git-ssh-repo-url-handler'. Allowed params are 'ssh'. Address: '${address}'`)
+      throw new Error(
+        `Address: incorrect scheme with 'git-ssh-repo-url-handler'. Allowed params are 'ssh'. Address: '${address}'`
+      )
     }
 
     const url = new URL(address)
@@ -90,11 +106,11 @@ export const handler: AddressHandler<'gitSshRepoUrl'> = {
         port: port ? parseInt(port, 10) : undefined,
         repo,
         params,
-        paramsSorted,
+        paramsSorted
       },
-      type: 'gitSshRepoUrl',
+      type: 'gitSshRepoUrl'
     }
-  },
+  }
 }
 
 // function handleGitRepoUrl(url: string, {git = false}: {git?: boolean} = {}) {

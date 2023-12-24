@@ -1,5 +1,8 @@
-import { AddressDescriptorUnion, AddressPathAbsolute } from "@business-as-code/address";
-import { BacError } from "@business-as-code/error";
+import {
+  AddressDescriptorUnion,
+  AddressPathAbsolute
+} from '@business-as-code/address'
+import { BacError } from '@business-as-code/error'
 // import { AsyncSeriesBailHook, AsyncSeriesHook } from "tapable";
 import {
   assertIsResult,
@@ -12,10 +15,10 @@ import {
   LifecycleStaticInterface,
   Result,
   ServiceMap
-} from "../../__types__";
-import { AsyncHook, TapFn } from "../../hooks";
-import { CommonExecuteOptions } from "./__types__";
-import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
+} from '../../__types__'
+import { AsyncHook, TapFn } from '../../hooks'
+import { CommonExecuteOptions } from './__types__'
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from './util'
 
 /**
  Fetch is an auxilary lifecycle that isn't part of the other user-initiated types.
@@ -26,101 +29,110 @@ import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./
 export class FetchContentLifecycleBase<
   T extends LifecycleStaticInterface = typeof FetchContentLifecycleBase<any>
 > {
-  static lifecycleTitle = "fetchContent" as const;
-  static title = "";
+  static lifecycleTitle = 'fetchContent' as const
+  static title = ''
 
   get ctor(): T {
-    return this.constructor as unknown as T;
+    return this.constructor as unknown as T
   }
   get title() {
-    return this.ctor.as ?? this.ctor.title;
+    return this.ctor.as ?? this.ctor.title
   }
 
   static hooks = {
-    beforeFetchContent: new AsyncHook<
-      "fetchContent"
-    >(["options"], "fetchContent", "beforeFetchContent"),
-    fetchContent: new AsyncHook<
-      "fetchContent"
-    >(["options"], "fetchContent", "fetchContent"),
-    afterFetchContent: new AsyncHook<
-      "fetchContent"
-    >(["options"], "fetchContent", "afterFetchContent"),
-  };
+    beforeFetchContent: new AsyncHook<'fetchContent'>(
+      ['options'],
+      'fetchContent',
+      'beforeFetchContent'
+    ),
+    fetchContent: new AsyncHook<'fetchContent'>(
+      ['options'],
+      'fetchContent',
+      'fetchContent'
+    ),
+    afterFetchContent: new AsyncHook<'fetchContent'>(
+      ['options'],
+      'fetchContent',
+      'afterFetchContent'
+    )
+  }
 
   /** @internal */
   static initialise<T extends FetchContentLifecycleBase>(
     this: { new (): T },
     options: { context: ContextCommand<any> }
   ) {
-    const { context } = options;
-    const ins = new this();
-    const beforeFetchContentHook = ins.beforeFetchContent() as TapFn<'fetchContent'>;
-    const fetchContentHook = ins.fetchContent() as TapFn<'fetchContent'>;
-    const afterFetchContentHook = ins.afterFetchContent() as TapFn<'fetchContent'>;
+    const { context } = options
+    const ins = new this()
+    const beforeFetchContentHook =
+      ins.beforeFetchContent() as TapFn<'fetchContent'>
+    const fetchContentHook = ins.fetchContent() as TapFn<'fetchContent'>
+    const afterFetchContentHook =
+      ins.afterFetchContent() as TapFn<'fetchContent'>
 
     if (beforeFetchContentHook) {
       context.logger.debug(
         `lifecycleHook loaded: ${ins.ctor.title}.beforeFetchContent`
-      );
+      )
       ins.ctor.hooks.beforeFetchContent.tapAsync(
         ins.title,
         beforeFetchContentHook
-      );
+      )
     }
     if (fetchContentHook) {
       context.logger.debug(
         `lifecycleHook loaded: ${ins.ctor.title}.fetchContent`
-      );
-      ins.ctor.hooks.fetchContent.tapAsync(ins.title, fetchContentHook);
+      )
+      ins.ctor.hooks.fetchContent.tapAsync(ins.title, fetchContentHook)
     }
     if (afterFetchContentHook) {
       context.logger.debug(
         `lifecycleHook loaded: ${ins.ctor.title}.afterFetchContent`
-      );
+      )
       ins.ctor.hooks.afterFetchContent.tapAsync(
         ins.title,
         afterFetchContentHook
-      );
+      )
     }
   }
 
   async executeFetchContent(options: {
-    common: CommonExecuteOptions & {cacheService: ServiceMap['cache'][0]},
-    options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"fetchContent">
-  }
-  ): Promise<
-    Result<LifecycleReturnByMethodArray<"fetchContent">, { error: BacError }>
+    common: CommonExecuteOptions & { cacheService: ServiceMap['cache'][0] }
+    options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'fetchContent'>
+  }): Promise<
+    Result<LifecycleReturnByMethodArray<'fetchContent'>, { error: BacError }>
   > {
-
-    const optionsWithCommon = mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'fetchContent'>(options)
+    const optionsWithCommon =
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'fetchContent'>(
+        options
+      )
 
     await FetchContentLifecycleBase.hooks.beforeFetchContent.mapAsync({
-      options: optionsWithCommon,
-    });
+      options: optionsWithCommon
+    })
 
     const res = await FetchContentLifecycleBase.hooks.fetchContent.mapAsync({
       options: optionsWithCommon,
-      strict: true,
-    });
-    assertIsResult(res);
+      strict: true
+    })
+    assertIsResult(res)
     await FetchContentLifecycleBase.hooks.afterFetchContent.mapAsync({
-      options: optionsWithCommon,
-    });
-    return res;
+      options: optionsWithCommon
+    })
+    return res
   }
 
   protected beforeFetchContent():
     | ((options: {
-        common: CommonExecuteOptions,
+        common: CommonExecuteOptions
         // context: Context;
         // workspacePath: AddressPathAbsolute;
         // workingPath: string;
         // options: FetchOptions;
-        cacheService: ServiceMap['cache'][0],
+        cacheService: ServiceMap['cache'][0]
         options: {
-          address: string, // for compatibility with ConfigConfigured which is serialised
-        };
+          address: string // for compatibility with ConfigConfigured which is serialised
+        }
       }) => Promise<unknown | void>)
     | void {}
 
@@ -128,27 +140,27 @@ export class FetchContentLifecycleBase<
     | ((options: {
         // context: Context;
         // workspacePath: AddressPathAbsolute;
-        common: CommonExecuteOptions,
+        common: CommonExecuteOptions
         // workingPath: string;
         // options: FetchOptions;
-        cacheService: ServiceMap['cache'][0],
+        cacheService: ServiceMap['cache'][0]
         options: {
-          address: string, // for compatibility with ConfigConfigured which is serialised
-        };
-      }) => Promise<Result<FetchResult, {error: BacError}> | void>)
+          address: string // for compatibility with ConfigConfigured which is serialised
+        }
+      }) => Promise<Result<FetchResult, { error: BacError }> | void>)
     | void {}
 
   protected afterFetchContent():
     | ((options: {
         // context: Context;
         // workspacePath: AddressPathAbsolute;
-        common: CommonExecuteOptions,
+        common: CommonExecuteOptions
         // workingPath: string;
         // options: FetchOptions;
-        cacheService: ServiceMap['cache'][0],
+        cacheService: ServiceMap['cache'][0]
         options: {
-          address: string, // for compatibility with ConfigConfigured which is serialised
-        };
+          address: string // for compatibility with ConfigConfigured which is serialised
+        }
       }) => Promise<unknown | void>)
     | void {}
 }

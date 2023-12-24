@@ -5,7 +5,7 @@ import { PackageManagerPnpmService } from './services/package-manager-pnpm-servi
 // } from "./lifecycles";
 
 export const plugin = {
-  services: [PackageManagerPnpmService],
+  services: [PackageManagerPnpmService]
   // lifecycles: [
   //   RunWorkspacePackageManagerPnpmLifecycle,
   // ],

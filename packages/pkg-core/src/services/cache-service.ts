@@ -1,23 +1,23 @@
 // inspired by the schematics cli module - https://tinyurl.com/2k54dvru
-import { AddressPathAbsolute } from "@business-as-code/address";
-import { ServiceInitialiseCommonOptions } from "../__types__";
-import { AddressCacheManager } from "../cache/address-cache-manager";
+import { AddressPathAbsolute } from '@business-as-code/address'
+import { ServiceInitialiseCommonOptions } from '../__types__'
+import { AddressCacheManager } from '../cache/address-cache-manager'
 
 declare global {
   namespace Bac {
     interface Services {
       cache: {
-        insType: CacheService;
-        staticType: typeof CacheService;
-      };
+        insType: CacheService
+        staticType: typeof CacheService
+      }
     }
   }
 }
 
 // type Options = ServiceInitialiseCommonOptions & Parameters<(typeof XfsCacheManager)["initialise"]>[0];
 type Options = ServiceInitialiseCommonOptions & {
-  rootPath: AddressPathAbsolute;
-};
+  rootPath: AddressPathAbsolute
+}
 
 // type GetEntry = {
 //   sourceAddress: AddressDescriptorUnion;
@@ -46,25 +46,25 @@ type Options = ServiceInitialiseCommonOptions & {
  arguments etc
  */
 export class CacheService {
-  static title = "cache" as const;
-  options: Options;
+  static title = 'cache' as const
+  options: Options
 
   // @ts-ignore: initialise set
-  protected cacheManager: AddressCacheManager; // shame we can't make the service generic :(. It's used differently in BacService
+  protected cacheManager: AddressCacheManager // shame we can't make the service generic :(. It's used differently in BacService
 
   get ctor(): typeof CacheService {
-    return this.constructor as unknown as typeof CacheService;
+    return this.constructor as unknown as typeof CacheService
   }
-  get title(): (typeof CacheService)["title"] {
+  get title(): (typeof CacheService)['title'] {
     return (this.constructor as any)
-      .title as unknown as (typeof CacheService)["title"];
+      .title as unknown as (typeof CacheService)['title']
   }
 
   static async initialise(options: Options, prevInstance?: CacheService) {
-    const ins = new CacheService(options);
-    await ins.initialise(options);
+    const ins = new CacheService(options)
+    await ins.initialise(options)
     ins.cacheManager = await AddressCacheManager.initialise({
-      ...options,
+      ...options
       // metaBaseAddress: addr.pathUtils.join(
       //   options.rootPath,
       //   addr.parseAsType(constants.RC_META_FOLDER, "portablePathFilename")
@@ -75,7 +75,7 @@ export class CacheService {
       //     namespace: sanitise(address.type),
       //   };
       // },
-    });
+    })
     // ins.cacheManager = await AddressCacheManager.initialise({
     //   contentBaseAddress: addr.pathUtils.join(
     //     options.rootPath,
@@ -90,11 +90,11 @@ export class CacheService {
     //   //   addr.parseAsType("outputs", "portablePathFilename")
     //   // ) as AddressPathAbsolute,
     // });
-    return ins;
+    return ins
   }
 
   constructor(options: Options) {
-    this.options = options;
+    this.options = options
   }
 
   protected async initialise(options: Options) {}
@@ -103,10 +103,9 @@ export class CacheService {
   //   return this.cacheManager.get(...options)
   // }
   async get(
-    options: Parameters<AddressCacheManager["get"]>[0]
-  ): ReturnType<AddressCacheManager["get"]> {
-
-    return this.cacheManager.get(options);
+    options: Parameters<AddressCacheManager['get']>[0]
+  ): ReturnType<AddressCacheManager['get']> {
+    return this.cacheManager.get(options)
 
     // const { absolute: contentPath, relative: contentPathRelative } =
     //   await this.cacheManager.createContentPaths({
@@ -141,9 +140,9 @@ export class CacheService {
     // return fetchRes;
   }
   async has(
-    options: Parameters<AddressCacheManager["has"]>[0]
-  ): ReturnType<AddressCacheManager["has"]> {
-    return this.cacheManager.has(options);
+    options: Parameters<AddressCacheManager['has']>[0]
+  ): ReturnType<AddressCacheManager['has']> {
+    return this.cacheManager.has(options)
   }
   // async has(address: AddressDescriptorUnion): Promise<boolean> {
   //   const { absolute: contentPath, relative: contentPathRelative } =

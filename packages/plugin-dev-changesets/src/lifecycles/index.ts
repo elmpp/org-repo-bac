@@ -1,4 +1,4 @@
-import { SynchroniseWorkspaceSnapshotDevLifecycle } from "./synchronise-workspace-snapshot-dev-lifecycle";
+import { SynchroniseWorkspaceSnapshotDevLifecycle } from './synchronise-workspace-snapshot-dev-lifecycle'
 
 declare global {
   namespace Bac {
@@ -13,4 +13,4 @@ declare global {
   }
 }
 
-export { SynchroniseWorkspaceSnapshotDevLifecycle };
+export { SynchroniseWorkspaceSnapshotDevLifecycle }

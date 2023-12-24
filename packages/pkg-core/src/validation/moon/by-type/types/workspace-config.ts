@@ -1,48 +1,48 @@
 export interface ConstraintsConfig {
-	enforceProjectTypeRelationships: boolean;
-	tagRelationships: Record<string, string[]>;
+  enforceProjectTypeRelationships: boolean
+  tagRelationships: Record<string, string[]>
 }
 
 export interface GeneratorConfig {
-	templates: string[];
+  templates: string[]
 }
 
 export interface HasherConfig {
-	batchSize: number | null;
-	optimization: 'accuracy' | 'performance';
-	walkStrategy: 'glob' | 'vcs';
-	warnOnMissingInputs: boolean;
+  batchSize: number | null
+  optimization: 'accuracy' | 'performance'
+  walkStrategy: 'glob' | 'vcs'
+  warnOnMissingInputs: boolean
 }
 
 export interface NotifierConfig {
-	webhookUrl: string | null;
+  webhookUrl: string | null
 }
 
 export interface RunnerConfig {
-	archivableTargets: string[];
-	cacheLifetime: string;
-	inheritColorsForPipedTasks: boolean;
-	logRunningCommand: boolean;
+  archivableTargets: string[]
+  cacheLifetime: string
+  inheritColorsForPipedTasks: boolean
+  logRunningCommand: boolean
 }
 
 export interface VcsConfig {
-	defaultBranch: string;
-	manager: 'git' | 'svn';
-	remoteCandidates: string[];
+  defaultBranch: string
+  manager: 'git' | 'svn'
+  remoteCandidates: string[]
 }
 
 export interface WorkspaceConfig {
-	extends: string | null;
-	constraints: ConstraintsConfig;
-	generator: GeneratorConfig;
-	hasher: HasherConfig;
-	notifier: NotifierConfig;
-	projects:
-		| Record<string, string>
-		| string[]
-		| { globs: string[]; sources: Record<string, string> };
-	runner: RunnerConfig;
-	telemetry: boolean;
-	vcs: VcsConfig;
-	versionConstraint: string | null;
+  extends: string | null
+  constraints: ConstraintsConfig
+  generator: GeneratorConfig
+  hasher: HasherConfig
+  notifier: NotifierConfig
+  projects:
+    | Record<string, string>
+    | string[]
+    | { globs: string[]; sources: Record<string, string> }
+  runner: RunnerConfig
+  telemetry: boolean
+  vcs: VcsConfig
+  versionConstraint: string | null
 }

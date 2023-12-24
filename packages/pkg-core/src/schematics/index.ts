@@ -1,2 +1,2 @@
-export * from "./tasks";
-export * as schematicUtils from "./schematics-utils";
+export * from './tasks'
+export * as schematicUtils from './schematics-utils'

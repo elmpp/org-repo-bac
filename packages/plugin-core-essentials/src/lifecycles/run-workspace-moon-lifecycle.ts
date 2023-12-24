@@ -1,12 +1,12 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
+import { AddressPathAbsolute } from '@business-as-code/address'
 import {
   Context,
   MoonCommand,
   MoonPlatform,
   MoonQuery,
   RunWorkspaceLifecycleBase,
-  ServiceMap,
-} from "@business-as-code/core";
+  ServiceMap
+} from '@business-as-code/core'
 
 // declare global {
 //   namespace Bac {
@@ -29,7 +29,7 @@ import {
 export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
   typeof RunWorkspaceMoonLifecycle
 > {
-  static override title = "moon" as const;
+  static override title = 'moon' as const
 
   // override get ctor(): typeof RunWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -37,28 +37,21 @@ export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
 
   override runWorkspace(): (options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     options: {
-      query?: MoonQuery;
-      platform: MoonPlatform;
-      command: MoonCommand;
-      runFromWorkspaceRoot?: boolean;
-    };
-  }) => ReturnType<ServiceMap["moon"][number]["run"]> {
+      query?: MoonQuery
+      platform: MoonPlatform
+      command: MoonCommand
+      runFromWorkspaceRoot?: boolean
+    }
+  }) => ReturnType<ServiceMap['moon'][number]['run']> {
     return async ({
-      common: {
-        context,
-        workspacePath,
-      },
+      common: { context, workspacePath },
       // workingPath,
-      options: {
-        query,
-        platform,
-        command
-      },
+      options: { query, platform, command }
     }) => {
       // if (!(await xfs.existsPromise(workspacePath.address))) {
       //   const workspacePathParent = addr.pathUtils.dirname(workspacePath);
@@ -71,21 +64,21 @@ export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
       //   await xfs.mkdirpPromise(workspacePath.address);
       // }
 
-      const moonService = await context.serviceFactory("moon", {
+      const moonService = await context.serviceFactory('moon', {
         context,
-        workingPath: '.',
-      });
+        workingPath: '.'
+      })
 
       // we depend on there being an existing moon task for each platform which we can then append our command to
 
       const res = await moonService.runTask({
-        command: command,
+        command: command
         // options: {
 
         // }
-      });
+      })
 
-      return res;
+      return res
 
       // console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
       // console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)
@@ -105,7 +98,7 @@ export class RunWorkspaceMoonLifecycle extends RunWorkspaceLifecycleBase<
       // }
 
       // return res;
-    };
+    }
   }
 }
 

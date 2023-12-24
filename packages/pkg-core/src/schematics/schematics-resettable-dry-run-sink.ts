@@ -1,4 +1,4 @@
-import { Path } from "@angular-devkit/core";
+import { Path } from '@angular-devkit/core'
 import {
   DeleteFileAction,
   DryRunCreateEvent,
@@ -7,14 +7,14 @@ import {
   DryRunRenameEvent,
   DryRunSink,
   DryRunUpdateEvent,
-  UnknownActionException,
-} from "@angular-devkit/schematics";
-import { concat, EMPTY, Observable, of as observableOf, Subject } from "rxjs";
-import { ignoreElements, map } from "rxjs/operators";
+  UnknownActionException
+} from '@angular-devkit/schematics'
+import { concat, EMPTY, Observable, of as observableOf, Subject } from 'rxjs'
+import { ignoreElements, map } from 'rxjs/operators'
 import {
   ResettableAction,
-  ResettableDeleteDirAction,
-} from "./schematics-resettable-host-tree";
+  ResettableDeleteDirAction
+} from './schematics-resettable-host-tree'
 
 // export interface DryRunErrorEvent {
 //   kind: 'error';
@@ -42,12 +42,12 @@ import {
 // }
 
 export interface ResettableDryRunDeleteDirEvent {
-  kind: "deleteDir";
-  path: string;
+  kind: 'deleteDir'
+  path: string
 }
 export interface ResettableDryRunFlushEvent {
-  kind: "flush";
-  path: "/";
+  kind: 'flush'
+  path: '/'
 }
 
 export type ResettableDryRunEvent =
@@ -57,10 +57,10 @@ export type ResettableDryRunEvent =
   | DryRunUpdateEvent
   | DryRunRenameEvent
   | ResettableDryRunDeleteDirEvent
-  | ResettableDryRunFlushEvent;
+  | ResettableDryRunFlushEvent
 
 export class SchematicResettableDryRunSink extends DryRunSink {
-  protected _dirsToDelete = new Set<Path>();
+  protected _dirsToDelete = new Set<Path>()
 
   // protected _filesToDelete = new Set<Path>();
   // protected _filesToRename = new Set<[Path, Path]>();
@@ -68,16 +68,16 @@ export class SchematicResettableDryRunSink extends DryRunSink {
   // protected _filesToUpdate = new Map<Path, UpdateBufferBase>();
 
   // @ts-ignore
-  protected override _subject = new Subject<ResettableDryRunEvent>();
+  protected override _subject = new Subject<ResettableDryRunEvent>()
   // protected _fileDoesNotExistExceptionSet = new Set<string>();
   // protected _fileAlreadyExistExceptionSet = new Set<string>();
 
   // @ts-ignore
   override readonly reporter: Observable<ResettableDryRunEvent> =
-    this._subject.asObservable();
+    this._subject.asObservable()
 
   protected _deleteDir(path: Path): Observable<void> {
-    this._dirsToDelete.add(path);
+    this._dirsToDelete.add(path)
 
     // if (this._filesToCreate.has(path)) {
     //   this._filesToCreate.delete(path);
@@ -86,7 +86,7 @@ export class SchematicResettableDryRunSink extends DryRunSink {
     //   this._filesToDelete.add(path);
     // }
 
-    return EMPTY;
+    return EMPTY
   }
 
   // /**
@@ -113,18 +113,18 @@ export class SchematicResettableDryRunSink extends DryRunSink {
 
   override validateSingleAction(action: ResettableAction): Observable<void> {
     switch (action.kind) {
-      case "o":
-        return this._validateOverwriteAction(action);
-      case "c":
-        return this._validateCreateAction(action);
-      case "r":
-        return this._validateRenameAction(action);
-      case "d":
-        return this._validateDeleteAction(action);
-      case "t":
-        return this._validateDeleteDirAction(action);
+      case 'o':
+        return this._validateOverwriteAction(action)
+      case 'c':
+        return this._validateCreateAction(action)
+      case 'r':
+        return this._validateRenameAction(action)
+      case 'd':
+        return this._validateDeleteAction(action)
+      case 't':
+        return this._validateDeleteDirAction(action)
       default:
-        throw new UnknownActionException(action);
+        throw new UnknownActionException(action)
     }
   }
 
@@ -132,38 +132,38 @@ export class SchematicResettableDryRunSink extends DryRunSink {
     return concat(
       this.validateSingleAction(action),
       new Observable<void>((observer) => {
-        let committed: Observable<void> | null = null;
+        let committed: Observable<void> | null = null
         switch (action.kind) {
-          case "o":
-            committed = this._overwriteFile(action.path, action.content);
-            break;
-          case "c":
-            committed = this._createFile(action.path, action.content);
-            break;
-          case "r":
-            committed = this._renameFile(action.path, action.to);
-            break;
-          case "d":
-            committed = this._deleteFile(action.path);
-            break;
-          case "t":
-            committed = this._deleteDir(action.path);
-            break;
+          case 'o':
+            committed = this._overwriteFile(action.path, action.content)
+            break
+          case 'c':
+            committed = this._createFile(action.path, action.content)
+            break
+          case 'r':
+            committed = this._renameFile(action.path, action.to)
+            break
+          case 'd':
+            committed = this._deleteFile(action.path)
+            break
+          case 't':
+            committed = this._deleteDir(action.path)
+            break
         }
 
         if (committed) {
-          committed.subscribe(observer);
+          committed.subscribe(observer)
         } else {
-          observer.complete();
+          observer.complete()
         }
       })
-    ).pipe(ignoreElements());
+    ).pipe(ignoreElements())
   }
 
   protected _dirDoesNotExistException(path: string): void {
     throw new Error(
       `Resettable directory does not exist when removing '${path}'`
-    );
+    )
   }
 
   protected _validateDeleteDirAction(
@@ -173,43 +173,45 @@ export class SchematicResettableDryRunSink extends DryRunSink {
     return this._validateDirExists(action.path).pipe(
       map((b) => {
         if (!b) {
-          this._dirDoesNotExistException(action.path);
+          this._dirDoesNotExistException(action.path)
         }
       })
-    );
+    )
   }
 
-  protected override _validateDeleteAction(action: DeleteFileAction): Observable<void> {
+  protected override _validateDeleteAction(
+    action: DeleteFileAction
+  ): Observable<void> {
     return this._validateFileExists(action.path).pipe(
       map((b) => {
         if (!b) {
-          this._fileDoesNotExistException(action.path);
+          this._fileDoesNotExistException(action.path)
         }
-      }),
-    );
+      })
+    )
   }
   protected override _validateFileExists(p: Path): Observable<boolean> {
     if (this._filesToCreate.has(p) || this._filesToUpdate.has(p)) {
-      return observableOf(true);
+      return observableOf(true)
     }
 
     if (this._filesToDelete.has(p)) {
-      return observableOf(false);
+      return observableOf(false)
     }
 
     for (const [from, to] of this._filesToRename.values()) {
       switch (p) {
         case from:
-          return observableOf(false);
+          return observableOf(false)
         case to:
-          return observableOf(true);
+          return observableOf(true)
       }
     }
-    return this._host.exists(p);
+    return this._host.exists(p)
   }
 
   protected _validateDirExists(p: Path): Observable<boolean> {
-    return observableOf(true);
+    return observableOf(true)
 
     // if (this._filesToCreate.has(p) || this._filesToUpdate.has(p)) {
     //   return of(true);
@@ -234,60 +236,60 @@ export class SchematicResettableDryRunSink extends DryRunSink {
   override _done() {
     this._fileAlreadyExistExceptionSet.forEach((path) => {
       this._subject.next({
-        kind: "error",
-        description: "alreadyExist",
-        path,
-      });
-    });
+        kind: 'error',
+        description: 'alreadyExist',
+        path
+      })
+    })
     this._fileDoesNotExistExceptionSet.forEach((path) => {
       this._subject.next({
-        kind: "error",
-        description: "doesNotExist",
-        path,
-      });
-    });
+        kind: 'error',
+        description: 'doesNotExist',
+        path
+      })
+    })
 
     this._filesToDelete.forEach((path) => {
       // Check if this is a renaming.
       for (const [from] of this._filesToRename) {
         if (from == path) {
           // The event is sent later on.
-          return;
+          return
         }
       }
 
-      this._subject.next({ kind: "delete", path });
-    });
+      this._subject.next({ kind: 'delete', path })
+    })
     this._filesToRename.forEach(([path, to]) => {
-      this._subject.next({ kind: "rename", path, to });
-    });
+      this._subject.next({ kind: 'rename', path, to })
+    })
     this._filesToCreate.forEach((content, path) => {
       // Check if this is a renaming.
       for (const [, to] of this._filesToRename) {
         if (to == path) {
           // The event is sent later on.
-          return;
+          return
         }
       }
       if (
         this._fileAlreadyExistExceptionSet.has(path) ||
         this._fileDoesNotExistExceptionSet.has(path)
       ) {
-        return;
+        return
       }
 
-      this._subject.next({ kind: "create", path, content: content.generate() });
-    });
+      this._subject.next({ kind: 'create', path, content: content.generate() })
+    })
     this._filesToUpdate.forEach((content, path) => {
-      this._subject.next({ kind: "update", path, content: content.generate() });
-    });
+      this._subject.next({ kind: 'update', path, content: content.generate() })
+    })
     /** must be last!! */
     this._dirsToDelete.forEach((path) => {
-      this._subject.next({ kind: "deleteDir", path });
-    });
+      this._subject.next({ kind: 'deleteDir', path })
+    })
 
-    this._subject.complete();
+    this._subject.complete()
 
-    return observableOf<void>(undefined);
+    return observableOf<void>(undefined)
   }
 }

@@ -4,7 +4,6 @@
   "title": "Schematic Options Schema",
   "type": "object",
   "properties": {
-
     "cb": {
       "type": "object",
       "description": "THIS IS ACTUALLY A FUNCTION BUT WE'RE BYPASSING VALIDATION ANYWAY. DIFFERENT IN SCHEMA.D.TS"
@@ -20,7 +19,7 @@
     "initialiseOptions": {
       "type": "object",
       "description": "Additional params for initialising of the service instance"
-    },
+    }
     // "destinationPath": {
     //   "type": "string",
     //   "description": "The absolute path where to scaffold to"

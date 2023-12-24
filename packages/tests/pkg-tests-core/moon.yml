@@ -2,17 +2,14 @@ $schema: 'https://moonrepo.dev/schemas/project.json'
 # docs - https://tinyurl.com/2qk3kdhv
 
 type: 'library'
-
 # dependsOn: # using the node syncer in moon
 #   - '@business-as-code/core'
-
 
 # moonrepo globs - https://tinyurl.com/2ftkxeso
 # fileGroups:
 #   # List of non-source test files.
 #   testFixtures:
 #     - '**/*.spec.*'
-
 
 # A task is an action that is ran within the context of a project, and wraps
 # around an npm or system command. Tasks that are defined here and inherited by all projects
@@ -21,19 +18,19 @@ type: 'library'
 # This setting requires a map, where the key is a unique name for the task,
 # and the value is an object of task parameters.
 # tasks:
-  # publishes to a local verdaccio server
-  # publish:
-  #   deps:
-  #     - root:build
-  #     - pkg-tests-verdaccio:verdacciostartBackground
-  #   command: 'pnpm publish --registry http://localhost:4873/'
-  #   # command: 'pnpm jest --passWithNoTests @in(0)'
-  #   # inputs:
-  #   #   - 'tests/pkg-tests-specs-fixtures'
-  #   #   # - '/tests/pkg-tests-specs-fixtures/**/*'
-  #   #   # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
-  #   #   # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
-  #   #   # - '@globs(testFixtures)'
-  #   # outputs:
-  #   #   - 'blah'
-  #   platform: 'node'
+# publishes to a local verdaccio server
+# publish:
+#   deps:
+#     - root:build
+#     - pkg-tests-verdaccio:verdacciostartBackground
+#   command: 'pnpm publish --registry http://localhost:4873/'
+#   # command: 'pnpm jest --passWithNoTests @in(0)'
+#   # inputs:
+#   #   - 'tests/pkg-tests-specs-fixtures'
+#   #   # - '/tests/pkg-tests-specs-fixtures/**/*'
+#   #   # - './tests/pkg-tests-specs-fixtures/src/test-env.spec.ts' # NEVER USE RELATIVE STARTS - https://tinyurl.com/2ftkxeso
+#   #   # - 'tests/pkg-tests-specs-fixtures/**/*.spec.*'
+#   #   # - '@globs(testFixtures)'
+#   # outputs:
+#   #   - 'blah'
+#   platform: 'node'

@@ -1,5 +1,5 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
-import type { ConfigConfigured } from "@business-as-code/cli";
+import { AddressPathAbsolute } from '@business-as-code/address'
+import type { ConfigConfigured } from '@business-as-code/cli'
 import {
   Context,
   ContextCommand,
@@ -26,90 +26,94 @@ import {
   ServiceInitialiseOptions,
   ServiceMap,
   ServiceProvidersForAsByMethod,
-  Simplify,
-} from "@business-as-code/core";
+  Simplify
+} from '@business-as-code/core'
 import {
   ArgsInfer,
   BaseCommand,
-  FlagsInfer,
-} from "@business-as-code/core/commands/base-command";
-import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
-import { describe, it } from 'bun:test';
-import { expectTypeOf } from "expect-type";
+  FlagsInfer
+} from '@business-as-code/core/commands/base-command'
+import { ParserOutput } from '@oclif/core/lib/interfaces/parser'
+import { describe, it } from 'bun:test'
+import { expectTypeOf } from 'expect-type'
 
-describe("types", () => {
-  describe("main types", () => {
-    describe("services", () => {
-      it("DEBUG", () => {
+describe('types', () => {
+  describe('main types', () => {
+    describe('services', () => {
+      it('DEBUG', () => {
         // @ts-ignore
-        type AllServices = keyof ServiceMap;
-      });
-      it("integrity", () => {
+        type AllServices = keyof ServiceMap
+      })
+      it('integrity', () => {
         expectTypeOf<ServiceMap>().toMatchTypeOf<{
           // instance side
           myService: [
             {
-              func1: Function;
+              func1: Function
             }
-          ];
+          ]
           yourService: [
             {
-              func1: Function;
+              func1: Function
             }
-          ];
+          ]
           schematics: [
             {
-              runSchematic: Function;
+              runSchematic: Function
             }
-          ];
+          ]
           bac: [
             {
-              run: Function;
+              run: Function
             }
-          ];
+          ]
           git: [
             {
-              getRepository: Function;
+              getRepository: Function
             }
-          ];
-        }>();
+          ]
+        }>()
         expectTypeOf<ServiceMap>().not.toMatchTypeOf<{
           // not the static side
           myService: {
-            title: string;
-            initialise: Function;
-          };
+            title: string
+            initialise: Function
+          }
           yourService: {
-            title: string;
-            initialise: Function;
-          };
-        }>();
-      });
+            title: string
+            initialise: Function
+          }
+        }>()
+      })
       it(`supports 'as' to group service types`, () => {
-        type PackageManager = ServiceMap["packageManager"];
+        type PackageManager = ServiceMap['packageManager']
         expectTypeOf<PackageManager>().toMatchTypeOf<
           [
             | {
-                title: "packageManagerPnpm";
+                title: 'packageManagerPnpm'
               }
             | {
-                title: "packageManagerYarn";
+                title: 'packageManagerYarn'
               }
             | {
-                title: "packageManagerBun";
+                title: 'packageManagerBun'
               }
             | {
-                title: "packageManagerNpm";
+                title: 'packageManagerNpm'
               }
           ]
-        >();
-        type PManagerAs = ServiceProvidersForAsByMethod<"packageManager">
-        expectTypeOf<PManagerAs>().toEqualTypeOf<"packageManagerBun" | "packageManagerNpm" | "packageManagerPnpm" | "packageManagerYarn">()
-      });
-      it("service options", () => {
-        type SchematicInitialiseOptions =
-          ServiceInitialiseOptions<"schematics">;
-        type BacInitialiseOptions = ServiceInitialiseOptions<"bac">;
+        >()
+        type PManagerAs = ServiceProvidersForAsByMethod<'packageManager'>
+        expectTypeOf<PManagerAs>().toEqualTypeOf<
+          | 'packageManagerBun'
+          | 'packageManagerNpm'
+          | 'packageManagerPnpm'
+          | 'packageManagerYarn'
+        >()
+      })
+      it('service options', () => {
+        type SchematicInitialiseOptions = ServiceInitialiseOptions<'schematics'>
+        type BacInitialiseOptions = ServiceInitialiseOptions<'bac'>
 
         // type CacheInitialiseOptions = ServiceInitialiseOptions<"cache">;
         // type CacheInitialiseOptions2 = Simplify<ServiceInitialiseLiteOptions<"cache">>;
@@ -119,17 +123,17 @@ describe("types", () => {
         //   rootPath: unknown
         // }>()
 
-        expectTypeOf<SchematicInitialiseOptions>().toMatchTypeOf<ServiceInitialiseCommonOptions>();
+        expectTypeOf<SchematicInitialiseOptions>().toMatchTypeOf<ServiceInitialiseCommonOptions>()
         expectTypeOf<SchematicInitialiseOptions>().toMatchTypeOf<{
-          dryRun?: boolean;
-        }>();
+          dryRun?: boolean
+        }>()
 
-        expectTypeOf<BacInitialiseOptions>().toMatchTypeOf<ServiceInitialiseCommonOptions>();
+        expectTypeOf<BacInitialiseOptions>().toMatchTypeOf<ServiceInitialiseCommonOptions>()
         // expectTypeOf<BacInitialiseOptions>().toMatchTypeOf<{workspacePath: AddressPathAbsolute}>()
-      });
-    });
+      })
+    })
 
-    describe("lifecycles", () => {
+    describe('lifecycles', () => {
       // it("integrity", () => {
       //   expectTypeOf<LifecycleMap>().toMatchTypeOf<{
       //     // instance side
@@ -182,196 +186,193 @@ describe("types", () => {
       //   }>()
       // });
 
-      it("DEBUG", () => {
-        type _ALLKeys = Simplify<keyof Bac.Lifecycles>;
-        type _ALLMethodsImplemented = LifecycleImplementedMethods;
+      it('DEBUG', () => {
+        type _ALLKeys = Simplify<keyof Bac.Lifecycles>
+        type _ALLMethodsImplemented = LifecycleImplementedMethods
         // type ALLMethodsRegardless = LifecycleMethods;
-      });
+      })
 
-      it("lifecycle methods augmented", () => {
+      it('lifecycle methods augmented', () => {
         expectTypeOf<
-          | "fetchContent"
-          | "initialiseWorkspace"
-          | "configureWorkspace"
+          | 'fetchContent'
+          | 'initialiseWorkspace'
+          | 'configureWorkspace'
           // | "synchroniseWorkspace"
-          | "runWorkspace"
+          | 'runWorkspace'
           // | "runProject"
-        >().toMatchTypeOf<LifecycleImplementedMethods>();
-      });
-      it("can derive a union of lifecycle method return types with provider key", () => {
+        >().toMatchTypeOf<LifecycleImplementedMethods>()
+      })
+      it('can derive a union of lifecycle method return types with provider key', () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceReturn =
-          LifecycleReturnByMethodSingular<"initialiseWorkspace">;
-        expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny();
+          LifecycleReturnByMethodSingular<'initialiseWorkspace'>
+        expectTypeOf<InitialiseWorkspaceReturn>().not.toBeAny()
         expectTypeOf<InitialiseWorkspaceReturn>().toMatchTypeOf<
-          | { provider: "core"; options: {} }
-          | { provider: "git"; options: { b: "b" } }
-        >();
-      });
-      it("can derive a union of lifecycle option types with provider key without common options (context+workspacePath)", () => {
+          | { provider: 'core'; options: {} }
+          | { provider: 'git'; options: { b: 'b' } }
+        >()
+      })
+      it('can derive a union of lifecycle option types with provider key without common options (context+workspacePath)', () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular<"initialiseWorkspace">;
-        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonSingular<'initialiseWorkspace'>
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny()
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<{
-          provider: "core";
-          options: any;
-        }>();
+          provider: 'core'
+          options: any
+        }>()
         expectTypeOf<InitialiseWorkspaceOptions>().not.toMatchTypeOf<{
-          provider: "core";
-          options: { options: any };
-        }>();
+          provider: 'core'
+          options: { options: any }
+        }>()
 
         type AllProviders =
-          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>;
-        type NonImplementers = Extract<AllProviders, { options: never }>;
-        expectTypeOf<NonImplementers>().toBeNever();
+          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>
+        type NonImplementers = Extract<AllProviders, { options: never }>
+        expectTypeOf<NonImplementers>().toBeNever()
 
         expectTypeOf<keyof AllProviders>().toEqualTypeOf<
-          "options" | "provider"
-        >();
-        expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
-        expectTypeOf<AllProviders["options"]>().not.toBeAny();
+          'options' | 'provider'
+        >()
+        expectTypeOf<AllProviders['options']>().toMatchTypeOf<{}>()
+        expectTypeOf<AllProviders['options']>().not.toBeAny()
 
         // // debugging
         // type DS1 = Extract<AllProviders["options"], {options: string}>
         // type DS2 = Exclude<AllProviders["options"], {options: Record<PropertyKey, unknown>}>
         // type DS3 = keyof UnionToIntersection<Omit<AllProviders["options"], 'options'>>
 
-        type AllProviderOptions = AllProviders["options"];
-        type AllProviderOptionsWithoutGroups = Exclude<AllProviders["options"], {common: any}>;
+        type AllProviderOptions = AllProviders['options']
+        type AllProviderOptionsWithoutGroups = Exclude<
+          AllProviders['options'],
+          { common: any }
+        >
 
         expectTypeOf<{
           common: {
-            context: Context;
-            workspacePath: AddressPathAbsolute;
-          },
-          options: any;
-        }>().toMatchTypeOf<AllProviderOptions>(); // all provider methods have, at least, 2 groups of options
+            context: Context
+            workspacePath: AddressPathAbsolute
+          }
+          options: any
+        }>().toMatchTypeOf<AllProviderOptions>() // all provider methods have, at least, 2 groups of options
         // expectTypeOf<AllProviderOptions>().toMatchTypeOf<{
         //   context: Context,
         //   workspacePath: AddressPathAbsolute,
         //   options: any
         // }>() // all provider methods have these 3 properties
         expectTypeOf<AllProviderOptions>().not.toMatchTypeOf<{
-          workingPath: string;
-        }>(); // workingPath should be within options.options as specific
-      });
-      it("can derive a union of lifecycle option types with provider key without common options (context+workspacePath)", () => {
+          workingPath: string
+        }>() // workingPath should be within options.options as specific
+      })
+      it('can derive a union of lifecycle option types with provider key without common options (context+workspacePath)', () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"initialiseWorkspace">;
-        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'initialiseWorkspace'>
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny()
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
           {
-            provider: "core";
+            provider: 'core'
             options: {
-              name: any,
+              name: any
               // common: any,
               // options: {
               // }
-            };
+            }
           }[]
-        >();
+        >()
         expectTypeOf<InitialiseWorkspaceOptions>().not.toMatchTypeOf<
           {
-            provider: "core";
+            provider: 'core'
             options: {
               common: any
-            };
+            }
           }[]
-        >();
+        >()
 
         type ConfigureWorkspaceOptions =
-          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"configureWorkspace">;
-        expectTypeOf<ConfigureWorkspaceOptions>().not.toBeAny();
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'configureWorkspace'>
+        expectTypeOf<ConfigureWorkspaceOptions>().not.toBeAny()
         expectTypeOf<ConfigureWorkspaceOptions>().toMatchTypeOf<
           {
-            provider: "git";
+            provider: 'git'
             options: {
-              address: string,
-            };
+              address: string
+            }
           }[]
-        >();
+        >()
         expectTypeOf<ConfigureWorkspaceOptions>().not.toMatchTypeOf<
           {
-            provider: "git";
+            provider: 'git'
             options: {
-              common: any,
-            };
+              common: any
+            }
           }[]
-        >();
-      });
-      it("can derive a union of lifecycle option types with provider key 1", () => {
+        >()
+      })
+      it('can derive a union of lifecycle option types with provider key 1', () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceOptions =
-          LifecycleOptionsByMethodKeyedByProviderSingular<"initialiseWorkspace">;
-        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny();
+          LifecycleOptionsByMethodKeyedByProviderSingular<'initialiseWorkspace'>
+        expectTypeOf<InitialiseWorkspaceOptions>().not.toBeAny()
         expectTypeOf<InitialiseWorkspaceOptions>().toMatchTypeOf<
-          | { provider: "core"; options: { options: any } }
-          | { provider: "git"; options: { options: any } }
-        >();
+          | { provider: 'core'; options: { options: any } }
+          | { provider: 'git'; options: { options: any } }
+        >()
 
         type AllProviders =
-          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>;
-        type NonImplementers = Extract<AllProviders, { options: never }>;
-        expectTypeOf<NonImplementers>().toBeNever();
+          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>
+        type NonImplementers = Extract<AllProviders, { options: never }>
+        expectTypeOf<NonImplementers>().toBeNever()
 
         expectTypeOf<keyof AllProviders>().toEqualTypeOf<
-          "options" | "provider"
-        >();
-        expectTypeOf<AllProviders["options"]>().toMatchTypeOf<{}>();
-        expectTypeOf<AllProviders["options"]>().not.toBeAny();
+          'options' | 'provider'
+        >()
+        expectTypeOf<AllProviders['options']>().toMatchTypeOf<{}>()
+        expectTypeOf<AllProviders['options']>().not.toBeAny()
 
         expectTypeOf<{
           common: {
-            context: any;
-            workspacePath: AddressPathAbsolute;
-          },
-          options: any;
-        }>().toMatchTypeOf<AllProviders["options"]>(); // all provider methods have these 3 properties
-        expectTypeOf<AllProviders["options"]>().not.toMatchTypeOf<{
-          workingPath: string;
-        }>(); // workingPath should be within options.options as specific
-      });
-      it("can derive a union of lifecycle option types with provider key 2", () => {
+            context: any
+            workspacePath: AddressPathAbsolute
+          }
+          options: any
+        }>().toMatchTypeOf<AllProviders['options']>() // all provider methods have these 3 properties
+        expectTypeOf<AllProviders['options']>().not.toMatchTypeOf<{
+          workingPath: string
+        }>() // workingPath should be within options.options as specific
+      })
+      it('can derive a union of lifecycle option types with provider key 2', () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type Options =
-          LifecycleOptionsByMethodKeyedByProviderSingular<"runWorkspace">;
-        expectTypeOf<Options>().not.toBeAny();
-        expectTypeOf<Options['options']>().not.toBeUnknown();
+          LifecycleOptionsByMethodKeyedByProviderSingular<'runWorkspace'>
+        expectTypeOf<Options>().not.toBeAny()
+        expectTypeOf<Options['options']>().not.toBeUnknown()
 
         // type _MoonOptions = Extract<Options, { provider: "moon" }>;
         // type _MoonOptionsOptions = Extract<
         //   Options,
         //   { provider: "moon" }
         // >["options"];
-        type MoonOptions = Extract<
-          Options,
-          { provider: "moon" }
-        >;
+        type MoonOptions = Extract<Options, { provider: 'moon' }>
         // type _NodeOptions = Extract<Options, { provider: "exec" }>;
         // type NodeOptionsOptions = Extract<Options, {provider: 'node'}>['options']
-        type NodeOptions = Extract<
-          Options,
-          { provider: "exec" }
-        >;
+        type NodeOptions = Extract<Options, { provider: 'exec' }>
 
         expectTypeOf<MoonOptions>().toMatchTypeOf<{
           options: {
             options: {
-              query?: string;
+              query?: string
             }
           }
-        }>();
+        }>()
 
         expectTypeOf<NodeOptions>().toMatchTypeOf<{
           options: {
             options: {
-              execOptions: any;
-            },
+              execOptions: any
+            }
           }
-        }>();
+        }>()
         // expectTypeOf<NodeOptionsOptions>().not.toMatchTypeOf<{
         //   workingPath: string // only on runProject
         // }>()
@@ -383,27 +384,26 @@ describe("types", () => {
         //   | { provider: "exec"; options: { execOptions: any } } // options should be specific to provider
         //   // | { provider: "packageManager"; options: { options: any } }
         // >();
-      });
+      })
       it(`accepts LifecycleAllMethods`, () => {
-        const anyLifecycleMethod: LifecycleMethods = "configureProject";
+        const anyLifecycleMethod: LifecycleMethods = 'configureProject'
         type _ReturnType = LifecycleReturnByMethodSingular<
           typeof anyLifecycleMethod
-        >;
-      });
-      it("can derive a union of lifecycle option types with provider key 3", () => {
+        >
+      })
+      it('can derive a union of lifecycle option types with provider key 3', () => {
         type Options =
-          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods>; // used in the hooks; e.g. callLifecycleBailAsync
-        expectTypeOf<Options>().not.toBeAny();
-        type OptionsProviders = Options["provider"];
+          LifecycleOptionsByMethodKeyedByProviderSingular<LifecycleImplementedMethods> // used in the hooks; e.g. callLifecycleBailAsync
+        expectTypeOf<Options>().not.toBeAny()
+        type OptionsProviders = Options['provider']
 
-        expectTypeOf<OptionsProviders>().toMatchTypeOf<"packageManager">;
-        expectTypeOf<OptionsProviders>().not
-          .toMatchTypeOf<"packageManagerPnpm">;
-      });
-      it("can derive a union of lifecycle option types with provider key 4", () => {
-        type Options = LifecycleReturnByMethodArray<"configureWorkspace">;
-        expectTypeOf<Options>().not.toBeAny();
-      });
+        expectTypeOf<OptionsProviders>().toMatchTypeOf<'packageManager'>
+        expectTypeOf<OptionsProviders>().not.toMatchTypeOf<'packageManagerPnpm'>
+      })
+      it('can derive a union of lifecycle option types with provider key 4', () => {
+        type Options = LifecycleReturnByMethodArray<'configureWorkspace'>
+        expectTypeOf<Options>().not.toBeAny()
+      })
       // it("can derive a union of lifecycle option types with the complex common properties removed", () => {
 
       //   type Options = _LifecycleOptionsByMethodMinusComplex<LifecycleOptionsByMethodKeyedByProvider<'initialiseWorkspace'>> // e.g. async AsyncHook#callLifecycleBailAsync
@@ -418,31 +418,31 @@ describe("types", () => {
       //     options: unknown
       //   }>() // leaves other options intact
       // });
-      it("can derive a union of lifecycle option types in an array form", () => {
+      it('can derive a union of lifecycle option types in an array form', () => {
         const aLifecycleMethodNotImplemented: LifecycleMethods =
-          "configureProject"; // ensures we still have a non-implemented lifecycle (to test the AsyncHook)
+          'configureProject' // ensures we still have a non-implemented lifecycle (to test the AsyncHook)
         expectTypeOf(
           aLifecycleMethodNotImplemented
-        ).not.toMatchTypeOf<LifecycleImplementedMethods>();
+        ).not.toMatchTypeOf<LifecycleImplementedMethods>()
 
         type Options1 = LifecycleOptionsByMethodKeyedByProviderArray<
           typeof aLifecycleMethodNotImplemented
-        >; // e.g. async AsyncHook#callLifecycleBailAsync
-        expectTypeOf<Options1>().not.toBeAny();
-        expectTypeOf<Options1>().toEqualTypeOf<never>();
+        > // e.g. async AsyncHook#callLifecycleBailAsync
+        expectTypeOf<Options1>().not.toBeAny()
+        expectTypeOf<Options1>().toEqualTypeOf<never>()
 
         const aLifecycleMethodImplemented: LifecycleMethods =
-          "initialiseWorkspace";
+          'initialiseWorkspace'
         expectTypeOf(
           aLifecycleMethodImplemented
-        ).toMatchTypeOf<LifecycleImplementedMethods>();
+        ).toMatchTypeOf<LifecycleImplementedMethods>()
 
         type Options2 = LifecycleOptionsByMethodKeyedByProviderArray<
           typeof aLifecycleMethodImplemented
-        >; // e.g. async AsyncHook#callLifecycleBailAsync
-        expectTypeOf<Options2>().not.toBeAny();
-        expectTypeOf<Options2>().not.toEqualTypeOf<never>();
-      });
+        > // e.g. async AsyncHook#callLifecycleBailAsync
+        expectTypeOf<Options2>().not.toBeAny()
+        expectTypeOf<Options2>().not.toEqualTypeOf<never>()
+      })
       // it(`supports 'as' to group lifecycle types`, () => {
       //   type PackageManagerOptions = LifecycleOptionsByMethodAndProvider<
       //     "runWorkspace",
@@ -474,19 +474,19 @@ describe("types", () => {
       //     "packageManagerPnpm" | "packageManagerYarn" | "packageManagerBun"
       //   >();
       // });
-      it("find particular lifecycle method return", () => {
+      it('find particular lifecycle method return', () => {
         // type InitialiseWorkspaceInitialiseMethodMap =
         type InitialiseWorkspaceCoreOptions =
-          LifecycleOptionsByMethodAndProvider<"initialiseWorkspace", "core">;
-        expectTypeOf<InitialiseWorkspaceCoreOptions>().not.toBeAny();
+          LifecycleOptionsByMethodAndProvider<'initialiseWorkspace', 'core'>
+        expectTypeOf<InitialiseWorkspaceCoreOptions>().not.toBeAny()
         expectTypeOf<InitialiseWorkspaceCoreOptions>().toMatchTypeOf<{
-          options: any;
-        }>();
+          options: any
+        }>()
         expectTypeOf<InitialiseWorkspaceCoreOptions>().not.toMatchTypeOf<
-          | { provider: "core"; options: { options: any } }
-          | { provider: "git"; options: { options: any } }
-        >();
-      });
+          | { provider: 'core'; options: { options: any } }
+          | { provider: 'git'; options: { options: any } }
+        >()
+      })
       // it(`find particular lifecycle method return for 'as' methods`, () => {
       //   // type InitialiseWorkspaceInitialiseMethodMap =
       //   type Options = LifecycleOptionsByMethodAndProvider<
@@ -504,12 +504,11 @@ describe("types", () => {
       // });
 
       it(`fetchContent should be compatible with ConfigConfigured`, () => {
-        type FetchContentInput = LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"fetchContent">
+        type FetchContentInput =
+          LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'fetchContent'>
         type ConfigureLifecycleOutput = ConfigConfigured['projects']
         expectTypeOf<FetchContentInput>().toMatchTypeOf<ConfigureLifecycleOutput>()
-      });
-
-
+      })
 
       // it("find particular lifecycle method return", () => {
       //   type InitialiseWorkspaceReturn = LifecycleMethodReturn<'initialiseWorkspace', 'git'>
@@ -531,50 +530,50 @@ describe("types", () => {
       //   expectTypeOf<BacInitialiseOptions>().toMatchTypeOf<ServiceInitialiseCommonOptions>();
       //   // expectTypeOf<BacInitialiseOptions>().toMatchTypeOf<{workspacePath: AddressPathAbsolute}>()
       // });
-    });
+    })
 
-    describe("contexts", () => {
-      it("contextCommand", () => {
+    describe('contexts', () => {
+      it('contextCommand', () => {
         expectTypeOf<ContextCommand<any>>().toMatchTypeOf<{
           /** @oclif/main#ParserOutput */
           cliOptions: {
-            args: any;
+            args: any
             flags: {
-              ["logLevel"]: string; // base flags
-            };
-            argv: any;
-            raw: any;
-            metadata: any;
-            nonExistentFlags: any;
-          };
-          serviceFactory: Function;
+              ['logLevel']: string // base flags
+            }
+            argv: any
+            raw: any
+            metadata: any
+            nonExistentFlags: any
+          }
+          serviceFactory: Function
           logger: {
-            debug: Function;
-          };
-          oclifConfig: object;
-          workspacePath: object;
-        }>();
-      });
-      it("context", () => {
+            debug: Function
+          }
+          oclifConfig: object
+          workspacePath: object
+        }>()
+      })
+      it('context', () => {
         expectTypeOf<ContextCommand<any>>().toMatchTypeOf<{
           /** @oclif/main#ParserOutput */
           cliOptions: {
             flags: {
-              ["logLevel"]: string; // base flags
-            };
-          };
-          serviceFactory: Function;
+              ['logLevel']: string // base flags
+            }
+          }
+          serviceFactory: Function
           logger: {
-            debug: Function;
-          };
-          oclifConfig: object;
-          workspacePath: object;
-        }>();
-      });
-      it("ContextCommand must be assignable to Context", () => {
-        expectTypeOf<ContextCommand<any>>().toMatchTypeOf<Context>(); // Context must be a subset of ContextCommand to enable the commands to use the serviceFactory
-      });
-    });
+            debug: Function
+          }
+          oclifConfig: object
+          workspacePath: object
+        }>()
+      })
+      it('ContextCommand must be assignable to Context', () => {
+        expectTypeOf<ContextCommand<any>>().toMatchTypeOf<Context>() // Context must be a subset of ContextCommand to enable the commands to use the serviceFactory
+      })
+    })
     // it("contextPrivate", () => {
     //   expectTypeOf<ContextPrivate>().toMatchTypeOf<{
     //     /** @oclif/main#ParserOutput */
@@ -587,54 +586,54 @@ describe("types", () => {
     //     };
     //   }>();
     // });
-  });
+  })
 
-  describe("utils", () => {
-    it("commands", () => {
+  describe('utils', () => {
+    it('commands', () => {
       class CommandWithCustom extends BaseCommand<typeof CommandWithCustom> {
         static override flags = {
           stringFlag: Oclif.Flags.string({
-            description: "Workspace name",
-            required: true,
-          }),
-        };
+            description: 'Workspace name',
+            required: true
+          })
+        }
 
         /** THIS IS HOW TO DEFINE CUSTOM OPTIONS!! */
         static override baseFlags = {
           ...BaseCommand.baseFlags,
           customOptions: Oclif.Flags.custom<Record<string, unknown>>({
-            parse: async (...args: any[]) => ({ a: 5 } as any),
+            parse: async (...args: any[]) => ({ a: 5 }) as any,
             // multiple: true,
             // summary: "Schematic ",
             // helpGroup: "GLOBAL",
             // required: true,
-            default: {},
-          })(),
-        };
+            default: {}
+          })()
+        }
         async execute() {
-          return "blah" as any;
+          return 'blah' as any
         }
       }
 
-      type FlagsInferred = FlagsInfer<typeof CommandWithCustom>;
+      type FlagsInferred = FlagsInfer<typeof CommandWithCustom>
       expectTypeOf<FlagsInferred>().toMatchTypeOf<{
-        stringFlag: string;
-        customOptions?: Record<string, unknown>;
-        json: boolean;
-        logLevel: unknown;
-      }>();
+        stringFlag: string
+        customOptions?: Record<string, unknown>
+        json: boolean
+        logLevel: unknown
+      }>()
 
       type ParserOutputType = ParserOutput<
         FlagsInfer<typeof CommandWithCustom>,
         FlagsInfer<typeof CommandWithCustom>,
         ArgsInfer<typeof CommandWithCustom>
-      >;
+      >
       expectTypeOf<
-        Pick<ParserOutputType["flags"], "logLevel">
-      >().toEqualTypeOf<{ logLevel: LogLevel | undefined }>(); // we keep the required nullishness as we use ParserOutput inside Commands as well as outside-in
-      expectTypeOf<Pick<ParserOutputType["flags"], "json">>().toEqualTypeOf<{
-        json: boolean;
-      }>(); // json is a base type, not derived from baseFlags in BaseCommand - vscode://eamodio.gitlens/link/r/deb373f5256b936edc18b2f0d0353a1f590bb9ff?url=git%40github.com%3Aelmpp%2Forg-repo-bac.git
-    });
-  });
-});
+        Pick<ParserOutputType['flags'], 'logLevel'>
+      >().toEqualTypeOf<{ logLevel: LogLevel | undefined }>() // we keep the required nullishness as we use ParserOutput inside Commands as well as outside-in
+      expectTypeOf<Pick<ParserOutputType['flags'], 'json'>>().toEqualTypeOf<{
+        json: boolean
+      }>() // json is a base type, not derived from baseFlags in BaseCommand - vscode://eamodio.gitlens/link/r/deb373f5256b936edc18b2f0d0353a1f590bb9ff?url=git%40github.com%3Aelmpp%2Forg-repo-bac.git
+    })
+  })
+})

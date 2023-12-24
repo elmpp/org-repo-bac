@@ -1,9 +1,7 @@
-import {
-  ServiceMap
-} from "../../../__types__";
-import { ServiceOptions } from "../../schematics-utils";
+import { ServiceMap } from '../../../__types__'
+import { ServiceOptions } from '../../schematics-utils'
 
-export const ServiceExecName = "service-exec";
+export const ServiceExecName = 'service-exec'
 
 export type ServiceExecTaskFactoryOptions = never // Service Tasks aren't "primed" like other services
 // export interface ServiceExecTaskFactoryOptions {
@@ -25,7 +23,7 @@ export type ServiceExecTaskFactoryOptions = never // Service Tasks aren't "prime
 // }
 
 export type ServiceExecTaskOptions<SName extends keyof ServiceMap> =
-  ServiceOptions<SName>;
+  ServiceOptions<SName>
 // export interface ServiceExecTaskOptions {
 //   // workingDirectory: string;
 //   options: Options<keyof ServicesStatic>; // must be optional due to TaskExecutor having optional params

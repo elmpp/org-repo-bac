@@ -1,5 +1,5 @@
-export {MyService} from './my-service'
-export {YourService} from './your-service'
+export { MyService } from './my-service'
+export { YourService } from './your-service'
 
 // declare global {
 //   interface Bac {
@@ -8,4 +8,3 @@ export {YourService} from './your-service'
 //     };
 //   }
 // }
-

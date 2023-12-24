@@ -4,10 +4,12 @@ export function assertNonEmpty<
   if (!Object.keys(obj).length) {
     throw new Error(
       `Object expected to be non-empty. Supplied: '${JSON.stringify(obj)}'`
-    );
+    )
   }
 }
 
 export function assertUnreachable(_x: never): never {
-  throw new Error(`Unreachable codepath encountered. See previous stacktrace entry. Value: '${JSON.stringify(_x)}'`);
+  throw new Error(
+    `Unreachable codepath encountered. See previous stacktrace entry. Value: '${JSON.stringify(_x)}'`
+  )
 }

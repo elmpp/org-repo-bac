@@ -6,8 +6,8 @@ import {
   AddressUrlGitSsh,
   AddressUrlGitString,
   AddressUrlGithub,
-  addr,
-} from "@business-as-code/address";
+  addr
+} from '@business-as-code/address'
 import {
   CacheKey,
   Context,
@@ -17,10 +17,10 @@ import {
   Result,
   ServiceMap,
   constants,
-  expectIsOk,
-} from "@business-as-code/core";
-import { BacError } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
+  expectIsOk
+} from '@business-as-code/core'
+import { BacError } from '@business-as-code/error'
+import { xfs } from '@business-as-code/fslib'
 
 // declare global {
 //   namespace Bac {
@@ -38,21 +38,21 @@ import { xfs } from "@business-as-code/fslib";
 
 export function assertIsAddressGit(address: any): address is AddressUrlGit {
   return (
-    ["gitHttpRepoUrl", "gitSshRepoUrl"] as (keyof AddressType)[]
-  ).includes(address.type);
+    ['gitHttpRepoUrl', 'gitSshRepoUrl'] as (keyof AddressType)[]
+  ).includes(address.type)
 }
 export function assertIsAddressGitSsh(
   address: any
-): address is AddressDescriptor<"gitSshRepoUrl"> {
+): address is AddressDescriptor<'gitSshRepoUrl'> {
   return (
-    ["gitHttpRepoUrl", "gitSshRepoUrl"] as (keyof AddressType)[]
-  ).includes(address.type);
+    ['gitHttpRepoUrl', 'gitSshRepoUrl'] as (keyof AddressType)[]
+  ).includes(address.type)
 }
 
 export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
   typeof FetchContentGitLifecycle
 > {
-  static override title = "git" as const;
+  static override title = 'git' as const
 
   // override get ctor(): typeof FetchContentLifecycle {
   //   return this.constructor as any;
@@ -60,40 +60,42 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
 
   override fetchContent(): (options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     // options: FetchOptions;
-    cacheService: ServiceMap['cache'][0],
+    cacheService: ServiceMap['cache'][0]
     options: {
-      address: string,
+      address: string
       // sourceAddress: string,
       // destinationAddress: string,
-    };
+    }
   }) => Promise<Result<FetchResult, { error: BacError }> | void> {
     return async (options) => {
       const {
         cacheService,
-        options: { address: addressString },
-      } = options;
+        options: { address: addressString }
+      } = options
 
-      const address = addr.parseAsType(addressString, 'gitHttpRepoUrl', {strict: false}) ?? addr.parseAsType(addressString, 'gitSshRepoUrl', {strict: false})
+      const address =
+        addr.parseAsType(addressString, 'gitHttpRepoUrl', { strict: false }) ??
+        addr.parseAsType(addressString, 'gitSshRepoUrl', { strict: false })
       // const destinationAddress = addr.parseAsType(destinationAddressString, 'gitHttpRepoUrl', {strict: false}) ?? addr.parseAsType(destinationAddressString, 'gitSshRepoUrl', {strict: false})
 
       // console.log(`options :>> `, options)
 
       if (!assertIsAddressGit(address)) {
-        return;
+        return
       }
       // const expectedChecksum = options.checksums.get(locator.locatorHash) || null;
 
-      let applicableAddress = address;
+      let applicableAddress = address
       /** gitssh descriptors may include branch/commit/tag query params which don't apply when fetching */
       if (assertIsAddressGitSsh(address)) {
         applicableAddress = addr.urlUtils.clone(address, {
-          params: new URLSearchParams(),
-        });
+          params: new URLSearchParams()
+        })
       }
       // if (assertIsAddressGitSsh(destinationAddress)) {
       //   applicableAddress = addr.urlUtils.clone(sourceAddress, {
@@ -113,12 +115,12 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
               // ...options.options,
               // sourceAddress,
               // destinationAddress,
-              address: applicableAddress,
+              address: applicableAddress
               // cacheService,
             },
             contentPath,
-            existentChecksum,
-          });
+            existentChecksum
+          })
         },
         onHit: () =>
           options.common.context.logger.debug(
@@ -131,168 +133,160 @@ export class FetchContentGitLifecycle extends FetchContentLifecycleBase<
         onStale: async ({ contentPath, existentChecksum }) => {
           options.common.context.logger.debug(
             `Cache checksum fail (prev: '${existentChecksum?.globalVersion}::${existentChecksum?.key}). Address: '${applicableAddress.addressNormalized}'. Will be updated from source`
-          );
+          )
           await this.updateFromNetwork({
             ...options,
             options: {
               ...options.options,
-              address: applicableAddress,
+              address: applicableAddress
               // cacheService,
             },
             destinationPath: contentPath,
-            existentChecksum,
-          });
+            existentChecksum
+          })
         },
         // onMiss: () => options.report.reportCacheMiss(locator, `${structUtils.prettyLocator(options.project.configuration, locator)} can't be found in the cache and will be fetched from GitHub`),
         onMiss: async ({ contentPath }) => {
           options.common.context.logger.debug(
             `Cache Miss. Address: '${applicableAddress.addressNormalized}'. Will be cloned from source`
-          );
+          )
           await this.cloneFromNetwork({
             ...options,
             options: {
               ...options.options,
-              address: applicableAddress,
+              address: applicableAddress
               // cacheService,
             },
-            destinationPath: contentPath,
-          });
-        },
-      });
+            destinationPath: contentPath
+          })
+        }
+      })
 
       // console.log(`fetchRes :>> `, require('util')SubrepoServicespect(fetchRes, {showHidden: false, depth: undefined, colors: true}))
 
       // expectIsOk(fetchRes);
-      return fetchRes;
-    };
+      return fetchRes
+    }
   }
 
   protected async cloneFromNetwork(options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     // options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
-    options: { address: AddressUrlGit };
+    options: { address: AddressUrlGit }
     // where to add the content
-    destinationPath: AddressPathAbsolute;
+    destinationPath: AddressPathAbsolute
   }): Promise<void> {
     const {
-      common: {
-        context,
-      },
+      common: { context },
       destinationPath,
-      options: { address },
-    } = options;
+      options: { address }
+    } = options
 
-    const gitService = await context.serviceFactory("git", {
+    const gitService = await context.serviceFactory('git', {
       context,
       workspacePath: destinationPath,
-      workingPath: ".",
-    });
+      workingPath: '.'
+    })
 
     async function cloneFromSource() {
       context.logger.debug(
         `fetchContentGitLifecycle: adding new cache entry from source. Source: '${address.addressNormalized}', destination: '${destinationPath.addressNormalized}'`
-      );
+      )
 
       const cloneOpts: Parameters<typeof gitService.clone>[1] = {
-        sshStrictHostCheckingDisable: true, // let's disable this for now
+        sshStrictHostCheckingDisable: true // let's disable this for now
         // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
-      };
+      }
       const cloneRes = await gitService.clone(
         address.addressNormalized,
         cloneOpts
-      );
+      )
 
-      expectIsOk(cloneRes);
+      expectIsOk(cloneRes)
     }
 
     await xfs.mkdirpPromise(destinationPath.address)
-    await cloneFromSource();
+    await cloneFromSource()
   }
 
   protected async updateFromNetwork(options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     // options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
-    options: { address: AddressUrlGit };
+    options: { address: AddressUrlGit }
     // where to add the content
-    destinationPath: AddressPathAbsolute;
-    existentChecksum?: CacheKey;
+    destinationPath: AddressPathAbsolute
+    existentChecksum?: CacheKey
   }): Promise<void> {
     const {
-      common: {
-        context,
-        workspacePath,
-      },
+      common: { context, workspacePath },
       destinationPath,
       existentChecksum,
-      options: { address },
-    } = options;
+      options: { address }
+    } = options
 
-    const gitService = await context.serviceFactory("git", {
+    const gitService = await context.serviceFactory('git', {
       context,
       workspacePath: destinationPath,
-      workingPath: ".",
-    });
+      workingPath: '.'
+    })
 
     async function updateFromSource() {
       context.logger.debug(
         `fetchContentGitLifecycle: updating existent cache entry from source. Source: '${address.addressNormalized}', destination: '${destinationPath.addressNormalized}', existent checksum: '${existentChecksum}'`
-      );
+      )
 
       const cloneOpts: Parameters<typeof gitService.clone>[1] = {
         // do we even want to support private key here? Probs not. It's GH deployment keys that we will bother with
-      };
+      }
       const cloneRes = await gitService.pull(
         address.addressNormalized,
         cloneOpts
-      );
+      )
 
-      expectIsOk(cloneRes);
+      expectIsOk(cloneRes)
     }
 
-    await updateFromSource();
+    await updateFromSource()
   }
 
   protected async createChecksum({
-    common: {
-      context,
-      workspacePath,
-    },
+    common: { context, workspacePath },
     existentChecksum,
-    contentPath,
+    contentPath
   }: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     // options: Omit<FetchOptions, "address"> & { address: AddressUrlGit };
-    options: { address: AddressUrlGit };
+    options: { address: AddressUrlGit }
     // where to find the content
-    contentPath: AddressPathAbsolute;
+    contentPath: AddressPathAbsolute
     // existent checksum if content found (but failed checksum)
-    existentChecksum?: CacheKey;
+    existentChecksum?: CacheKey
   }): Promise<CacheKey> {
     // let's always just return a git HEAD SHA
-    const gitService = await context.serviceFactory("git", {
+    const gitService = await context.serviceFactory('git', {
       context,
       workspacePath: contentPath,
-      workingPath: ".",
-    });
+      workingPath: '.'
+    })
 
-    const res = await gitService.revParse("HEAD");
-    expectIsOk(res);
+    const res = await gitService.revParse('HEAD')
+    expectIsOk(res)
     return {
       globalVersion: constants.GLOBAL_CACHE_KEY,
-      key: res.res,
-    };
+      key: res.res
+    }
 
     // if (existentChecksum) {
 

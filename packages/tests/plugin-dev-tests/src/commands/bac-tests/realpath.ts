@@ -4,9 +4,9 @@ import {
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
-  expectIsOk,
-} from "@business-as-code/core";
-import { MessageName } from "@business-as-code/error";
+  expectIsOk
+} from '@business-as-code/core'
+import { MessageName } from '@business-as-code/error'
 
 /**
  Silly test of the run-workspace lifecycle. Just executes realpath in various workspaces
@@ -14,7 +14,7 @@ import { MessageName } from "@business-as-code/error";
 export default class BacTestsRealpath extends BaseCommand<
   typeof BacTestsRealpath
 > {
-  static override description = "Runs arbitrary shell command (realpath)";
+  static override description = 'Runs arbitrary shell command (realpath)'
 
   // constructor(...args: any[]) {
   //   super(...args)
@@ -52,14 +52,14 @@ export default class BacTestsRealpath extends BaseCommand<
     // }),
     workspacePath: Oclif.Flags.directory({
       exists: true, // do NOT infer from the RC file
-      description: "Workspace name",
-      required: true,
+      description: 'Workspace name',
+      required: true
     }),
 
     query: Oclif.Flags.string({
-      description: "Workspace query (moon format)",
-      required: true,
-    }),
+      description: 'Workspace query (moon format)',
+      required: true
+    })
     // schematicsAddress: Oclif.Flags.string({
     //   description: "Schematics Address",
     //   required: true,
@@ -81,9 +81,9 @@ export default class BacTestsRealpath extends BaseCommand<
     //   }
     //   // required: true,
     // }),
-  };
+  }
 
-  static override args = {};
+  static override args = {}
 
   // override async run(): Promise<void> {
 
@@ -164,37 +164,37 @@ export default class BacTestsRealpath extends BaseCommand<
 
     // console.log(`:>> ergergergerghieu`);
 
-
     const moonService = await context.serviceFactory('moon', {
       context,
-      workingPath: '.',
+      workingPath: '.'
       // workspacePath: ''
     })
-    const moonProjects = await moonService.findProjects({query: context.cliOptions.flags.query})
-
-
+    const moonProjects = await moonService.findProjects({
+      query: context.cliOptions.flags.query
+    })
 
     // console.log(`projects, typeof:>> `, `|${projects}|`, typeof projects)
 
-    const runLifecycleRes = await context.lifecycles.runWorkspace.executeRunWorkspace({
-      projects: moonProjects.projects,
-      common: {
-        context,
-        workspacePath: context.workspacePath,
-        workingPath: '.',
-      },
-      options: [
-        {
-          provider: 'exec',
-          options: {
-            command: 'realpath',
-            execOptions: {
-              shell: true,
-            },
-          },
+    const runLifecycleRes =
+      await context.lifecycles.runWorkspace.executeRunWorkspace({
+        projects: moonProjects.projects,
+        common: {
+          context,
+          workspacePath: context.workspacePath,
+          workingPath: '.'
         },
-      ]
-    })
+        options: [
+          {
+            provider: 'exec',
+            options: {
+              command: 'realpath',
+              execOptions: {
+                shell: true
+              }
+            }
+          }
+        ]
+      })
 
     // console.log(`runLifecycleRes :>> `, runLifecycleRes)
     expectIsOk(runLifecycleRes)

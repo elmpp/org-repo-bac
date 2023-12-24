@@ -1,11 +1,6 @@
 {
   "extends": "../../tsconfig.options.json",
-  "include": [
-    "src/**/*",
-    "*.spec.*",
-    "*.js",
-    "*.ts"
-  ],
+  "include": ["src/**/*", "*.spec.*", "*.js", "*.ts"],
   "references": [
     {
       "path": "../pkg-error"
@@ -18,18 +13,10 @@
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
-      "@business-as-code/error": [
-        "../pkg-error/src/index.ts"
-      ],
-      "@business-as-code/error/*": [
-        "../pkg-error/src/*"
-      ],
-      "@business-as-code/fslib": [
-        "../pkg-fslib/src/index.ts"
-      ],
-      "@business-as-code/fslib/*": [
-        "../pkg-fslib/src/*"
-      ]
+      "@business-as-code/error": ["../pkg-error/src/index.ts"],
+      "@business-as-code/error/*": ["../pkg-error/src/*"],
+      "@business-as-code/fslib": ["../pkg-fslib/src/index.ts"],
+      "@business-as-code/fslib/*": ["../pkg-fslib/src/*"]
     }
   }
 }

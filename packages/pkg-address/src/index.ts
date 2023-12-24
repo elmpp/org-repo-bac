@@ -7,19 +7,17 @@ export {
   assertIsAddressPackageDescriptor,
   assertIsAddressPackageIdent,
   assertIsAddressPathAbsolute,
-  assertIsAddressPathRelative,
+  assertIsAddressPathRelative
 } from './address'
 
-export {
-  type AddressPackageProtocols
-} from './address-package'
+export { type AddressPackageProtocols } from './address-package'
 
-import {Address, InitialiseOptions} from './address'
+import { Address, InitialiseOptions } from './address'
 
 const addressOptions: InitialiseOptions = {
   parseParams: {
-    arch: process.platform,
-  },
+    arch: process.platform
+  }
 }
 const addr = Address.initialise(addressOptions)
 
@@ -28,7 +26,4 @@ const addr = Address.initialise(addressOptions)
 // }
 // addressBootstrap() // bootstrap without parameters upfront. Consumers should do this again with `parseParams`
 
-export {
-  addr,
-  Address,
-}
+export { addr, Address }

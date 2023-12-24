@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { configProjectSourceConfigSchema } from "./config-project-source";
+import { z } from 'zod'
+import { configProjectSourceConfigSchema } from './config-project-source'
 
 /**
  entire workspace is driven by this configuration format. Highly optional
@@ -10,12 +10,12 @@ import { configProjectSourceConfigSchema } from "./config-project-source";
 // );
 export const configSchema = z.object({
   /** define projects for the workspace */
-  projectSource: z.array(configProjectSourceConfigSchema),
-});
+  projectSource: z.array(configProjectSourceConfigSchema)
+})
 
 // export type _Config =
 //   LifecycleOptionsByMethodKeyedByProviderArray<"configureWorkspace">;
-export type Config = z.infer<typeof configSchema>;
+export type Config = z.infer<typeof configSchema>
 
 // expectTypeOf<Config>().toMatchTypeOf<_Config>();
 // expectTypeOf<_Config>().toMatchTypeOf<Config>();

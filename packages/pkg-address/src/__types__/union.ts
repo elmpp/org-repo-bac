@@ -1,5 +1,5 @@
-import { AddressType } from "."
-import { AddressDescriptor } from "./main"
+import { AddressType } from '.'
+import { AddressDescriptor } from './main'
 
 export type ValueOf<T> = T[keyof T]
 
@@ -15,5 +15,5 @@ export type AddressGroupUnion = 'path' | 'url' | 'package' | 'other'
 export type AddressDescriptorUnion = ValueOf<{
   [K in keyof AddressType]: AddressDescriptor<K>
 }>
-type Simplify<T> = {[KeyType in keyof T]: T[KeyType]};
+type Simplify<T> = { [KeyType in keyof T]: T[KeyType] }
 type D = Simplify<keyof AddressType>

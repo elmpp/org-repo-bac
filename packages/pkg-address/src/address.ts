@@ -5,10 +5,10 @@
   @packageDocumentation
   */
 
-import "./handlers"; // force interface merging in declaration files
-import { AddressPathUtils, createAddressPath } from "./address-path";
-import { AddressPackageUtils, createAddressPackage } from "./address-package";
-import { handlers as defaultHandlers } from "./handlers";
+import './handlers' // force interface merging in declaration files
+import { AddressPathUtils, createAddressPath } from './address-path'
+import { AddressPackageUtils, createAddressPackage } from './address-package'
+import { handlers as defaultHandlers } from './handlers'
 import {
   AddressDescriptor,
   AddressGroupUnion,
@@ -20,10 +20,10 @@ import {
   AddressPathAbsolute,
   AddressPathRelative,
   AddressType,
-  AddressUrl,
-} from "./__types__";
-import { AddressTypeByGroup } from "./__types__/util";
-import { AddressUrlUtils, createAddressUrl } from "./address-url";
+  AddressUrl
+} from './__types__'
+import { AddressTypeByGroup } from './__types__/util'
+import { AddressUrlUtils, createAddressUrl } from './address-url'
 
 // export const address = {
 //   parseAsType() {}  // <!---- used to replace struct-utils#parsePackageDescriptor etc
@@ -32,109 +32,109 @@ import { AddressUrlUtils, createAddressUrl } from "./address-url";
 export function assertIsAddress(address: any): address is AddressDescriptor {
   // @todo - look at a Portable Path style __path
   return !!(
-    ["path", "url", "package"].includes(address?.group) &&
+    ['path', 'url', 'package'].includes(address?.group) &&
     address?.original &&
     address?.type
-  );
+  )
 }
 export function assertIsAddressPath(address: any): address is AddressPath {
-  return address?.group === "path";
+  return address?.group === 'path'
 }
 export function assertIsAddressUrl(address: any): address is AddressUrl {
-  return address?.group === "url";
+  return address?.group === 'url'
 }
 export function assertIsAddressPackage(
   address: any
 ): address is AddressPackage {
-  return address?.group === "package";
+  return address?.group === 'package'
 }
 export function assertIsAddressPackageDescriptor(
   address: any
 ): address is AddressPackageDescriptor {
   return (
     [
-      "paramDescriptorStringifiedPackage",
-      "paramDescriptorPackage",
+      'paramDescriptorStringifiedPackage',
+      'paramDescriptorPackage'
     ] as (keyof AddressType)[]
-  ).includes(address?.type);
+  ).includes(address?.type)
 }
 export function assertIsAddressPackageIdent(
   address: any
 ): address is AddressPackageIdent {
   return (
     [
-      "paramIdentStringifiedPackage",
-      "paramIdentPackage",
+      'paramIdentStringifiedPackage',
+      'paramIdentPackage'
     ] as (keyof AddressType)[]
-  ).includes(address?.type);
+  ).includes(address?.type)
 }
 export function assertIsAddressPathRelative(
   address: any
 ): address is AddressPathRelative {
   return (
     [
-      "portablePathPosixRelative",
-      "portablePathWindowsRelative",
-      "portablePathFilename",
+      'portablePathPosixRelative',
+      'portablePathWindowsRelative',
+      'portablePathFilename'
     ] as (keyof AddressType)[]
-  ).includes(address?.type);
+  ).includes(address?.type)
 }
 export function assertIsAddressPathAbsolute(
   address: any
 ): address is AddressPathAbsolute {
   return (
     [
-      "portablePathPosixAbsolute",
-      "portablePathWindowsAbsolute",
+      'portablePathPosixAbsolute',
+      'portablePathWindowsAbsolute'
     ] as (keyof AddressType)[]
-  ).includes(address.type);
+  ).includes(address.type)
 }
 
-const ADDRESS_SCHEME_REGEX = /^(path|url|package|other):(.+)$/;
+const ADDRESS_SCHEME_REGEX = /^(path|url|package|other):(.+)$/
 // export type AddressSchemed = `${AddressGroupUnion}:${string}`
 
 // type PackageManagerUnion = FeatureKeysByLabel<'packageManager', 'workroot'>
 
 export type InitialiseOptions = {
-  handlers?: AddressHandler[];
+  handlers?: AddressHandler[]
 
   /** NB these params must be persistent values (e.g. architecture and NOT based on ephemeral/FS) */
   parseParams: {
     // packageManager: string,
     // packageManager: PackageManagerUnion, // build problems `mnt:build-and-clean`
-    arch?: NodeJS.Platform;
-  };
-};
+    arch?: NodeJS.Platform
+  }
+}
 
 export class Address {
-  options: Omit<InitialiseOptions, "handlers">;
+  options: Omit<InitialiseOptions, 'handlers'>
   handlers = {
     path: new Map<keyof AddressType, AddressHandler>(),
     url: new Map<keyof AddressType, AddressHandler>(),
     package: new Map<keyof AddressType, AddressHandler>(),
-    other: new Map<keyof AddressType, AddressHandler>(),
-  };
-  readonly pathUtils: AddressPathUtils;
-  readonly packageUtils: AddressPackageUtils;
-  readonly urlUtils: AddressUrlUtils;
+    other: new Map<keyof AddressType, AddressHandler>()
+  }
+  readonly pathUtils: AddressPathUtils
+  readonly packageUtils: AddressPackageUtils
+  readonly urlUtils: AddressUrlUtils
 
   constructor({ handlers = [], ...options }: InitialiseOptions) {
-    this.options = options;
+    this.options = options
     for (const handler of handlers.reverse()) {
-      this.registerHandler(handler);
+      this.registerHandler(handler)
     }
 
-    this.pathUtils = createAddressPath(this, this.options.parseParams);
-    this.packageUtils = createAddressPackage(this, this.options.parseParams);
-    this.urlUtils = createAddressUrl(this, this.options.parseParams);
+    this.pathUtils = createAddressPath(this, this.options.parseParams)
+    this.packageUtils = createAddressPackage(this, this.options.parseParams)
+    this.urlUtils = createAddressUrl(this, this.options.parseParams)
   }
 
   static initialise(options: InitialiseOptions): Address {
-    const { handlers = [], ...otherOptions } = options;
+    const { handlers = [], ...otherOptions } = options
     return new Address({
       handlers: [...defaultHandlers, ...handlers] as any,
-      ...otherOptions,
-    });
+      ...otherOptions
+    })
   }
 
   /**
@@ -156,41 +156,41 @@ export class Address {
    ```
    */
   parse(options: {
-    address: string;
-    strict: true;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-    options?: { normalize?: boolean };
-  }): AddressDescriptor;
+    address: string
+    strict: true
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+    options?: { normalize?: boolean }
+  }): AddressDescriptor
   parse(options: {
-    address: string;
-    strict?: boolean;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-    options?: { normalize?: boolean };
-  }): AddressDescriptor | undefined;
+    address: string
+    strict?: boolean
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+    options?: { normalize?: boolean }
+  }): AddressDescriptor | undefined
   parse(options: {
-    address: string;
-    strict?: boolean;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-    options?: { normalize?: boolean };
+    address: string
+    strict?: boolean
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+    options?: { normalize?: boolean }
   }): AddressDescriptor | undefined {
-    const { address, pathType } = options;
-    const matches = address.match(ADDRESS_SCHEME_REGEX);
+    const { address, pathType } = options
+    const matches = address.match(ADDRESS_SCHEME_REGEX)
     if (!matches) {
       throw new Error(
         `Invalid address provided '${address}'. See docs about format: https://monotonous.org/docs/address-formats`
-      );
+      )
     }
-    const [_, matchGroup, matchAddress] = matches;
+    const [_, matchGroup, matchAddress] = matches
 
     return this.doParse({
       ...options,
       address: matchAddress,
       group: matchGroup as AddressGroupUnion,
-      pathType,
-    });
+      pathType
+    })
   }
 
   /**
@@ -202,60 +202,60 @@ export class Address {
    @param [type]  Runs only a specific handler and therefore useful as a test
    */
   private doParse<TType extends keyof AddressType>(options: {
-    address: string;
-    group?: AddressGroupUnion;
-    type: TType;
-    strict: true;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-  }): AddressDescriptor<TType>;
+    address: string
+    group?: AddressGroupUnion
+    type: TType
+    strict: true
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+  }): AddressDescriptor<TType>
   private doParse<TGroup extends AddressGroupUnion>(options: {
-    address: string;
-    group: TGroup;
-    type?: keyof AddressType;
-    strict: true;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-  }): AddressDescriptor<AddressTypeByGroup<TGroup>>;
+    address: string
+    group: TGroup
+    type?: keyof AddressType
+    strict: true
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+  }): AddressDescriptor<AddressTypeByGroup<TGroup>>
   private doParse<TGroup extends AddressGroupUnion>(options: {
-    address: string;
-    group: TGroup;
-    type?: keyof AddressType;
-    strict?: boolean;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-  }): AddressDescriptor<AddressTypeByGroup<TGroup>> | undefined;
+    address: string
+    group: TGroup
+    type?: keyof AddressType
+    strict?: boolean
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+  }): AddressDescriptor<AddressTypeByGroup<TGroup>> | undefined
   private doParse<TType extends keyof AddressType>(options: {
-    address: string;
-    group?: AddressGroupUnion;
-    type?: TType;
-    strict: true;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-  }): AddressDescriptor;
+    address: string
+    group?: AddressGroupUnion
+    type?: TType
+    strict: true
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+  }): AddressDescriptor
   private doParse<TType extends keyof AddressType>(options: {
-    address: string;
-    group?: AddressGroupUnion;
-    type: TType;
-    strict?: boolean;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-  }): AddressDescriptor<TType> | undefined;
+    address: string
+    group?: AddressGroupUnion
+    type: TType
+    strict?: boolean
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+  }): AddressDescriptor<TType> | undefined
   private doParse(options: {
-    address: string;
-    group?: AddressGroupUnion;
-    type?: keyof AddressType;
-    strict?: boolean;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
-  }): AddressDescriptor | undefined;
+    address: string
+    group?: AddressGroupUnion
+    type?: keyof AddressType
+    strict?: boolean
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
+  }): AddressDescriptor | undefined
   private doParse(options: {
-    address: string;
-    group?: AddressGroupUnion;
-    type?: keyof AddressType;
-    strict?: boolean;
-    arch?: NodeJS.Platform;
-    pathType?: "native" | "portable";
+    address: string
+    group?: AddressGroupUnion
+    type?: keyof AddressType
+    strict?: boolean
+    arch?: NodeJS.Platform
+    pathType?: 'native' | 'portable'
   }): AddressDescriptor | undefined {
     const {
       arch = process.platform,
@@ -263,8 +263,8 @@ export class Address {
       group,
       strict,
       type,
-      pathType,
-    } = options;
+      pathType
+    } = options
 
     // let ret: AddressDescriptor | undefined = undefined
 
@@ -293,22 +293,22 @@ export class Address {
       handler: AddressHandler,
       strict: boolean
     ): AddressDescriptor | undefined => {
-      let res: AddressDescriptor | undefined = undefined;
+      let res: AddressDescriptor | undefined = undefined
 
       try {
         res = handler.parse({
           address,
           arch,
           ...this.options.parseParams,
-          pathType,
-        }) as AddressDescriptor;
-        if (res) res.group = handler.group;
+          pathType
+        }) as AddressDescriptor
+        if (res) res.group = handler.group
       } catch (err) {
-        if (strict) throw err;
+        if (strict) throw err
       }
 
-      return res;
-    };
+      return res
+    }
 
     const doReturn = (
       descriptor: AddressDescriptor | undefined,
@@ -317,33 +317,33 @@ export class Address {
       if (!descriptor && strict) {
         throw new Error(
           `Address: unable to parse '${address}' as group/type: '${
-            group ?? "-"
-          }/${type ?? "-"}'${error ? `. Error: '${error.message}'` : ``}`
-        );
+            group ?? '-'
+          }/${type ?? '-'}'${error ? `. Error: '${error.message}'` : ``}`
+        )
       }
-      return descriptor;
-    };
+      return descriptor
+    }
 
     const doGroup = (group: AddressGroupUnion) => {
       for (const [_handlerName, handler] of this.handlers[group].entries()) {
-        const res = doHandler(handler, false);
-        if (res) return res;
+        const res = doHandler(handler, false)
+        if (res) return res
       }
-    };
+    }
     try {
       if (type) {
-        return doReturn(doHandler(this.getHandlerForType(type), true));
+        return doReturn(doHandler(this.getHandlerForType(type), true))
       }
       if (group) {
-        return doReturn(doGroup(group));
+        return doReturn(doGroup(group))
       }
 
       for (const aGroup of Object.keys(this.handlers)) {
-        const res = doGroup(aGroup as AddressGroupUnion);
-        if (res) return doReturn(res);
+        const res = doGroup(aGroup as AddressGroupUnion)
+        if (res) return doReturn(res)
       }
     } catch (err) {
-      return doReturn(undefined, err as Error);
+      return doReturn(undefined, err as Error)
     }
   }
 
@@ -354,69 +354,69 @@ export class Address {
   registerHandler(handler: AddressHandler) {
     const handlerArrMap = [[handler.name, handler] as const].concat(
       Array.from(this.handlers[handler.group])
-    );
-    this.handlers[handler.group] = new Map(handlerArrMap);
+    )
+    this.handlers[handler.group] = new Map(handlerArrMap)
   }
 
   /** parses a path string with assumption it is in the platform's format (i.e. NativePath) */
   parsePath(
     address: string,
     options: { strict: false }
-  ): AddressDescriptor<AddressTypeByGroup<"path">> | undefined;
+  ): AddressDescriptor<AddressTypeByGroup<'path'>> | undefined
   parsePath(
     address: string,
     options?: { strict?: true }
-  ): AddressDescriptor<AddressTypeByGroup<"path">>;
+  ): AddressDescriptor<AddressTypeByGroup<'path'>>
   parsePath(
     address: string,
     { strict = true }: { strict?: boolean } = {}
-  ): AddressDescriptor<AddressTypeByGroup<"path">> | undefined {
-    const desc = this.doParse({ address, group: "path", strict });
+  ): AddressDescriptor<AddressTypeByGroup<'path'>> | undefined {
+    const desc = this.doParse({ address, group: 'path', strict })
     // if (assertIsAddressPathRelative(desc) && resolveFromCwd) {
     //   return addressPath.
     // }
-    return desc;
+    return desc
   }
   /** parses a path string with assumption it is in the posix format regardless of platform (i.e. PortablePath) */
   parsePPath(
     address: string,
     options?: {}
-  ): AddressDescriptor<AddressTypeByGroup<"path">>;
+  ): AddressDescriptor<AddressTypeByGroup<'path'>>
   parsePPath(
     address: string,
     options: {} = {}
-  ): AddressDescriptor<AddressTypeByGroup<"path">> {
-    return this.doParse({ address, group: "path", strict: true });
+  ): AddressDescriptor<AddressTypeByGroup<'path'>> {
+    return this.doParse({ address, group: 'path', strict: true })
   }
   parseUrl(
     address: string,
     options: {} = {}
-  ): AddressDescriptor<AddressTypeByGroup<"url">> {
-    return this.doParse({ address, group: "url", strict: true });
+  ): AddressDescriptor<AddressTypeByGroup<'url'>> {
+    return this.doParse({ address, group: 'url', strict: true })
   }
   parsePackage(
     address: string,
     options: {} = {}
-  ): AddressDescriptor<AddressTypeByGroup<"package">> {
-    return this.doParse({ address, group: "package", strict: true });
+  ): AddressDescriptor<AddressTypeByGroup<'package'>> {
+    return this.doParse({ address, group: 'package', strict: true })
   }
   parseAsType<TType extends keyof AddressType>(
     address: string,
     type: TType,
     options: { strict: false }
-  ): AddressDescriptor<TType> | undefined;
+  ): AddressDescriptor<TType> | undefined
   parseAsType<TType extends keyof AddressType>(
     address: string,
     type: TType,
     options?: { strict?: true }
-  ): AddressDescriptor<TType>;
+  ): AddressDescriptor<TType>
   parseAsType<TType extends keyof AddressType>(
     address: string,
     type: TType,
     options: { strict?: boolean } = {}
   ): AddressDescriptor<TType> | undefined {
-    const { strict = true } = options;
-    return this.doParse({ address, type, strict });
+    const { strict = true } = options
+    return this.doParse({ address, type, strict })
   }
   // fromPortableAddress(address: AddressDescriptor): string {
   //   if (!['portablePathPosixAbsolute', 'portablePathPosixRelative', 'portablePathWindowsAbsolute', 'portablePathWindowsRelative'].includes(address.type)) {
@@ -426,17 +426,17 @@ export class Address {
   // }
 
   format(address: AddressDescriptor): string {
-    let handler = this.getHandlerForType(address.type);
+    let handler = this.getHandlerForType(address.type)
     if (!handler.format) {
-      handler = this.getDefaultHandlerForGroup(address.group);
+      handler = this.getDefaultHandlerForGroup(address.group)
     }
     if (!handler.format)
       throw new Error(
         `Address: default handler '${handler.name}' does not implement format(). Ensure correct handler order is maintained`
-      );
+      )
     return handler.format
       ? handler.format({ address, addressIns: this })
-      : JSON.stringify(address);
+      : JSON.stringify(address)
   }
 
   // private normalize<Desc extends AddressDescriptor>(address: Desc): string {
@@ -485,23 +485,23 @@ export class Address {
       ...this.handlers.path.values(),
       ...this.handlers.url.values(),
       ...this.handlers.package.values(),
-      ...this.handlers.other.values(),
-    ]).find((h) => h.name === type) as unknown as AddressHandler<TType>;
+      ...this.handlers.other.values()
+    ]).find((h) => h.name === type) as unknown as AddressHandler<TType>
     if (!handler)
       throw new Error(
         `Address: Handler '${type}' not found. Ensure it is registered early enough in the lifecycle before usage`
-      );
-    return handler;
+      )
+    return handler
   }
   private getDefaultHandlerForGroup<TGroup extends AddressGroupUnion>(
     group: TGroup
   ): AddressHandler<AddressTypeByGroup<TGroup>> {
     if (!this.handlers[group]) {
-      throw new Error(`Handlers not found for group '${group}'`);
+      throw new Error(`Handlers not found for group '${group}'`)
     }
-    const groupHandlers = Array.from(this.handlers[group].values());
+    const groupHandlers = Array.from(this.handlers[group].values())
     return groupHandlers[groupHandlers.length - 1] as unknown as AddressHandler<
       AddressTypeByGroup<TGroup>
-    >;
+    >
   }
 }

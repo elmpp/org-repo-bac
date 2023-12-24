@@ -4,8 +4,8 @@ import {
   AddressPathRelative,
   assertIsAddressPath,
   assertIsAddressPathAbsolute,
-  assertIsAddressPathRelative,
-} from "@business-as-code/address";
+  assertIsAddressPathRelative
+} from '@business-as-code/address'
 import {
   BaseCommand,
   ContextCommand,
@@ -15,76 +15,78 @@ import {
   ok,
   ServiceProvidersForAsByMethod,
   validators
-} from "@business-as-code/core";
+} from '@business-as-code/core'
 // import { configSchema } from "@business-as-code/core/src/validation/config";
-import {
-  BacError,
-  BacErrorWrapper,
-  MessageName,
-} from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
+import { BacError, BacErrorWrapper, MessageName } from '@business-as-code/error'
+import { xfs } from '@business-as-code/fslib'
 
 const identity = <T extends any>(value: T) => value
 export default class InitialiseWorkspace extends BaseCommand<
   typeof InitialiseWorkspace
 > {
-  static override description = "Creates an empty workspace";
+  static override description = 'Creates an empty workspace'
 
   static override examples = [
     `$ oex hello friend --from oclif
 hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ];
+`
+  ]
 
   static override flags = {
     name: Oclif.Flags.string({
-      description: "Workspace name",
-      required: true,
+      description: 'Workspace name',
+      required: true
     }),
     workspacePath: Oclif.Flags.directory({
-      description: "Workspace path",
+      description: 'Workspace path',
       required: true,
       exists: false,
       parse: async (aPath) => {
         if (!addr.parsePath(aPath, { strict: false })) {
           throw new Error(
             `Expected an valid relative/absolute path but received: ${aPath}`
-          );
+          )
         }
-        return aPath;
-      },
+        return aPath
+      }
     }),
     configPath: Oclif.Flags.string({
-      description: "Relative or absolute path to a workspace configuration",
-      required: false,
+      description: 'Relative or absolute path to a workspace configuration',
+      required: false
     }),
     cliVersion: Oclif.Flags.string({
-      description: "Specify a Bac cli version",
+      description: 'Specify a Bac cli version',
       required: false,
-      default: "latest",
+      default: 'latest'
     }),
     cliRegistry: Oclif.Flags.string({
-      description: "Specify a package manager registry to load the Bac cli",
-      required: false,
+      description: 'Specify a package manager registry to load the Bac cli',
+      required: false
       // default: "https://registry.npmjs.org",
       // default: "http://localhost:4873",
     }),
     cliPath: Oclif.Flags.string({
       description:
-        "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
-      required: false,
+        'Specify a fs path to load the Bac cli (performs a link via package manager). For dev use',
+      required: false
     }),
-    packageManager: Oclif.Flags.custom<ServiceProvidersForAsByMethod<"packageManager">>({
-      summary: "Package manager for the workspace",
+    packageManager: Oclif.Flags.custom<
+      ServiceProvidersForAsByMethod<'packageManager'>
+    >({
+      summary: 'Package manager for the workspace',
       // env: 'BAC_LOG_LEVEL',
-      options: ['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn'] satisfies ServiceProvidersForAsByMethod<"packageManager">[], // don't support npm workspaces
+      options: [
+        'packageManagerBun',
+        'packageManagerPnpm',
+        'packageManagerYarn'
+      ] satisfies ServiceProvidersForAsByMethod<'packageManager'>[], // don't support npm workspaces
       // options: ['packageManagerBun', 'packageManagerPnpm', 'packageManagerYarn', 'packageManagerNpm'] satisfies ServiceProvidersForAsByMethod<"packageManager">[],
       // helpGroup: "GLOBAL",
       // default: 'info',
       // default: async () => process.env.BAC_LOG_LEVEL ?? 'info',
       // default: "info",
-      required: true,
-    })(),
+      required: true
+    })()
     // packageManager: Oclif.Flags.string({
     //   description:
     //     "Specify a fs path to load the Bac cli (performs a link via package manager). For dev use",
@@ -92,7 +94,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   required: true,
     //   // default: 'packageManagerBun',
     // }),
-  };
+  }
 
   static override args = {
     // firstArg: Oclif.Args.string(
@@ -110,7 +112,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
-  };
+  }
 
   protected async getConfig(
     context: ContextCommand<typeof InitialiseWorkspace>
@@ -122,9 +124,9 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         | AddressPathRelative
     ): AddressPathAbsolute => {
       let configPath: AddressPathAbsolute | AddressPathRelative =
-        typeof runtimeConfigRelOrAbsoluteNative === "string"
+        typeof runtimeConfigRelOrAbsoluteNative === 'string'
           ? addr.parsePath(runtimeConfigRelOrAbsoluteNative)
-          : runtimeConfigRelOrAbsoluteNative;
+          : runtimeConfigRelOrAbsoluteNative
       //   addr.parsePath(
       //     runtimeConfigRelOrAbsoluteNative ??
       //       path.resolve(__dirname, "./config-default.js")
@@ -147,7 +149,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         configPath = addr.pathUtils.resolve(
           addr.parsePath(process.cwd()),
           configPath
-        ) as AddressPathAbsolute;
+        ) as AddressPathAbsolute
       }
 
       if (!xfs.existsSync(configPath.address)) {
@@ -155,14 +157,14 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           MessageName.OCLIF_ERROR,
           `Config path at '${
             configPath.original
-          }' does not exist, supplied as '${require("util").inspect(
+          }' does not exist, supplied as '${require('util').inspect(
             runtimeConfigRelOrAbsoluteNative,
             { showHidden: false, depth: undefined, colors: true }
           )}'`
-        );
+        )
       }
-      return configPath;
-    };
+      return configPath
+    }
 
     // const cliCheckoutPath = addr.packageUtils.resolve({
     //   address: addr.parsePackage(
@@ -181,23 +183,23 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   ) as AddressPathAbsolute, // we should always be able to find other BAC packages from the cli (which is available via oclifConfig)
     //   strict: true,
     // });
-    const skeletonConfigPath = fsUtils.resolveCoreConfig("skeleton.js");
+    const skeletonConfigPath = fsUtils.resolveCoreConfig('skeleton.js')
 
     const inputConfigPathWithDefault =
-      context.cliOptions.flags.configPath ?? skeletonConfigPath;
-    const configPath = getConfigPath(inputConfigPathWithDefault);
-    const { module } = await fsUtils.loadModule(configPath.address);
+      context.cliOptions.flags.configPath ?? skeletonConfigPath
+    const configPath = getConfigPath(inputConfigPathWithDefault)
+    const { module } = await fsUtils.loadModule(configPath.address)
 
     if (!module.config) {
       throw new BacError(
         MessageName.CONFIGURATION_CONTENT_ERROR,
         `Configuration file found but does not contain expected content. Path: '${configPath.original}'`
-      );
+      )
     }
-    const configRaw = module.config;
-// console.log(`configRaw :>> `, configRaw, configSchema)
+    const configRaw = module.config
+    // console.log(`configRaw :>> `, configRaw, configSchema)
 
-    const configParseRes = validators.config.configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
+    const configParseRes = validators.config.configSchema.safeParse(configRaw) // https://tinyurl.com/23w6yx2u
     // const configParseRes = validators.config.configSchema.safeParse(configRaw); // https://tinyurl.com/23w6yx2u
 
     if (configParseRes.success === false) {
@@ -205,79 +207,79 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         MessageName.CONFIGURATION_INVALID_ERROR,
         `Configuration file found but has validation errors. ${configParseRes.error.message}. Path: '${configPath.original}'`,
         configParseRes.error
-      );
+      )
     }
 
     return {
       config: configParseRes.data,
-      path: configPath,
-    };
+      path: configPath
+    }
   }
 
   async execute(context: ContextCommand<typeof InitialiseWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
 
-    let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!);
+    let workspacePath = addr.parsePath(context.cliOptions.flags.workspacePath!)
     if (!assertIsAddressPath(workspacePath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
         `Path '${context.cliOptions.args.path.path}' cannot be parsed as a path`
-      );
+      )
     }
     if (assertIsAddressPathRelative(workspacePath)) {
       workspacePath = addr.pathUtils.join(
         addr.parsePath(process.cwd()),
         workspacePath
-      );
+      )
     }
     if (!assertIsAddressPathAbsolute(workspacePath)) {
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
         `Path '${workspacePath.original}' must be absolute/relative`
-      );
+      )
     }
 
-    const { path: configPath } = await this.getConfig(context);
+    const { path: configPath } = await this.getConfig(context)
 
     const initialiseRes =
       await context.lifecycles.initialiseWorkspace.executeInitialiseWorkspace({
         common: {
           context,
           workspacePath,
-          workingPath: ".",
+          workingPath: '.'
         },
         options: [
           {
-            provider: "core",
+            provider: 'core',
             options: {
               name: context.cliOptions.flags.name,
               configPath: configPath.original,
               cliVersion: context.cliOptions.flags.cliVersion,
               cliRegistry: context.cliOptions.flags.cliRegistry,
               cliPath: context.cliOptions.flags.cliPath,
-              packageManager: context.cliOptions.flags.packageManager!,
+              packageManager: context.cliOptions.flags.packageManager!
               // options: {
               //   a: 'a',
               // }, // <!-- typed as any atm ¯\_(ツ)_/¯
-            },
-          },
-        ],
-      });
+            }
+          }
+        ]
+      })
 
     // return initialiseRes.res
-    expectIsOk(initialiseRes);
+    expectIsOk(initialiseRes)
 
-    const bacService = await context.serviceFactory("bac", {
+    const bacService = await context.serviceFactory('bac', {
       context,
       workspacePath,
-      workingPath: ".",
-      packageManager: context.cliOptions.flags.packageManager!,
-    });
+      workingPath: '.',
+      packageManager: context.cliOptions.flags.packageManager!
+    })
 
-    context.logger.info(`initialise:workspace: lifecycle initialise success`);
+    context.logger.info(`initialise:workspace: lifecycle initialise success`)
 
-    const configWithoutCommonRes = await bacService.loadConfig();
-    expectIsOk(configWithoutCommonRes);
+    const configWithoutCommonRes = await bacService.loadConfig()
+    expectIsOk(configWithoutCommonRes)
 
     // const config = mapLifecycleOptionsByMethodKeyedByProviderWithoutCommon({common: {
     //   context,
@@ -299,13 +301,13 @@ hello friend from oclif! (./src/commands/hello/index.ts)
         common: {
           context,
           workspacePath,
-          workingPath: '.',
+          workingPath: '.'
         },
         options: {
-          config: configWithoutCommonRes.res,
-        },
-      });
-    expectIsOk(configureRes);
+          config: configWithoutCommonRes.res
+        }
+      })
+    expectIsOk(configureRes)
 
     await bacService.setConfiguredConfigEntry(configureRes.res)
 
@@ -329,12 +331,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     //   "utf-8"
     // );
 
-    context.logger.info(`initialise:workspace: lifecycle configure success`);
+    context.logger.info(`initialise:workspace: lifecycle configure success`)
 
     // expectIsOk(configureRes.res)
 
     // we have an array of lifecycle return types after configure...
-    return ok({});
+    return ok({})
     // return configureRes.
 
     // return res.res; // we eschew the provider wrapping for our solitary initialWorkspace

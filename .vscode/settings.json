@@ -12,9 +12,7 @@
   // ---------- moon eslint setup -- https://tinyurl.com/2oocjdoe ----
   // Automatically run all linting fixes on save as a concurrent code action,
   // and avoid formatting with ESLint. Use another formatter, like Prettier.
-  "editor.codeActionsOnSave": [
-    "source.fixAll.eslint"
-  ],
+  "editor.codeActionsOnSave": ["source.fixAll.eslint"],
   "eslint.format.enable": false,
   // If linting is *too slow* while typing, uncomment the following line to
   // only run the linter on save only.
@@ -42,7 +40,7 @@
   "editor.formatOnSave": false,
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
-  },
+  }
   // "[typescript]": {
   //   "editor.defaultFormatter": "vscode.typescript-language-features"
   // }

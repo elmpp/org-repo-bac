@@ -22,13 +22,10 @@ import('@business-as-code/cli')
 //   }
 // }
 
-
 declare global {
   namespace Bac {
-    interface Services {
-    }
-    interface Lifecycles {
-    }
+    interface Services {}
+    interface Lifecycles {}
     // interface ConfigProjectSource {
 
     // }

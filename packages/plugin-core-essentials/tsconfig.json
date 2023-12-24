@@ -32,42 +32,22 @@
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
-      "@business-as-code/address": [
-        "../pkg-address/src/index.ts"
-      ],
-      "@business-as-code/address/*": [
-        "../pkg-address/src/*"
-      ],
-      "@business-as-code/core": [
-        "../pkg-core/src/index.ts"
-      ],
-      "@business-as-code/core/*": [
-        "../pkg-core/src/*"
-      ],
-      "@business-as-code/error": [
-        "../pkg-error/src/index.ts"
-      ],
-      "@business-as-code/error/*": [
-        "../pkg-error/src/*"
-      ],
-      "@business-as-code/fslib": [
-        "../pkg-fslib/src/index.ts"
-      ],
-      "@business-as-code/fslib/*": [
-        "../pkg-fslib/src/*"
-      ],
+      "@business-as-code/address": ["../pkg-address/src/index.ts"],
+      "@business-as-code/address/*": ["../pkg-address/src/*"],
+      "@business-as-code/core": ["../pkg-core/src/index.ts"],
+      "@business-as-code/core/*": ["../pkg-core/src/*"],
+      "@business-as-code/error": ["../pkg-error/src/index.ts"],
+      "@business-as-code/error/*": ["../pkg-error/src/*"],
+      "@business-as-code/fslib": ["../pkg-fslib/src/index.ts"],
+      "@business-as-code/fslib/*": ["../pkg-fslib/src/*"],
       "@business-as-code/plugin-dev-essentials": [
         "../plugin-dev-essentials/src/index.ts"
       ],
       "@business-as-code/plugin-dev-essentials/*": [
         "../plugin-dev-essentials/src/*"
       ],
-      "@business-as-code/tests-core": [
-        "../tests/pkg-tests-core/src/index.ts"
-      ],
-      "@business-as-code/tests-core/*": [
-        "../tests/pkg-tests-core/src/*"
-      ]
+      "@business-as-code/tests-core": ["../tests/pkg-tests-core/src/index.ts"],
+      "@business-as-code/tests-core/*": ["../tests/pkg-tests-core/src/*"]
     }
   }
 }

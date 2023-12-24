@@ -1,68 +1,62 @@
 import { PortablePath } from '@business-as-code/fslib'
 import { Address } from '../address'
 import { AddressPathUtils } from '../address-path'
-import { AddressDescriptor, AddressPathAbsolute, AddressTypeByGroup } from '../__types__'
-
+import {
+  AddressDescriptor,
+  AddressPathAbsolute,
+  AddressTypeByGroup
+} from '../__types__'
 
 describe('addr.pathUtils', () => {
-
   let addr: Address
   let addressPathUtils: AddressPathUtils
 
   beforeEach(async () => {
-    addr = Address.initialise({parseParams: {}})
+    addr = Address.initialise({ parseParams: {} })
     addressPathUtils = addr.pathUtils
   })
   describe('static references', () => {
     it('references', () => {
       const realCwd = process.cwd()
       process.chdir('/')
-      expect(addressPathUtils.root).toEqual(
-        {
-          original: '/',
-          originalNormalized: '/',
-          address: '/',
-          addressNormalized: '/',
-          group: 'path',
-          type: 'portablePathPosixAbsolute',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.dot).toEqual(
-        {
-          original: '.',
-          originalNormalized: '.',
-          address: '.',
-          addressNormalized: '.',
-          group: 'path',
-          type: 'portablePathPosixRelative',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.cwd).toEqual(
-        {
-          original: '/',
-          originalNormalized: '/',
-          address: '/',
-          addressNormalized: '/',
-          group: 'path',
-          type: 'portablePathPosixAbsolute',
-          parts: {},
-        }
-      )
+      expect(addressPathUtils.root).toEqual({
+        original: '/',
+        originalNormalized: '/',
+        address: '/',
+        addressNormalized: '/',
+        group: 'path',
+        type: 'portablePathPosixAbsolute',
+        parts: {}
+      })
+      expect(addressPathUtils.dot).toEqual({
+        original: '.',
+        originalNormalized: '.',
+        address: '.',
+        addressNormalized: '.',
+        group: 'path',
+        type: 'portablePathPosixRelative',
+        parts: {}
+      })
+      expect(addressPathUtils.cwd).toEqual({
+        original: '/',
+        originalNormalized: '/',
+        address: '/',
+        addressNormalized: '/',
+        group: 'path',
+        type: 'portablePathPosixAbsolute',
+        parts: {}
+      })
       process.chdir(realCwd)
     })
   })
   describe('other methods', () => {
     // it('projectSubPath', () => {
-
     //   const projectCwd = addr.parsePath('/tmp') as AddressPathAbsolute
     //   // const worktree: import('@monotonous/core/src/database/entity/main/worktree-entity').WorktreeEntitySpec = {
     //   const worktree: any = {
     //     relativeCwd: 'orgs/org1' as PortablePath,
     //     type: 'worktree',
     //   }
-
     //   expect(addressPathUtils.projectSubPath({
     //     projectCwd,
     //     tier: 'workroot',
@@ -122,9 +116,6 @@ describe('addr.pathUtils', () => {
     //     worktree,
     //     // relativeCwd: './ILLOGICAL' as PortablePath
     //   })).toThrowError(/AddressPath#projectSubPath\(\): `worktree` only suppliable for a `workspace` type/)
-
-
-
     //   expect(addressPathUtils.projectSubPath({
     //     projectCwd,
     //     tier: 'workspace',
@@ -191,9 +182,6 @@ describe('addr.pathUtils', () => {
     //       parts: {},
     //     }
     //   )
-
-
-
     //   expect(addressPathUtils.projectSubPath({
     //     projectCwd,
     //     tier: 'worktree',
@@ -249,7 +237,12 @@ describe('addr.pathUtils', () => {
   })
   describe('parseAsType', () => {
     it.skip(`non-absolute paths may be parsed as relative, even if they could also be 'portablePathFilename'`, () => {
-      expect(addr.parseAsType(addr.pathUtils.dot.address, 'portablePathPosixRelative')).toHaveProperty('original', '.') // currently not supported :(
+      expect(
+        addr.parseAsType(
+          addr.pathUtils.dot.address,
+          'portablePathPosixRelative'
+        )
+      ).toHaveProperty('original', '.') // currently not supported :(
     })
   })
   describe('posix path methods', () => {
@@ -257,186 +250,336 @@ describe('addr.pathUtils', () => {
       const realCwd = process.cwd()
       process.chdir('/')
 
-      expect(addressPathUtils.resolve(addressPathUtils.root, addr.parsePath('/tmp'))).toEqual(
-        {
-          original: '/tmp',
-          originalNormalized: '/tmp',
-          address: '/tmp',
-          addressNormalized: '/tmp',
-          group: 'path',
-          type: 'portablePathPosixAbsolute',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.resolve(addr.parsePath('relative'))).toEqual(
-        {
-          original: '/relative',
-          originalNormalized: '/relative',
-          address: '/relative',
-          addressNormalized: '/relative',
-          group: 'path',
-          type: 'portablePathPosixAbsolute',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.resolve(addr.parsePath('/Users/matt/dev/org-repo/orgs/monotonous/packages/mnt-pkg-database'), addr.parsePath('../../../..'))).toEqual(
-        {
-          original: '/Users/matt/dev/org-repo',
-          originalNormalized: '/Users/matt/dev/org-repo',
-          address: '/Users/matt/dev/org-repo',
-          addressNormalized: '/Users/matt/dev/org-repo',
-          group: 'path',
-          type: 'portablePathPosixAbsolute',
-          parts: {},
-        }
-      )
+      expect(
+        addressPathUtils.resolve(addressPathUtils.root, addr.parsePath('/tmp'))
+      ).toEqual({
+        original: '/tmp',
+        originalNormalized: '/tmp',
+        address: '/tmp',
+        addressNormalized: '/tmp',
+        group: 'path',
+        type: 'portablePathPosixAbsolute',
+        parts: {}
+      })
+      expect(addressPathUtils.resolve(addr.parsePath('relative'))).toEqual({
+        original: '/relative',
+        originalNormalized: '/relative',
+        address: '/relative',
+        addressNormalized: '/relative',
+        group: 'path',
+        type: 'portablePathPosixAbsolute',
+        parts: {}
+      })
+      expect(
+        addressPathUtils.resolve(
+          addr.parsePath(
+            '/Users/matt/dev/org-repo/orgs/monotonous/packages/mnt-pkg-database'
+          ),
+          addr.parsePath('../../../..')
+        )
+      ).toEqual({
+        original: '/Users/matt/dev/org-repo',
+        originalNormalized: '/Users/matt/dev/org-repo',
+        address: '/Users/matt/dev/org-repo',
+        addressNormalized: '/Users/matt/dev/org-repo',
+        group: 'path',
+        type: 'portablePathPosixAbsolute',
+        parts: {}
+      })
       process.chdir(realCwd)
     })
     it('join', () => {
-      const testMap: [AddressDescriptor<AddressTypeByGroup<"path">>[], Partial<Pick<AddressDescriptor<AddressTypeByGroup<"path">>, 'original' | 'originalNormalized' | 'address' | 'addressNormalized' | 'type'>>, AddressDescriptor<AddressTypeByGroup<"path">>['parts']][] = [
-        [[addressPathUtils.root, addr.parsePath('/tmp')], {original: '/tmp', originalNormalized: '/tmp', address: '/tmp' as PortablePath, addressNormalized: '/tmp' as PortablePath}, {suffix: undefined}],
-        [[addr.parsePath('/tmp1'), addr.parsePath('/tmp2')], {original: '/tmp1/tmp2', originalNormalized: '/tmp1/tmp2', address: '/tmp1/tmp2' as PortablePath, addressNormalized: '/tmp1/tmp2' as PortablePath}, {suffix: undefined}],
-        [[addr.parsePath('/tmp1/*'), addr.parsePath('/tmp2/*')], {original: '/tmp1/tmp2/*', originalNormalized: '/tmp1/tmp2', address: '/tmp1/tmp2/*' as PortablePath, addressNormalized: '/tmp1/tmp2' as PortablePath}, {suffix: '/*'}],
-        [[addr.parsePath('./*'), addr.parsePath('.')], {original: '.', originalNormalized: '.', address: '.' as PortablePath, addressNormalized: '.' as PortablePath, type: 'portablePathFilename'}, {suffix: undefined}],
-        [[addr.parsePath('.'), addr.parsePath('./*')], {original: './*', originalNormalized: '.', address: './*' as PortablePath, addressNormalized: '.' as PortablePath, type: 'portablePathPosixRelative'}, {suffix: '/*'}],
+      const testMap: [
+        AddressDescriptor<AddressTypeByGroup<'path'>>[],
+        Partial<
+          Pick<
+            AddressDescriptor<AddressTypeByGroup<'path'>>,
+            | 'original'
+            | 'originalNormalized'
+            | 'address'
+            | 'addressNormalized'
+            | 'type'
+          >
+        >,
+        AddressDescriptor<AddressTypeByGroup<'path'>>['parts']
+      ][] = [
+        [
+          [addressPathUtils.root, addr.parsePath('/tmp')],
+          {
+            original: '/tmp',
+            originalNormalized: '/tmp',
+            address: '/tmp' as PortablePath,
+            addressNormalized: '/tmp' as PortablePath
+          },
+          { suffix: undefined }
+        ],
+        [
+          [addr.parsePath('/tmp1'), addr.parsePath('/tmp2')],
+          {
+            original: '/tmp1/tmp2',
+            originalNormalized: '/tmp1/tmp2',
+            address: '/tmp1/tmp2' as PortablePath,
+            addressNormalized: '/tmp1/tmp2' as PortablePath
+          },
+          { suffix: undefined }
+        ],
+        [
+          [addr.parsePath('/tmp1/*'), addr.parsePath('/tmp2/*')],
+          {
+            original: '/tmp1/tmp2/*',
+            originalNormalized: '/tmp1/tmp2',
+            address: '/tmp1/tmp2/*' as PortablePath,
+            addressNormalized: '/tmp1/tmp2' as PortablePath
+          },
+          { suffix: '/*' }
+        ],
+        [
+          [addr.parsePath('./*'), addr.parsePath('.')],
+          {
+            original: '.',
+            originalNormalized: '.',
+            address: '.' as PortablePath,
+            addressNormalized: '.' as PortablePath,
+            type: 'portablePathFilename'
+          },
+          { suffix: undefined }
+        ],
+        [
+          [addr.parsePath('.'), addr.parsePath('./*')],
+          {
+            original: './*',
+            originalNormalized: '.',
+            address: './*' as PortablePath,
+            addressNormalized: '.' as PortablePath,
+            type: 'portablePathPosixRelative'
+          },
+          { suffix: '/*' }
+        ]
       ]
 
       for (const [segments, expectations, parts] of testMap) {
         const ret = addressPathUtils.join(...segments)
-        expect(ret).toEqual(
-          {
-            type: 'portablePathPosixAbsolute',
-            ...expectations,
-            group: 'path',
-            parts,
-          }
-        )
+        expect(ret).toEqual({
+          type: 'portablePathPosixAbsolute',
+          ...expectations,
+          group: 'path',
+          parts
+        })
       }
-
     })
     it('isAbsolute', () => {
       expect(addressPathUtils.isAbsolute(addr.parsePath('/tmp'))).toBeTruthy()
 
       expect(addressPathUtils.isAbsolute(addressPathUtils.dot)).toBeFalsy()
-      expect(addressPathUtils.isAbsolute(addr.parsePath('filename'))).toBeFalsy()
-      expect(addressPathUtils.isAbsolute(addr.parsePath('filename'))).toBeFalsy()
-      expect(addressPathUtils.isAbsolute(addr.parsePath('./relative'))).toBeFalsy()
+      expect(
+        addressPathUtils.isAbsolute(addr.parsePath('filename'))
+      ).toBeFalsy()
+      expect(
+        addressPathUtils.isAbsolute(addr.parsePath('filename'))
+      ).toBeFalsy()
+      expect(
+        addressPathUtils.isAbsolute(addr.parsePath('./relative'))
+      ).toBeFalsy()
     })
     it('overlap', () => {
-      const srcAddress = addr.parseAsType('/tmp', 'portablePathPosixAbsolute') as AddressPathAbsolute
+      const srcAddress = addr.parseAsType(
+        '/tmp',
+        'portablePathPosixAbsolute'
+      ) as AddressPathAbsolute
 
-      expect(addressPathUtils.overlap(srcAddress, addr.parseAsType('/tmp', 'portablePathPosixAbsolute'))).toEqual(true)
-      expect(addressPathUtils.overlap(srcAddress, addr.parseAsType('/tmp/', 'portablePathPosixAbsolute'))).toEqual(true)
-      expect(addressPathUtils.overlap(srcAddress, addr.parseAsType('/tmp/somewhere', 'portablePathPosixAbsolute'))).toEqual(true)
+      expect(
+        addressPathUtils.overlap(
+          srcAddress,
+          addr.parseAsType('/tmp', 'portablePathPosixAbsolute')
+        )
+      ).toEqual(true)
+      expect(
+        addressPathUtils.overlap(
+          srcAddress,
+          addr.parseAsType('/tmp/', 'portablePathPosixAbsolute')
+        )
+      ).toEqual(true)
+      expect(
+        addressPathUtils.overlap(
+          srcAddress,
+          addr.parseAsType('/tmp/somewhere', 'portablePathPosixAbsolute')
+        )
+      ).toEqual(true)
 
-      expect(addressPathUtils.overlap(srcAddress, addr.parseAsType('/tmp-not-matching/somewhere', 'portablePathPosixAbsolute'))).toEqual(false)
-      expect(addressPathUtils.overlap(addr.parseAsType('/tmp-not-matching/somewhere', 'portablePathPosixAbsolute'), srcAddress)).toEqual(false)
+      expect(
+        addressPathUtils.overlap(
+          srcAddress,
+          addr.parseAsType(
+            '/tmp-not-matching/somewhere',
+            'portablePathPosixAbsolute'
+          )
+        )
+      ).toEqual(false)
+      expect(
+        addressPathUtils.overlap(
+          addr.parseAsType(
+            '/tmp-not-matching/somewhere',
+            'portablePathPosixAbsolute'
+          ),
+          srcAddress
+        )
+      ).toEqual(false)
     })
     it('dirname', () => {
-
-      const testMap: [AddressDescriptor<AddressTypeByGroup<"path">>, Pick<AddressDescriptor<AddressTypeByGroup<"path">>, 'original' | 'originalNormalized' | 'address' | 'addressNormalized' | 'type'>, AddressDescriptor<AddressTypeByGroup<"path">>['parts']][] = [
-        [addr.parsePath('/tmp/subdir'), {original: '/tmp', originalNormalized: '/tmp', address: '/tmp' as PortablePath, addressNormalized: '/tmp' as PortablePath, type: 'portablePathPosixAbsolute'}, {suffix: undefined}],
-        [addr.parsePath('/tmp2'), {original: '/', originalNormalized: '/', address: '/' as PortablePath, addressNormalized: '/' as PortablePath, type: 'portablePathPosixAbsolute'}, {suffix: undefined}],
-        [addr.parsePath('./tmp2'), {original: '.', originalNormalized: '.', address: '.' as PortablePath, addressNormalized: '.' as PortablePath, type: 'portablePathFilename'}, {suffix: undefined}],
-        [addr.parsePath('../tmp2'), {original: '..', originalNormalized: '..', address: '..' as PortablePath, addressNormalized: '..' as PortablePath, type: 'portablePathFilename'}, {suffix: undefined}],
-        [addr.parsePath('tmp2'), {original: '.', originalNormalized: '.', address: '.' as PortablePath, addressNormalized: '.' as PortablePath, type: 'portablePathFilename'}, {suffix: undefined}],
+      const testMap: [
+        AddressDescriptor<AddressTypeByGroup<'path'>>,
+        Pick<
+          AddressDescriptor<AddressTypeByGroup<'path'>>,
+          | 'original'
+          | 'originalNormalized'
+          | 'address'
+          | 'addressNormalized'
+          | 'type'
+        >,
+        AddressDescriptor<AddressTypeByGroup<'path'>>['parts']
+      ][] = [
+        [
+          addr.parsePath('/tmp/subdir'),
+          {
+            original: '/tmp',
+            originalNormalized: '/tmp',
+            address: '/tmp' as PortablePath,
+            addressNormalized: '/tmp' as PortablePath,
+            type: 'portablePathPosixAbsolute'
+          },
+          { suffix: undefined }
+        ],
+        [
+          addr.parsePath('/tmp2'),
+          {
+            original: '/',
+            originalNormalized: '/',
+            address: '/' as PortablePath,
+            addressNormalized: '/' as PortablePath,
+            type: 'portablePathPosixAbsolute'
+          },
+          { suffix: undefined }
+        ],
+        [
+          addr.parsePath('./tmp2'),
+          {
+            original: '.',
+            originalNormalized: '.',
+            address: '.' as PortablePath,
+            addressNormalized: '.' as PortablePath,
+            type: 'portablePathFilename'
+          },
+          { suffix: undefined }
+        ],
+        [
+          addr.parsePath('../tmp2'),
+          {
+            original: '..',
+            originalNormalized: '..',
+            address: '..' as PortablePath,
+            addressNormalized: '..' as PortablePath,
+            type: 'portablePathFilename'
+          },
+          { suffix: undefined }
+        ],
+        [
+          addr.parsePath('tmp2'),
+          {
+            original: '.',
+            originalNormalized: '.',
+            address: '.' as PortablePath,
+            addressNormalized: '.' as PortablePath,
+            type: 'portablePathFilename'
+          },
+          { suffix: undefined }
+        ]
       ]
 
       for (const [anAddr, expectations, parts] of testMap) {
         const ret = addressPathUtils.dirname(anAddr)
-        expect(ret).toEqual(
-          {
-            ...expectations,
-            group: 'path',
-            parts,
-          }
-        )
+        expect(ret).toEqual({
+          ...expectations,
+          group: 'path',
+          parts
+        })
       }
     })
     it('basename', () => {
       const ret = addressPathUtils.basename(addr.parsePath('/tmp/mnt'))
-      expect(ret).toEqual(
-        {
-          original: 'mnt',
-          originalNormalized: 'mnt',
-          address: 'mnt',
-          addressNormalized: 'mnt',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
-      )
+      expect(ret).toEqual({
+        original: 'mnt',
+        originalNormalized: 'mnt',
+        address: 'mnt',
+        addressNormalized: 'mnt',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
 
-      expect(addressPathUtils.basename(addr.parsePath('./relative'))).toEqual(
-        {
-          original: 'relative',
-          originalNormalized: 'relative',
-          address: 'relative',
-          addressNormalized: 'relative',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.basename(addr.parsePath('filename'))).toEqual(
-        {
-          original: 'filename',
-          originalNormalized: 'filename',
-          address: 'filename',
-          addressNormalized: 'filename',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.basename(addressPathUtils.dot)).toEqual(
-        {
-          original: '.',
-          originalNormalized: '.',
-          address: '.',
-          addressNormalized: '.',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
-      )
+      expect(addressPathUtils.basename(addr.parsePath('./relative'))).toEqual({
+        original: 'relative',
+        originalNormalized: 'relative',
+        address: 'relative',
+        addressNormalized: 'relative',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
+      expect(addressPathUtils.basename(addr.parsePath('filename'))).toEqual({
+        original: 'filename',
+        originalNormalized: 'filename',
+        address: 'filename',
+        addressNormalized: 'filename',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
+      expect(addressPathUtils.basename(addressPathUtils.dot)).toEqual({
+        original: '.',
+        originalNormalized: '.',
+        address: '.',
+        addressNormalized: '.',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
     })
     it('extname', () => {
-      expect(addressPathUtils.extname(addr.parsePath('/tmp/mnt.ts'))).toEqual(
-        {
-          original: '.ts',
-          originalNormalized: '.ts',
-          address: '.ts',
-          addressNormalized: '.ts',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
+      expect(addressPathUtils.extname(addr.parsePath('/tmp/mnt.ts'))).toEqual({
+        original: '.ts',
+        originalNormalized: '.ts',
+        address: '.ts',
+        addressNormalized: '.ts',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
+      expect(
+        addressPathUtils.extname(addr.parsePath('./relative/mnt.ts'))
+      ).toEqual({
+        original: '.ts',
+        originalNormalized: '.ts',
+        address: '.ts',
+        addressNormalized: '.ts',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
+      expect(addressPathUtils.extname(addr.parsePath('mnt.ts'))).toEqual({
+        original: '.ts',
+        originalNormalized: '.ts',
+        address: '.ts',
+        addressNormalized: '.ts',
+        group: 'path',
+        type: 'portablePathFilename',
+        parts: {}
+      })
+      expect(() => addressPathUtils.extname(addressPathUtils.dot)).toThrowError(
+        /AddressPath: extname\(\) called on extensionless path.*/
       )
-      expect(addressPathUtils.extname(addr.parsePath('./relative/mnt.ts'))).toEqual(
-        {
-          original: '.ts',
-          originalNormalized: '.ts',
-          address: '.ts',
-          addressNormalized: '.ts',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
-      )
-      expect(addressPathUtils.extname(addr.parsePath('mnt.ts'))).toEqual(
-        {
-          original: '.ts',
-          originalNormalized: '.ts',
-          address: '.ts',
-          addressNormalized: '.ts',
-          group: 'path',
-          type: 'portablePathFilename',
-          parts: {},
-        }
-      )
-      expect(() => addressPathUtils.extname(addressPathUtils.dot)).toThrowError(/AddressPath: extname\(\) called on extensionless path.*/)
-      expect(() => addressPathUtils.extname(addr.parsePath('something'))).toThrowError(/AddressPath: extname\(\) called on extensionless path.*/)
+      expect(() =>
+        addressPathUtils.extname(addr.parsePath('something'))
+      ).toThrowError(/AddressPath: extname\(\) called on extensionless path.*/)
     })
   })
   describe('integrity checks', () => {
@@ -444,14 +587,21 @@ describe('addr.pathUtils', () => {
       const urlDesc = addr.parseUrl('http://www.bbc.com')
 
       // @ts-expect-error:
-      expect(() => addressPathUtils.isAbsolute(urlDesc)).toThrowError(/AddressPath: non path descriptor supplied .*/)
+      expect(() => addressPathUtils.isAbsolute(urlDesc)).toThrowError(
+        /AddressPath: non path descriptor supplied .*/
+      )
       // @ts-expect-error:
-      expect(() => addressPathUtils.dirname(urlDesc)).toThrowError(/AddressPath: non path descriptor supplied .*/)
+      expect(() => addressPathUtils.dirname(urlDesc)).toThrowError(
+        /AddressPath: non path descriptor supplied .*/
+      )
       // @ts-expect-error:
-      expect(() => addressPathUtils.basename(urlDesc)).toThrowError(/AddressPath: non path descriptor supplied .*/)
+      expect(() => addressPathUtils.basename(urlDesc)).toThrowError(
+        /AddressPath: non path descriptor supplied .*/
+      )
       // @ts-expect-error:
-      expect(() => addressPathUtils.extname(urlDesc)).toThrowError(/AddressPath: non path descriptor supplied .*/)
+      expect(() => addressPathUtils.extname(urlDesc)).toThrowError(
+        /AddressPath: non path descriptor supplied .*/
+      )
     })
   })
-
 })

@@ -1,17 +1,19 @@
-import { addr, assertIsAddressPathAbsolute } from "@business-as-code/address";
+import { addr, assertIsAddressPathAbsolute } from '@business-as-code/address'
 import {
   BaseCommand,
   ContextCommand,
   Oclif,
   Interfaces as _Interfaces,
   assertIsOk,
-  constants,
-} from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
+  constants
+} from '@business-as-code/core'
+import { BacError, MessageName } from '@business-as-code/error'
+import { xfs } from '@business-as-code/fslib'
 
-export default class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoCreate> {
-  static override description = "Creates the tests git repositories";
+export default class BacTestsRepoCreate extends BaseCommand<
+  typeof BacTestsRepoCreate
+> {
+  static override description = 'Creates the tests git repositories'
 
   //   static override examples = [
   //     `$ oex hello friend --from oclif
@@ -25,33 +27,33 @@ export default class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoC
     //   required: true,
     // }),
     repositoriesPath: Oclif.Flags.directory({
-      description: "Repositories name",
+      description: 'Repositories name',
       exists: true,
       required: false,
-      default: constants.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT,
+      default: constants.GIT_SSH_PUBKEY_MOCK_SERVER_ROOT
     }),
     workspacePath: Oclif.Flags.directory({
       exists: true,
-      description: "Workspace name",
-      required: false,
-    }),
+      description: 'Workspace name',
+      required: false
+    })
     // configPath: Oclif.Flags.string({
     //   description: "Relative or absolute path to a workspace configuration",
     //   required: false,
     // }),
-  };
+  }
 
   static override args = {
     // path: Oclif.Args.string({
     //   description: "Absolute/Relative path",
     //   required: false,
     // }),
-  };
+  }
 
   async execute(context: ContextCommand<typeof BacTestsRepoCreate>) {
     let repositoriesPath = addr.parsePath(
       context.cliOptions.flags.repositoriesPath!
-    );
+    )
     // if (!assertIsAddressPath(repositoriesPath)) {
     //   throw new BacError(
     //     MessageName.FS_PATH_FORMAT_ERROR,
@@ -68,7 +70,7 @@ export default class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoC
       throw new BacError(
         MessageName.FS_PATH_FORMAT_ERROR,
         `Path '${repositoriesPath.original}' must be absolute/relative`
-      );
+      )
     }
     // if (!(await xfs.existsPromise(repositoriesPath.address))) {
     //   const repositoriesPathParent = addr.pathUtils.dirname(repositoriesPath);
@@ -83,47 +85,47 @@ export default class BacTestsRepoCreate extends BaseCommand<typeof BacTestsRepoC
     // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    const schematicsService = await context.serviceFactory("schematics", {
+    const schematicsService = await context.serviceFactory('schematics', {
       context,
-      workingPath: ".",
-      workspacePath: repositoriesPath,
-    });
+      workingPath: '.',
+      workspacePath: repositoriesPath
+    })
 
     context.logger.info(
       `Creating repositories in '${repositoriesPath.original}'`
-    );
+    )
 
     if (!(await xfs.existsPromise(repositoriesPath.address))) {
       context.logger.info(
         `Creating repositories directory at '${repositoriesPath.original}'`
-      );
-      await xfs.mkdirPromise(repositoriesPath.address);
+      )
+      await xfs.mkdirPromise(repositoriesPath.address)
     }
 
     const res = await schematicsService.runSchematic({
       address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
-      options: {},
-    });
+      options: {}
+    })
 
     context.logger.info(
       `Created repositories in '${repositoriesPath.original}'`
-    );
+    )
 
     if (!assertIsOk(res)) {
       switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
       }
     }
 
-    return res;
+    return res
 
     //   override async run(): Promise<void> {
     //     }

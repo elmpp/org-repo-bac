@@ -5,15 +5,23 @@ import { stringifyDeterministic } from './hash-utils'
 
 export type JsonSerialisable = Record<string, any>
 
-export const JSONNormalize = (content: string, prettify = false): string => JSON.stringify(JSONParse(content), null, prettify ? 2 : 0)
+export const JSONNormalize = (content: string, prettify = false): string =>
+  JSON.stringify(JSONParse(content), null, prettify ? 2 : 0)
 export const JSONParse = (content: string): JsonSerialisable => {
   try {
     return JSON5.parse(content)
   } catch (err) {
-    throw new BacErrorWrapper(MessageName.UNNAMED, `Caught error when parsing content \n'${content}'`, err as Error)
+    throw new BacErrorWrapper(
+      MessageName.UNNAMED,
+      `Caught error when parsing content \n'${content}'`,
+      err as Error
+    )
   }
 }
-export const JSONStringify = (content: JsonSerialisable, prettify = false): string => {
+export const JSONStringify = (
+  content: JsonSerialisable,
+  prettify = false
+): string => {
   return JSON.stringify(content, null, prettify ? 2 : 0)
 }
 

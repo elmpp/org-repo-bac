@@ -3,9 +3,9 @@ import {
   BaseCommand,
   ContextCommand,
   Oclif,
-  Interfaces as _Interfaces,
-} from "@business-as-code/core";
-import { MessageName } from "@business-as-code/error";
+  Interfaces as _Interfaces
+} from '@business-as-code/core'
+import { MessageName } from '@business-as-code/error'
 
 /**
  Generic command to run any schematic. Allows testing without standing up dedicated command
@@ -13,7 +13,7 @@ import { MessageName } from "@business-as-code/error";
 export default class SchematicsRunCommand extends BaseCommand<
   typeof SchematicsRunCommand
 > {
-  static override description = "Runs arbitrary schematic";
+  static override description = 'Runs arbitrary schematic'
 
   //   static override examples = [
   //     `$ oex hello friend --from oclif
@@ -34,24 +34,22 @@ export default class SchematicsRunCommand extends BaseCommand<
       // helpGroup: "GLOBAL",
       // default: "patch",
       required: false,
-      default: {},
+      default: {}
     })(),
     workspacePath: Oclif.Flags.directory({
-    exists: true,
-      description: "Workspace name",
-      required: true,
+      exists: true,
+      description: 'Workspace name',
+      required: true
     }),
     schematicsAddress: Oclif.Flags.string({
-      description: "Schematics Address",
-      required: true,
-    }),
-  };
+      description: 'Schematics Address',
+      required: true
+    })
+  }
 
-  static override args = {};
+  static override args = {}
 
   async execute(context: ContextCommand<typeof SchematicsRunCommand>) {
-
-
     // let repositoriesPath = addr.parsePath(context.cliOptions.flags.repositoriesPath! ?? path.resolve(__dirname, '../../../../pkg-tests-specs-fixtures/repositories'));
     // if (!assertIsAddressPath(repositoriesPath)) {
     //   throw new BacError(
@@ -87,36 +85,34 @@ export default class SchematicsRunCommand extends BaseCommand<
     // console.error(`context.cliOptions.flags :>> `, context.cliOptions.flags)
     // console.log(`(context.cliOptions.flags as any).initialiseOptions :>> `, (context.cliOptions.flags as any).payload.initialiseOptions)
 
-    const schematicsService = await context.serviceFactory("schematics", {
+    const schematicsService = await context.serviceFactory('schematics', {
       context,
       // workspacePath: context.workspacePath,
-      workingPath: '.',
-    });
-
-
+      workingPath: '.'
+    })
 
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
-      options: context.cliOptions.flags.payload,
+      options: context.cliOptions.flags.payload
       // destinationPath: workspacePath,
-    });
+    })
 
     if (!assertIsOk(res)) {
       switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
       }
     }
 
-    return res;
+    return res
 
     //   override async run(): Promise<void> {
     //     }

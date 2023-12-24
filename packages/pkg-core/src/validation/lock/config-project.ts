@@ -1,9 +1,7 @@
-import { z } from "zod";
-import {
-  originProviderTypeSchema
-} from "../common";
-import { projectSchema as moonProjectSchema } from '../moon/by-state-files/project';
-import { configTeamSchema } from "./config-team";
+import { z } from 'zod'
+import { originProviderTypeSchema } from '../common'
+import { projectSchema as moonProjectSchema } from '../moon/by-state-files/project'
+import { configTeamSchema } from './config-team'
 
 /**
  defines the non-common attributes of a Project that must be detected during Source import
@@ -21,30 +19,32 @@ import { configTeamSchema } from "./config-team";
 /** let's not keep moon task/config info */
 const baseMoonProjectSchema = moonProjectSchema.pick({
   alias: true,
-	// config: true,
-	dependencies: true,
-	// fileGroups: true,
+  // config: true,
+  dependencies: true,
+  // fileGroups: true,
   id: true,
-	// inheritedConfig: true,
-	language: true,
+  // inheritedConfig: true,
+  language: true,
   root: true,
   source: true,
-	// tasks: true,
-	type: true,
+  // tasks: true,
+  type: true
 })
 
-const configProjectOriginSchema = z.object({
-  provider: originProviderTypeSchema,
+const configProjectOriginSchema = z
+  .object({
+    provider: originProviderTypeSchema
 
-  // /** the provider can store a hash to prevent reimport */
-  // lastHashTime: z.string().datetime(),
-  // lastHash: z.string(),
-}).catchall(z.unknown())
+    // /** the provider can store a hash to prevent reimport */
+    // lastHashTime: z.string().datetime(),
+    // lastHash: z.string(),
+  })
+  .catchall(z.unknown())
 
 export const configProjectSchema = z.object({
   stage: baseMoonProjectSchema, // we're calling the /repo area 'stage'
   origin: configProjectOriginSchema,
-  teams: z.record(z.string(), configTeamSchema),
+  teams: z.record(z.string(), configTeamSchema)
 })
 
 // type BaseProject = z.infer<typeof baseProjectSchema>

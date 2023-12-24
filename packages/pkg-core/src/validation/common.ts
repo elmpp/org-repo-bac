@@ -4,8 +4,8 @@
 //   ProjectType as MoonProjectType,
 // } from "@moonrepo/types";
 
-import { z } from "zod";
-import { MoonQueryProjects } from "./moon-query-projects";
+import { z } from 'zod'
+import { MoonQueryProjects } from './moon-query-projects'
 // import { Lifecycles } from "../lifecycles";
 
 /** the origin providers. Will be only core plugins so we know their handles upfront */
@@ -17,34 +17,33 @@ import { MoonQueryProjects } from "./moon-query-projects";
 
 // }
 export const originProviderTypeSchema = z.union([
-  z.literal("SubrepoService"),
-  z.literal("github"),
-]);
-
+  z.literal('SubrepoService'),
+  z.literal('github')
+])
 
 export const teamProviderTypeSchema = z.union([
-  z.literal("codeowners"),
+  z.literal('codeowners'),
   /** passed through during config */
-  z.literal("config"),
-]);
+  z.literal('config')
+])
 
 export const languageSchema = z.union([
-  z.literal("javascript"),
-  z.literal("rust"),
-]);
+  z.literal('javascript'),
+  z.literal('rust')
+])
 
 export const languageVariantSchema = z.union([
   // z.literal("bash"),
   // z.literal("batch"),
   // z.literal("go"),
-  z.literal("javascript"),
+  z.literal('javascript'),
   // z.literal("php"),
   // z.literal("python"),
   // z.literal("ruby"),
-  z.literal("rust"),
-  z.literal("typescript"),
+  z.literal('rust'),
+  z.literal('typescript')
   // z.literal("unknown"),
-]);
+])
 
 // export const platformSchema = z.union([
 //   z.literal("javascript"),
@@ -53,11 +52,11 @@ export const languageVariantSchema = z.union([
 // ]);
 
 export const projectTypeSchema = z.union([
-  z.literal("application"),
-  z.literal("library"),
-  z.literal("tool"),
+  z.literal('application'),
+  z.literal('library'),
+  z.literal('tool')
   // z.literal("unknown"),
-]);
+])
 
 // type AddressPathAbsoluteString = string;
 // type AddressUrlGitString = string;
@@ -95,12 +94,10 @@ export const projectTypeSchema = z.union([
 //     { message: "bollocks" }
 //   );
 
-export type ProjectLanguage = z.infer<typeof languageSchema>;
-export type ProjectLanguageVariant = z.infer<typeof languageVariantSchema>;
-
+export type ProjectLanguage = z.infer<typeof languageSchema>
+export type ProjectLanguageVariant = z.infer<typeof languageVariantSchema>
 
 // export type Project = z.infer<typeof projectTypeSchema>;
-
 
 type ArrayInfer<T extends Array<unknown>> = T extends Array<infer U> ? U : never
 /** defines the models/dtos that will be passed around app layer. Let's just alias to Moon though, in reality */

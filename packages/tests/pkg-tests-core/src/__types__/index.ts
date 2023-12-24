@@ -40,14 +40,12 @@
 
 export {}
 
-
 /** the stage1 persistable content */
 declare global {
   interface Stage1Content {
     // 'initialise_workspace_skeleton_workspace_without_configPath_using_skeleton_config': true,
   }
 }
-
 
 // /**
 //  A Task is something that in runnable and produces output
@@ -56,5 +54,3 @@ declare global {
 //  {@linkTutorial https://monotonous.org/lexicon#output | output - any form of new stuff; stream output / fs content}
 //  */
 // export type CacheTask = ProjectLevelState<{state: CacheUnit, meta: { } }, >
-
-

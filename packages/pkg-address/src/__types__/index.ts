@@ -1,11 +1,9 @@
-
 export * from './main'
 export * from './package'
 export * from './path'
 export * from './union'
 export * from './url'
 export * from './util'
-
 
 export interface AddressType {
   // handlerName: {
@@ -18,7 +16,6 @@ export interface AddressType {
   //   string
   // },
 }
-
 
 // export interface AddressHandler<AddName extends keyof AddressType = keyof AddressType> {
 
@@ -57,7 +54,6 @@ export interface AddressType {
 //   AddressType[AddName] extends [object, AddressGroupUnion] ? AddressType[AddName][1] : never
 // export type AddressGroupTypesByType<AddName extends keyof AddressType> = AddressTypeByGroup<AddressGroupByType<AddName>>
 
-
 // /** a parsed representation of the address */
 // export type AddressDescriptor<AddName extends keyof AddressType = keyof AddressType> = {
 //   /** pre-parsed format. For paths this will always be the NativePath */
@@ -75,7 +71,6 @@ export interface AddressType {
 //   // }
 // }
 
-
 // export type AddressPath = AddressDescriptor<AddressTypeByGroup<'path'>>
 // export type AddressPackage = AddressDescriptor<AddressTypeByGroup<'package'>>
 // export type AddressUrl = AddressDescriptor<AddressTypeByGroup<'url'>>
@@ -88,4 +83,3 @@ export interface AddressType {
 // export type AddressPackageIdent = AddressDescriptor<'paramIdentPackage'>
 // export type AddressPackageDescriptorString = string
 // export type AddressPackageIdentString = string
-

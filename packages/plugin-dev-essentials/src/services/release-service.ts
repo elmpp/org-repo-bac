@@ -2,106 +2,108 @@ import {
   ServiceInitialiseCommonOptions,
   execUtils as _execUtils,
   Result,
-  expectIsOk,
-} from "@business-as-code/core";
-import { BacError } from "@business-as-code/error";
+  expectIsOk
+} from '@business-as-code/core'
+import { BacError } from '@business-as-code/error'
 
 declare global {
   namespace Bac {
     interface Services {
       release: {
-        insType: ReleaseService;
-        staticType: typeof ReleaseService;
-      };
+        insType: ReleaseService
+        staticType: typeof ReleaseService
+      }
     }
   }
 }
 
-type Options = ServiceInitialiseCommonOptions & {};
+type Options = ServiceInitialiseCommonOptions & {}
 
 export class ReleaseService {
-  static title = "release" as const;
+  static title = 'release' as const
 
   get ctor(): typeof ReleaseService {
-    return this.constructor as unknown as typeof ReleaseService;
+    return this.constructor as unknown as typeof ReleaseService
   }
-  get title(): (typeof ReleaseService)["title"] {
+  get title(): (typeof ReleaseService)['title'] {
     return (this.constructor as any)
-      .title as unknown as (typeof ReleaseService)["title"];
+      .title as unknown as (typeof ReleaseService)['title']
   }
 
   static async initialise(options: Options) {
-    const ins = new ReleaseService(options);
-    return ins;
+    const ins = new ReleaseService(options)
+    return ins
   }
 
   constructor(protected options: Options) {}
 
   protected async build() {
-    const { context } = this.options;
-    const moonService = await context.serviceFactory("moon", {
+    const { context } = this.options
+    const moonService = await context.serviceFactory('moon', {
       context,
-      workingPath: ".",
-    });
+      workingPath: '.'
+    })
 
-    return moonService.runTask({ command: "build" });
+    return moonService.runTask({ command: 'build' })
   }
 
   async snapshot({
     query,
     message,
-    registry = "https://registry.npmjs.org",
-    tag = "latest",
+    registry = 'https://registry.npmjs.org',
+    tag = 'latest'
   }: {
-    query?: string;
-    message: string;
-    registry?: string;
-    tag?: string;
+    query?: string
+    message: string
+    registry?: string
+    tag?: string
   }): Promise<Result<{ version: string; tag: string }, { error: BacError }>> {
-    const { context } = this.options;
+    const { context } = this.options
 
     // const buildRes = await this.build(); // do not build here - moon
     // expectIsOk(buildRes)
 
-    const moonService = await context.serviceFactory("moon", {
+    const moonService = await context.serviceFactory('moon', {
       context,
-      workingPath: ".",
-    });
-    const moonProjects = await moonService.findProjects({query: "projectType=library || projectType=application"})
+      workingPath: '.'
+    })
+    const moonProjects = await moonService.findProjects({
+      query: 'projectType=library || projectType=application'
+    })
 
-    const changesetService = await context.serviceFactory("changeset", {
+    const changesetService = await context.serviceFactory('changeset', {
       context,
-      workingPath: ".",
-    });
+      workingPath: '.'
+    })
 
     await changesetService.create({
       projects: moonProjects.projects,
       message,
-      bump: "patch",
-    });
+      bump: 'patch'
+    })
 
     const versionRes = await changesetService.version({
       tag,
-      isSnapshot: true,
-    });
+      isSnapshot: true
+    })
 
-    expectIsOk(versionRes);
+    expectIsOk(versionRes)
 
     // console.log(`versionRes :>> `, versionRes, registry)
 
     const publishRes = await changesetService.publish({
       registry,
-      tag,
-    });
+      tag
+    })
 
-    expectIsOk(publishRes);
+    expectIsOk(publishRes)
 
     return {
       success: true,
       res: {
-        version: "",
-        tag,
-      },
-    };
+        version: '',
+        tag
+      }
+    }
   }
 }

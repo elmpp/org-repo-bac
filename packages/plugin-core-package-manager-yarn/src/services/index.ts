@@ -1,6 +1,4 @@
-import { ServiceStaticInterface } from "@business-as-code/core";
-import { PackageManagerYarnService } from "./package-manager-yarn-service";
+import { ServiceStaticInterface } from '@business-as-code/core'
+import { PackageManagerYarnService } from './package-manager-yarn-service'
 
-export const services: ServiceStaticInterface[] = [
-  PackageManagerYarnService,
-];
+export const services: ServiceStaticInterface[] = [PackageManagerYarnService]

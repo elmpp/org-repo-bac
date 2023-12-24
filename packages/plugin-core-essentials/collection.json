@@ -9,6 +9,6 @@
       "factory": "./src/schematics/synchronise-workspace/factory",
       "schema": "./src/schematics/synchronise-workspace/schema.json",
       "description": "Applies configuration to a workspace"
-    },
+    }
   }
 }

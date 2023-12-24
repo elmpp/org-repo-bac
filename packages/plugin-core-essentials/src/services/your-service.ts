@@ -1,4 +1,3 @@
-
 // declare global {
 //   interface Bac {
 //     "@business-as-code/plugin-core-essentials": {
@@ -14,15 +13,15 @@
 //   }
 // }
 
-import { ServiceInitialiseCommonOptions } from "@business-as-code/core";
+import { ServiceInitialiseCommonOptions } from '@business-as-code/core'
 
 declare global {
   namespace Bac {
     interface Services {
       yourService: {
-        insType: YourService;
-        staticType: typeof YourService;
-      },
+        insType: YourService
+        staticType: typeof YourService
+      }
     }
   }
 }
@@ -33,7 +32,6 @@ declare global {
 //   }
 // }
 
-
 export class YourService {
   static title = 'yourService' as const
   static async initialise(options: ServiceInitialiseCommonOptions) {
@@ -41,21 +39,15 @@ export class YourService {
   }
 
   get ctor(): typeof YourService {
-    return this.constructor as unknown as typeof YourService;
+    return this.constructor as unknown as typeof YourService
   }
   get title(): (typeof YourService)['title'] {
-    return (this.constructor as any).title as unknown as (typeof YourService)['title']
+    return (this.constructor as any)
+      .title as unknown as (typeof YourService)['title']
   }
 
-  constructor(protected options: ServiceInitialiseCommonOptions) {
+  constructor(protected options: ServiceInitialiseCommonOptions) {}
 
-  }
-
-
-  static staticFunc1() {
-
-  }
-  async func1() {
-
-  }
+  static staticFunc1() {}
+  async func1() {}
 }

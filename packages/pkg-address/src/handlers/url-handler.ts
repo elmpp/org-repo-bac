@@ -7,23 +7,27 @@ declare module '../__types__' {
     // url: {
     //   scheme: string,
     // }
-    url: [{
-      url: URL
-      scheme: 'http' | 'https',
-      host: string,
-      port?: number
-    }, 'url', string]
+    url: [
+      {
+        url: URL
+        scheme: 'http' | 'https'
+        host: string
+        port?: number
+      },
+      'url',
+      string
+    ]
   }
 }
 
-export const REGEX = /(http|https?):\/\/((?:(?:[-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})|(?:localhost))(?:\:([0-9]+))?([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
+export const REGEX =
+  /(http|https?):\/\/((?:(?:[-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})|(?:localhost))(?:\:([0-9]+))?([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
 // export const URL_REGEX = /(https?):\/\/([-a-zA-Z0-9@:%._\+~#=]{1,256}\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/ // SO - https://tinyurl.com/2jjo64u4
 
 export const handler: AddressHandler<'url'> = {
   name: 'url',
   group: 'url',
-  parse({address}) {
-
+  parse({ address }) {
     if (!address.match(REGEX)) return
 
     const matches = address.match(REGEX)
@@ -41,7 +45,7 @@ export const handler: AddressHandler<'url'> = {
           url,
           scheme: scheme as 'http' | 'https',
           host,
-          port: port ? parseInt(port, 10) : undefined,
+          port: port ? parseInt(port, 10) : undefined
         }
 
         const urlNormalized = new URL(address)
@@ -54,18 +58,17 @@ export const handler: AddressHandler<'url'> = {
           address,
           addressNormalized: normalized,
           parts,
-          type: 'url',
+          type: 'url'
         }
       }
-    }
-    catch {}
+    } catch {}
   },
   format(options) {
-    const {address} = options
+    const { address } = options
     const url = address.parts.url
     normalizeUrl(url)
     return url.toString()
-  },
+  }
   // normalize({address, addressIns}) {
   //   const url = address.parts.url
   //   normalizeUrl(url)

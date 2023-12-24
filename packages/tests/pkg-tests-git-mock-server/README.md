@@ -2,33 +2,26 @@ TODO - GET THIS WORKING AND PUSH BACK OR FORK
 
 GIT SERVER:
 
- - `git clone ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git` // note the username
- - `p run dev:mockGitServerSsh`. Dumps a keypair into /Users/matt/dev/tmp/bac-tests/repositories/id_rsa*. Need to `ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
- - `p run dev:mockGitServerSshAnonymous`. Should allow cloning without authentication
+- `git clone ssh://git-ssh-mock-server@localhost:2222/bare-repo1.git` // note the username
+- `p run dev:mockGitServerSsh`. Dumps a keypair into /Users/matt/dev/tmp/bac-tests/repositories/id_rsa\*. Need to `ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
+- `p run dev:mockGitServerSshAnonymous`. Should allow cloning without authentication
 
 HTTP SERVER
 
- - `git clone http://localhost:8174/bare-repo1.git` // note the `.git` suffix
- - `p run dev:mockGitServerSsh`. Dumps a keypair into /Users/matt/dev/tmp/bac-tests/repositories/id_rsa*. Need to `ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
- - `p run dev:mockGitServerSshAnonymous`. Should allow cloning without authentication
-
+- `git clone http://localhost:8174/bare-repo1.git` // note the `.git` suffix
+- `p run dev:mockGitServerSsh`. Dumps a keypair into /Users/matt/dev/tmp/bac-tests/repositories/id_rsa\*. Need to `ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
+- `p run dev:mockGitServerSshAnonymous`. Should allow cloning without authentication
 
 TO DEBUG"
- - turn on `debug: console.log` within `ssh-server.js`
- - PUBLIC KEY NOT CONNECTING: `ssh -vvv localhost -p 2222`
- - search the [https://github.com/mscdex/ssh2](issues) (ssh server js lib)
 
+- turn on `debug: console.log` within `ssh-server.js`
+- PUBLIC KEY NOT CONNECTING: `ssh -vvv localhost -p 2222`
+- search the [https://github.com/mscdex/ssh2](issues) (ssh server js lib)
 
-
-
-
-
-
-
-------------
-
+---
 
 # git-http-mock-server / git-ssh-mock-server
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fisomorphic-git%2Fgit-http-mock-server.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fisomorphic-git%2Fgit-http-mock-server?ref=badge_shield)
 
 Clone and push to git repository test fixtures over HTTP or SSH.
@@ -42,6 +35,7 @@ Run in a directory full of bare git repositories, `git-http-mock-server` will se
 native `git-http-backend` process built into `git` (which needs to be installed on the machine).
 
 You can then:
+
 - run tests that clone or push to those git repositories (regardless of whether Github is down :wink:).
 - run those tests in parallel without them interfering with each other.
 
@@ -73,6 +67,7 @@ test-repo1.git    test-repo2.git   imaginatively-named-repo.git
 ```
 
 Now in another shell, clone and push away...
+
 ```sh
 > git clone http://localhost:8174/test-repo1.git
 > git clone http://localhost:8174/test-repo2.git
@@ -89,6 +84,7 @@ test-repo1.git    test-repo2.git   imaginatively-named-repo.git
 ```
 
 Now in another shell,
+
 ```sh
 > git clone ssh://localhost:2222/imaginatively-named-repo.git
 ```
@@ -150,11 +146,11 @@ This key can be used to authenticate with the server as well!
 
 1. Run `GIT_SSH_MOCK_SERVER_PUBKEY=true git-ssh-mock-server`
 2. Try cloning (e.g. `git clone ssh://localhost:2222/imaginatively-named-repo.git`). It shouldn't work.
-2. Run `git-ssh-mock-server exportKeys` which will copy the key files to `./id_rsa` and `./id_rsa.pub` in the working directory with the correct file permissions (`600`).
+3. Run `git-ssh-mock-server exportKeys` which will copy the key files to `./id_rsa` and `./id_rsa.pub` in the working directory with the correct file permissions (`600`).
 <!-- 3. Run `ssh-add ./id_rsa` -->
-3. Run `ssh-keygen -R \[localhost\]:2222; ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
-4. Now try cloning. It works!
-5. To clear the key from the ssh-agent, use `ssh-add -d ./id_rsa`
+4. Run `ssh-keygen -R \[localhost\]:2222; ssh-add /Users/matt/dev/tmp/bac-tests/repositories/id_rsa`
+5. Now try cloning. It works!
+6. To clear the key from the ssh-agent, use `ssh-add -d ./id_rsa`
 
 You can use `GIT_SSH_MOCK_SERVER_PUBKEY` and `GIT_SSH_MOCK_SERVER_PASSWORD` together, but using either one disables anonymous SSH access.
 

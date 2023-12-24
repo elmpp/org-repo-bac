@@ -24,37 +24,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-fslib",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -64,30 +52,20 @@
         "source": "packages/pkg-fslib",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/pkg-fslib/**/*.spec.*",
               ".moon/*.yml",
               "packages/pkg-fslib/src/**/*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -122,37 +100,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-error",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -162,30 +128,20 @@
         "source": "packages/pkg-error",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/pkg-error/src/**/*",
               ".moon/*.yml",
               "packages/pkg-error/**/*.spec.*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -233,37 +189,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-address",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -273,30 +217,20 @@
         "source": "packages/pkg-address",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/pkg-address/**/*.spec.*",
               ".moon/*.yml",
               "packages/pkg-address/src/**/*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -353,37 +287,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-core",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -393,30 +315,20 @@
         "source": "packages/pkg-core",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/pkg-core/**/*.spec.*",
               "packages/pkg-core/src/**/*",
               ".moon/*.yml"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -478,37 +390,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-tests-core",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -518,30 +418,20 @@
         "source": "packages/tests/pkg-tests-core",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               ".moon/*.yml",
               "packages/tests/pkg-tests-core/src/**/*",
               "packages/tests/pkg-tests-core/**/*.spec.*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -610,37 +500,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "plugin-core-git",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -650,30 +528,20 @@
         "source": "packages/plugin-core-git",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               ".moon/*.yml",
               "packages/plugin-core-git/src/**/*",
               "packages/plugin-core-git/**/*.spec.*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -742,37 +610,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "plugin-dev-tests",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -782,30 +638,20 @@
         "source": "packages/tests/plugin-dev-tests",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/tests/plugin-dev-tests/**/*.spec.*",
               ".moon/*.yml",
               "packages/tests/plugin-dev-tests/src/**/*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -874,37 +720,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "plugin-core-moon",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -914,30 +748,20 @@
         "source": "packages/plugin-core-moon",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/plugin-core-moon/**/*.spec.*",
               "packages/plugin-core-moon/src/**/*",
               ".moon/*.yml"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -1006,37 +830,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "plugin-core-essentials",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -1046,30 +858,20 @@
         "source": "packages/plugin-core-essentials",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               ".moon/*.yml",
               "packages/plugin-core-essentials/src/**/*",
               "packages/plugin-core-essentials/**/*.spec.*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -1138,37 +940,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-cli",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -1178,30 +968,20 @@
         "source": "packages/pkg-cli",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               ".moon/*.yml",
               "packages/pkg-cli/**/*.spec.*",
               "packages/pkg-cli/src/**/*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -1257,9 +1037,7 @@
           "tasks": {
             "build": {
               "command": "tsc --build",
-              "deps": [
-                "~:buildClean"
-              ],
+              "deps": ["~:buildClean"],
               "local": true,
               "platform": "node"
             },
@@ -1270,17 +1048,13 @@
             },
             "buildWatch": {
               "command": "tsc --build --watch",
-              "deps": [
-                "~:buildClean"
-              ],
+              "deps": ["~:buildClean"],
               "local": true,
               "platform": "node"
             },
             "publish": {
               "command": "pnpm publish -r --force",
-              "deps": [
-                "~:build"
-              ]
+              "deps": ["~:build"]
             },
             "publishDev": {
               "command": "pnpm publish -r --no-git-checks --force --registry http://localhost:4873/",
@@ -1298,12 +1072,8 @@
             },
             "test": {
               "command": "pnpm jest --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures",
-              "deps": [
-                "~:testFixtures"
-              ],
-              "inputs": [
-                "@globs(testNonFixtures)"
-              ],
+              "deps": ["~:testFixtures"],
+              "inputs": ["@globs(testNonFixtures)"],
               "options": {
                 "runFromWorkspaceRoot": true
               },
@@ -1311,9 +1081,7 @@
             },
             "testFixtures": {
               "command": "pnpm jest --passWithNoTests packages/tests/pkg-tests-specs-fixtures",
-              "inputs": [
-                "@globs(testFixtures)"
-              ],
+              "inputs": ["@globs(testFixtures)"],
               "options": {
                 "runFromWorkspaceRoot": true
               },
@@ -1321,12 +1089,8 @@
             },
             "testWatch": {
               "command": "pnpm jest --watch --passWithNoTests --testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures",
-              "deps": [
-                "~:testFixtures"
-              ],
-              "inputs": [
-                "@globs(testNonFixtures)"
-              ],
+              "deps": ["~:testFixtures"],
+              "inputs": ["@globs(testNonFixtures)"],
               "local": true,
               "options": {
                 "runFromWorkspaceRoot": true
@@ -1365,24 +1129,17 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "testFixtures": {
             "files": [],
-            "globs": [
-              "packages/tests/pkg-tests-specs-fixtures/**/*.spec.*"
-            ],
+            "globs": ["packages/tests/pkg-tests-specs-fixtures/**/*.spec.*"],
             "id": "testFixtures"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           },
           "testNonFixtures": {
@@ -1397,20 +1154,13 @@
         "id": "root",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -1420,26 +1170,15 @@
         "source": ".",
         "tasks": {
           "build": {
-            "args": [
-              "--build"
-            ],
+            "args": ["--build"],
             "command": "tsc",
-            "deps": [
-              "root:buildClean"
-            ],
+            "deps": ["root:buildClean"],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "build",
-            "inputs": [
-              "**/*"
-            ],
-            "inputGlobs": [
-              "**/*",
-              ".moon/*.yml"
-            ],
+            "inputs": ["**/*"],
+            "inputGlobs": ["**/*", ".moon/*.yml"],
             "inputPaths": [],
             "inputVars": [],
             "options": {
@@ -1466,25 +1205,15 @@
             "type": "run"
           },
           "buildClean": {
-            "args": [
-              "--build",
-              "--clean"
-            ],
+            "args": ["--build", "--clean"],
             "command": "tsc",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "buildClean",
-            "inputs": [
-              "**/*"
-            ],
-            "inputGlobs": [
-              "**/*",
-              ".moon/*.yml"
-            ],
+            "inputs": ["**/*"],
+            "inputGlobs": ["**/*", ".moon/*.yml"],
             "inputPaths": [],
             "inputVars": [],
             "options": {
@@ -1511,27 +1240,15 @@
             "type": "run"
           },
           "buildWatch": {
-            "args": [
-              "--build",
-              "--watch"
-            ],
+            "args": ["--build", "--watch"],
             "command": "tsc",
-            "deps": [
-              "root:buildClean"
-            ],
+            "deps": ["root:buildClean"],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "buildWatch",
-            "inputs": [
-              "**/*"
-            ],
-            "inputGlobs": [
-              "**/*",
-              ".moon/*.yml"
-            ],
+            "inputs": ["**/*"],
+            "inputGlobs": ["**/*", ".moon/*.yml"],
             "inputPaths": [],
             "inputVars": [],
             "options": {
@@ -1558,35 +1275,16 @@
             "type": "run"
           },
           "publish": {
-            "args": [
-              "publish",
-              "--",
-              "publish",
-              "-r",
-              "--force"
-            ],
+            "args": ["publish", "--", "publish", "-r", "--force"],
             "command": "pnpm",
-            "deps": [
-              "root:build"
-            ],
+            "deps": ["root:build"],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
-            "inputGlobs": [
-              "**/*.spec.*",
-              "src/**/*",
-              ".moon/*.yml"
-            ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputs": ["@globs(sources)"],
+            "inputGlobs": ["**/*.spec.*", "src/**/*", ".moon/*.yml"],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -1629,17 +1327,10 @@
             ],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "publishDev",
-            "inputs": [
-              "**/*"
-            ],
-            "inputGlobs": [
-              "**/*",
-              ".moon/*.yml"
-            ],
+            "inputs": ["**/*"],
+            "inputGlobs": ["**/*", ".moon/*.yml"],
             "inputPaths": [],
             "inputVars": [],
             "options": {
@@ -1672,18 +1363,12 @@
               "--testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures"
             ],
             "command": "pnpm",
-            "deps": [
-              "root:testFixtures"
-            ],
+            "deps": ["root:testFixtures"],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "test",
-            "inputs": [
-              "@globs(testNonFixtures)"
-            ],
+            "inputs": ["@globs(testNonFixtures)"],
             "inputGlobs": [
               "**/*.spec.*",
               ".moon/*.yml",
@@ -1724,13 +1409,9 @@
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "testFixtures",
-            "inputs": [
-              "@globs(testFixtures)"
-            ],
+            "inputs": ["@globs(testFixtures)"],
             "inputGlobs": [
               "packages/tests/pkg-tests-specs-fixtures/**/*.spec.*",
               ".moon/*.yml"
@@ -1768,18 +1449,12 @@
               "--testPathIgnorePatterns=packages/tests/pkg-tests-specs-fixtures"
             ],
             "command": "pnpm",
-            "deps": [
-              "root:testFixtures"
-            ],
+            "deps": ["root:testFixtures"],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "testWatch",
-            "inputs": [
-              "@globs(testNonFixtures)"
-            ],
+            "inputs": ["@globs(testNonFixtures)"],
             "inputGlobs": [
               "**/*.spec.*",
               ".moon/*.yml",
@@ -1827,17 +1502,10 @@
             ],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "unpublishDev",
-            "inputs": [
-              "**/*"
-            ],
-            "inputGlobs": [
-              "**/*",
-              ".moon/*.yml"
-            ],
+            "inputs": ["**/*"],
+            "inputGlobs": ["**/*", ".moon/*.yml"],
             "inputPaths": [],
             "inputVars": [],
             "options": {
@@ -1883,9 +1551,7 @@
             },
             "verdacciostartBackground": {
               "command": "pnpm run verdaccio:startBackground",
-              "deps": [
-                "~:verdaccioStopBackground"
-              ],
+              "deps": ["~:verdaccioStopBackground"],
               "local": true
             },
             "verdaccioStopBackground": {
@@ -1912,37 +1578,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-tests-verdaccio",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -1952,30 +1606,20 @@
         "source": "packages/tests/pkg-tests-verdaccio",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/tests/pkg-tests-verdaccio/src/**/*",
               "packages/tests/pkg-tests-verdaccio/**/*.spec.*",
               ".moon/*.yml"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -2001,21 +1645,14 @@
             "type": "test"
           },
           "verdaccioEnsureRunning": {
-            "args": [
-              "run",
-              "verdaccio:isRunning"
-            ],
+            "args": ["run", "verdaccio:isRunning"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "verdaccioEnsureRunning",
-            "inputs": [
-              "**/*"
-            ],
+            "inputs": ["**/*"],
             "inputGlobs": [
               "packages/tests/pkg-tests-verdaccio/**/*",
               ".moon/*.yml"
@@ -2046,21 +1683,14 @@
             "type": "run"
           },
           "verdaccioLogin": {
-            "args": [
-              "run",
-              "verdaccio:login"
-            ],
+            "args": ["run", "verdaccio:login"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "verdaccioLogin",
-            "inputs": [
-              "**/*"
-            ],
+            "inputs": ["**/*"],
             "inputGlobs": [
               "packages/tests/pkg-tests-verdaccio/**/*",
               ".moon/*.yml"
@@ -2091,23 +1721,14 @@
             "type": "run"
           },
           "verdacciostartBackground": {
-            "args": [
-              "run",
-              "verdaccio:startBackground"
-            ],
+            "args": ["run", "verdaccio:startBackground"],
             "command": "pnpm",
-            "deps": [
-              "pkg-tests-verdaccio:verdaccioStopBackground"
-            ],
+            "deps": ["pkg-tests-verdaccio:verdaccioStopBackground"],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "verdacciostartBackground",
-            "inputs": [
-              "**/*"
-            ],
+            "inputs": ["**/*"],
             "inputGlobs": [
               "packages/tests/pkg-tests-verdaccio/**/*",
               ".moon/*.yml"
@@ -2138,21 +1759,14 @@
             "type": "run"
           },
           "verdaccioStopBackground": {
-            "args": [
-              "run",
-              "verdaccio:stopBackground"
-            ],
+            "args": ["run", "verdaccio:stopBackground"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "verdaccioStopBackground",
-            "inputs": [
-              "**/*"
-            ],
+            "inputs": ["**/*"],
             "inputGlobs": [
               "packages/tests/pkg-tests-verdaccio/**/*",
               ".moon/*.yml"
@@ -2192,37 +1806,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-tests-git-mock-server",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -2232,30 +1834,20 @@
         "source": "packages/tests/pkg-tests-git-mock-server",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/tests/pkg-tests-git-mock-server/**/*.spec.*",
               "packages/tests/pkg-tests-git-mock-server/src/**/*",
               ".moon/*.yml"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -2287,19 +1879,13 @@
         "alias": "@business-as-code/tests-specs-fixtures",
         "config": {
           "fileGroups": {
-            "testFixtures": [
-              "**/*.spec.*"
-            ]
+            "testFixtures": ["**/*.spec.*"]
           },
           "tasks": {
             "testFixtures": {
               "command": "pnpm jest --passWithNoTests",
-              "inputs": [
-                "tests/pkg-tests-specs-fixtures"
-              ],
-              "outputs": [
-                "blah"
-              ],
+              "inputs": ["tests/pkg-tests-specs-fixtures"],
+              "outputs": ["blah"],
               "platform": "node"
             }
           },
@@ -2334,44 +1920,30 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "testFixtures": {
             "files": [],
-            "globs": [
-              "**/*.spec.*"
-            ],
+            "globs": ["**/*.spec.*"],
             "id": "testFixtures"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-tests-specs-fixtures",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -2381,30 +1953,20 @@
         "source": "packages/tests/pkg-tests-specs-fixtures",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/tests/pkg-tests-specs-fixtures/**/*.spec.*",
               "packages/tests/pkg-tests-specs-fixtures/src/**/*",
               ".moon/*.yml"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -2430,24 +1992,15 @@
             "type": "test"
           },
           "testFixtures": {
-            "args": [
-              "jest",
-              "--passWithNoTests"
-            ],
+            "args": ["jest", "--passWithNoTests"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/*.yml"],
             "id": "testFixtures",
-            "inputs": [
-              "tests/pkg-tests-specs-fixtures"
-            ],
-            "inputGlobs": [
-              ".moon/*.yml"
-            ],
+            "inputs": ["tests/pkg-tests-specs-fixtures"],
+            "inputGlobs": [".moon/*.yml"],
             "inputPaths": [
               "packages/tests/pkg-tests-specs-fixtures/tests/pkg-tests-specs-fixtures"
             ],
@@ -2468,13 +2021,9 @@
               "runFromWorkspaceRoot": false,
               "shell": true
             },
-            "outputs": [
-              "blah"
-            ],
+            "outputs": ["blah"],
             "outputGlobs": [],
-            "outputPaths": [
-              "packages/tests/pkg-tests-specs-fixtures/blah"
-            ],
+            "outputPaths": ["packages/tests/pkg-tests-specs-fixtures/blah"],
             "platform": "node",
             "target": "pkg-tests-specs-fixtures:testFixtures",
             "type": "build"
@@ -2486,211 +2035,47 @@
     "node_holes": [],
     "edge_property": "directed",
     "edges": [
-      [
-        2,
-        0,
-        null
-      ],
-      [
-        2,
-        1,
-        null
-      ],
-      [
-        3,
-        0,
-        null
-      ],
-      [
-        3,
-        1,
-        null
-      ],
-      [
-        3,
-        2,
-        null
-      ],
-      [
-        4,
-        0,
-        null
-      ],
-      [
-        4,
-        2,
-        null
-      ],
-      [
-        4,
-        1,
-        null
-      ],
-      [
-        4,
-        3,
-        null
-      ],
-      [
-        5,
-        0,
-        null
-      ],
-      [
-        5,
-        2,
-        null
-      ],
-      [
-        5,
-        4,
-        null
-      ],
-      [
-        5,
-        1,
-        null
-      ],
-      [
-        5,
-        3,
-        null
-      ],
-      [
-        6,
-        0,
-        null
-      ],
-      [
-        6,
-        2,
-        null
-      ],
-      [
-        6,
-        4,
-        null
-      ],
-      [
-        6,
-        1,
-        null
-      ],
-      [
-        6,
-        3,
-        null
-      ],
-      [
-        7,
-        0,
-        null
-      ],
-      [
-        7,
-        2,
-        null
-      ],
-      [
-        7,
-        4,
-        null
-      ],
-      [
-        7,
-        1,
-        null
-      ],
-      [
-        7,
-        3,
-        null
-      ],
-      [
-        8,
-        0,
-        null
-      ],
-      [
-        8,
-        2,
-        null
-      ],
-      [
-        8,
-        4,
-        null
-      ],
-      [
-        8,
-        1,
-        null
-      ],
-      [
-        8,
-        3,
-        null
-      ],
-      [
-        9,
-        8,
-        null
-      ],
-      [
-        9,
-        5,
-        null
-      ],
-      [
-        9,
-        7,
-        null
-      ],
-      [
-        9,
-        6,
-        null
-      ],
-      [
-        9,
-        3,
-        null
-      ],
-      [
-        11,
-        9,
-        null
-      ],
-      [
-        12,
-        0,
-        null
-      ],
-      [
-        12,
-        3,
-        null
-      ],
-      [
-        14,
-        13,
-        null
-      ],
-      [
-        14,
-        2,
-        null
-      ],
-      [
-        14,
-        4,
-        null
-      ],
-      [
-        14,
-        3,
-        null
-      ]
+      [2, 0, null],
+      [2, 1, null],
+      [3, 0, null],
+      [3, 1, null],
+      [3, 2, null],
+      [4, 0, null],
+      [4, 2, null],
+      [4, 1, null],
+      [4, 3, null],
+      [5, 0, null],
+      [5, 2, null],
+      [5, 4, null],
+      [5, 1, null],
+      [5, 3, null],
+      [6, 0, null],
+      [6, 2, null],
+      [6, 4, null],
+      [6, 1, null],
+      [6, 3, null],
+      [7, 0, null],
+      [7, 2, null],
+      [7, 4, null],
+      [7, 1, null],
+      [7, 3, null],
+      [8, 0, null],
+      [8, 2, null],
+      [8, 4, null],
+      [8, 1, null],
+      [8, 3, null],
+      [9, 8, null],
+      [9, 5, null],
+      [9, 7, null],
+      [9, 6, null],
+      [9, 3, null],
+      [11, 9, null],
+      [12, 0, null],
+      [12, 3, null],
+      [14, 13, null],
+      [14, 2, null],
+      [14, 4, null],
+      [14, 3, null]
     ]
   },
   "indices": {

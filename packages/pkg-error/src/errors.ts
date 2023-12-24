@@ -1,5 +1,5 @@
-import { MessageName } from "./message-name";
-import os from "os";
+import { MessageName } from './message-name'
+import os from 'os'
 
 /**
  Subclasses of builtins in TS don't work with Instanceof - https://tinyurl.com/yy98e53g / https://tinyurl.com/y5qjen4t
@@ -12,29 +12,29 @@ export function assertIsError(errorLike: any): errorLike is Error {
     // (errorLike?.stack && errorLike?.message) ||
     !!errorLike?.message ||
     !!(errorLike?.diagnosticText && errorLike?.diagnosticCodes)
-  );
+  )
 }
 export function assertIsBacError<
   Extra = undefined,
   Code extends MessageName = MessageName
 >(errorLike: any): errorLike is BacError<Code, Extra> {
-  return assertIsError(errorLike) && errorLike instanceof BacError;
+  return assertIsError(errorLike) && errorLike instanceof BacError
 }
 export function assertIsBacWrappedError<
   Extra = undefined,
   Code extends MessageName = MessageName
 >(errorLike: any): errorLike is BacErrorWrapper<Code, Extra> {
-  return assertIsError(errorLike) && !!((errorLike as BacErrorWrapper).wrapped);
+  return assertIsError(errorLike) && !!(errorLike as BacErrorWrapper).wrapped
 }
 
 // https://github.com/arcanis/clipanion/blob/665d2ab3125be0f247009799d01da9ca5f6fd24f/sources/errors.ts#L3
 export type ClipanionErrorMeta =
   | {
-      type: `none`;
+      type: `none`
     }
   | {
-      type: `usage`;
-    };
+      type: `usage`
+    }
 
 // type ErrorTypeUnion =
 //   /** wrong options etc */
@@ -43,16 +43,16 @@ export type ClipanionErrorMeta =
 //   | 'clipanionGeneral'
 // type ErrorTypeOrExitCode = 'clipanionUsage' | 'clipanionGeneral' | ExitCode
 export class BacError<
-Code extends MessageName = MessageName,
-Extra = unknown,
+  Code extends MessageName = MessageName,
+  Extra = unknown
 > extends Error {
-  public reportCode: Code;
-  public clipanion?: ClipanionErrorMeta; // for compatibility with Clipanion
+  public reportCode: Code
+  public clipanion?: ClipanionErrorMeta // for compatibility with Clipanion
   // public type?: ErrorTypeUnion
   // public exitCode?: ExitCode
-  public messageRaw: string;
-  public stackRaw?: string;
-  public extra?: Extra;
+  public messageRaw: string
+  public stackRaw?: string
+  public extra?: Extra
 
   // static isSuccessError(err: Error) {
   //   if ((err as BacError)?.reportCode) {
@@ -63,47 +63,70 @@ Extra = unknown,
 
   static fromError<Extra = undefined>(
     err: string | Error,
-    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra, messagePrefix?: string }
-  ): BacError<MessageName.UNNAMED, Extra>;
+    options?: {
+      reportCode?: MessageName.UNNAMED
+      extra?: Extra
+      messagePrefix?: string
+    }
+  ): BacError<MessageName.UNNAMED, Extra>
   static fromError<Extra = undefined>(
     err: string,
-    options?: { reportCode?: MessageName.UNNAMED; extra?: Extra, messagePrefix?: string }
-  ): BacError<MessageName.UNNAMED, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
+    options?: {
+      reportCode?: MessageName.UNNAMED
+      extra?: Extra
+      messagePrefix?: string
+    }
+  ): BacError<MessageName.UNNAMED, Extra>
+  static fromError<
+    Extra = undefined,
+    Code extends MessageName = MessageName.UNNAMED
+  >(
     err: BacError,
-    options?: { reportCode?: Code; extra?: Extra, messagePrefix?: string }
-  ): BacError<Code, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
+    options?: { reportCode?: Code; extra?: Extra; messagePrefix?: string }
+  ): BacError<Code, Extra>
+  static fromError<
+    Extra = undefined,
+    Code extends MessageName = MessageName.UNNAMED
+  >(
     err: BacErrorWrapper,
-    options?: { reportCode?: Code; extra?: Extra, messagePrefix?: string }
-  ): BacErrorWrapper<Code, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
+    options?: { reportCode?: Code; extra?: Extra; messagePrefix?: string }
+  ): BacErrorWrapper<Code, Extra>
+  static fromError<
+    Extra = undefined,
+    Code extends MessageName = MessageName.UNNAMED
+  >(
     err: Error,
-    options?: { reportCode?: Code; extra?: Extra, messagePrefix?: string }
-  ): BacError<Code, Extra>;
-  static fromError<Extra = undefined, Code extends MessageName = MessageName.UNNAMED>(
+    options?: { reportCode?: Code; extra?: Extra; messagePrefix?: string }
+  ): BacError<Code, Extra>
+  static fromError<
+    Extra = undefined,
+    Code extends MessageName = MessageName.UNNAMED
+  >(
     errParam: BacError | BacErrorWrapper | Error | string,
-    options: { reportCode?: Code; extra?: Extra, messagePrefix?: string } = {}
+    options: { reportCode?: Code; extra?: Extra; messagePrefix?: string } = {}
   ): BacError<Code, Extra> | BacErrorWrapper<Code, Extra> {
-
-    const { reportCode, extra, messagePrefix } = options;
+    const { reportCode, extra, messagePrefix } = options
     let err = errParam
     if (typeof err === 'string') {
-      err = new BacError<Code, Extra>(reportCode ?? MessageName.UNNAMED as Code, err)
-    }
-    else if (
+      err = new BacError<Code, Extra>(
+        reportCode ?? (MessageName.UNNAMED as Code),
+        err
+      )
+    } else if (
       assertIsBacWrappedError<Extra, Code>(err) ||
       assertIsBacError<Extra, Code>(err)
-      ) {
-        if (reportCode) err.reportCode = reportCode;
-        if (extra) err.extra = extra;
+    ) {
+      if (reportCode) err.reportCode = reportCode
+      if (extra) err.extra = extra
 
       // console.log(`err :>> `, Object.keys(err))
-      return err;
+      return err
     }
     // const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err) : err.message
 
-    const nextMessage = messagePrefix ? BacErrorWrapper.inlineWrapError(messagePrefix, err.message) : err.message
+    const nextMessage = messagePrefix
+      ? BacErrorWrapper.inlineWrapError(messagePrefix, err.message)
+      : err.message
     // const nextErr = Object.assign(new BacError<Code, Extra>(
     //   reportCode ?? (MessageName.UNNAMED as Code),
     //   nextMessage,
@@ -113,14 +136,16 @@ Extra = unknown,
       reportCode ?? (MessageName.UNNAMED as Code),
       nextMessage,
       { extra, cause: err }
-      );
+    )
 
-      // console.log(`err, nextErr :>> `, err, nextErr) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
+    // console.log(`err, nextErr :>> `, err, nextErr) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
 
     return nextErr
   }
 
-  static getMessageForError(err: string | BacError | BacErrorWrapper | Error): string {
+  static getMessageForError(
+    err: string | BacError | BacErrorWrapper | Error
+  ): string {
     if (typeof err === 'string') {
       return err
     }
@@ -129,7 +154,7 @@ Extra = unknown,
     }
     // console.log(`err :>> `, assertIsBacWrappedError(err), assertIsBacError(err), assertIsError(err), err?.stack, err)
     if (assertIsBacError(err)) {
-      return BacError.formatMessageName(err.reportCode, err.stack);
+      return BacError.formatMessageName(err.reportCode, err.stack)
     }
     if (err.stack) {
       return err.stack
@@ -144,13 +169,17 @@ Extra = unknown,
   //   err.message = `${prefixMessage}${err.message}`;
   // }
 
-  constructor(code: Code, message: string, { extra, cause }: { extra?: Extra, cause?: Error } = {}) {
+  constructor(
+    code: Code,
+    message: string,
+    { extra, cause }: { extra?: Extra; cause?: Error } = {}
+  ) {
     // super(BacError.formatMessageName(code, message))
-    super(message, {cause});
-    this.messageRaw = message;
-    this.reportCode = code;
+    super(message, { cause })
+    this.messageRaw = message
+    this.reportCode = code
     if (extra) {
-      this.extra = extra;
+      this.extra = extra
     }
     // this.type = type
 
@@ -164,29 +193,29 @@ Extra = unknown,
     //     this.type = type
     // }
 
-    Object.setPrototypeOf(this, BacError.prototype);
+    Object.setPrototypeOf(this, BacError.prototype)
   }
 
   override get message(): string {
     // if (BacError.isSuccessError(this)) {
     //   return ''
     // }
-    return BacError.formatMessageName(this.reportCode, this.message);
+    return BacError.formatMessageName(this.reportCode, this.message)
     // return this.message
   }
   override get stack(): string {
     // if (BacError.isSuccessError(this)) {
     //   return ''
     // }
-    return this.stack;
+    return this.stack
   }
 
   private static formatMessageName(code: MessageName, message: string) {
     if (!code) {
       // standard UNNAMED need not hyperlink
-      return message;
+      return message
     }
-    return `Error code '${code}'. More info at https://monotonous.org/advanced/error-codes#${code}--- \n${message}`;
+    return `Error code '${code}'. More info at https://monotonous.org/advanced/error-codes#${code}--- \n${message}`
   }
 }
 
@@ -231,10 +260,10 @@ Extra = unknown,
 // }
 
 export class BacErrorWrapper<
-Code extends MessageName = MessageName,
-Extra = undefined,
+  Code extends MessageName = MessageName,
+  Extra = undefined
 > extends BacError<Code, Extra> {
-  public wrapped: Error;
+  public wrapped: Error
 
   // constructor(code: MessageName, message: string, error: Error, typeOrExitCode?: ErrorTypeOrExitCode) {
   constructor(
@@ -244,23 +273,27 @@ Extra = undefined,
     options: { extra?: Extra } = {}
   ) {
     // super(`${message}'.\nRethrowing the error: "${error.message}"`)
-    const nextStack = BacErrorWrapper.inlineWrapError(message, error);
-    super((code ?? (error as BacError).reportCode ?? MessageName.UNNAMED) as Code, nextStack, options);
-    this.wrapped = error;
+    const nextStack = BacErrorWrapper.inlineWrapError(message, error)
+    super(
+      (code ?? (error as BacError).reportCode ?? MessageName.UNNAMED) as Code,
+      nextStack,
+      options
+    )
+    this.wrapped = error
     if (error.stack) {
       // @ts-ignore
-      this.stack = nextStack;
+      this.stack = nextStack
     }
-    Object.setPrototypeOf(this, BacErrorWrapper.prototype);
+    Object.setPrototypeOf(this, BacErrorWrapper.prototype)
   }
 
   static inlineWrapError(message: string, wrappable: string | Error = message) {
     if (assertIsError(wrappable)) {
-      wrappable = wrappable.stack ?? wrappable.message;
+      wrappable = wrappable.stack ?? wrappable.message
     }
-    const lines = wrappable.split(os.EOL);
+    const lines = wrappable.split(os.EOL)
     return `Error: ${message}\nWrapped error:\n${lines
       .map((line) => `  ${line}`)
-      .join(os.EOL)}`;
+      .join(os.EOL)}`
   }
 }

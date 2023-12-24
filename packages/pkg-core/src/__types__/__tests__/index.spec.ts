@@ -1,9 +1,8 @@
-import { logLevelMatching } from "../index";
-import { describe, it, jest, expect } from "bun:test";
+import { logLevelMatching } from '../index'
+import { describe, it, jest, expect } from 'bun:test'
 
 describe('index', () => {
   it('logLevelMatching', () => {
-
     expect(logLevelMatching('info', 'debug', false)).toBeFalsy()
     expect(logLevelMatching('debug', 'debug', false)).toBeTruthy()
     expect(logLevelMatching('debug', 'error', false)).toBeTruthy()
@@ -20,6 +19,5 @@ describe('index', () => {
     expect(logLevelMatching('fatal', 'fatal', true)).toBeTruthy()
 
     expect(logLevelMatching('debug', 'info', true)).toBeFalsy()
-
   })
 })

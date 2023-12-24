@@ -9,10 +9,9 @@ import * as config from './config'
 
 export const validators = {
   moon: {
-    queryProjects: moonQueryProjects,
+    queryProjects: moonQueryProjects
   },
-  config,
+  config
 }
 
 // export * from './config'
-

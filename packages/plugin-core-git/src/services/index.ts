@@ -1,5 +1,5 @@
 import { ServiceStaticInterface } from '@business-as-code/core'
-import {GitService} from './git-service'
+import { GitService } from './git-service'
 
 // declare global {
 //   interface Bac {

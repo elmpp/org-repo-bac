@@ -1,4 +1,4 @@
-import { Config, configSchema } from "../config/config";
+import { Config, configSchema } from '../config/config'
 
 // const configStaticSourceOk = {
 //   projectSource: [{
@@ -54,29 +54,29 @@ import { Config, configSchema } from "../config/config";
 //   }]
 // } satisfies Config
 
-describe("config", () => {
-  it("provider-based config validates", () => {
+describe('config', () => {
+  it('provider-based config validates', () => {
     const config = {
       projectSource: [
         {
-          provider: "git",
+          provider: 'git',
           options: {
             // b: 'b',
             // context: {} as Context,
             // workingPath: '.',
             // workspacePath: addr.parsePath('.') as AddressPathAbsolute,
             // options: {
-            address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9',
+            address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9'
             // }
             // address: 'http://localhost:8174/bare-repo1.git?commit=21c39617a9'
           }
-        },
-      ],
-    } satisfies Config;
-    const res = configSchema.safeParse(config);
+        }
+      ]
+    } satisfies Config
+    const res = configSchema.safeParse(config)
     expect(res.success).toBeTruthy()
-  });
-  it("provider-based config validates provider + options shape", () => {
+  })
+  it('provider-based config validates provider + options shape', () => {
     const config: Config = {
       projectSource: [
         // @ts-expect-error: provider missing
@@ -84,28 +84,28 @@ describe("config", () => {
           // options: {
           //   incorrect: 'objects',
           // }
-        },
-      ],
+        }
+      ]
     }
-    const res = configSchema.safeParse(config);
+    const res = configSchema.safeParse(config)
     expect(res.success).toBeFalsy()
-  });
-  it("provider-based config validates provider + options as an unknown", () => {
+  })
+  it('provider-based config validates provider + options as an unknown', () => {
     const config = {
       projectSource: [
         {
           // @ts-expect-error:
-          provider: "unknownproviderkey",
+          provider: 'unknownproviderkey',
           options: {
             // @ts-expect-error:
-            incorrect: 'objects',
+            incorrect: 'objects'
           }
-        },
-      ],
-    } satisfies Config;
-    const res = configSchema.safeParse(config);
+        }
+      ]
+    } satisfies Config
+    const res = configSchema.safeParse(config)
     expect(res.success).toBeTruthy() // we're just checking the shape
-  });
+  })
 
   // it("validates with errors", () => {
   //   const config = {
@@ -128,4 +128,4 @@ describe("config", () => {
   //   const res = configSchema.safeParse(config);
   //   expect(res.success).toBeFalsy()
   // });
-});
+})

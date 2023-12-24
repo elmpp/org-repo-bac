@@ -1,4 +1,4 @@
-import { Path, virtualFs } from "@angular-devkit/core";
+import { Path, virtualFs } from '@angular-devkit/core'
 import {
   Action,
   ActionBase,
@@ -11,48 +11,44 @@ import {
   OverwriteFileAction,
   RenameFileAction,
   Tree
-} from "@angular-devkit/schematics";
-import { SchematicResettableCordHost } from "./schematics-resettable-cord-host";
+} from '@angular-devkit/schematics'
+import { SchematicResettableCordHost } from './schematics-resettable-cord-host'
 
 export interface ResettableDeleteDirAction extends ActionBase {
-  readonly kind: "t";
+  readonly kind: 't'
 }
-export type ResettableAction = Action | ResettableDeleteDirAction;
+export type ResettableAction = Action | ResettableDeleteDirAction
 
 export function assertIsSchematicResettableHostTree(
   tree: any
 ): asserts tree is SchematicsResettableHostTree {
   console.log(`tree :>> `, tree)
   if (typeof tree.mvDir === 'function') {
-    return;
+    return
   }
-  throw new Error(
-    `Expected tree to be instance of SchematicResettableHostTree`
-  );
+  throw new Error(`Expected tree to be instance of SchematicResettableHostTree`)
 }
 
 export class SchematicsResettableHostTree extends HostTree {
-
-
   // constructor(workspacePath: string) {
-    // constructor(
-    //   public override _backend: SchematicResettableScopedNodeJsSyncHost
-    // ) {
-    //   // constructor(public override _backend: virtualFs.ReadonlyHost<{}>) {
-    //   // const backend = new virtualFs.ScopedHost(
-    //   //       new NodeJsSyncHost(),
-    //   //       // workflowHost,
-    //   //       workspacePath as Path,
-    //   //       // tree._root,
-    //   //     )
-    //   super(_backend);
-    //   // super(_backend)
-    //   // @ts-ignore
-    //   // this._record = new SchematicResettableCordHost(new virtualFs.SafeReadonlyHost(backend));
-    //   // this._record = new virtualFs.CordHost(new virtualFs.SafeReadonlyHost(_backend));
-    //   // // @ts-ignore
-    //   // this._recordSync = new virtualFs.SyncDelegateHost(this._record);
-    // }
+  // constructor(
+  //   public override _backend: SchematicResettableScopedNodeJsSyncHost
+  // ) {
+  //   // constructor(public override _backend: virtualFs.ReadonlyHost<{}>) {
+  //   // const backend = new virtualFs.ScopedHost(
+  //   //       new NodeJsSyncHost(),
+  //   //       // workflowHost,
+  //   //       workspacePath as Path,
+  //   //       // tree._root,
+  //   //     )
+  //   super(_backend);
+  //   // super(_backend)
+  //   // @ts-ignore
+  //   // this._record = new SchematicResettableCordHost(new virtualFs.SafeReadonlyHost(backend));
+  //   // this._record = new virtualFs.CordHost(new virtualFs.SafeReadonlyHost(_backend));
+  //   // // @ts-ignore
+  //   // this._recordSync = new virtualFs.SyncDelegateHost(this._record);
+  // }
 
   /** branches against the current real FS with provided tree */
   static branchFromFs(
@@ -64,18 +60,18 @@ export class SchematicsResettableHostTree extends HostTree {
     // ins.merge(tree)
 
     // @ts-ignore
-    const ins = new SchematicsResettableHostTree(this._backend);
+    const ins = new SchematicsResettableHostTree(this._backend)
     // @ts-ignore
-    ins._record = SchematicResettableCordHost.cloneFrom(tree._record);
+    ins._record = SchematicResettableCordHost.cloneFrom(tree._record)
     // ins._record = tree._record.clone();
     // @ts-ignore
-    ins._recordSync = new virtualFs.SyncDelegateHost(ins._record);
+    ins._recordSync = new virtualFs.SyncDelegateHost(ins._record)
     // @ts-ignore
-    ins._ancestry = new Set(tree._ancestry).add(tree._id);
+    ins._ancestry = new Set(tree._ancestry).add(tree._id)
 
     // console.log(`ins._record :>> `, ins._record)
 
-    return ins;
+    return ins
   }
 
   /** branches normally using provided tree */
@@ -83,7 +79,7 @@ export class SchematicsResettableHostTree extends HostTree {
     // workspacePath: string,
     // prevTree: Tree,
     nextTree: Tree,
-    mergeStrategy?: MergeStrategy,
+    mergeStrategy?: MergeStrategy
   ): SchematicsResettableHostTree {
     // static fromExisting(workspacePath: string, tree: SchematicsResettableHostTree): SchematicsResettableHostTree {
     // const ins = new SchematicsResettableHostTree(workspacePath)
@@ -105,16 +101,16 @@ export class SchematicsResettableHostTree extends HostTree {
     // assertIsSchematicResettableHostTree(nextTree); // they may not be SchematicResettableHostTree actually (schematics start withy EMPTY() trees)
 
     // @ts-ignore
-    const ins = new SchematicsResettableHostTree(this._backend);
+    const ins = new SchematicsResettableHostTree(this._backend)
 
     // @ts-ignore
-    ins._record = SchematicResettableCordHost.cloneFrom(nextTree._record);
+    ins._record = SchematicResettableCordHost.cloneFrom(nextTree._record)
     // // ins._record = tree._record.clone();
     // @ts-ignore
-    ins._recordSync = new virtualFs.SyncDelegateHost(ins._record);
+    ins._recordSync = new virtualFs.SyncDelegateHost(ins._record)
 
     // @ts-ignore
-    ins._ancestry = new Set(nextTree._ancestry).add(nextTree._id);
+    ins._ancestry = new Set(nextTree._ancestry).add(nextTree._id)
 
     // prevTree.merge(nextTree)
 
@@ -125,7 +121,7 @@ export class SchematicsResettableHostTree extends HostTree {
     //   ins.readText("./README.md")
     // );
 
-    ins.merge(nextTree, mergeStrategy);
+    ins.merge(nextTree, mergeStrategy)
 
     // nextTree.merge(ins, MergeStrategy.AllowCreationConflict)
 
@@ -161,61 +157,61 @@ export class SchematicsResettableHostTree extends HostTree {
 
     // console.log(`ins._record :>> `, ins._record)
 
-    return ins;
+    return ins
   }
 
   protected getRecord(): SchematicResettableCordHost {
-    return (this as any)._record;
+    return (this as any)._record
   }
 
   private override *generateActions(): Iterable<ResettableAction> {
     for (const record of this.getRecord().records()) {
       switch (record.kind) {
-        case "create":
+        case 'create':
           yield {
             id: (this as any)._id,
             parent: 0,
-            kind: "c",
+            kind: 'c',
             path: record.path,
-            content: Buffer.from(record.content),
-          } as CreateFileAction;
-          break;
-        case "overwrite":
+            content: Buffer.from(record.content)
+          } as CreateFileAction
+          break
+        case 'overwrite':
           yield {
             id: (this as any)._id,
             parent: 0,
-            kind: "o",
+            kind: 'o',
             path: record.path,
-            content: Buffer.from(record.content),
-          } as OverwriteFileAction;
-          break;
-        case "rename":
+            content: Buffer.from(record.content)
+          } as OverwriteFileAction
+          break
+        case 'rename':
           yield {
             id: (this as any)._id,
             parent: 0,
-            kind: "r",
+            kind: 'r',
             path: record.from,
-            to: record.to,
-          } as RenameFileAction;
-          break;
-        case "delete":
+            to: record.to
+          } as RenameFileAction
+          break
+        case 'delete':
           yield {
             id: (this as any)._id,
             parent: 0,
-            kind: "d",
-            path: record.path,
+            kind: 'd',
+            path: record.path
             // isDir: false,
-          } as DeleteFileAction;
-          break;
-        case "deleteDir":
+          } as DeleteFileAction
+          break
+        case 'deleteDir':
           yield {
             id: (this as any)._id,
             parent: 0,
-            kind: "t",
-            path: record.path,
+            kind: 't',
+            path: record.path
             // isDir: true,
-          } as ResettableDeleteDirAction;
-          break;
+          } as ResettableDeleteDirAction
+          break
       }
     }
   }
@@ -224,7 +220,7 @@ export class SchematicsResettableHostTree extends HostTree {
   override get actions(): ResettableAction[] {
     // Create a list of all records until we hit our original backend. This is to support branches
     // that diverge from each others.
-    return Array.from(this.generateActions());
+    return Array.from(this.generateActions())
   }
 
   override merge(other: Tree, strategy = MergeStrategy.Default) {
@@ -232,14 +228,14 @@ export class SchematicsResettableHostTree extends HostTree {
 
     if (other === this) {
       // Merging with yourself? Tsk tsk. Nothing to do at least.
-      return;
+      return
     }
 
     // @ts-ignore
     if (this.isAncestorOf(other)) {
       // Workaround for merging a branch back into one of its ancestors
       // More complete branch point tracking is required to avoid
-      strategy |= MergeStrategy.Overwrite;
+      strategy |= MergeStrategy.Overwrite
     }
 
     // const _creationConflictAllowed =
@@ -247,41 +243,41 @@ export class SchematicsResettableHostTree extends HostTree {
     //   MergeStrategy.AllowCreationConflict;
     const overwriteConflictAllowed =
       (strategy & MergeStrategy.AllowOverwriteConflict) ==
-      MergeStrategy.AllowOverwriteConflict;
+      MergeStrategy.AllowOverwriteConflict
     const deleteConflictAllowed =
       (strategy & MergeStrategy.AllowDeleteConflict) ==
-      MergeStrategy.AllowDeleteConflict;
+      MergeStrategy.AllowDeleteConflict
 
     other.actions.forEach((action) => {
       switch (action.kind) {
-        case "c": {
-          const { path, content } = action;
+        case 'c': {
+          const { path, content } = action
 
           if (
             this._willCreate(path) ||
             this._willOverwrite(path) ||
             this.exists(path)
           ) {
-            const existingContent = this.read(path);
+            const existingContent = this.read(path)
             if (existingContent && content.equals(existingContent)) {
               // Identical outcome; no action required
-              return;
+              return
             }
 
             // if (!creationConflictAllowed) {
             //   throw new MergeConflictException(path);
             // }
 
-          //   if (action.path === '/README.md') {
-          //     console.log(`action :>> `, action, this._willCreate(path), this._willOverwrite(path), this.exists(path), content.toString(), existingContent?.toString(), strategy)
-          // }
+            //   if (action.path === '/README.md') {
+            //     console.log(`action :>> `, action, this._willCreate(path), this._willOverwrite(path), this.exists(path), content.toString(), existingContent?.toString(), strategy)
+            // }
 
             /** WE EXPLICITLY ONLY ALLOW OVERWRITES WITH OUR CUSTOM MERGE */
             if (MergeStrategy.AllowCreationConflict === strategy) {
               // @ts-ignore
               this._record
                 .overwrite(path, content as {} as virtualFs.FileBuffer)
-                .subscribe();
+                .subscribe()
             }
             // console.log(`:>> PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP`);
 
@@ -290,30 +286,30 @@ export class SchematicsResettableHostTree extends HostTree {
             // @ts-ignore
             this._record
               .create(path, content as {} as virtualFs.FileBuffer)
-              .subscribe();
+              .subscribe()
           }
 
-          return;
+          return
         }
 
-        case "o": {
-          const { path, content } = action;
+        case 'o': {
+          const { path, content } = action
           if (this._willDelete(path) && !overwriteConflictAllowed) {
-            console.log(`:>> mergeConflictException overwriting::deleting`);
-            throw new MergeConflictException(path);
+            console.log(`:>> mergeConflictException overwriting::deleting`)
+            throw new MergeConflictException(path)
           }
 
           // Ignore if content is the same (considered the same change).
           if (this._willOverwrite(path)) {
-            const existingContent = this.read(path);
+            const existingContent = this.read(path)
             if (existingContent && content.equals(existingContent)) {
               // Identical outcome; no action required
-              return;
+              return
             }
 
             if (!overwriteConflictAllowed) {
-              console.log(`:>> mergeConflictException overwriting::overwriting`);
-              throw new MergeConflictException(path);
+              console.log(`:>> mergeConflictException overwriting::overwriting`)
+              throw new MergeConflictException(path)
             }
           }
           // We use write here as merge validation has already been done, and we want to let
@@ -321,54 +317,54 @@ export class SchematicsResettableHostTree extends HostTree {
           // @ts-ignore
           this._record
             .write(path, content as {} as virtualFs.FileBuffer)
-            .subscribe();
+            .subscribe()
 
-          return;
+          return
         }
 
-        case "r": {
-          const { path, to } = action;
+        case 'r': {
+          const { path, to } = action
           if (this._willDelete(path)) {
-            console.log(`:>> mergeConflictException renaming::deleting`);
-            throw new MergeConflictException(path);
+            console.log(`:>> mergeConflictException renaming::deleting`)
+            throw new MergeConflictException(path)
           }
 
           if (this._willRename(path)) {
             // @ts-ignore
             if (this._record.willRenameTo(path, to)) {
               // Identical outcome; no action required
-              return;
+              return
             }
 
             // No override possible for renaming.
-            console.log(`:>> mergeConflictException renaming::renaming`);
-            throw new MergeConflictException(path);
+            console.log(`:>> mergeConflictException renaming::renaming`)
+            throw new MergeConflictException(path)
           }
-          this.rename(path, to);
+          this.rename(path, to)
 
-          return;
+          return
         }
 
-        case "d": {
-          const { path } = action;
+        case 'd': {
+          const { path } = action
           if (this._willDelete(path)) {
             // TODO: This should technically check the content (e.g., hash on delete)
             // Identical outcome; no action required
-            return;
+            return
           }
 
           if (!this.exists(path) && !deleteConflictAllowed) {
-            console.log(`:>> mergeConflictException deleting::deleting`);
-            throw new MergeConflictException(path);
+            console.log(`:>> mergeConflictException deleting::deleting`)
+            throw new MergeConflictException(path)
           }
 
           // @ts-ignore
-          this._recordSync.delete(path);
+          this._recordSync.delete(path)
 
-          return;
+          return
         }
       }
-    });
+    })
   }
 
   /**
@@ -393,7 +389,7 @@ export class SchematicsResettableHostTree extends HostTree {
     //       );
     //     }
 
-    this.getRecord().rmDir(dirEntry);
+    this.getRecord().rmDir(dirEntry)
   }
 
   /**
@@ -418,7 +414,7 @@ export class SchematicsResettableHostTree extends HostTree {
     //       );
     //     }
 
-    this.getRecord().mvDir(fromPath, toPath);
+    this.getRecord().mvDir(fromPath, toPath)
   }
 
   // reset() {

@@ -1,14 +1,14 @@
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
 import {
   assertIsOk,
   Context,
   InitialiseWorkspaceLifecycleBase,
   LifecycleProvidersForAsByMethod,
   ServiceMap,
-  ServiceProvidersForAsByMethod,
-} from "@business-as-code/core";
-import { BacError, MessageName } from "@business-as-code/error";
-import { xfs } from "@business-as-code/fslib";
+  ServiceProvidersForAsByMethod
+} from '@business-as-code/core'
+import { BacError, MessageName } from '@business-as-code/error'
+import { xfs } from '@business-as-code/fslib'
 
 // declare global {
 //   namespace Bac {
@@ -27,7 +27,7 @@ import { xfs } from "@business-as-code/fslib";
 export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecycleBase<
   typeof InitialiseWorkspaceCoreLifecycle
 > {
-  static override title = "core" as const;
+  static override title = 'core' as const
 
   // override get ctor(): typeof InitialiseWorkspaceLifecycle {
   //   return this.constructor as any;
@@ -35,41 +35,46 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
 
   override initialiseWorkspace(): (options: {
     common: {
-      context: Context;
-      workspacePath: AddressPathAbsolute;
-    },
+      context: Context
+      workspacePath: AddressPathAbsolute
+    }
     // workingPath: string;
     options: {
       // a: 'a'
-      name: string;
-      configPath: string;
-      cliVersion: string;
-      cliRegistry: string;
-      cliPath?: string;
-      packageManager: ServiceProvidersForAsByMethod<"packageManager">,
-    };
-  }) => ReturnType<ServiceMap["schematics"][number]["runSchematic"]> {
+      name: string
+      configPath: string
+      cliVersion: string
+      cliRegistry: string
+      cliPath?: string
+      packageManager: ServiceProvidersForAsByMethod<'packageManager'>
+    }
+  }) => ReturnType<ServiceMap['schematics'][number]['runSchematic']> {
     return async ({
-      common: { context,
-        workspacePath,
-      },
-      options: { name, configPath, cliVersion, cliRegistry, cliPath, packageManager },
+      common: { context, workspacePath },
+      options: {
+        name,
+        configPath,
+        cliVersion,
+        cliRegistry,
+        cliPath,
+        packageManager
+      }
     }) => {
       if (!(await xfs.existsPromise(workspacePath.address))) {
-        const workspacePathParent = addr.pathUtils.dirname(workspacePath);
+        const workspacePathParent = addr.pathUtils.dirname(workspacePath)
         if (!(await xfs.existsPromise(workspacePathParent.address))) {
           throw new BacError(
             MessageName.FS_PATH_FORMAT_ERROR,
             `Parent path '${workspacePathParent.original}' must be present when creating workspace at '${workspacePath.original}'`
-          );
+          )
         }
-        await xfs.mkdirpPromise(workspacePath.address);
+        await xfs.mkdirpPromise(workspacePath.address)
       }
 
-      const schematicsService = await context.serviceFactory("schematics", {
+      const schematicsService = await context.serviceFactory('schematics', {
         context,
-        workingPath: ".",
-      });
+        workingPath: '.'
+      })
 
       // console.log(`context.cliOptions.flags :>> `, context.cliOptions.flags);
       // console.log(`configPath, cliVersion, cliRegistry :>> `, configPath, cliVersion, cliRegistry)
@@ -82,36 +87,36 @@ export class InitialiseWorkspaceCoreLifecycle extends InitialiseWorkspaceLifecyc
           cliVersion,
           cliRegistry,
           cliPath,
-          packageManager,
+          packageManager
 
           // ...context.cliOptions.flags,
           // name: context.cliOptions.flags.name,
           // // workspacePath: context.cliOptions.flags.workspacePath,
           // configPath: context.cliOptions.flags.configPath,
           // author: 'boloerguie',
-        },
+        }
         // destinationPath: workspacePath,
         // dryRun: false,
         // force: true,
         // workingPath: addr.pathUtils.dot,
-      });
+      })
 
       if (!assertIsOk(res)) {
         switch (res.res.error.reportCode) {
           case MessageName.SCHEMATICS_ERROR:
-            context.logger.error(res.res.error.message);
-            break;
+            context.logger.error(res.res.error.message)
+            break
           case MessageName.SCHEMATICS_INVALID_ADDRESS:
-            context.logger.error(res.res.error.message);
-            break;
+            context.logger.error(res.res.error.message)
+            break
           case MessageName.SCHEMATICS_NOT_FOUND:
-            context.logger.error(res.res.error.message);
-            break;
+            context.logger.error(res.res.error.message)
+            break
         }
       }
 
-      return res;
-    };
+      return res
+    }
   }
 }
 

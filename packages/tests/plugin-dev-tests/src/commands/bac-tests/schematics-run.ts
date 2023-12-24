@@ -3,9 +3,9 @@ import {
   BaseCommand,
   ContextCommand,
   Oclif,
-  Interfaces as _Interfaces,
-} from "@business-as-code/core";
-import { MessageName } from "@business-as-code/error";
+  Interfaces as _Interfaces
+} from '@business-as-code/core'
+import { MessageName } from '@business-as-code/error'
 
 /**
  Generic command to run any schematic. Allows testing without standing up dedicated command
@@ -13,7 +13,7 @@ import { MessageName } from "@business-as-code/error";
 export default class BacTestsSchematicsRun extends BaseCommand<
   typeof BacTestsSchematicsRun
 > {
-  static override description = "Runs arbitrary schematic";
+  static override description = 'Runs arbitrary schematic'
 
   // constructor(...args: any[]) {
   //   super(...args)
@@ -28,20 +28,20 @@ export default class BacTestsSchematicsRun extends BaseCommand<
   static override baseFlags = {
     ...BaseCommand.baseFlags,
     schematicOptions: Oclif.Flags.custom<Record<string, unknown>>({
-      summary: "Schematic Options",
+      summary: 'Schematic Options',
       // options: ["debug", "error", "fatal", "info", "warn"] satisfies LogLevel[],
-      helpGroup: "GLOBAL",
+      helpGroup: 'GLOBAL',
       parse: async (jsonString: string) => {
         try {
-          const parsed = JSON.parse(jsonString);
-          return parsed;
+          const parsed = JSON.parse(jsonString)
+          return parsed
         } catch (err) {
-          throw err;
+          throw err
         }
       },
-      default: {},
-    })(),
-  };
+      default: {}
+    })()
+  }
 
   static override flags = {
     // payload: Oclif.Flags.custom({
@@ -50,14 +50,14 @@ export default class BacTestsSchematicsRun extends BaseCommand<
     //     default: () => {},
     // }),
     workspacePath: Oclif.Flags.directory({
-    exists: true, // do NOT infer from the RC file
-      description: "Workspace name",
-      required: true,
+      exists: true, // do NOT infer from the RC file
+      description: 'Workspace name',
+      required: true
     }),
     schematicsAddress: Oclif.Flags.string({
-      description: "Schematics Address",
-      required: true,
-    }),
+      description: 'Schematics Address',
+      required: true
+    })
     // name: Oclif.Flags.string({
     //   description: "Schematics Address",
     //   // parse: async (input) => {
@@ -75,9 +75,9 @@ export default class BacTestsSchematicsRun extends BaseCommand<
     //   }
     //   // required: true,
     // }),
-  };
+  }
 
-  static override args = {};
+  static override args = {}
 
   // override async run(): Promise<void> {
 
@@ -148,39 +148,39 @@ export default class BacTestsSchematicsRun extends BaseCommand<
     // console.log(`repositoriesPath :>> `, repositoriesPath)
     // const repositoriesPath = addr.pathUtils.resolve(addr.parsePath(__dirname), addr.parsePath('../../../../pkg-tests-specs-fixtures/repositories'))
     // console.log(`context.services :>> `, context.services);
-    const schematicsService = await context.serviceFactory("schematics", {
+    const schematicsService = await context.serviceFactory('schematics', {
       context,
       // workspacePath: context.workspacePath,
-      workingPath: ".",
+      workingPath: '.'
       // force: true,
       // dryRun: true,
-    });
+    })
 
     const res = await schematicsService.runSchematic({
       // address: `@business-as-code/plugin-dev-tests#namespace=repositories-create`,
       address: context.cliOptions.flags.schematicsAddress,
-      options: context.cliOptions.flags["schematicOptions"]!,
+      options: context.cliOptions.flags['schematicOptions']!
       // destinationPath: workspacePath,
       // dryRun: false,
       // force: true,
       // workingPath: addr.pathUtils.dot,
-    });
+    })
 
     if (!assertIsOk(res)) {
       switch (res.res.error.reportCode) {
         case MessageName.SCHEMATICS_ERROR:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
         case MessageName.SCHEMATICS_INVALID_ADDRESS:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
         case MessageName.SCHEMATICS_NOT_FOUND:
-          context.logger.error(res.res.error.message);
-          break;
+          context.logger.error(res.res.error.message)
+          break
       }
     }
 
-    return res;
+    return res
 
     //   override async run(): Promise<void> {
     //     }

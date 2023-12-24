@@ -24,6 +24,6 @@
       "factory": "./src/schematics/schematic-utils/factory",
       "schema": "./src/schematics/schematic-utils/schema.json",
       "description": "Tests our schematic bootstrapping and utils"
-    },
+    }
   }
 }

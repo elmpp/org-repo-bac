@@ -31,17 +31,17 @@ uplinks:
   #     type: bearer
   #     token: dsyTcamuhMd8GlsakOhP5A==
 packages:
-  "@business-as-code/*":
+  '@business-as-code/*':
     access: $all
     publish: $authenticated
     unpublish: $authenticated
     # proxy: npmjs // prevents EPUBLISHCONFLICT fails when --force pushing locally
-  "@*/*":
+  '@*/*':
     access: $all
     publish: $authenticated
     unpublish: $authenticated
     proxy: npmjs
-  "**":
+  '**':
     access: $all
     publish: $authenticated
     unpublish: $authenticated
@@ -59,13 +59,12 @@ middlewares:
 security:
   api:
     jwt:
-     sign:
-      expiresIn: 1d
+      sign:
+        expiresIn: 1d
 
 log: { type: stdout, format: pretty, level: trace }
 
 i18n:
   web: en-US
-
 # try to use verdaccio with child_process:fork
 # _debug: true

@@ -1,15 +1,15 @@
 // import {xfs} from '@business-as-code/common'
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { PortablePath, xfs } from "@business-as-code/fslib";
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { PortablePath, xfs } from '@business-as-code/fslib'
 // import { fsUtils } from "./utils";
-import { JSONParse } from "../utils/format-utils";
-import { CacheKey, fail, ok, Result } from "../__types__";
-import { fsUtils } from "../utils";
+import { JSONParse } from '../utils/format-utils'
+import { CacheKey, fail, ok, Result } from '../__types__'
+import { fsUtils } from '../utils'
 
 export type Meta = {
   // destinationPath: AddressPathAbsolute;
-  contentChecksum: CacheKey;
-};
+  contentChecksum: CacheKey
+}
 
 /**
  Represents the location of a cache unit. The term 'unit' here is some measure of (stream) output + FS artifacts.
@@ -19,26 +19,26 @@ export type Meta = {
  */
 type CacheEntryBase = {
   meta: {
-    _base: AddressPathAbsolute;
-    _namespaceBase: AddressPathAbsolute;
-    main: AddressPathAbsolute;
-  };
+    _base: AddressPathAbsolute
+    _namespaceBase: AddressPathAbsolute
+    main: AddressPathAbsolute
+  }
   content?: {
-    _base: AddressPathAbsolute;
-    _namespaceBase: AddressPathAbsolute;
-    main: AddressPathAbsolute;
-  };
-};
+    _base: AddressPathAbsolute
+    _namespaceBase: AddressPathAbsolute
+    main: AddressPathAbsolute
+  }
+}
 export type CacheEntry<WithContent extends boolean> = WithContent extends true
   ? Required<CacheEntryBase>
-  : CacheEntryBase;
+  : CacheEntryBase
 
 export type CacheSourceEntry = {
   // outputs: Outputs;
   // meta: Meta;
-  contentPath?: AddressPathAbsolute;
-  meta: Meta;
-};
+  contentPath?: AddressPathAbsolute
+  meta: Meta
+}
 
 // type S = false
 // type DD1 = true extends S ? true : false
@@ -59,19 +59,19 @@ export type CacheSourceEntry = {
 
 // type Options<TAddressName extends keyof AddressType> = {contentBaseAddress: AddressDescriptor<TAddressName>, outputsBaseAddress: AddressDescriptor<TAddressName>}
 type Options = {
-  metaBaseAddress: AddressPathAbsolute;
-  contentBaseAddress?: AddressPathAbsolute;
-};
+  metaBaseAddress: AddressPathAbsolute
+  contentBaseAddress?: AddressPathAbsolute
+}
 // export type Options<WithContent extends boolean> = WithContent extends true ? OptionsBase : Omit<OptionsBase, 'contentBaseAddress'>;
 
 /**
  XfsCacheManager is a lower level cache manager implementation. It appears unused ATM!!!
  */
 export class XfsCacheManager<WithContent extends boolean> {
-  options: Options;
+  options: Options
 
   constructor(options: Options) {
-    this.options = options;
+    this.options = options
   }
 
   static async initialise<WithContent extends boolean>(
@@ -90,52 +90,50 @@ export class XfsCacheManager<WithContent extends boolean> {
     if (options.contentBaseAddress) {
       const contentLocationExists = await xfs.existsPromise(
         options.contentBaseAddress.address
-      );
+      )
       if (!contentLocationExists) {
-        await xfs.mkdirpPromise(options.contentBaseAddress.address);
+        await xfs.mkdirpPromise(options.contentBaseAddress.address)
       }
     }
     const metaLocationExists = await xfs.existsPromise(
       options.metaBaseAddress.address
-    );
+    )
     if (!metaLocationExists) {
-      await xfs.mkdirpPromise(options.metaBaseAddress.address);
+      await xfs.mkdirpPromise(options.metaBaseAddress.address)
     }
 
-
-
-    return new XfsCacheManager(options);
+    return new XfsCacheManager(options)
   }
 
   async checksumMatch({
     prevChecksum,
     nextChecksum,
-    cacheEntry,
+    cacheEntry
   }: {
-    prevChecksum?: CacheKey;
-    nextChecksum: CacheKey;
-    cacheEntry: CacheEntry<WithContent>;
+    prevChecksum?: CacheKey
+    nextChecksum: CacheKey
+    cacheEntry: CacheEntry<WithContent>
   }): Promise<Result<true, { error: Error }>> {
     // if (!prevChecksum) return fail(false);
     if (prevChecksum?.globalVersion !== nextChecksum.globalVersion) {
       return fail({
         error: new Error(
           `Checksum miss: global keys do not match. This normally happens following a global cache invalidation. Existing: '${prevChecksum.toString()}', expected: '${nextChecksum.toString()}' when validating cache entry '${
-            cacheEntry.content?._base ?? "n/a"
+            cacheEntry.content?._base ?? 'n/a'
           }'`
-        ),
-      });
+        )
+      })
     }
     if (prevChecksum.key !== nextChecksum.key) {
       return fail({
         error: new Error(
           `Checksum miss: checksum keys do not match. Existing: '${prevChecksum.toString()}', expected: '${nextChecksum.toString()}' when validating cache entry '${
-            cacheEntry.content?._base ?? "n/a"
+            cacheEntry.content?._base ?? 'n/a'
           }'`
-        ),
-      });
+        )
+      })
     }
-    return ok(true);
+    return ok(true)
   }
 
   // async getOutputs({ key, namespace }: { key: string; namespace?: string }) {
@@ -171,29 +169,29 @@ export class XfsCacheManager<WithContent extends boolean> {
   // }
   async getMeta({
     key,
-    namespace,
+    namespace
   }: {
-    key: string;
-    namespace?: string;
+    key: string
+    namespace?: string
   }): Promise<Meta | undefined> {
-    const cacheEntry = await this.getCacheEntry({ key, namespace });
+    const cacheEntry = await this.getCacheEntry({ key, namespace })
 
     const tryGetMeta = async (
       path: AddressPathAbsolute
     ): Promise<Meta | undefined> => {
       if (await xfs.existsPromise(path.address)) {
         const parsed = JSONParse(
-          await xfs.readFilePromise(path.address, "utf-8")
-        ) as Meta;
-        return parsed;
+          await xfs.readFilePromise(path.address, 'utf-8')
+        ) as Meta
+        return parsed
       }
-      return undefined;
-    };
+      return undefined
+    }
     try {
-      const meta = await tryGetMeta(cacheEntry.meta.main);
-      return meta;
+      const meta = await tryGetMeta(cacheEntry.meta.main)
+      return meta
     } catch (err) {
-      return undefined;
+      return undefined
     }
 
     // const valCount = Object.values(ret).filter((o) => o !== undefined).length;
@@ -213,41 +211,41 @@ export class XfsCacheManager<WithContent extends boolean> {
   async copyContent({
     key,
     namespace,
-    destinationPath,
+    destinationPath
   }: {
-    key: string;
-    namespace: string;
-    destinationPath: AddressPathAbsolute;
+    key: string
+    namespace: string
+    destinationPath: AddressPathAbsolute
   }) {
-    const cacheEntry = await this.getCacheEntry({ key, namespace });
+    const cacheEntry = await this.getCacheEntry({ key, namespace })
     if (!this.options.contentBaseAddress) {
       throw new Error(
         `XfsCacheManager::copyContent has no content base directory configured`
-      );
+      )
     }
 
-    await xfs.mkdirpPromise(destinationPath.address);
+    await xfs.mkdirpPromise(destinationPath.address)
     cacheEntry.content &&
       (await xfs.copyPromise(
         destinationPath.address,
         `${cacheEntry.content.main.address}/*` as PortablePath,
         { overwrite: true }
-      ));
+      ))
     // await copyPromise({
     //   source: `${cacheEntry.content.main.address}/*` as PortablePath,
     //   destination: destinationPath.address,
     //   options: {mode: 'overwriteIfExistent'},
     // })
-    return this;
+    return this
   }
 
   async has({ key, namespace }: { key: string; namespace?: string }) {
-    const cacheEntry = await this.getCacheEntry({ key, namespace });
+    const cacheEntry = await this.getCacheEntry({ key, namespace })
 
     const hasContent =
       cacheEntry.content &&
-      (await xfs.existsPromise(cacheEntry.content._base.address));
-    const hasMeta = await xfs.existsPromise(cacheEntry.meta.main.address);
+      (await xfs.existsPromise(cacheEntry.content._base.address))
+    const hasMeta = await xfs.existsPromise(cacheEntry.meta.main.address)
     if (
       this.options.contentBaseAddress &&
       Boolean(hasContent) !== Boolean(hasMeta)
@@ -256,26 +254,26 @@ export class XfsCacheManager<WithContent extends boolean> {
         `XFSCacheManager corruption: uncoupled state '${JSON.stringify(
           cacheEntry
         )}'. hasContent: '${hasContent}', hasMeta: '${hasMeta}'`
-      );
+      )
     }
     // return hasContent && hasMeta;
-    return hasMeta;
+    return hasMeta
   }
   async hasNamespace({ namespace }: { namespace: string }) {
-    const cacheEntry = await this.getCacheEntry({ key: "dummy", namespace });
+    const cacheEntry = await this.getCacheEntry({ key: 'dummy', namespace })
 
-    return xfs.existsPromise(cacheEntry.meta._namespaceBase.address);
+    return xfs.existsPromise(cacheEntry.meta._namespaceBase.address)
   }
 
   protected validateAttributes({
     key,
-    namespace,
+    namespace
   }: {
-    key: string;
-    namespace?: string;
+    key: string
+    namespace?: string
   }) {
-    const sanitisedKey = fsUtils.sanitise(key);
-    const sanitisedNamespace = fsUtils.sanitise(namespace || "");
+    const sanitisedKey = fsUtils.sanitise(key)
+    const sanitisedNamespace = fsUtils.sanitise(namespace || '')
 
     if (
       sanitisedKey !== key ||
@@ -283,25 +281,25 @@ export class XfsCacheManager<WithContent extends boolean> {
     ) {
       throw new Error(
         `xfsCacheManager attributes not sanitised sufficiently for filesystem storage. key: '${key}', namespace: '${namespace}' vs sanitised '${sanitisedKey}', namespace: '${sanitisedNamespace}'`
-      );
+      )
     }
   }
 
   async set({
     key,
     namespace,
-    sourceEntry,
+    sourceEntry
   }: {
-    key: string;
-    namespace?: string;
-    sourceEntry: CacheSourceEntry;
+    key: string
+    namespace?: string
+    sourceEntry: CacheSourceEntry
   }) {
     this.validateAttributes({
       key,
-      namespace,
-    });
+      namespace
+    })
 
-    const cacheEntry = await this.getCacheEntry({ key, namespace });
+    const cacheEntry = await this.getCacheEntry({ key, namespace })
     // // meta
     // await xfs.mkdirpPromise(
     //   addr.pathUtils.dirname(cacheEntry.meta.destinationPath).address
@@ -314,7 +312,7 @@ export class XfsCacheManager<WithContent extends boolean> {
 
     // console.log(`cacheEntry :>> `, cacheEntry)
 
-    await this.prime(cacheEntry);
+    await this.prime(cacheEntry)
 
     // outputs
     // await xfs.mkdirpPromise(
@@ -353,13 +351,13 @@ export class XfsCacheManager<WithContent extends boolean> {
         cacheEntry.content.main.address,
         `${sourceEntry.contentPath.address}/*` as PortablePath,
         { overwrite: true }
-      );
+      )
     }
     await xfs.writeFilePromise(
       cacheEntry.meta.main.address,
       JSON.stringify(sourceEntry.meta),
-      "utf-8"
-    );
+      'utf-8'
+    )
 
     // await copyPromise({
     //   source: `${sourceEntry.content.address}/*` as PortablePath,
@@ -368,33 +366,33 @@ export class XfsCacheManager<WithContent extends boolean> {
     // })
     // }
 
-    return cacheEntry;
+    return cacheEntry
   }
 
   async remove(cacheEntry: CacheEntry<WithContent>) {
     // await xfs.removePromise(cacheEntry.outputs._base.address);
     cacheEntry.content &&
-      (await xfs.removePromise(cacheEntry.content._base.address));
-    await xfs.removePromise(cacheEntry.meta._base.address);
-    return this;
+      (await xfs.removePromise(cacheEntry.content._base.address))
+    await xfs.removePromise(cacheEntry.meta._base.address)
+    return this
   }
   async removeNamespace({ namespace }: { namespace: string }) {
-    const cacheEntry = await this.getCacheEntry({ key: "dummy", namespace });
-    console.log(`removing namespace  :>> `, namespace);
+    const cacheEntry = await this.getCacheEntry({ key: 'dummy', namespace })
+    console.log(`removing namespace  :>> `, namespace)
     // await xfs.removePromise(cacheEntry.outputs._namespaceBase.address);
     cacheEntry.content &&
-      (await xfs.removePromise(cacheEntry.content._namespaceBase.address));
-    await xfs.removePromise(cacheEntry.meta._namespaceBase.address);
+      (await xfs.removePromise(cacheEntry.content._namespaceBase.address))
+    await xfs.removePromise(cacheEntry.meta._namespaceBase.address)
 
-    return this;
+    return this
   }
 
   async clearAll() {
     // await xfs.removePromise(this.options.outputsBaseAddress.address);
     this.options.contentBaseAddress &&
-      (await xfs.removePromise(this.options.contentBaseAddress.address));
-    await xfs.removePromise(this.options.metaBaseAddress.address);
-    return this;
+      (await xfs.removePromise(this.options.contentBaseAddress.address))
+    await xfs.removePromise(this.options.metaBaseAddress.address)
+    return this
   }
 
   /** sets up a cache location */
@@ -406,19 +404,18 @@ export class XfsCacheManager<WithContent extends boolean> {
     //   addr.pathUtils.dirname(cacheEntry.outputs.stderr).address
     // );
     cacheEntry.content &&
-      (await xfs.mkdirpPromise(cacheEntry.content._base.address));
-    await xfs.mkdirpPromise(cacheEntry.meta._base.address);
+      (await xfs.mkdirpPromise(cacheEntry.content._base.address))
+    await xfs.mkdirpPromise(cacheEntry.meta._base.address)
   }
 
   async getCacheEntry({
     key,
-    namespace,
+    namespace
   }: {
-    key: string;
-    namespace?: string;
+    key: string
+    namespace?: string
   }): Promise<CacheEntry<WithContent>> {
-
-    this.validateAttributes({key, namespace})
+    this.validateAttributes({ key, namespace })
     // const key = fsUtils.sanitise(unsanitisedKey);
     // const namespace = fsUtils.sanitise(unsanitisedNamespace);
 
@@ -450,22 +447,28 @@ export class XfsCacheManager<WithContent extends boolean> {
       meta: {
         _base: addr.pathUtils.join(
           this.options.metaBaseAddress,
-          namespace ? addr.parseAsType(namespace, "portablePathFilename") : undefined,
-          addr.parseAsType(key, "portablePathFilename")
+          namespace
+            ? addr.parseAsType(namespace, 'portablePathFilename')
+            : undefined,
+          addr.parseAsType(key, 'portablePathFilename')
         ) as AddressPathAbsolute,
         _namespaceBase: addr.pathUtils.join(
           this.options.metaBaseAddress,
-          namespace ? addr.parseAsType(namespace, "portablePathFilename") : undefined,
+          namespace
+            ? addr.parseAsType(namespace, 'portablePathFilename')
+            : undefined
         ) as AddressPathAbsolute,
         main: addr.pathUtils.join(
           this.options.metaBaseAddress,
-          namespace ? addr.parseAsType(namespace, "portablePathFilename") : undefined,
-          addr.parseAsType(key, "portablePathFilename"),
-          addr.parseAsType("main.json", "portablePathFilename") // meta does keep it's data within here
-        ) as AddressPathAbsolute,
+          namespace
+            ? addr.parseAsType(namespace, 'portablePathFilename')
+            : undefined,
+          addr.parseAsType(key, 'portablePathFilename'),
+          addr.parseAsType('main.json', 'portablePathFilename') // meta does keep it's data within here
+        ) as AddressPathAbsolute
       },
-      content: undefined,
-    } as CacheEntry<WithContent>;
+      content: undefined
+    } as CacheEntry<WithContent>
 
     if (this.options.contentBaseAddress) {
       return {
@@ -473,22 +476,28 @@ export class XfsCacheManager<WithContent extends boolean> {
         content: {
           _base: addr.pathUtils.join(
             this.options.contentBaseAddress,
-            namespace ? addr.parseAsType(namespace, "portablePathFilename") : undefined,
-            addr.parseAsType(key, "portablePathFilename")
+            namespace
+              ? addr.parseAsType(namespace, 'portablePathFilename')
+              : undefined,
+            addr.parseAsType(key, 'portablePathFilename')
           ) as AddressPathAbsolute,
           _namespaceBase: addr.pathUtils.join(
             this.options.contentBaseAddress,
-            namespace ? addr.parseAsType(namespace, "portablePathFilename") : undefined,
+            namespace
+              ? addr.parseAsType(namespace, 'portablePathFilename')
+              : undefined
           ) as AddressPathAbsolute,
           main: addr.pathUtils.join(
             this.options.contentBaseAddress,
-            namespace ? addr.parseAsType(namespace, "portablePathFilename") : undefined,
-            addr.parseAsType(key, "portablePathFilename")
+            namespace
+              ? addr.parseAsType(namespace, 'portablePathFilename')
+              : undefined,
+            addr.parseAsType(key, 'portablePathFilename')
             // addr.parseAsType("main", "portablePathFilename") // content does not need internal namespacing
-          ) as AddressPathAbsolute,
-        },
-      } as CacheEntry<WithContent>;
+          ) as AddressPathAbsolute
+        }
+      } as CacheEntry<WithContent>
     }
-    return base;
+    return base
   }
 }

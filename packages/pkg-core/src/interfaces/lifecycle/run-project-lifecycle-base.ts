@@ -1,6 +1,6 @@
-import { AddressPathAbsolute } from "@business-as-code/address";
-import { BacError } from "@business-as-code/error";
-import { AsyncHook, TapFn } from "../../hooks";
+import { AddressPathAbsolute } from '@business-as-code/address'
+import { BacError } from '@business-as-code/error'
+import { AsyncHook, TapFn } from '../../hooks'
 // import { AsyncSeriesBailHook, AsyncSeriesHook, Hook } from "tapable";
 import {
   Context,
@@ -9,11 +9,11 @@ import {
   LifecycleReturnByMethodSingular,
   LifecycleStaticInterface,
   Result,
-  assertIsResult,
-} from "../../__types__";
-import { CommonExecuteOptions } from "./__types__";
-import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from "./util";
-import { Project } from "../../validation/common";
+  assertIsResult
+} from '../../__types__'
+import { CommonExecuteOptions } from './__types__'
+import { mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray } from './util'
+import { Project } from '../../validation/common'
 // import { InferHookReturn } from "./__types__";
 
 // /** skips hooks when the provider does not match. Interception docs - https://tinyurl.com/2dzb777b */
@@ -53,30 +53,32 @@ import { Project } from "../../validation/common";
 export class RunProjectLifecycleBase<
   T extends LifecycleStaticInterface = typeof RunProjectLifecycleBase<any>
 > {
-  static lifecycleTitle = "runProject" as const;
-  static title = "";
+  static lifecycleTitle = 'runProject' as const
+  static title = ''
 
   get ctor(): T {
-    return this.constructor as unknown as T;
+    return this.constructor as unknown as T
   }
   get title() {
-    return this.ctor.as ?? this.ctor.title;
+    return this.ctor.as ?? this.ctor.title
   }
 
   static hooks = {
-    beforeRunProject: new AsyncHook<"runProject">(
-      ["options"],
-      "runProject",
-      "beforeRunProject"
+    beforeRunProject: new AsyncHook<'runProject'>(
+      ['options'],
+      'runProject',
+      'beforeRunProject'
     ),
-    runProject: new AsyncHook<
-      "runProject"
-    >(["options"], "runProject", "runProject"),
-    afterRunProject: new AsyncHook<"runProject">(
-      ["options"],
-      "runProject",
-      "afterRunProject"
+    runProject: new AsyncHook<'runProject'>(
+      ['options'],
+      'runProject',
+      'runProject'
     ),
+    afterRunProject: new AsyncHook<'runProject'>(
+      ['options'],
+      'runProject',
+      'afterRunProject'
+    )
     // runProject: new AsyncHook< THIS NEED TO BE ITS OWN CLASS SO INFERENCE WORKS OK
     //   {
     //     context: Context;
@@ -115,39 +117,37 @@ export class RunProjectLifecycleBase<
     //   workingPath: string;
     //   options: unknown;
     // }>(["options"]),
-  };
+  }
 
   /** @internal */
   static initialise<T extends RunProjectLifecycleBase>(
     this: { new (): T },
     options: { context: ContextCommand<any> }
   ) {
-    const { context } = options;
-    const ins = new this();
+    const { context } = options
+    const ins = new this()
     const beforeRunProjectHook =
-      ins.beforeRunProject() as TapFn<"runProject"> as TapFn<"runProject">;
+      ins.beforeRunProject() as TapFn<'runProject'> as TapFn<'runProject'>
     const runProjectHook =
-      ins.runProject() as TapFn<"runProject"> as TapFn<"runProject">;
+      ins.runProject() as TapFn<'runProject'> as TapFn<'runProject'>
     const afterRunProjectHook =
-      ins.afterRunProject() as TapFn<"runProject"> as TapFn<"runProject">;
+      ins.afterRunProject() as TapFn<'runProject'> as TapFn<'runProject'>
 
     if (beforeRunProjectHook) {
       context.logger.debug(
         `lifecycleHook loaded: ${ins.ctor.title}.beforeRunProject`
-      );
-      ins.ctor.hooks.beforeRunProject.tapAsync(ins.title, beforeRunProjectHook);
+      )
+      ins.ctor.hooks.beforeRunProject.tapAsync(ins.title, beforeRunProjectHook)
     }
     if (runProjectHook) {
-      context.logger.debug(
-        `lifecycleHook loaded: ${ins.ctor.title}.runProject`
-      );
-      ins.ctor.hooks.runProject.tapAsync(ins.title, runProjectHook);
+      context.logger.debug(`lifecycleHook loaded: ${ins.ctor.title}.runProject`)
+      ins.ctor.hooks.runProject.tapAsync(ins.title, runProjectHook)
     }
     if (afterRunProjectHook) {
       context.logger.debug(
         `lifecycleHook loaded: ${ins.ctor.title}.afterRunProject`
-      );
-      ins.ctor.hooks.afterRunProject.tapAsync(ins.title, afterRunProjectHook);
+      )
+      ins.ctor.hooks.afterRunProject.tapAsync(ins.title, afterRunProjectHook)
     }
 
     // addProviderInterception(ins.ctor.hooks.beforeRunProject, ins.ctor.title)
@@ -158,65 +158,65 @@ export class RunProjectLifecycleBase<
   // async executeRunProject(options: InferHookParams<typeof RunProjectLifecycleBase.hooks.runProject>): Promise<InferHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>> {
   async executeRunProject(
     options: {
-      projects: Project[],
-      common: CommonExecuteOptions;
-      options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runProject">;
+      projects: Project[]
+      common: CommonExecuteOptions
+      options: LifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'runProject'>
     }
     // options: LifecycleOptionsByMethodAndProvider<"runProject", "core">
   ): Promise<
-    Result<LifecycleReturnByMethodSingular<"runProject">, { error: BacError }>
+    Result<LifecycleReturnByMethodSingular<'runProject'>, { error: BacError }>
     // InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
   > {
     // need to mix in the common attributes for lifecycles
     const optionsWithCommon =
-      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<"runProject">(
+      mapLifecycleOptionsByMethodKeyedByProviderWithoutCommonArray<'runProject'>(
         options
-      );
+      )
 
     await RunProjectLifecycleBase.hooks.beforeRunProject.callBailAsync({
-      options: optionsWithCommon,
-    });
+      options: optionsWithCommon
+    })
     // type DDDD = InferAsyncHookReturn<typeof RunProjectLifecycleBase.hooks.runProject>
     const res = await RunProjectLifecycleBase.hooks.runProject.callBailAsync({
       options: optionsWithCommon,
-      strict: true,
-    });
+      strict: true
+    })
 
-    assertIsResult(res);
+    assertIsResult(res)
 
     await RunProjectLifecycleBase.hooks.afterRunProject.callBailAsync({
-      options: optionsWithCommon,
-    });
-    return res;
+      options: optionsWithCommon
+    })
+    return res
   }
 
   protected beforeRunProject():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        context: Context
+        workspacePath: AddressPathAbsolute
         // projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: any;
+        workingPath: string
+        options: any
       }) => Promise<unknown | void>)
     | void {}
 
   protected runProject():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        context: Context
+        workspacePath: AddressPathAbsolute
         // projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: any;
+        workingPath: string
+        options: any
       }) => Promise<unknown | void>)
     | void {}
 
   protected afterRunProject():
     | ((options: {
-        context: Context;
-        workspacePath: AddressPathAbsolute;
+        context: Context
+        workspacePath: AddressPathAbsolute
         // projectPath: AddressPathAbsolute;
-        workingPath: string;
-        options: any;
+        workingPath: string
+        options: any
       }) => Promise<unknown | void>)
     | void {}
 }

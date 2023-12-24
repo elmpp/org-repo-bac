@@ -24,37 +24,25 @@
         "fileGroups": {
           "configs": {
             "files": [],
-            "globs": [
-              "*.{js,json}"
-            ],
+            "globs": ["*.{js,json}"],
             "id": "configs"
           },
           "sources": {
             "files": [],
-            "globs": [
-              "src/**/*",
-              "**/*.spec.*"
-            ],
+            "globs": ["src/**/*", "**/*.spec.*"],
             "id": "sources"
           }
         },
         "id": "pkg-fslib",
         "inheritedConfig": {
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "sources": [
-              "src/**/*",
-              "**/*.spec.*"
-            ]
+            "configs": ["*.{js,json}"],
+            "sources": ["src/**/*", "**/*.spec.*"]
           },
           "tasks": {
             "publish": {
               "command": "pnpm publish --",
-              "inputs": [
-                "@globs(sources)"
-              ],
+              "inputs": ["@globs(sources)"],
               "platform": "node"
             }
           }
@@ -64,30 +52,20 @@
         "source": "packages/pkg-fslib",
         "tasks": {
           "publish": {
-            "args": [
-              "publish",
-              "--"
-            ],
+            "args": ["publish", "--"],
             "command": "pnpm",
             "deps": [],
             "env": {},
             "flags": [],
-            "globalInputs": [
-              "/.moon/tasks/typescript.yml",
-              "/.moon/*.yml"
-            ],
+            "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
             "id": "publish",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "inputGlobs": [
               "packages/pkg-fslib/**/*.spec.*",
               ".moon/*.yml",
               "packages/pkg-fslib/src/**/*"
             ],
-            "inputPaths": [
-              ".moon/tasks/typescript.yml"
-            ],
+            "inputPaths": [".moon/tasks/typescript.yml"],
             "inputVars": [],
             "options": {
               "affectedFiles": null,
@@ -118,13 +96,7 @@
     ],
     "node_holes": [],
     "edge_property": "directed",
-    "edges": [
-      [
-        2,
-        0,
-        null
-      ]
-    ]
+    "edges": [[2, 0, null]]
   },
   "indices": {
     "plugin-core-git": 5

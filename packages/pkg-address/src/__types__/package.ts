@@ -1,15 +1,19 @@
-import { AddressDescriptor } from ".";
-import { AddressTypeByGroup } from "./util";
+import { AddressDescriptor } from '.'
+import { AddressTypeByGroup } from './util'
 
 export type AddressPackage = AddressDescriptor<AddressTypeByGroup<'package'>>
 
-export type AddressPackageDescriptor = AddressDescriptor<'paramDescriptorPackage'>
+export type AddressPackageDescriptor =
+  AddressDescriptor<'paramDescriptorPackage'>
 export type AddressPackageIdent = AddressDescriptor<'paramIdentPackage'>
 // export type AddressPackageTemplateIdent = AddressDescriptor<'templateIdentPackage'>
-export type AddressPackageScaffoldIdent = AddressDescriptor<'scaffoldIdentPackage'>
+export type AddressPackageScaffoldIdent =
+  AddressDescriptor<'scaffoldIdentPackage'>
 /** e.g. @org/name#namespace=my-schematic */
 export type AddressPackageScaffoldIdentString = string
-export type AddressPackageStringifiedUnion = AddressDescriptor<'paramDescriptorStringifiedPackage'> | AddressDescriptor<'paramIdentStringifiedPackage'>
+export type AddressPackageStringifiedUnion =
+  | AddressDescriptor<'paramDescriptorStringifiedPackage'>
+  | AddressDescriptor<'paramIdentStringifiedPackage'>
 export type AddressPackageDescriptorString = string
 export type AddressPackageStringified = string
 // export type addressPackageIdentTemplateNamespace

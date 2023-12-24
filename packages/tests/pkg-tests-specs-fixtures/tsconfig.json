@@ -5,8 +5,9 @@
     "src/**/*",
     "*.spec.*",
     "*.js",
-    "*.ts"
-, "etc/config/.gitkeep"  ],
+    "*.ts",
+    "etc/config/.gitkeep"
+  ],
   "references": [
     {
       "path": "../../pkg-address"
@@ -28,30 +29,14 @@
     "emitDeclarationOnly": false,
     "noEmit": true,
     "paths": {
-      "@business-as-code/address": [
-        "../../pkg-address/src/index.ts"
-      ],
-      "@business-as-code/address/*": [
-        "../../pkg-address/src/*"
-      ],
-      "@business-as-code/core": [
-        "../../pkg-core/src/index.ts"
-      ],
-      "@business-as-code/core/*": [
-        "../../pkg-core/src/*"
-      ],
-      "@business-as-code/fslib": [
-        "../../pkg-fslib/src/index.ts"
-      ],
-      "@business-as-code/fslib/*": [
-        "../../pkg-fslib/src/*"
-      ],
-      "@business-as-code/tests-core": [
-        "../pkg-tests-core/src/index.ts"
-      ],
-      "@business-as-code/tests-core/*": [
-        "../pkg-tests-core/src/*"
-      ]
+      "@business-as-code/address": ["../../pkg-address/src/index.ts"],
+      "@business-as-code/address/*": ["../../pkg-address/src/*"],
+      "@business-as-code/core": ["../../pkg-core/src/index.ts"],
+      "@business-as-code/core/*": ["../../pkg-core/src/*"],
+      "@business-as-code/fslib": ["../../pkg-fslib/src/index.ts"],
+      "@business-as-code/fslib/*": ["../../pkg-fslib/src/*"],
+      "@business-as-code/tests-core": ["../pkg-tests-core/src/index.ts"],
+      "@business-as-code/tests-core/*": ["../pkg-tests-core/src/*"]
     }
   }
 }

@@ -17,7 +17,7 @@ const allowHeaders = [
   'user-agent',
   'x-authorization',
   'x-http-method-override',
-  'x-requested-with',
+  'x-requested-with'
 ]
 const exposeHeaders = [
   'accept-ranges',
@@ -35,13 +35,9 @@ const exposeHeaders = [
   'transfer-encoding',
   'vary',
   'x-github-request-id',
-  'x-redirected-url',
+  'x-redirected-url'
 ]
-const allowMethods = [
-  'POST',
-  'GET',
-  'OPTIONS'
-]
+const allowMethods = ['POST', 'GET', 'OPTIONS']
 const cors = require('micro-cors')({
   allowHeaders,
   exposeHeaders,

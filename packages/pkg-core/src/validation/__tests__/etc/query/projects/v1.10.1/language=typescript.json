@@ -63,9 +63,7 @@
       "fileGroups": {
         "configs": {
           "files": [],
-          "globs": [
-            "packages/pkg-address/*.{js,json}"
-          ],
+          "globs": ["packages/pkg-address/*.{js,json}"],
           "id": "configs"
         },
         "publishable": {
@@ -98,17 +96,9 @@
           ".moon/tasks/typescript.yml": {
             "$schema": "https://moonrepo.dev/schemas/tasks.json",
             "fileGroups": {
-              "configs": [
-                "*.{js,json}"
-              ],
-              "publishable": [
-                "**/*",
-                "!src/**/*"
-              ],
-              "sources": [
-                "src/**/*",
-                "!src/**/*.spec.[tj]s"
-              ]
+              "configs": ["*.{js,json}"],
+              "publishable": ["**/*", "!src/**/*"],
+              "sources": ["src/**/*", "!src/**/*.spec.[tj]s"]
             }
           }
         },
@@ -116,17 +106,9 @@
           "schema": "https://moonrepo.dev/schemas/tasks.json",
           "extends": null,
           "fileGroups": {
-            "configs": [
-              "*.{js,json}"
-            ],
-            "publishable": [
-              "**/*",
-              "!src/**/*"
-            ],
-            "sources": [
-              "src/**/*",
-              "!src/**/*.spec.[tj]s"
-            ]
+            "configs": ["*.{js,json}"],
+            "publishable": ["**/*", "!src/**/*"],
+            "sources": ["src/**/*", "!src/**/*.spec.[tj]s"]
           },
           "implicitDeps": [],
           "implicitInputs": [],

@@ -1,26 +1,26 @@
-import { Plugin } from "@business-as-code/core";
+import { Plugin } from '@business-as-code/core'
 // import { beforeInitialiseWorkspace } from './hooks/before-initialise-workspace'
 // import { initialiseWorkspace } from './hooks/initialise-workspace'
-import { MyService, YourService } from "./services";
+import { MyService, YourService } from './services'
 // import {InitialiseWorkspaceLifecycle, ConfigureWorkspaceLifecycle} from './lifecycles'
 import {
   InitialiseWorkspaceCoreLifecycle,
   RunWorkspaceMoonLifecycle,
-  RunWorkspaceExecLifecycle,
+  RunWorkspaceExecLifecycle
   // RunProjectNodeLifecycle,
-} from "./lifecycles";
+} from './lifecycles'
 
 export const plugin = {
   services: [YourService, MyService],
   lifecycles: [
     InitialiseWorkspaceCoreLifecycle,
     RunWorkspaceMoonLifecycle,
-    RunWorkspaceExecLifecycle,
+    RunWorkspaceExecLifecycle
     // RunProjectNodeLifecycle,
     // ConfigureWorkspaceLifecycle,
-  ],
+  ]
   // initialise: (initialiseOptions) => {
   //   beforeInitialiseWorkspace(initialiseOptions)
   //   initialiseWorkspace(initialiseOptions)
   // },
-} satisfies Plugin;
+} satisfies Plugin

@@ -1,11 +1,6 @@
 {
   "extends": "../../tsconfig.options.json",
-  "include": [
-    "src/**/*",
-    "*.spec.*",
-    "*.js",
-    "*.ts"
-  ],
+  "include": ["src/**/*", "*.spec.*", "*.js", "*.ts"],
   "references": [
     {
       "path": "../pkg-core"
@@ -40,24 +35,16 @@
     "outDir": "dist",
     "emitDeclarationOnly": false,
     "paths": {
-      "@business-as-code/core": [
-        "../pkg-core/src/index.ts"
-      ],
-      "@business-as-code/core/*": [
-        "../pkg-core/src/*"
-      ],
+      "@business-as-code/core": ["../pkg-core/src/index.ts"],
+      "@business-as-code/core/*": ["../pkg-core/src/*"],
       "@business-as-code/plugin-core-essentials": [
         "../plugin-core-essentials/src/index.ts"
       ],
       "@business-as-code/plugin-core-essentials/*": [
         "../plugin-core-essentials/src/*"
       ],
-      "@business-as-code/plugin-core-git": [
-        "../plugin-core-git/src/index.ts"
-      ],
-      "@business-as-code/plugin-core-git/*": [
-        "../plugin-core-git/src/*"
-      ],
+      "@business-as-code/plugin-core-git": ["../plugin-core-git/src/index.ts"],
+      "@business-as-code/plugin-core-git/*": ["../plugin-core-git/src/*"],
       "@business-as-code/plugin-core-package-manager-pnpm": [
         "../plugin-core-package-manager-pnpm/src/index.ts"
       ],
@@ -88,12 +75,8 @@
       "@business-as-code/plugin-dev-tests/*": [
         "../tests/plugin-dev-tests/src/*"
       ],
-      "@business-as-code/tests-core": [
-        "../tests/pkg-tests-core/src/index.ts"
-      ],
-      "@business-as-code/tests-core/*": [
-        "../tests/pkg-tests-core/src/*"
-      ]
+      "@business-as-code/tests-core": ["../tests/pkg-tests-core/src/index.ts"],
+      "@business-as-code/tests-core/*": ["../tests/pkg-tests-core/src/*"]
     }
   }
 }

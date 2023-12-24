@@ -60,7 +60,7 @@
     // "rootDir": "src",
     "noErrorTruncation": true, // more verbose intellisense - https://tinyurl.com/yxa6ocvh
     "verbatimModuleSyntax": false, // moon-config sets to true. We should probs make this work - https://tinyurl.com/2aps5mpn
-    "types": ["bun-types"], // https://tinyurl.com/ympz754a
+    "types": ["bun-types"] // https://tinyurl.com/ympz754a
   },
   "exclude": [
     "**/__mocks__/**/*",
@@ -72,7 +72,7 @@
     "**/*.skip.*",
     "**/*.ignore.*/**/*",
     "**/*.ignore/**/*",
-    "**/dist/**/*",
+    "**/dist/**/*"
 
     // "**/dist/**/*"
   ],
@@ -94,9 +94,9 @@
     "compilerOptions": {
       "importHelpers": false,
       // "module": "NodeNext",
-      "module": "CommonJS",
+      "module": "CommonJS"
       // "target": "ESNext",
       // "allowJs": true, // to compile .js execa
     }
-  },
+  }
 }

@@ -1,14 +1,12 @@
 import type {
   // ProjectLanguage as MoonLanguage,
   // ProjectType as MoonProjectType,
-  PlatformType as MoonPlatform,
-} from "@moonrepo/types";
+  PlatformType as MoonPlatform
+} from '@moonrepo/types'
 
 /** Moon query language - https://tinyurl.com/2ek7rph4 */
 export type MoonQuery = string // maybe later allow programmatic construction
 
 export type MoonCommand = string
 
-export {
-  type MoonPlatform,
-}
+export { type MoonPlatform }

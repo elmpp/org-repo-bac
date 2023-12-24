@@ -20,42 +20,26 @@
       "fileGroups": {
         "configs": {
           "files": [],
-          "globs": [
-            "*.{js,json}"
-          ],
+          "globs": ["*.{js,json}"],
           "id": "configs"
         },
         "publishable": {
           "files": [],
-          "globs": [
-            "**/*",
-            "!src/**/*"
-          ],
+          "globs": ["**/*", "!src/**/*"],
           "id": "publishable"
         },
         "sources": {
           "files": [],
-          "globs": [
-            "src/**/*",
-            "!src/**/*.spec.[tj]s"
-          ],
+          "globs": ["src/**/*", "!src/**/*.spec.[tj]s"],
           "id": "sources"
         }
       },
       "id": "pkg-address",
       "inheritedConfig": {
         "fileGroups": {
-          "configs": [
-            "*.{js,json}"
-          ],
-          "publishable": [
-            "**/*",
-            "!src/**/*"
-          ],
-          "sources": [
-            "src/**/*",
-            "!src/**/*.spec.[tj]s"
-          ]
+          "configs": ["*.{js,json}"],
+          "publishable": ["**/*", "!src/**/*"],
+          "sources": ["src/**/*", "!src/**/*.spec.[tj]s"]
         },
         "tasks": {
           "changesetInit": {
@@ -68,12 +52,8 @@
           },
           "changesetSnapshotPublish": {
             "command": "changeset publish --no-git-tag --tag bollards",
-            "deps": [
-              "changesetSnapshotVersion"
-            ],
-            "inputs": [
-              "@globs(publishable)"
-            ],
+            "deps": ["changesetSnapshotVersion"],
+            "inputs": ["@globs(publishable)"],
             "options": {
               "runFromWorkspaceRoot": true
             },
@@ -81,17 +61,12 @@
           },
           "changesetSnapshotPublishLocal": {
             "command": "changeset publish --no-git-tag -u foo --tag bollards",
-            "deps": [
-              "root:build",
-              "changesetSnapshotVersion"
-            ],
+            "deps": ["root:build", "changesetSnapshotVersion"],
             "env": {
               "npm_config_registry": "http://localhost:4873",
               "npm_config_user": "foo"
             },
-            "inputs": [
-              "@globs(publishable)"
-            ],
+            "inputs": ["@globs(publishable)"],
             "options": {
               "runFromWorkspaceRoot": true
             },
@@ -99,10 +74,7 @@
           },
           "changesetSnapshotVersion": {
             "command": "changeset version --snapshot bollards",
-            "deps": [
-              "changesetInit",
-              "changesetSnapshotAddChangeset"
-            ],
+            "deps": ["changesetInit", "changesetSnapshotAddChangeset"],
             "platform": "node"
           },
           "changesetStatus": {
@@ -111,9 +83,7 @@
           },
           "publish": {
             "command": "pnpm publish --",
-            "inputs": [
-              "@globs(sources)"
-            ],
+            "inputs": ["@globs(sources)"],
             "platform": "node"
           }
         }
@@ -123,28 +93,16 @@
       "source": "packages/pkg-address",
       "tasks": {
         "changesetInit": {
-          "args": [
-            "init"
-          ],
+          "args": ["init"],
           "command": "changeset",
           "deps": [],
           "env": {},
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "changesetInit",
-          "inputs": [
-            "**/*"
-          ],
-          "inputGlobs": [
-            "packages/pkg-address/**/*",
-            ".moon/*.yml"
-          ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputs": ["**/*"],
+          "inputGlobs": ["packages/pkg-address/**/*", ".moon/*.yml"],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,
@@ -170,29 +128,16 @@
           "type": "test"
         },
         "changesetSnapshotAddChangeset": {
-          "args": [
-            "add",
-            "--empty"
-          ],
+          "args": ["add", "--empty"],
           "command": "changeset",
           "deps": [],
           "env": {},
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "changesetSnapshotAddChangeset",
-          "inputs": [
-            "**/*"
-          ],
-          "inputGlobs": [
-            "packages/pkg-address/**/*",
-            ".moon/*.yml"
-          ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputs": ["**/*"],
+          "inputGlobs": ["packages/pkg-address/**/*", ".moon/*.yml"],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,
@@ -218,34 +163,20 @@
           "type": "test"
         },
         "changesetSnapshotPublish": {
-          "args": [
-            "publish",
-            "--no-git-tag",
-            "--tag",
-            "bollards"
-          ],
+          "args": ["publish", "--no-git-tag", "--tag", "bollards"],
           "command": "changeset",
-          "deps": [
-            "pkg-address:changesetSnapshotVersion"
-          ],
+          "deps": ["pkg-address:changesetSnapshotVersion"],
           "env": {},
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "changesetSnapshotPublish",
-          "inputs": [
-            "@globs(publishable)"
-          ],
+          "inputs": ["@globs(publishable)"],
           "inputGlobs": [
             "packages/pkg-address/**/*",
             "!packages/pkg-address/src/**/*",
             ".moon/*.yml"
           ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,
@@ -271,40 +202,23 @@
           "type": "test"
         },
         "changesetSnapshotPublishLocal": {
-          "args": [
-            "publish",
-            "--no-git-tag",
-            "-u",
-            "foo",
-            "--tag",
-            "bollards"
-          ],
+          "args": ["publish", "--no-git-tag", "-u", "foo", "--tag", "bollards"],
           "command": "changeset",
-          "deps": [
-            "root:build",
-            "pkg-address:changesetSnapshotVersion"
-          ],
+          "deps": ["root:build", "pkg-address:changesetSnapshotVersion"],
           "env": {
             "npm_config_registry": "http://localhost:4873",
             "npm_config_user": "foo"
           },
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "changesetSnapshotPublishLocal",
-          "inputs": [
-            "@globs(publishable)"
-          ],
+          "inputs": ["@globs(publishable)"],
           "inputGlobs": [
             "packages/pkg-address/**/*",
             "!packages/pkg-address/src/**/*",
             ".moon/*.yml"
           ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,
@@ -330,11 +244,7 @@
           "type": "test"
         },
         "changesetSnapshotVersion": {
-          "args": [
-            "version",
-            "--snapshot",
-            "bollards"
-          ],
+          "args": ["version", "--snapshot", "bollards"],
           "command": "changeset",
           "deps": [
             "pkg-address:changesetInit",
@@ -342,21 +252,11 @@
           ],
           "env": {},
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "changesetSnapshotVersion",
-          "inputs": [
-            "**/*"
-          ],
-          "inputGlobs": [
-            "packages/pkg-address/**/*",
-            ".moon/*.yml"
-          ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputs": ["**/*"],
+          "inputGlobs": ["packages/pkg-address/**/*", ".moon/*.yml"],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,
@@ -382,28 +282,16 @@
           "type": "test"
         },
         "changesetStatus": {
-          "args": [
-            "status"
-          ],
+          "args": ["status"],
           "command": "changeset",
           "deps": [],
           "env": {},
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "changesetStatus",
-          "inputs": [
-            "**/*"
-          ],
-          "inputGlobs": [
-            "packages/pkg-address/**/*",
-            ".moon/*.yml"
-          ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputs": ["**/*"],
+          "inputGlobs": ["packages/pkg-address/**/*", ".moon/*.yml"],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,
@@ -429,30 +317,20 @@
           "type": "test"
         },
         "publish": {
-          "args": [
-            "publish",
-            "--"
-          ],
+          "args": ["publish", "--"],
           "command": "pnpm",
           "deps": [],
           "env": {},
           "flags": [],
-          "globalInputs": [
-            "/.moon/tasks/typescript.yml",
-            "/.moon/*.yml"
-          ],
+          "globalInputs": ["/.moon/tasks/typescript.yml", "/.moon/*.yml"],
           "id": "publish",
-          "inputs": [
-            "@globs(sources)"
-          ],
+          "inputs": ["@globs(sources)"],
           "inputGlobs": [
             "packages/pkg-address/src/**/*",
             ".moon/*.yml",
             "!packages/pkg-address/src/**/*.spec.[tj]s"
           ],
-          "inputPaths": [
-            ".moon/tasks/typescript.yml"
-          ],
+          "inputPaths": [".moon/tasks/typescript.yml"],
           "inputVars": [],
           "options": {
             "affectedFiles": null,

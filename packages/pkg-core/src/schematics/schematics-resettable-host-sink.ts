@@ -1,8 +1,8 @@
-import { virtualFs } from "@angular-devkit/core";
-import { concat as concatObservables, from as observableFrom } from "rxjs";
-import { concatMap, reduce } from "rxjs/operators";
-import { SchematicResettableScopedNodeJsSyncHost } from "./schematic-resettable-scoped-node-js-sync-host";
-import { SchematicResettableDryRunSink } from "./schematics-resettable-dry-run-sink";
+import { virtualFs } from '@angular-devkit/core'
+import { concat as concatObservables, from as observableFrom } from 'rxjs'
+import { concatMap, reduce } from 'rxjs/operators'
+import { SchematicResettableScopedNodeJsSyncHost } from './schematic-resettable-scoped-node-js-sync-host'
+import { SchematicResettableDryRunSink } from './schematics-resettable-dry-run-sink'
 
 export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
   // export class SchematicResettableHostSink extends HostSink {
@@ -14,7 +14,7 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
     // protected override _host: SchematicResettableScopedNodeJsSyncHost,
     // protected override _force = false
   ) {
-    super(_host, _force);
+    super(_host, _force)
   }
 
   // protected _filesToDelete = new Set<Path>();
@@ -196,7 +196,7 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
           return this._host.write(
             path,
             buffer.generate() as {} as virtualFs.FileBuffer
-          );
+          )
         })
       ),
       observableFrom([...this._filesToUpdate.entries()]).pipe(
@@ -204,7 +204,7 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
           return this._host.write(
             path,
             buffer.generate() as {} as virtualFs.FileBuffer
-          );
+          )
         })
       ),
       /** must be last!! */
@@ -216,9 +216,9 @@ export class SchematicResettableHostSink extends SchematicResettableDryRunSink {
         concatMap((path) => {
           // const absPath
           // console.log(`this._host :>> `, this._host)
-          return this._host.deleteDir(path);
+          return this._host.deleteDir(path)
         })
       )
-    ).pipe(reduce(() => {}));
+    ).pipe(reduce(() => {}))
   }
 }

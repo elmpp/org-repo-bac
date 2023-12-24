@@ -1,2 +1,2 @@
- - stage1 content is where copyable content is produced. Try to keep the amount of validation here to a minimum (see stage1)
- - all copyable content should be augmented into the Stage1Content interface
+- stage1 content is where copyable content is produced. Try to keep the amount of validation here to a minimum (see stage1)
+- all copyable content should be augmented into the Stage1Content interface

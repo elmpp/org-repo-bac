@@ -1,5 +1,5 @@
-import {AddressHandler} from '../__types__'
-import {URL} from 'url'
+import { AddressHandler } from '../__types__'
+import { URL } from 'url'
 import { arrayIntersection } from '../tools/string-utils'
 
 declare module '../__types__' {
@@ -7,27 +7,32 @@ declare module '../__types__' {
     // schemedUrl: {
     //   scheme: string,
     // }
-    githubRepoUrl: [{
-      url: URL,
-      org: string,
-      user: string
-      params: URLSearchParams
-      paramsSorted: URLSearchParams
-      // head?: string
-      // tag?: string
-      // commit?: string
-    }, 'url', string]
+    githubRepoUrl: [
+      {
+        url: URL
+        org: string
+        user: string
+        params: URLSearchParams
+        paramsSorted: URLSearchParams
+        // head?: string
+        // tag?: string
+        // commit?: string
+      },
+      'url',
+      string
+    ]
   }
 }
 
-const GITHUB_REPO_REGEX = /.*github.com(?:\/|:).*(?:\.git|\/tarball)?(?:#([^#]+))?$/
-const GITHUB_REPO_NORMALIZED_REGEX = /.*github.com\/([^/]+)\/(.*)\.git(?:#([^#]+))?$/
+const GITHUB_REPO_REGEX =
+  /.*github.com(?:\/|:).*(?:\.git|\/tarball)?(?:#([^#]+))?$/
+const GITHUB_REPO_NORMALIZED_REGEX =
+  /.*github.com\/([^/]+)\/(.*)\.git(?:#([^#]+))?$/
 
 export const handler: AddressHandler<'githubRepoUrl'> = {
   name: 'githubRepoUrl',
   group: 'url',
-  parse({address}) {
-
+  parse({ address }) {
     // console.log(`address, address.match(GITHUB_REPO_REGEX) :>> `, address, address.match(GITHUB_REPO_REGEX))
     if (!address.match(GITHUB_REPO_REGEX)) return
 
@@ -42,12 +47,21 @@ export const handler: AddressHandler<'githubRepoUrl'> = {
     const [, user, org, hashParamString] = matches
 
     const params = new URLSearchParams(hashParamString ?? '')
-    const paramIntersection = arrayIntersection(Object.keys(params), ['head', 'tag', 'commit'])
+    const paramIntersection = arrayIntersection(Object.keys(params), [
+      'head',
+      'tag',
+      'commit'
+    ])
     if (paramIntersection.unmatched.length) {
-      throw new Error(`Address: unknown params has been supplied when url with 'github-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`)
+      throw new Error(
+        `Address: unknown params has been supplied when url with 'github-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`
+      )
     }
-    const paramsSorted = (() => {const params = new URLSearchParams(hashParamString); params.sort(); return params})()
-
+    const paramsSorted = (() => {
+      const params = new URLSearchParams(hashParamString)
+      params.sort()
+      return params
+    })()
 
     const url = new URL(handled)
 
@@ -61,14 +75,17 @@ export const handler: AddressHandler<'githubRepoUrl'> = {
         user,
         url,
         params,
-        paramsSorted,
+        paramsSorted
       },
-      type: 'githubRepoUrl',
+      type: 'githubRepoUrl'
     }
-  },
+  }
 }
 
-function handleGithubRepoUrl(url: string, {git = false}: {git?: boolean} = {}) {
+function handleGithubRepoUrl(
+  url: string,
+  { git = false }: { git?: boolean } = {}
+) {
   // "git+https://" isn't an actual Git protocol. It's just a way to
   // disambiguate that this URL points to a Git repository.
   url = url.replace(/^git\+https:/, `https:`)
@@ -88,7 +105,10 @@ function handleGithubRepoUrl(url: string, {git = false}: {git?: boolean} = {}) {
   )
 
   // support for git url e.g. git@github.com:elmpp/org-repo.git
-  url = url.replace(/^git@github\.com:([^\/]+)\/(.+)$/, `https://github.com/$1/$2`)
+  url = url.replace(
+    /^git@github\.com:([^\/]+)\/(.+)$/,
+    `https://github.com/$1/$2`
+  )
 
   // The `git+` prefix doesn't mean anything at all for Git
   if (git) url = url.replace(/^git\+([^:]+):/, `$1:`)

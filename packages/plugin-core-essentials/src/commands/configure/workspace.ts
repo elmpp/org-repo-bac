@@ -6,19 +6,21 @@ import {
   Interfaces as _Interfaces,
   LifecycleOptionsByMethodKeyedByProviderArray,
   ok,
-  expectIsOk,
-} from "@business-as-code/core";
-import { JSONStringify } from "@business-as-code/core/utils/format-utils";
-import { xfs } from "@business-as-code/fslib";
+  expectIsOk
+} from '@business-as-code/core'
+import { JSONStringify } from '@business-as-code/core/utils/format-utils'
+import { xfs } from '@business-as-code/fslib'
 
-export default class ConfigureWorkspace extends BaseCommand<typeof ConfigureWorkspace> {
-  static override description = "Performs the configuration expansion";
+export default class ConfigureWorkspace extends BaseCommand<
+  typeof ConfigureWorkspace
+> {
+  static override description = 'Performs the configuration expansion'
 
   static override examples = [
     `$ oex hello friend --from oclif
 hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ];
+`
+  ]
 
   static override flags = {
     // name: Oclif.Flags.string({
@@ -27,16 +29,16 @@ hello friend from oclif! (./src/commands/hello/index.ts)
     // }),
     force: Oclif.Flags.boolean({
       required: false,
-      default: false,
+      default: false
     }),
     workspacePath: Oclif.Flags.directory({
       exists: true,
-      description: "Workspace name",
-      required: true,
-    }),
-  };
+      description: 'Workspace name',
+      required: true
+    })
+  }
 
-  static override args = {};
+  static override args = {}
 
   async execute(context: ContextCommand<typeof ConfigureWorkspace>) {
     // console.log(`context.cliOptions :>> `, context.cliOptions)
@@ -45,18 +47,21 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
     // const {config, path: configPath} = await this.getConfig(context);
 
-    const bacService = await context.serviceFactory("bac", {
+    const bacService = await context.serviceFactory('bac', {
       context,
       workspacePath: context.workspacePath,
-      workingPath: ".",
-      packageManager: context.detectedPackageManager!,
-    });
+      workingPath: '.',
+      packageManager: context.detectedPackageManager!
+    })
 
-    const configCache = await bacService.getConfigEntry();
-    expectIsOk(configCache);
+    const configCache = await bacService.getConfigEntry()
+    expectIsOk(configCache)
 
-    if (!configCache.res.checksumValid || !configCache.res.existentChecksum || context.cliOptions.flags.force) {
-
+    if (
+      !configCache.res.checksumValid ||
+      !configCache.res.existentChecksum ||
+      context.cliOptions.flags.force
+    ) {
       const configRes = await bacService.loadConfig()
       expectIsOk(configRes)
       const config = configRes.res
@@ -66,13 +71,12 @@ hello friend from oclif! (./src/commands/hello/index.ts)
           common: {
             context,
             workspacePath: context.workspacePath,
-            workingPath: '.',
+            workingPath: '.'
           },
           options: {
-            config,
-          },
-        }
-        );
+            config
+          }
+        })
 
       expectIsOk(configureLifecycleRes)
 
@@ -82,8 +86,7 @@ hello friend from oclif! (./src/commands/hello/index.ts)
       expectIsOk(configuredCacheEntry)
 
       await bacService.setConfiguredConfigEntry(configureLifecycleRes.res)
-    }
-    else {
+    } else {
       context.logger.debug(`configure-workspace: cache hit`)
     }
 

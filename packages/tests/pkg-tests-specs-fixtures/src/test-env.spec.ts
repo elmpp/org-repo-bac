@@ -1,5 +1,5 @@
 import { createPersistentTestEnv } from '@business-as-code/tests-core'
-import { describe, it, jest, expect } from "bun:test";
+import { describe, it, jest, expect } from 'bun:test'
 
 /** simply ensures the testEnv core util is operating properly */
 describe('test-env', () => {
@@ -18,18 +18,21 @@ describe('test-env', () => {
 
   // })
   it('picks up paths from moon', async () => {
-
     const persistentTestEnv = await createPersistentTestEnv({
       testName: `test-env: picks up paths from moon`
     })
-    await persistentTestEnv.test({},
-    async (testContext) => {
+    await persistentTestEnv.test({}, async (testContext) => {
+      const { testEnvVars } = testContext
 
-      const {testEnvVars} = testContext
-
-      expect(testEnvVars.checkoutPath.original).toEqual('/Users/matt/dev/org-repo-moonrepo')
-      expect(testEnvVars.basePath.original).toEqual('/Users/matt/dev/org-repo-moonrepo/etc/var')
-      expect(testEnvVars.workspacePath.original).toMatch('/Users/matt/dev/org-repo-moonrepo/etc/var/tests')
+      expect(testEnvVars.checkoutPath.original).toEqual(
+        '/Users/matt/dev/org-repo-moonrepo'
+      )
+      expect(testEnvVars.basePath.original).toEqual(
+        '/Users/matt/dev/org-repo-moonrepo/etc/var'
+      )
+      expect(testEnvVars.workspacePath.original).toMatch(
+        '/Users/matt/dev/org-repo-moonrepo/etc/var/tests'
+      )
 
       // console.log(`envVars :>> `, envVars)
 

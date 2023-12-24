@@ -1,5 +1,5 @@
-import {AddressHandler} from '../__types__'
-import {URL} from 'url'
+import { AddressHandler } from '../__types__'
+import { URL } from 'url'
 import { REGEX as URL_REGEX } from './url-handler'
 import { arrayIntersection } from '../tools/string-utils'
 
@@ -8,23 +8,27 @@ declare module '../__types__' {
     // schemedUrl: {
     //   scheme: string,
     // }
-    gitHttpRepoUrl: [{
-      url: URL,
+    gitHttpRepoUrl: [
+      {
+        url: URL
 
-      // user: string,
-      scheme: 'http' | 'https'
-      host: string,
-      port?: number
-      repo: string
+        // user: string,
+        scheme: 'http' | 'https'
+        host: string
+        port?: number
+        repo: string
 
-      // path: string,
-      // key?: string
-      params: URLSearchParams
-      paramsSorted: URLSearchParams
+        // path: string,
+        // key?: string
+        params: URLSearchParams
+        paramsSorted: URLSearchParams
 
-      // org: string,
-      // owner: string
-    }, 'url', string]
+        // org: string,
+        // owner: string
+      },
+      'url',
+      string
+    ]
   }
 }
 
@@ -33,9 +37,10 @@ declare module '../__types__' {
 // const REGEX = /https?:\/\/.*github.com\/([^/]+)\/(.*)\.git(?:#([^#]+))?$/
 // console.log(`${URL_REGEX}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`)
 
-const REGEX = new RegExp(`${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`)
+const REGEX = new RegExp(
+  `${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+))?$`
+)
 // const GITHUB_REPO_NORMALIZED_REGEX = /.*github.com\/([^/]+)\/(.*)\.git[#?]?.*/
-
 
 /**
  e.g.:
@@ -46,14 +51,12 @@ const REGEX = new RegExp(`${URL_REGEX.source}/([a-zA-Z0-9()\-]+\.git)(?:#([^#]+)
 export const handler: AddressHandler<'gitHttpRepoUrl'> = {
   name: 'gitHttpRepoUrl',
   group: 'url',
-  parse({address}) {
-
+  parse({ address }) {
     // console.log(`githttprepourl address, address.match(REGEX) :>> `, address, address.match(REGEX), REGEX)
     if (!address.match(REGEX)) return
 
     // if (!address.match(GITHUB_REPO_REGEX)) return
     // const handled = handleGitRepoUrl(address)
-
 
     const matches = address.match(REGEX)
     // console.log(`matches :>> `, matches)
@@ -63,14 +66,26 @@ export const handler: AddressHandler<'gitHttpRepoUrl'> = {
     const [, scheme, host, port, _, repo, hashParamString] = matches
 
     const params = new URLSearchParams(hashParamString ?? '')
-    const paramIntersection = arrayIntersection(Object.keys(params), ['head', 'tag', 'commit'])
+    const paramIntersection = arrayIntersection(Object.keys(params), [
+      'head',
+      'tag',
+      'commit'
+    ])
     if (paramIntersection.unmatched.length) {
-      throw new Error(`Address: unknown params has been supplied when url with 'git-http-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`)
+      throw new Error(
+        `Address: unknown params has been supplied when url with 'git-http-repo-url-handler'. Allowed params are 'head, tag, commit'. Address: '${address}'`
+      )
     }
-    const paramsSorted = (() => {const params = new URLSearchParams(hashParamString); params.sort(); return params})()
+    const paramsSorted = (() => {
+      const params = new URLSearchParams(hashParamString)
+      params.sort()
+      return params
+    })()
 
     if (!['http', 'https'].includes(scheme)) {
-      throw new Error(`Address: incorrect scheme with 'git-http-repo-url-handler'. Allowed params are 'http, https'. Address: '${address}'`)
+      throw new Error(
+        `Address: incorrect scheme with 'git-http-repo-url-handler'. Allowed params are 'http, https'. Address: '${address}'`
+      )
     }
 
     const url = new URL(address)
@@ -87,11 +102,11 @@ export const handler: AddressHandler<'gitHttpRepoUrl'> = {
         port: port ? parseInt(port, 10) : undefined,
         repo,
         params,
-        paramsSorted,
+        paramsSorted
       },
-      type: 'gitHttpRepoUrl',
+      type: 'gitHttpRepoUrl'
     }
-  },
+  }
 }
 
 // function handleGitRepoUrl(url: string, {git = false}: {git?: boolean} = {}) {

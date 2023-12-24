@@ -1,7 +1,7 @@
-import { join, normalize, Path, virtualFs } from "@angular-devkit/core";
-import { NodeJsSyncHost } from "@angular-devkit/core/node";
-import { Host } from "@angular-devkit/core/src/virtual-fs/host";
-import util from "util";
+import { join, normalize, Path, virtualFs } from '@angular-devkit/core'
+import { NodeJsSyncHost } from '@angular-devkit/core/node'
+import { Host } from '@angular-devkit/core/src/virtual-fs/host'
+import util from 'util'
 import {
   HostCreateTree,
   HostDirEntry,
@@ -9,48 +9,48 @@ import {
   Rule,
   SchematicContext,
   TaskConfigurationGenerator,
-  Tree,
-} from "@angular-devkit/schematics";
-import { addr, AddressPathAbsolute } from "@business-as-code/address";
-import { BacErrorWrapper, MessageName } from "@business-as-code/error";
-import path from "path";
-import { from } from "rxjs";
-import { schematicUtils } from ".";
+  Tree
+} from '@angular-devkit/schematics'
+import { addr, AddressPathAbsolute } from '@business-as-code/address'
+import { BacErrorWrapper, MessageName } from '@business-as-code/error'
+import path from 'path'
+import { from } from 'rxjs'
+import { schematicUtils } from '.'
 import {
   Context,
   logLevelMatching,
   ServiceInitialiseOptions,
   ServiceMap,
-  ServiceStaticMap,
-} from "../__types__";
-import fs from "fs";
-import { SchematicsResettableHostTree } from "./schematics-resettable-host-tree";
-import { ServiceExecTask } from "./tasks";
+  ServiceStaticMap
+} from '../__types__'
+import fs from 'fs'
+import { SchematicsResettableHostTree } from './schematics-resettable-host-tree'
+import { ServiceExecTask } from './tasks'
 
 // import { Options as Options } from "./tasks/service-exec/options";
 
 export interface ServiceOptions<SName extends keyof ServiceStaticMap> {
   cb: (options: {
-    service: ServiceMap[SName][number];
-    serviceName: SName;
-  }) => Promise<any>;
+    service: ServiceMap[SName][number]
+    serviceName: SName
+  }) => Promise<any>
   // }) => ReturnType<TaskExecutor<ServiceExecTaskOptions>>;
-  serviceName: SName;
-  initialiseOptions: ServiceInitialiseOptions<SName>;
+  serviceName: SName
+  initialiseOptions: ServiceInitialiseOptions<SName>
   // initialiseOptions: ServiceInitialiseCommonOptions;
   // initialiseOptions: ServiceInitialiseOptions;
   // workingPath: AddressPathRelative
-  context: Context;
+  context: Context
 }
 export type ServiceOptionsLite<SName extends keyof ServiceStaticMap> = Omit<
   ServiceOptions<SName>,
-  "initialiseOptions"
+  'initialiseOptions'
 > & {
   initialiseOptions: Omit<
-    ServiceOptions<SName>["initialiseOptions"],
-    "context" | "workspacePath"
-  >;
-};
+    ServiceOptions<SName>['initialiseOptions'],
+    'context' | 'workspacePath'
+  >
+}
 
 /**
  naughty naughty
@@ -59,37 +59,37 @@ export type ServiceOptionsLite<SName extends keyof ServiceStaticMap> = Omit<
 export function getEngineHost(
   context: SchematicContext
 ): Host & { _root: string } {
-  return (context.engine.workflow as any)._host;
+  return (context.engine.workflow as any)._host
 }
 
 export const getHostRoot = (context: SchematicContext): AddressPathAbsolute => {
   return addr.parsePath(
     (context.engine.workflow as any)?._host?._root!
-  ) as AddressPathAbsolute;
-};
+  ) as AddressPathAbsolute
+}
 
 function wrapServiceCbAsRule<SName extends keyof ServiceMap>({
-  serviceOptions,
+  serviceOptions
 }: {
-  serviceOptions: ServiceOptions<SName>;
+  serviceOptions: ServiceOptions<SName>
 }): Rule {
   return (tree: Tree, schematicContext: SchematicContext) => {
-    const { serviceName, initialiseOptions, cb, context } = serviceOptions;
+    const { serviceName, initialiseOptions, cb, context } = serviceOptions
 
     return from(
       context!
         .serviceFactory(serviceName, initialiseOptions)
         .then((service) => cb({ service, serviceName }))
         .then(() => tree)
-    );
-  };
+    )
+  }
 }
 
 export const wrapServiceAsRule = <SName extends keyof ServiceMap>({
   serviceOptions,
-  schematicContext,
+  schematicContext
 }: {
-  serviceOptions: ServiceOptionsLite<SName>;
+  serviceOptions: ServiceOptionsLite<SName>
   // serviceInitialiseOptions: Omit<ServiceOptions<SName>, "options"> & {
   //   options:(IsEmptyObject<
   //     Omit<
@@ -103,7 +103,7 @@ export const wrapServiceAsRule = <SName extends keyof ServiceMap>({
   //         keyof ServiceInitialiseOptions
   //       >) & {workingPath?: string};
   // },
-  schematicContext: SchematicContext;
+  schematicContext: SchematicContext
 }): Rule => {
   const options: ServiceOptions<SName> = {
     ...serviceOptions,
@@ -111,17 +111,17 @@ export const wrapServiceAsRule = <SName extends keyof ServiceMap>({
     initialiseOptions: {
       ...serviceOptions.initialiseOptions,
       context: serviceOptions.context,
-      workspacePath: getHostRoot(schematicContext),
-    },
-  };
-  return wrapServiceCbAsRule({ serviceOptions: options });
-};
+      workspacePath: getHostRoot(schematicContext)
+    }
+  }
+  return wrapServiceCbAsRule({ serviceOptions: options })
+}
 
 export const wrapServiceAsTask = <SName extends keyof ServiceMap>({
   serviceOptions,
-  schematicContext,
+  schematicContext
 }: {
-  serviceOptions: ServiceOptionsLite<SName>;
+  serviceOptions: ServiceOptionsLite<SName>
   // serviceInitialiseOptions: Omit<ServiceOptions<SName>, "options"> & {
   //   options:(IsEmptyObject<
   //     Omit<
@@ -135,7 +135,7 @@ export const wrapServiceAsTask = <SName extends keyof ServiceMap>({
   //         keyof ServiceInitialiseOptions
   //       >) & {workingPath?: string};
   // },
-  schematicContext: SchematicContext;
+  schematicContext: SchematicContext
 }): TaskConfigurationGenerator<ServiceOptionsLite<SName>> => {
   const options: ServiceOptions<SName> = {
     ...serviceOptions,
@@ -143,11 +143,11 @@ export const wrapServiceAsTask = <SName extends keyof ServiceMap>({
     initialiseOptions: {
       ...serviceOptions.initialiseOptions,
       context: serviceOptions.context,
-      workspacePath: getHostRoot(schematicContext),
-    },
-  };
+      workspacePath: getHostRoot(schematicContext)
+    }
+  }
 
-  return new ServiceExecTask(options);
+  return new ServiceExecTask(options)
 
   // return new class() {
 
@@ -163,7 +163,7 @@ export const wrapServiceAsTask = <SName extends keyof ServiceMap>({
   //       .then(() => tree)
   //   );
   // };
-};
+}
 
 // /**
 //  Runs a service callback but ensures that previous Rules are flushed to disk
@@ -239,8 +239,8 @@ export const wrapServiceAsTask = <SName extends keyof ServiceMap>({
 export const flushBranchMerge = (
   rule: Rule,
   serviceOptions: {
-    context: Context;
-    initialiseOptions: ServiceOptionsLite<"schematics">["initialiseOptions"];
+    context: Context
+    initialiseOptions: ServiceOptionsLite<'schematics'>['initialiseOptions']
   }
   // mergeStrategy: MergeStrategy
 ): Rule => {
@@ -265,10 +265,10 @@ export const flushBranchMerge = (
 
     const res = from(
       serviceOptions.context
-        .serviceFactory("schematics", {
+        .serviceFactory('schematics', {
           ...serviceOptions.initialiseOptions,
           context: serviceOptions.context,
-          workspacePath: serviceOptions.context.workspacePath, // ALWAYS pass along workspacePath in utils
+          workspacePath: serviceOptions.context.workspacePath // ALWAYS pass along workspacePath in utils
           // workspacePath: getHostRoot(schematicContext),
         })
         .then((schematicsService) => {
@@ -307,7 +307,7 @@ export const flushBranchMerge = (
                 SchematicsResettableHostTree.branchFromFs(
                   getHostRoot(schematicContext).original,
                   tree
-                ) as Tree;
+                ) as Tree
               // const applicableNextTree = tree
               // applicableNextTree.merge(tree, mergeStrategy)
               // console.log(`applicableNextTree1, tree :>> `, applicableNextTree, tree)
@@ -329,7 +329,7 @@ export const flushBranchMerge = (
                 .runSchematicRule({
                   schematicContext,
                   schematicRule: rule,
-                  tree: applicableNextTree,
+                  tree: applicableNextTree
                 })
                 .then((nextTree) => {
                   // nextTree._record.reset();
@@ -347,7 +347,7 @@ export const flushBranchMerge = (
                   //   );
                   // };
                   // console.log(`nextTree preFlush actions :>> `, debugActions(nextTree));
-                  return nextTree;
+                  return nextTree
 
                   // return schematicsService.flush({
                   //   tree: nextTree,
@@ -355,7 +355,7 @@ export const flushBranchMerge = (
                   // }).then(() => nextTree)
                 })
                 .then((nextTree) => {
-                  return nextTree;
+                  return nextTree
                   // return schematicsService
                   //   .flush({
                   //     tree: nextTree,
@@ -379,7 +379,7 @@ export const flushBranchMerge = (
                     SchematicsResettableHostTree.branchFromFs(
                       getHostRoot(schematicContext).original,
                       nextTree
-                    ) as Tree;
+                    ) as Tree
                   // let applicableNextTree = nextTree
 
                   // we absolutely need to merge this nextTree into the previous tree. This is because the tree can't be
@@ -398,7 +398,7 @@ export const flushBranchMerge = (
                   //   );
                   // };
                   // console.log(`nextTree actions :>> `, debugActions(applicableNextTree));
-                  return applicableNextTree;
+                  return applicableNextTree
 
                   // NEED A CUSTOM HOST+RECORD IMPLEMENTATION THAT WILL PREVENT THE ACTIONS BEING CARRIED ACROSS. MAYBE WITH A CUSTOM .clear()
 
@@ -415,7 +415,7 @@ export const flushBranchMerge = (
                   // return t;
                   // tree.merge(nextTree, mergeStrategy)
                   // return tree;
-                });
+                })
               // // return schematicsService.flush({ tree: nextTree, action: 'report' })
               // // .then(() => {
               // //   tree.merge(nextTree, mergeStrategy);
@@ -435,12 +435,12 @@ export const flushBranchMerge = (
               // // // // console.log(`tree after :>> `, nextTree)
               // // return nextTree; // is branched from previous tree
               // });
-            });
+            })
         })
-    );
-    return res;
-  };
-};
+    )
+    return res
+  }
+}
 
 /**
  Branches the tree and merges the outcome of the wrapped rule
@@ -448,18 +448,18 @@ export const flushBranchMerge = (
 export const branchMerge = (
   rule: Rule,
   serviceOptions: {
-    context: Context;
-    initialiseOptions: ServiceOptionsLite<"schematics">["initialiseOptions"];
+    context: Context
+    initialiseOptions: ServiceOptionsLite<'schematics'>['initialiseOptions']
   },
   mergeStrategy: MergeStrategy
 ): Rule => {
   return (tree: Tree, schematicContext: SchematicContext) => {
     const res = from(
       serviceOptions.context
-        .serviceFactory("schematics", {
+        .serviceFactory('schematics', {
           ...serviceOptions.initialiseOptions,
           context: serviceOptions.context,
-          workspacePath: serviceOptions.context.workspacePath, // ALWAYS pass along workspacePath in utils
+          workspacePath: serviceOptions.context.workspacePath // ALWAYS pass along workspacePath in utils
           // workspacePath: getHostRoot(schematicContext),
         })
         .then((schematicsService) => {
@@ -467,7 +467,7 @@ export const branchMerge = (
             .runSchematicRule({
               schematicContext,
               schematicRule: rule,
-              tree,
+              tree
             })
             .then((nextTree) => {
               let applicableNextTree =
@@ -476,15 +476,15 @@ export const branchMerge = (
                   // tree,
                   nextTree,
                   mergeStrategy // incoming changes will overwrite if existent
-                ) as Tree;
+                ) as Tree
               // console.log(`applicableNextTree.readText('./README.md') :>> `, applicableNextTree.readText('./README.md'))
-              return applicableNextTree;
-            });
+              return applicableNextTree
+            })
         })
-    );
-    return res;
-  };
-};
+    )
+    return res
+  }
+}
 
 // /** runs a separate schematic. Actually produces separate context which enables a task to be run - https://github.com/angular/angular-cli/blob/8095268fa4e06c70f2f11323cff648fc6d4aba7d/packages/angular_devkit/schematics/src/rules/schematic.ts#L21 */
 // export function runExternalSchematic(options: {
@@ -568,40 +568,40 @@ export function remove(
   schematicContext: SchematicContext,
   originalPath?: string
 ): void {
-  const originalRemovePath = originalPath ?? filePath;
+  const originalRemovePath = originalPath ?? filePath
 
   if (!originalPath) {
     schematicContext.logger.debug(
       `schematicUtils::remove: call made to remove '${filePath}'`
-    );
+    )
   }
 
   if (!(tree instanceof SchematicsResettableHostTree)) {
-    throw new Error(`Only custom tree type supported`);
+    throw new Error(`Only custom tree type supported`)
   }
 
   /** this "double blind deletion" is seen to be effective, dunno why */
   const forceDelete = (path: string) => {
     try {
-      tree.delete(path);
-      tree.delete(path);
+      tree.delete(path)
+      tree.delete(path)
     } catch (err) {
-      throw err;
+      throw err
       // console.log(`schematicUtils::remove: MEHMEH err :>> `, err);
     }
-  };
+  }
 
   try {
     // as the tree only lists the files, this returns false for directories
     if (!tree.exists(filePath)) {
       // retrieve the directory corresponding to the path
-      const dirEntry = tree.getDir(filePath);
+      const dirEntry = tree.getDir(filePath)
       // if there are neither files nor dirs in the directory entry,
       // it means the directory does not exist
       if (!dirEntry.subdirs.length && !dirEntry.subfiles.length) {
         schematicContext.logger.debug(
           `schematicUtils::remove: ${filePath} does not exist. OriginalRemovePath: '${originalRemovePath}'`
-        );
+        )
         // console.log(`dirEntry.subdirs, dirEntry , tree :>> `, dirEntry.subdirs, dirEntry , tree)
 
         // we do a cheeky forceDelete as this seems to effect changes to FS following wrapExternals
@@ -611,26 +611,26 @@ export function remove(
       } else {
         schematicContext.logger.debug(
           `schematicUtils::remove: deleting files in directory ${filePath}. dirEntry found? ${!!dirEntry}. OriginalRemovePath: '${originalRemovePath}'`
-        );
+        )
         dirEntry.subfiles.forEach((subFile) => {
-          const subDirFilePath = path.join(filePath, subFile);
+          const subDirFilePath = path.join(filePath, subFile)
           // forceDelete(subDirFilePath)
-          remove(subDirFilePath, tree, schematicContext, originalRemovePath);
-        });
+          remove(subDirFilePath, tree, schematicContext, originalRemovePath)
+        })
         dirEntry.subdirs.forEach((subDir) => {
-          const subDirDirPath = path.join(filePath, subDir);
-          remove(subDirDirPath, tree, schematicContext, originalRemovePath);
-        });
+          const subDirDirPath = path.join(filePath, subDir)
+          remove(subDirDirPath, tree, schematicContext, originalRemovePath)
+        })
         if (!originalPath) {
           schematicContext.logger.debug(
             `schematicUtils::remove: removing no-empty folder ${filePath}.`
-          );
+          )
           // remove(filePath, tree, schematicContext, originalRemovePath) // try to remove the now-empty folder (only on tail of first call)
           // forceDelete(filePath) // try to remove the now-empty folder (only on tail of first call)
 
           // console.log(`tree._record._cache :>> `, tree._record._cache)
 
-          tree.rmDir(dirEntry); // try to remove the now-empty folder (only on tail of first call)
+          tree.rmDir(dirEntry) // try to remove the now-empty folder (only on tail of first call)
 
           // tree._record.delete(filePath) // NEED A SUPERDUPER WAY OF DELETING TO THE FS HERE
         }
@@ -639,19 +639,19 @@ export function remove(
     } else {
       schematicContext.logger.debug(
         `schematicUtils::remove: deleting file ${filePath}. OriginalRemovePath: '${originalRemovePath}'`
-      );
+      )
       // tree.delete(filePath);
-      forceDelete(filePath); // double deletion seems to affect the filesystem (which is required with wrapExternal)
+      forceDelete(filePath) // double deletion seems to affect the filesystem (which is required with wrapExternal)
       schematicContext.logger.debug(
         `schematicUtils::remove: file ${filePath} deleted successfully. OriginalRemovePath: '${originalRemovePath}'`
-      );
+      )
     }
   } catch (err) {
     throw new BacErrorWrapper(
       MessageName.UNNAMED,
       `schematicUtils::remove: Error occurred whilst deleting. OriginalRemovePath: '${originalRemovePath}'`,
       err as Error
-    );
+    )
     // throw new Error(
     //   `schematicUtils::remove: Could not delete file, ${filePath}. OriginalRemovePath: '${originalRemovePath}'`
     // );
@@ -666,32 +666,32 @@ export function move(
   schematicContext: SchematicContext
 ): void {
   if (to === undefined) {
-    to = from;
-    from = "/";
+    to = from
+    from = '/'
   }
 
-  const fromPath = normalize("/" + from);
-  const toPath = normalize("/" + to);
+  const fromPath = normalize('/' + from)
+  const toPath = normalize('/' + to)
 
   if (fromPath === toPath) {
-    return;
+    return
   }
 
   if (tree.exists(fromPath)) {
     schematicContext.logger.debug(
       `schematicUtils::move: folder ${fromPath} being renamed. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
 
     // fromPath is a file
-    tree.rename(fromPath, toPath);
+    tree.rename(fromPath, toPath)
   } else {
     schematicContext.logger.debug(
       `schematicUtils::move: dir ${fromPath} file's being individually renamed. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
 
-    const dirEntry = tree.getDir(fromPath);
+    const dirEntry = tree.getDir(fromPath)
     if (!(dirEntry instanceof HostDirEntry)) {
-      throw new Error(`host dir does not exist '${fromPath}'`);
+      throw new Error(`host dir does not exist '${fromPath}'`)
     }
 
     // console.log(`dirEntry :>> `, dirEntry)
@@ -703,8 +703,8 @@ export function move(
           toPath,
           path.slice(fromPath.length)
         )}'`
-      );
-      tree.rename(path, join(toPath, path.slice(fromPath.length)));
+      )
+      tree.rename(path, join(toPath, path.slice(fromPath.length)))
 
       // const debugActions = (tree: Tree) => {
       //   return tree.actions.map(
@@ -713,16 +713,16 @@ export function move(
       //   );
       // };
       // console.log(`tree.rename actions :>> `, debugActions(tree));
-    });
+    })
 
     schematicContext.logger.debug(
       `schematicUtils::move: dir ${fromPath} being added to _renameDirs. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
 
-    (tree as SchematicsResettableHostTree).mvDir(fromPath, toPath);
+    ;(tree as SchematicsResettableHostTree).mvDir(fromPath, toPath)
   }
 
-  return;
+  return
 }
 
 /** original Schematics GH - https://github.com/angular/angular-cli/blob/137651645ca5e7f08cbcdc0d2c080e3518d6c908/packages/angular_devkit/schematics/src/rules/move.ts#L13 */
@@ -733,34 +733,34 @@ export function copy(
   schematicContext: SchematicContext
 ): void {
   if (to === undefined) {
-    to = from;
-    from = "/";
+    to = from
+    from = '/'
   }
 
-  const fromPath = normalize("/" + from);
-  const toPath = normalize("/" + to);
+  const fromPath = normalize('/' + from)
+  const toPath = normalize('/' + to)
 
   if (fromPath === toPath) {
-    return;
+    return
   }
 
   if (tree.exists(fromPath)) {
     schematicContext.logger.debug(
       `schematicUtils::copy: folder ${fromPath} being copied. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
 
     // fromPath is a file
-    tree.rename(fromPath, toPath);
+    tree.rename(fromPath, toPath)
   } else if (path.isAbsolute(from) && fs.existsSync(from)) {
     // console.log(`:>> 222`);
     schematicContext.logger.debug(
       `schematicUtils::copy: file ${fromPath} being copied from outside the tree. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
 
     if (tree.exists(toPath)) {
-      tree.overwrite(to, fs.readFileSync(from, { encoding: "utf8" }));
+      tree.overwrite(to, fs.readFileSync(from, { encoding: 'utf8' }))
     } else {
-      tree.create(to, fs.readFileSync(from, { encoding: "utf8" }));
+      tree.create(to, fs.readFileSync(from, { encoding: 'utf8' }))
     }
     // if (schematicContext.strategy === MergeStrategy.Overwrite) {
     // }
@@ -771,11 +771,11 @@ export function copy(
     // console.log(`:>> 333`);
     schematicContext.logger.debug(
       `schematicUtils::copy: directory ${fromPath} being individually copied. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
 
-    const dirEntry = tree.getDir(fromPath);
+    const dirEntry = tree.getDir(fromPath)
     if (!(dirEntry instanceof HostDirEntry)) {
-      throw new Error(`host dir does not exist '${fromPath}'`);
+      throw new Error(`host dir does not exist '${fromPath}'`)
     }
 
     // console.log(`dirEntry :>> `, dirEntry)
@@ -785,7 +785,7 @@ export function copy(
       tree.create(
         join(toPath, path.slice(fromPath.length)),
         tree.get(path)!.content
-      );
+      )
 
       // const debugActions = (tree: Tree) => {
       //   return tree.actions.map(
@@ -794,44 +794,44 @@ export function copy(
       //   );
       // };
       // console.log(`tree.rename actions :>> `, debugActions(tree));
-    });
+    })
 
     schematicContext.logger.debug(
       `schematicUtils::copy: directory ${fromPath} being individually copied COMPLETE. fromPath: '${fromPath}' toPath: '${toPath}'`
-    );
+    )
   }
 
-  return;
+  return
 }
 
 export function debugRule(
   options: Pick<
-    schematicUtils.ServiceOptionsLite<"SubrepoService">,
-    "initialiseOptions" | "context"
+    schematicUtils.ServiceOptionsLite<'SubrepoService'>,
+    'initialiseOptions' | 'context'
   > & { withRealFs?: boolean }
 ): Rule {
   function getFsContents(tree: Tree) {
-    const treeFiles: string[] = [];
-    tree.visit((p) => treeFiles.push(p));
-    return treeFiles;
+    const treeFiles: string[] = []
+    tree.visit((p) => treeFiles.push(p))
+    return treeFiles
   }
   function getTreeActions(tree: Tree): string[] {
     return tree.actions.map((a) =>
-      a.kind === "r"
+      a.kind === 'r'
         ? `tree$ index: '0'; kind: ${a.kind}; fromPath: ${a.path} -> ${a.to}`
         : `tree$ index: '0'; kind: ${a.kind}; path: ${a.path}`
-    );
+    )
   }
 
   return (tree: Tree, schematicContext: SchematicContext) => {
     if (
       !logLevelMatching(
-        "debug",
+        'debug',
         options.context.cliOptions.flags.logLevel,
         options.context.cliOptions.flags.json
       )
     ) {
-      return tree; // expensive computation otherwise
+      return tree // expensive computation otherwise
     }
 
     const liveFsTree = new HostCreateTree(
@@ -840,47 +840,47 @@ export function debugRule(
         new NodeJsSyncHost(),
         schematicUtils.getHostRoot(schematicContext).original as Path
       )
-    );
+    )
 
     const debuggable: Record<string, any> = {
       cwd: getHostRoot(schematicContext).original,
       treeContents: getFsContents(tree),
       fsContents: getFsContents(liveFsTree),
-      actions: getTreeActions(tree),
-    };
+      actions: getTreeActions(tree)
+    }
 
     const withGitRule = wrapServiceAsRule({
       serviceOptions: {
-        serviceName: "SubrepoService",
+        serviceName: 'SubrepoService',
         cb: async ({ service }) => {
-          const repo = service.getRepository(false);
+          const repo = service.getRepository(false)
           if (repo) {
             // console.log(`service.get :>> `, service.getWorkingDestinationPath())
             // console.log(`repo.config :>> `, repo)
 
-            debuggable.status = await repo.status();
-            debuggable.branches = await repo.branch();
-            debuggable.localBranches = await repo.branchLocal();
-            debuggable.logs = await repo.log();
+            debuggable.status = await repo.status()
+            debuggable.branches = await repo.branch()
+            debuggable.localBranches = await repo.branchLocal()
+            debuggable.logs = await repo.log()
           }
 
           options.context.logger.debug(
             util.inspect(debuggable, {
               showHidden: false,
               depth: undefined,
-              colors: true,
+              colors: true
             })
-          );
+          )
 
           // console.log(`debugRule: :>> `, debuggable);
 
-          return tree;
+          return tree
         },
-        ...options,
+        ...options
       },
-      schematicContext,
-    });
+      schematicContext
+    })
 
-    return withGitRule;
-  };
+    return withGitRule
+  }
 }
