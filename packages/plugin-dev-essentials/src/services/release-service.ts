@@ -50,7 +50,7 @@ export class ReleaseService {
   async snapshot({
     query,
     message,
-    // registry = "https://registry.npmjs.org",
+    registry = "https://registry.npmjs.org",
     tag = "latest",
   }: {
     query?: string;
@@ -87,7 +87,7 @@ export class ReleaseService {
 
     expectIsOk(versionRes);
 
-    console.log(`versionRes :>> `, versionRes, registry)
+    // console.log(`versionRes :>> `, versionRes, registry)
 
     const publishRes = await changesetService.publish({
       registry,

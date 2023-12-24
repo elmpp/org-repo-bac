@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-dev-essentials",
-  "version": "0.0.0-bollards-20231223082609",
+  "version": "0.0.0-bollards-20231223224109",
   "description": "Dev plugin package @business-as-code/plugin-dev-essentials",
   "main": "src/index.ts",
   "bin": {

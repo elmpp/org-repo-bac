@@ -10,7 +10,7 @@ import {
 } from "@business-as-code/address";
 import { BacError, MessageName } from "@business-as-code/error";
 import * as oclif from "@oclif/core";
-import { OclifError, PrettyPrintableError } from "@oclif/core/lib/interfaces";
+import { PrettyPrintableError } from "@oclif/core/lib/interfaces";
 import { ParserOutput } from "@oclif/core/lib/interfaces/parser";
 import * as ansiColors from "ansi-colors";
 import debugLoggerModule from 'debug';
@@ -30,7 +30,6 @@ import {
   Result,
   ServiceInitialiseLiteOptions,
   ServiceMap,
-  ServiceProvidersForAsByMethod,
   ServiceStaticMap
 } from "../__types__";
 import { constants } from "../constants";
@@ -167,7 +166,7 @@ export abstract class BaseCommand<
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
   }) {
     this.logger = this.createLogger(options);
-    this.addDebugLogger({logger: this.logger, ...options})
+    this.addDebugLogger({ logger: this.logger, ...options })
 
     // console.log(`this.logger :>> `, this.logger)
   }
@@ -280,9 +279,11 @@ export abstract class BaseCommand<
   }
 
   /** many libraries rely directly on the debug logger module - https://tinyurl.com/ymvxgb7a */
-  protected addDebugLogger(options: {logger: Logger, config: oclif.Config;
-    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;}) {
-      // debugLoggerModule.log = options.logger.log
+  protected addDebugLogger(options: {
+    logger: Logger, config: oclif.Config;
+    parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>>;
+  }) {
+    // debugLoggerModule.log = options.logger.log
     // debugLoggerModule.log = console.log.bind(console)
     debugLoggerModule.log = options.logger.debug.bind(options.logger)
     if (logLevelMatching(options.parseOutput.flags["logLevel"], "debug", options.parseOutput.flags.json)) {
@@ -464,8 +465,7 @@ export abstract class BaseCommand<
     context: ContextCommand<T>;
   }) {
     context.logger.debug(
-      `plugin.initialisePlugins: '${
-        context.oclifConfig.plugins.length
+      `plugin.initialisePlugins: '${context.oclifConfig.plugins.length
       }' plugins found. '${context.oclifConfig.plugins
         .map((p) => `${p.name}:${p.root}`)
         .join("\n")}'`
@@ -506,8 +506,7 @@ export abstract class BaseCommand<
       // return mod.initialise
 
       this.debug(
-        `plugin.loadLifecycleImplementationsForPlugin#${
-          plugin.name
+        `plugin.loadLifecycleImplementationsForPlugin#${plugin.name
         } defines lifecycles: '${mod.lifecycles
           ?.map((l) => `${l.lifecycleTitle}: ${l.title}`)
           .join(", ")}'`
@@ -723,7 +722,7 @@ export abstract class BaseCommand<
           //   nextContext.workspacePath,
           //   initialiseOptionsLite.workspacePath
           // );
-// console.log(`serviceOptions :>> `, serviceOptions)
+          // console.log(`serviceOptions :>> `, serviceOptions)
 
           if (
             serviceOptions?.workspacePath?.original !==
@@ -968,10 +967,8 @@ export abstract class BaseCommand<
     ) {
       throw new BacError(
         MessageName.COMMAND_DANGEROUS_JSON,
-        `Command '${
-          this.ctor.name
-        }' has called logJson but current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${
-          this.context!.cliOptions.flags.logLevel
+        `Command '${this.ctor.name
+        }' has called logJson but current output settings do not guarantee clean outputting. --json: '${!!this.jsonEnabled()}', logLevel: '${this.context!.cliOptions.flags.logLevel
         }'.\n Run again with either --json or --logLevel=error.\n Also ensure you have no console.*() usage`
       );
     }
@@ -1008,7 +1005,7 @@ export abstract class BaseCommand<
     assertIsResult(res)
     // if (!res.success) {
     if (!assertIsOk(res)) {
-      console.log(`failing res during command execution: '${this.ctor.name}' :>> `, require('util').inspect(res, {showHidden: false, depth: undefined, colors: true}))
+      console.log(`failing res during command execution: '${this.ctor.name}' :>> `, require('util').inspect(res, { showHidden: false, depth: undefined, colors: true }))
 
       const err = res.res.error;
       (err as any).exitCode = err?.extra?.exitCode ?? 1; // make it look like an OclifError
@@ -1036,7 +1033,7 @@ export abstract class BaseCommand<
     parseOutput,
   }: {
     parseOutput: ParserOutput<FlagsInfer<T>, FlagsInfer<T>, ArgsInfer<T>> &
-      BaseParseOutput;
+    BaseParseOutput;
   }): Promise<ContextCommand<T>> {
     // type ServiceMap = Bac.Services
     const oclifConfig = (this.ctor as typeof BaseCommand).oclifConfig;
@@ -1078,7 +1075,7 @@ export abstract class BaseCommand<
         runWorkspace: new RunWorkspaceLifecycleBase<any>(),
         // synchroniseWorkspace: new SynchroniseWorkspaceLifecycleBase<any>(),
       },
-      detectedPackageManager: await fsUtils.detectPackageManager({workspacePath: workspacePath}),
+      detectedPackageManager: await fsUtils.detectPackageManager({ workspacePath: workspacePath }),
     };
     return contextCommand;
   }
@@ -1171,7 +1168,7 @@ export abstract class BaseCommand<
       try {
         oclif.ux.action.stop(colors.red("!"));
         // Note this should be the only place where caught errors are to be output!!!
-      } catch {}
+      } catch { }
       // return
       // throw err
 
@@ -1341,96 +1338,3 @@ export abstract class BaseCommand<
 //     }
 //   }
 
-/**
-   catastrophic process error. Replaces - https://github.com/oclif/core/blob/ca88895bcfdca2d1c1ae5eda6e879ae6b1ac4122/src/errors/handle.ts#L10
-   Defined here because causes panic during `bun build` when in core
-   */
-   export function handleCommandError({
-    err,
-    exitProcess,
-    extra,
-  }: {
-    err: Error & Partial<PrettyPrintableError> & Partial<OclifError>;
-    exitProcess: boolean;
-    extra?: {
-      args: string[];
-      cwd: string;
-      logLevel: LogLevel;
-      packageManager?: ServiceProvidersForAsByMethod<"packageManager">;
-    };
-  }) {
-    // console.log(`:>> handling error`, extra, err, exitProcess);
-
-    // const logger = process.stderr.write; // reference does not seem to work
-
-    try {
-      // console.log(`err :>> `, err.stack)
-      // if (!err) err = new Error("no error?");
-      if (err.message === "SIGINT") process.exit(1);
-      // console.log(`err.message :>> `, err.message)
-
-      // const shouldPrint = !(err instanceof ExitError)
-      // const pretty = prettyPrint(err)
-      // const stack = clean(err.stack || '', {pretty: true})
-      // const stack = err.stack || "";
-
-      // if (shouldPrint) {
-      //   logger(err.stack)
-      //   // console.error(pretty ? pretty : stack)
-      // }
-
-      // console.log(`err.message :>> `, err.message)
-      let wrapped = BacError.fromError(err, { messagePrefix: `Failure during command invocation.` })
-      // process.stderr.write(`:>> BBBBBBBBB`);
-      // let msg = `Failure during command invocation.`
-
-      // console.log(`err.message :>> `, err.message)
-
-      // const errWrapped = BacErrorWrapper()
-
-      // console.log(`extra :>> `, extra)
-      if (extra) {
-        wrapped = BacError.fromError(err, {
-          messagePrefix: `Failure during command invocation. Command: '${extra.args.join(
-            " "
-          )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${extra.cwd
-            }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'`
-        })
-        // process.stdout.write(
-        //   `Failure during command invocation. Command: '${extra.args.join(
-        //     " "
-        //   )}'. Cwd: '${extra.cwd}'. Full command: 'cd ${
-        //     extra.cwd
-        //   }; ${extra.packageManager ? extra.packageManager.replace('packageManager', '').toLowerCase() : 'bun --bun'} bac-test ${extra.args.join(" ")}'` + EOL
-        // );
-      }
-
-      // const wrappedErr = new BacErrorWrapper(MessageName.UNNAMED, msg, err)
-      const exitCode =
-        err.oclif?.exit !== undefined && err.oclif?.exit !== false
-          ? err.oclif?.exit
-          : 1;
-
-
-      if (process.stderr.write && err.code !== "EEXIT") {
-
-
-        // console.log(`err :>> `, err.stack) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
-        process.stderr.write(wrapped.stack ?? wrapped.message + EOL)
-        // console.error(wrapped.stack)
-
-        // config.errorLogger.flush()
-        try {
-          return exitProcess && process.exit(exitCode);
-        } catch (err2) {
-          process.stderr.write(err2 as any);
-        }
-      } else {
-        exitProcess && process.exit(exitCode);
-      }
-    } catch (error: any) {
-      // logger(err.stack)
-      // logger(error.stack)
-      exitProcess && process.exit(1);
-    }
-  }

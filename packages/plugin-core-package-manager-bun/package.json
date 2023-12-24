@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-core-package-manager-bun",
-  "version": "0.0.0-bollards-20231223082609",
+  "version": "0.0.0-bollards-20231223224109",
   "description": "Core plugin package @business-as-code/plugin-core-package-manager-bun",
   "main": "src/index.ts",
   "files": [

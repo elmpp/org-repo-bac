@@ -1,1 +1,1 @@
-export {BaseCommand, handleCommandError} from './base-command'
+export {BaseCommand} from './base-command'

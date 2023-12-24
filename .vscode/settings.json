@@ -20,7 +20,7 @@
   // only run the linter on save only.
   // "editor.run": "onSave",
   // Your package manager of choice.
-  "eslint.packageManager": "yarn",
+  "eslint.packageManager": "pnpm",
   // Use the newer and more performant `ESLint` class implementation.
   "eslint.useESLintClass": true,
   // List of directories that that linter should operate on.
@@ -36,13 +36,15 @@
   // ---------- moon prettier setup -- https://tinyurl.com/2qcfhs4s ----
   // Use Prettier as the default formatter for all file types. Types not
   // supported by Prettier can be overriden using bracket syntax, or ignore files.
+  "prettier.prettierPath": "./node_modules/prettier/index.cjs", // pnpm
+  "prettier.configPath": "./.prettierrc",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": false,
   "[shellscript]": {
     "editor.defaultFormatter": "mkhl.shfmt"
   },
-  "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
-  }
+  // "[typescript]": {
+  //   "editor.defaultFormatter": "vscode.typescript-language-features"
+  // }
   // ---------- moon prettier setup EOF ----
 }
