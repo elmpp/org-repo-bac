@@ -1,29 +1,14 @@
 {
   "name": "@business-as-code/plugin-dev-essentials",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Dev plugin package @business-as-code/plugin-dev-essentials",
   "main": "src/index.ts",
-  "bin": {
-    "bac-prepack": "src/bin/prepack.sh",
-    "bac-postpack": "src/bin/postpack.sh"
-  },
   "files": [
-    "dist",
+    "src",
     "package.json",
     "collection.json"
   ],
   "types": "src/index.ts",
-  "scripts": {
-    "prepack": "mkdir dist; rsync -avh \"src/bin/\" \"dist/bin/\""
-  },
-  "publishConfig": {
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "bin": {
-      "bac-prepack": "dist/bin/prepack.sh",
-      "bac-postpack": "dist/bin/postpack.sh"
-    }
-  },
   "peerDependencies": {
     "@angular-devkit/core": "*",
     "@angular-devkit/schematics": "*"

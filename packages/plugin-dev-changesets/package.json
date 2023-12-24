@@ -1,20 +1,15 @@
 {
   "name": "@business-as-code/plugin-dev-changesets",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Dev plugin package @business-as-code/plugin-dev-changesets",
   "main": "src/index.ts",
   "files": [
-    "dist",
+    "src",
     "package.json",
     "collection.json"
   ],
   "types": "src/index.ts",
-  "scripts": {
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack",
-    "//prepack": "jq '.oclif.commands=\"./dist/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/src\\//.\\/dist\\//g' collection.json",
-    "//postpack": "jq '.oclif.commands=\"./src/commands\"' package.json | sponge package.json; sed -i'' -D 's/.\\/dist\\//.\\/src\\//g' collection.json"
-  },
+  "scripts": {},
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
@@ -37,7 +32,7 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./dist/commands",
     "topics": {
       "changesets": {
         "description": "Changesets actions"

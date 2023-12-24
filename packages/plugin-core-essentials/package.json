@@ -1,7 +1,7 @@
 {
   "name": "@business-as-code/plugin-core-essentials",
   "library": "lib",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Core Plugin package @business-as-code/plugin-core-essentials",
   "main": "src/index.ts",
   "files": [
@@ -11,10 +11,6 @@
     "collection.json"
   ],
   "types": "src/index.ts",
-  "scripts": {
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack"
-  },
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
@@ -42,7 +38,7 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./dist/commands",
     "topics": {
       "initialise": {
         "description": "Initialising of content"

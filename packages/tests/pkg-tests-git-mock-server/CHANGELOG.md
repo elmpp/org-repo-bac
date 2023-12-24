@@ -1,5 +1,26 @@
 # git-http-mock-server
 
+## 0.0.0-bollards-20231224100345
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20231224100345
+
+## 0.0.0-bollards-20231224100056
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20231224100056
+
+## 0.0.0-bollards-20231224003347
+
+### Patch Changes
+
+- Updated dependencies
+  - @business-as-code/core@0.0.0-bollards-20231224003347
+
 ## 0.0.0-bollards-20231223224109
 
 ### Patch Changes

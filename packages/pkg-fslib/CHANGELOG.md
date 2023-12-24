@@ -1,5 +1,23 @@
 # @business-as-code/fslib
 
+## 0.0.0-bollards-20231224100345
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-bollards-20231224100056
+
+### Patch Changes
+
+- this is a snapshot release
+
+## 0.0.0-bollards-20231224003347
+
+### Patch Changes
+
+- this is a snapshot release
+
 ## 0.0.0-bollards-20231223224109
 
 ### Patch Changes

@@ -135,8 +135,12 @@ export class BacError<
     const nextErr = new BacError<Code, Extra>(
       reportCode ?? (MessageName.UNNAMED as Code),
       nextMessage,
-      { extra, cause: err }
+      {
+        extra,
+        cause: err, // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
+      }
     )
+    nextErr.stack = err.stack
 
     // console.log(`err, nextErr :>> `, err, nextErr) // you're probably still waiting for this to be fixed - https://github.com/oven-sh/bun/issues/3311
 

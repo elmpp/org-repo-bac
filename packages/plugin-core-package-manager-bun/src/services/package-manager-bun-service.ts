@@ -128,6 +128,7 @@ export class PackageManagerBunService extends BasePackageManagerService<Options>
   async run(options: {
     command: string
     pkg?: AddressPackageStringified
+    noForce?: boolean
     options?: DoExecOptionsLite
   }) {
     let cwd: AddressPathAbsolute | undefined = undefined
@@ -143,7 +144,7 @@ export class PackageManagerBunService extends BasePackageManagerService<Options>
 
     /** probably not needed but helps with tests */
     return this.exec({
-      command: `run --bun ${options.command}`,
+      command: `run ${options.noForce ? '' : '--bun '}${options.command}`,
       options: {
         ...options.options,
         ...(cwd ? { cwd } : {})

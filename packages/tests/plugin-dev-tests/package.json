@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-dev-tests",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Publishable plugin package @business-as-code/plugin-dev-tests",
   "main": "src/index.ts",
   "files": [
@@ -9,10 +9,6 @@
     "collection.json"
   ],
   "types": "src/index.ts",
-  "scripts": {
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack"
-  },
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
@@ -36,7 +32,7 @@
     "expect-type": "^0.15.0"
   },
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./dist/commands",
     "topics": {
       "bac-tests": {
         "description": "Commands related to testing of BaC"

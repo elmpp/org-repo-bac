@@ -30,7 +30,7 @@
     "@moonrepo/cli": "file:///Users/matt/dev/tmp/bac-tests/local-npm-packages/@moonrepo/cli/cli-1.15.4.tgz"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.26.1",
+    "@changesets/cli": "2.27.1",
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-conventional": "^17.4.4",
     "@commitlint/prompt-cli": "^17.4.4",

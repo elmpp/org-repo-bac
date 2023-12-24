@@ -1,21 +1,14 @@
 {
   "name": "@business-as-code/plugin-core-subrepo",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Core plugin package @business-as-code/plugin-core-subrepo",
   "main": "src/index.ts",
   "files": [
-    "dist",
+    "src",
     "package.json"
   ],
   "types": "src/index.ts",
-  "scripts": {
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack"
-  },
-  "publishConfig": {
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts"
-  },
+  "scripts": {},
   "dependencies": {
     "@business-as-code/address": "workspace:*",
     "@business-as-code/core": "workspace:*",

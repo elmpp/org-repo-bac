@@ -1,10 +1,10 @@
 {
   "name": "@business-as-code/tests-core",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Tool package @business-as-code/tests-core",
   "main": "src/index.ts",
   "files": [
-    "dist",
+    "src",
     "package.json",
     "collection.json"
   ],

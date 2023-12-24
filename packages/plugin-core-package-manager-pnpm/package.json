@@ -1,6 +1,6 @@
 {
   "name": "@business-as-code/plugin-core-package-manager-pnpm",
-  "version": "0.0.0-bollards-20231223224109",
+  "version": "0.0.0-bollards-20231224100345",
   "description": "Core plugin package @business-as-code/plugin-core-package-manager-pnpm",
   "main": "src/index.ts",
   "files": [
@@ -9,10 +9,6 @@
     "collection.json"
   ],
   "types": "src/index.ts",
-  "scripts": {
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack"
-  },
   "publishConfig": {
     "main": "dist/index.js",
     "typings": "dist/index.d.ts"
@@ -37,6 +33,6 @@
     "@types/node": "^18.15.3"
   },
   "oclif": {
-    "commands": "./src/commands"
+    "commands": "./dist/commands"
   }
 }

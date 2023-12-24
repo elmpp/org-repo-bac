@@ -26,10 +26,6 @@ force: true
   ],
   "types": "src/index.ts",
   "scripts": {
-    {% if type_variant == 'plugin-core' or type_variant == 'plugin-dev' or type_variant == 'plugin' -%}
-    "prepack": "bac-prepack",
-    "postpack": "bac-postpack",
-    {% endif -%}
   }
 
   {% if type == 'library' or type == 'application' -%}

@@ -107,7 +107,7 @@ export class ChangesetService {
     const { context } = this.options
     const packageManagerService = await context.serviceFactory(
       'packageManager',
-      { context, workingPath: '.', packageManager: 'packageManagerPnpm' }
+      { context, workingPath: '.' }
     )
     // const execService = await context.serviceFactory('exec', {context, workingPath: '.'})
 
@@ -120,6 +120,7 @@ export class ChangesetService {
 
     const resPublish = await packageManagerService.run({
       command,
+      noForce: true, // causes workspace-not-found - https://tinyurl.com/2x5xcwhu
       options: {
         env: {
           ...(registry ? { npm_config_registry: registry } : {})
